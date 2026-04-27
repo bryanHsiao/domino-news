@@ -1,0 +1,48 @@
+---
+import { localizedPath, type Lang } from '../i18n/ui';
+
+interface PostItem {
+  slug: string;
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags: string[];
+}
+
+interface Props {
+  lang: Lang;
+  posts: PostItem[];
+}
+
+const { lang, posts } = Astro.props;
+
+function formatDate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}.${m}.${day}`;
+}
+---
+
+<ul class="post-list">
+  {
+    posts.map((p) => (
+      <li>
+        <a class="post-title" href={localizedPath(lang, `/posts/${p.slug}`)}>
+          {p.title}
+        </a>
+        <div class="post-date">{formatDate(p.pubDate)}</div>
+        {p.description && <p class="post-desc">{p.description}</p>}
+        {p.tags.length > 0 && (
+          <div class="post-tags">
+            {p.tags.map((tag) => (
+              <a class="tag" href={localizedPath(lang, `/tags/${tag}`)}>
+                {tag}
+              </a>
+            ))}
+          </div>
+        )}
+      </li>
+    ))
+  }
+</ul>

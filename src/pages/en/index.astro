@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostList from '../../components/PostList.astro';
+import { getPostsByLang } from '../../lib/posts';
+import { useTranslations, localizedPath } from '../../i18n/ui';
+
+const lang = 'en' as const;
+const t = useTranslations(lang);
+const posts = (await getPostsByLang(lang)).slice(0, 10);
+---
+
+<BaseLayout lang={lang}>
+  <h1>{t('site.tagline')}</h1>
+  <p>{t('site.description')}</p>
+
+  <h2>{t('home.latest')}</h2>
+  <PostList
+    lang={lang}
+    posts={posts.map((p) => ({
+      slug: p.data.slug,
+      title: p.data.title,
+      description: p.data.description,
+      pubDate: p.data.pubDate,
+      tags: p.data.tags,
+    }))}
+  />
+
+  <p><a href={localizedPath(lang, '/posts')}>{t('home.viewAll')}</a></p>
+</BaseLayout>

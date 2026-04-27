@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { useTranslations } from '../../i18n/ui';
+
+const lang = 'en' as const;
+const t = useTranslations(lang);
+---
+
+<BaseLayout lang={lang} title={t('about.title')}>
+  <h1>{t('about.title')}</h1>
+  <p>
+    This site focuses on <strong>HCL Domino</strong> and its broader ecosystem (Notes, Domino REST
+    API, Volt MX, Nomad, AppDev Pack, and more) — covering the latest news and technical articles.
+  </p>
+  <p>
+    A GitHub Actions cron job triggers OpenAI (with Web Search) every day to curate news and blog
+    posts from the last 24–72 hours, generating both Traditional Chinese and English versions with
+    relevant tags.
+  </p>
+  <p>
+    Source code is available on <a href="https://github.com/bryanHsiao/domino-news">GitHub</a>.
+  </p>
+</BaseLayout>

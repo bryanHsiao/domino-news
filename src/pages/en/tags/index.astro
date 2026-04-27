@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getAllTags } from '../../../lib/posts';
+import { useTranslations, localizedPath } from '../../../i18n/ui';
+
+const lang = 'en' as const;
+const t = useTranslations(lang);
+const tags = await getAllTags(lang);
+---
+
+<BaseLayout lang={lang} title={t('tags.title')}>
+  <h1>{t('tags.title')}</h1>
+  <div class="tag-cloud">
+    {
+      tags.map(({ tag, count }) => (
+        <a class="tag" href={localizedPath(lang, `/tags/${tag}`)}>
+          #{tag} ({count})
+        </a>
+      ))
+    }
+  </div>
+</BaseLayout>

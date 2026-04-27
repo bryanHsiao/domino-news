@@ -1,0 +1,77 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getPostsByLang } from '../../../lib/posts';
+import { useTranslations, localizedPath } from '../../../i18n/ui';
+
+export async function getStaticPaths() {
+  const posts = await getPostsByLang('en');
+  return posts.map((post) => ({
+    params: { slug: post.data.slug },
+    props: { post },
+  }));
+}
+
+const lang = 'en' as const;
+const t = useTranslations(lang);
+const { post } = Astro.props;
+const { Content } = await render(post);
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout lang={lang} title={post.data.title} description={post.data.description}>
+  <article>
+    <h1>{post.data.title}</h1>
+    <div class="meta">
+      {t('post.published')} {dateFormatter.format(post.data.pubDate)}
+      {
+        post.data.updatedDate && (
+          <>
+            {' · '}
+            {t('post.updated')} {dateFormatter.format(post.data.updatedDate)}
+          </>
+        )
+      }
+    </div>
+
+    <Content />
+
+    {
+      post.data.sources.length > 0 && (
+        <section>
+          <h2>{t('post.sources')}</h2>
+          <ul class="sources-list">
+            {post.data.sources.map((s) => (
+              <li>
+                <a href={s.url} target="_blank" rel="noopener noreferrer">
+                  {s.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      post.data.tags.length > 0 && (
+        <section>
+          <h2>{t('post.tags')}</h2>
+          <div class="tag-cloud">
+            {post.data.tags.map((tag) => (
+              <a class="tag" href={localizedPath(lang, `/tags/${tag}`)}>
+                #{tag}
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <p><a href={localizedPath(lang, '/posts')}>{t('post.backToList')}</a></p>
+  </article>
+</BaseLayout>
