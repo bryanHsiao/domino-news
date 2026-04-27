@@ -383,7 +383,8 @@ article.post {
 
 article.post .post-cover {
   width: 100%;
-  aspect-ratio: 2 / 1;
+  aspect-ratio: 2.8 / 1;
+  max-height: 420px;
   border-radius: 0;
   background-size: cover;
   background-position: center;
@@ -395,6 +396,60 @@ article.post .post-cover {
 
 article.post .post-body {
   padding: 3rem 4rem;
+}
+
+/* breadcrumb */
+article.post .breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  margin-bottom: 1.5rem;
+}
+
+article.post .breadcrumb a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--color-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+article.post .breadcrumb a:hover {
+  color: var(--color-accent);
+}
+
+article.post .breadcrumb svg {
+  flex: none;
+}
+
+article.post .breadcrumb .sep {
+  color: color-mix(in srgb, var(--color-muted) 60%, transparent);
+  font-size: 0.95rem;
+}
+
+article.post .breadcrumb .current {
+  color: var(--color-fg-strong);
+  max-width: min(420px, 60%);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* meta row icons */
+article.post .meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-variant-numeric: tabular-nums;
+}
+
+article.post .meta-item svg {
+  flex: none;
+  opacity: 0.75;
 }
 
 article.post .post-cover.fallback {
