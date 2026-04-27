@@ -68,44 +68,46 @@ const jsonLd = {
       </div>
     )}
 
-    <h1>{post.data.title}</h1>
-    <div class="meta">
-      <span>{t('post.published')} {dateFormatter.format(post.data.pubDate)}</span>
-      {post.data.updatedDate && (
-        <span>· {t('post.updated')} {dateFormatter.format(post.data.updatedDate)}</span>
+    <div class="post-body">
+      <h1>{post.data.title}</h1>
+      <div class="meta">
+        <span>{t('post.published')} {dateFormatter.format(post.data.pubDate)}</span>
+        {post.data.updatedDate && (
+          <span>· {t('post.updated')} {dateFormatter.format(post.data.updatedDate)}</span>
+        )}
+        {post.data.tags.length > 0 && (
+          <div class="tag-cloud">
+            {post.data.tags.map((tag) => {
+              const pal = tagPalette(tag);
+              return (
+                <a class="tag" href={localizedPath(lang, `/tags/${tag}`)}
+                   style={`--tag-bg:${pal.bg};--tag-fg:${pal.fg}`}>
+                  {tag}
+                </a>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <Content />
+
+      {post.data.sources.length > 0 && (
+        <section>
+          <h2>{t('post.sources')}</h2>
+          <ul class="sources-list">
+            {post.data.sources.map((s) => (
+              <li>
+                <a href={s.url} target="_blank" rel="noopener noreferrer">
+                  {s.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
-      {post.data.tags.length > 0 && (
-        <div class="tag-cloud">
-          {post.data.tags.map((tag) => {
-            const pal = tagPalette(tag);
-            return (
-              <a class="tag" href={localizedPath(lang, `/tags/${tag}`)}
-                 style={`--tag-bg:${pal.bg};--tag-fg:${pal.fg}`}>
-                {tag}
-              </a>
-            );
-          })}
-        </div>
-      )}
+
+      <p><a href={localizedPath(lang, '/posts')}>{t('post.backToList')}</a></p>
     </div>
-
-    <Content />
-
-    {post.data.sources.length > 0 && (
-      <section>
-        <h2>{t('post.sources')}</h2>
-        <ul class="sources-list">
-          {post.data.sources.map((s) => (
-            <li>
-              <a href={s.url} target="_blank" rel="noopener noreferrer">
-                {s.title}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-    )}
-
-    <p><a href={localizedPath(lang, '/posts')}>{t('post.backToList')}</a></p>
   </article>
 </BaseLayout>
