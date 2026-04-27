@@ -11,23 +11,29 @@ tags:
   - "LotusScript"
   - "Tutorial"
 sources:
-  - title: "HCL Domino Query Language (DQL) — official documentation"
-    url: "https://help.hcl-software.com/domino/14.0.0/admin/conf_dql.html"
-  - title: "Domino Query Language Syntax Reference"
-    url: "https://help.hcl-software.com/domino/14.0.0/admin/conf_dql_syntax.html"
-  - title: "OpenNTF: DQL examples and patterns"
-    url: "https://www.openntf.org/main.nsf/project.xsp?r=project/Domino%20Query%20Language%20Examples"
+  - title: "Domino Query Language overview — HCL official docs"
+    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_overview.html"
+  - title: "DQL syntax reference — HCL official docs"
+    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_syntax.html"
+  - title: "Examples of simple DQL queries — HCL official docs"
+    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_simple_examples.html"
+  - title: "DQL Explorer — OpenNTF community project"
+    url: "https://www.openntf.org/main.nsf/project.xsp?r=project/DQL+Explorer"
 cover: "/covers/dql-getting-started.png"
 ---
 
 ## 為什麼需要 DQL
 
-長期寫 Notes 應用的開發者都熟悉兩種查詢方式：
+長期寫 Notes 應用的開發者，過去主要靠以下三種方式找文件：
 
-1. **View + getEntryByKey / getAllEntriesByKey** — 快但要先建好 view 索引
-2. **@Formula 全資料庫搜尋** — 不用 view 但慢、不容易組合條件
+1. **View 查詢**（`NotesView.GetDocumentByKey`、`GetAllDocumentsByKey`、`GetAllEntriesByKey`）
+   — 最快、最直覺：先建好 view 並設定 sort key column，按 key 直接取。缺點是每種查詢條件幾乎都要建一個對應 view，design 會越長越多。
+2. **`NotesDatabase.Search`（公式全檔掃）**
+   — 用 `@Formula` 表達選取條件，整個 NSF 文件逐一比對。不用 view，但每次都掃完整資料庫，文件多就慢；適合一次性管理任務。
+3. **`NotesDatabase.FTSearch`（全文索引搜尋）**
+   — 走 full-text 索引、支援詞綴與布林關鍵字。適合「找含某幾個字的文件」這種需求；缺點是需要先建 FT 索引，而且對結構化欄位（數值、範圍、邏輯組合）的支援不如 view。
 
-**Domino Query Language（DQL）** 是 HCL 從 V10 引入、在 V12 之後逐步穩定的第三種選擇：用接近 SQL 的語法直接查詢文件，**底層自動利用 design catalog 與 view 索引**，不用每次都自己寫 view。
+**Domino Query Language（DQL）** 是 HCL 從 V10 引入、在 V12 之後穩定的**第四種選擇**：用接近 SQL 的語法直接查詢文件，**底層會自動利用 design catalog 與既有的 view 索引**，找不到時 fallback 到全檔掃。優勢是不必為每種查詢條件預先設計新 view，且查詢語法可組合、可從 LotusScript / Java / REST API 統一呼叫。
 
 ## DQL 範例：第一個查詢
 

@@ -11,23 +11,40 @@ tags:
   - "LotusScript"
   - "Tutorial"
 sources:
-  - title: "HCL Domino Query Language (DQL) — official documentation"
-    url: "https://help.hcl-software.com/domino/14.0.0/admin/conf_dql.html"
-  - title: "Domino Query Language Syntax Reference"
-    url: "https://help.hcl-software.com/domino/14.0.0/admin/conf_dql_syntax.html"
-  - title: "OpenNTF: DQL examples and patterns"
-    url: "https://www.openntf.org/main.nsf/project.xsp?r=project/Domino%20Query%20Language%20Examples"
+  - title: "Domino Query Language overview — HCL official docs"
+    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_overview.html"
+  - title: "DQL syntax reference — HCL official docs"
+    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_syntax.html"
+  - title: "Examples of simple DQL queries — HCL official docs"
+    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_simple_examples.html"
+  - title: "DQL Explorer — OpenNTF community project"
+    url: "https://www.openntf.org/main.nsf/project.xsp?r=project/DQL+Explorer"
 cover: "/covers/dql-getting-started.png"
 ---
 
 ## Why DQL exists
 
-Long-time Notes developers know two ways to retrieve documents:
+Notes developers traditionally rely on three ways to retrieve documents:
 
-1. **View + `getEntryByKey` / `getAllEntriesByKey`** — fast, but you must design the view first
-2. **`@Formula` full-database search** — no view needed, but slow and awkward to combine conditions
+1. **View lookups** (`NotesView.GetDocumentByKey`, `GetAllDocumentsByKey`,
+   `GetAllEntriesByKey`) — fastest and most intuitive: design a view with a
+   sorted key column, then look up by key. The cost is design bloat — almost
+   every query shape needs its own view.
+2. **`NotesDatabase.Search`** — selects documents with an `@Formula`
+   expression scanned across the whole NSF. No view required, but every call
+   walks every document; fine for one-off admin tasks, painful for hot paths.
+3. **`NotesDatabase.FTSearch`** — uses the full-text index, supports word
+   stems and boolean keywords. Great for "find documents that mention these
+   words", but it needs an FT index, and structured-field queries (numeric
+   ranges, complex boolean) are weaker than view-based lookups.
 
-**Domino Query Language (DQL)**, introduced in Domino V10 and stabilized through V12, is a third option: a SQL-like syntax that queries documents directly while **automatically using the design catalog and view indexes** under the hood.
+**Domino Query Language (DQL)**, introduced in V10 and stabilized through V12,
+is the **fourth option**: a near-SQL syntax that queries documents directly
+while **automatically using the design catalog and existing view indexes**,
+falling back to a full scan when no index can answer the query. The advantage
+is that you don't need a dedicated view per query shape, conditions compose
+naturally, and the same query string runs from LotusScript, Java, and the
+Domino REST API.
 
 ## A first DQL query
 

@@ -18,6 +18,8 @@ import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import OpenAI from 'openai';
+import { verifyAll, extractMarkdownLinks } from './lib/verify-urls.js';
+import { reviewArticle, type ReviewIssue } from './lib/review-article.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -427,8 +429,64 @@ rather than an illustration.`;
   }
 }
 
+async function gateUrls(article: BilingualArticle): Promise<void> {
+  const sourceUrls = article.sources.map((s) => s.url);
+  const inlineUrls = [
+    ...extractMarkdownLinks(article.zh.markdown),
+    ...extractMarkdownLinks(article.en.markdown),
+  ];
+  const all = [...new Set([...sourceUrls, ...inlineUrls])];
+  console.log(`[gate-urls] Verifying ${all.length} URL(s)...`);
+  const results = await verifyAll(all);
+  const broken = results.filter((r) => !r.ok);
+  for (const r of results) {
+    const tag = r.ok ? 'ok ' : 'BAD';
+    console.log(`  [${tag}] ${r.status} ${r.url}${r.reason ? ' — ' + r.reason : ''}`);
+  }
+  const brokenSources = broken.filter((b) => sourceUrls.includes(b.url));
+  if (brokenSources.length > 0) {
+    throw new Error(
+      `URL gate FAILED — ${brokenSources.length} source URL(s) are not reachable:\n` +
+        brokenSources.map((b) => `  - ${b.status} ${b.url}`).join('\n')
+    );
+  }
+  if (broken.length > 0) {
+    console.warn(`[gate-urls] ${broken.length} inline link(s) broken (article still allowed).`);
+  }
+}
+
+async function gateReview(article: BilingualArticle): Promise<void> {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    console.warn('[gate-review] ANTHROPIC_API_KEY not set — skipping AI review.');
+    return;
+  }
+  const result = await reviewArticle(
+    article.en.title,
+    article.en.markdown,
+    article.sources.map((s) => s.url)
+  );
+  const critical = result.issues.filter((i) => i.severity === 'critical');
+  const major = result.issues.filter((i) => i.severity === 'major');
+  const minor = result.issues.filter((i) => i.severity === 'minor');
+  console.log(
+    `[gate-review] ${critical.length} critical / ${major.length} major / ${minor.length} minor`
+  );
+  const fmt = (i: ReviewIssue) =>
+    `  [${i.severity}] ${i.location}\n      problem: ${i.problem}\n      fix:     ${i.suggestion}`;
+  for (const i of result.issues) console.log(fmt(i));
+  if (critical.length > 0) {
+    throw new Error(
+      `Review gate FAILED — ${critical.length} critical issue(s):\n` +
+        critical.map(fmt).join('\n')
+    );
+  }
+}
+
 async function main() {
   const article = await generate();
+  await gateUrls(article);
+  await gateReview(article);
+
   const client = new OpenAI();
   article.cover = await generateCover(client, article);
 

@@ -51,8 +51,14 @@ npm run generate:article
 
 | 名稱 | 類型 | 說明 |
 |---|---|---|
-| `OPENAI_API_KEY` | Secret | 必填，OpenAI API key |
-| `OPENAI_MODEL` | Variable（可選） | 預設 `gpt-4o`，可改成 `gpt-4o-mini` 省錢 |
+| `OPENAI_API_KEY` | Secret | 必填，OpenAI API key（產文 + 封面圖） |
+| `OPENAI_MODEL` | Variable（可選） | 預設 `gpt-4o` |
+| `OPENAI_IMAGE_MODEL` | Variable（可選） | 預設 `gpt-image-1` |
+| `OPENAI_IMAGE_QUALITY` | Variable（可選） | `low` / `medium` / `high` / `auto`，預設 `medium` |
+| `ANTHROPIC_API_KEY` | Secret（建議） | 跨廠審稿用 Claude，沒設就跳過審稿步驟 |
+| `ANTHROPIC_MODEL` | Variable（可選） | 預設 `claude-sonnet-4-6` |
+
+> 沒設 `ANTHROPIC_API_KEY` 也能跑，但少了第二層事實校對。建議加上，每篇審稿成本約 $0.024。
 
 ## 啟用 GitHub Pages
 
