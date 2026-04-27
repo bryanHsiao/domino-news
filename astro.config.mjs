@@ -1,10 +1,11 @@
 import { defineConfig } from 'astro/config';
+import expressiveCode from 'astro-expressive-code';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://bryanHsiao.github.io',
+  site: 'https://bryanhsiao.github.io',
   base: '/domino-news',
   trailingSlash: 'ignore',
   i18n: {
@@ -14,5 +15,29 @@ export default defineConfig({
       prefixDefaultLocale: false,
     },
   },
-  integrations: [mdx(), sitemap()],
+  integrations: [
+    expressiveCode({
+      themes: ['github-light', 'github-dark'],
+      themeCssSelector: (theme) =>
+        theme.name === 'github-dark'
+          ? '@media (prefers-color-scheme: dark)'
+          : ':root',
+      styleOverrides: {
+        borderRadius: '10px',
+        borderColor: 'var(--color-border)',
+        codeFontSize: '0.9rem',
+        codeFontFamily: 'var(--font-mono)',
+        codePaddingBlock: '1rem',
+        codePaddingInline: '1.25rem',
+        frames: {
+          shadowColor: 'transparent',
+        },
+      },
+      defaultProps: {
+        showLineNumbers: false,
+      },
+    }),
+    mdx(),
+    sitemap(),
+  ],
 });

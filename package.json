@@ -9,13 +9,15 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "generate:article": "tsx scripts/generate-article.ts"
+    "generate:article": "tsx scripts/generate-article.ts",
+    "backfill:covers": "tsx scripts/backfill-covers.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",
     "@astrojs/rss": "^4.0.0",
     "@astrojs/sitemap": "^3.2.0",
-    "astro": "^5.0.0"
+    "astro": "^5.0.0",
+    "astro-expressive-code": "^0.41.7"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

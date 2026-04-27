@@ -33,7 +33,7 @@ const grad = slugGradient(post.data.slug);
       <div class="post-cover" style={`background-image: url('${cover}')`} />
     ) : (
       <div class="post-cover fallback" style={`--g-from:${grad.from};--g-to:${grad.to}`}>
-        <span class="cover-icon">{post.data.slug.charAt(0).toUpperCase()}</span>
+        {post.data.tags[0] && <span class="cover-icon">{post.data.tags[0]}</span>}
       </div>
     )}
 

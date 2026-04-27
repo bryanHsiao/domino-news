@@ -238,30 +238,42 @@ main > h2::before {
 
 .card .cover {
   display: block;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 16 / 10;
   background-size: cover;
   background-position: center;
   position: relative;
+  background-color: var(--color-card);
+}
+
+.card .cover.fallback {
+  background:
+    radial-gradient(at 20% 25%, color-mix(in srgb, var(--g-from, #2563eb) 70%, white) 0, transparent 55%),
+    radial-gradient(at 80% 75%, color-mix(in srgb, var(--g-to, #7c3aed) 70%, white) 0, transparent 55%),
+    linear-gradient(135deg, var(--g-from, #2563eb), var(--g-to, #7c3aed));
+  filter: saturate(0.85);
 }
 
 .card .cover.fallback::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--g-from, #2563eb), var(--g-to, #7c3aed));
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 18px 18px;
+  opacity: 0.7;
 }
 
 .card .cover.fallback .cover-icon {
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  bottom: 0.6rem;
+  right: 0.8rem;
   z-index: 1;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 2.5rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-feature-settings: 'tnum';
 }
 
 .card .body {
@@ -355,28 +367,44 @@ article.post {
 
 article.post .post-cover {
   width: 100%;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 16 / 10;
   border-radius: var(--radius-card);
   background-size: cover;
   background-position: center;
   margin-bottom: 1.75rem;
   position: relative;
   overflow: hidden;
+  background-color: var(--color-card);
 }
 
 article.post .post-cover.fallback {
-  background: linear-gradient(135deg, var(--g-from, #2563eb), var(--g-to, #7c3aed));
+  background:
+    radial-gradient(at 20% 25%, color-mix(in srgb, var(--g-from, #2563eb) 70%, white) 0, transparent 55%),
+    radial-gradient(at 80% 75%, color-mix(in srgb, var(--g-to, #7c3aed) 70%, white) 0, transparent 55%),
+    linear-gradient(135deg, var(--g-from, #2563eb), var(--g-to, #7c3aed));
+  filter: saturate(0.85);
+}
+
+article.post .post-cover.fallback::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.7;
 }
 
 article.post .post-cover.fallback .cover-icon {
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 4rem;
-  font-weight: 700;
+  bottom: 1.2rem;
+  right: 1.4rem;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 article.post h1 {
@@ -413,7 +441,8 @@ article.post p {
   margin: 1rem 0;
 }
 
-article.post code {
+/* Inline code only — block code is handled by astro-expressive-code */
+article.post :not(pre) > code {
   font-family: var(--font-mono);
   background: var(--color-card);
   padding: 0.15rem 0.45rem;
@@ -422,19 +451,8 @@ article.post code {
   color: var(--color-fg-strong);
 }
 
-article.post pre {
-  background: var(--color-card);
-  padding: 1.1rem 1.25rem;
-  border-radius: var(--radius);
-  overflow-x: auto;
-  border: 1px solid var(--color-border);
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
-
-article.post pre code {
-  background: transparent;
-  padding: 0;
+article.post .expressive-code {
+  margin: 1.5rem 0;
 }
 
 article.post blockquote {

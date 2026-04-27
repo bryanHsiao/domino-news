@@ -30,10 +30,6 @@ function coverUrl(cover?: string): string | null {
   if (!cover) return null;
   return `${base}${cover.startsWith('/') ? cover : `/${cover}`}`;
 }
-
-function initial(slug: string): string {
-  return slug.charAt(0).toUpperCase();
-}
 ---
 
 <ul class="card-grid">
@@ -55,7 +51,7 @@ function initial(slug: string): string {
                 : `--g-from:${grad.from};--g-to:${grad.to}`
             }
           >
-            {!cover && <span class="cover-icon">{initial(p.slug)}</span>}
+            {!cover && p.tags[0] && <span class="cover-icon">{p.tags[0]}</span>}
           </a>
           <div class="body">
             <div class="card-tags">

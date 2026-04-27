@@ -380,14 +380,26 @@ async function generateCover(
   }
   const primaryTag = article.tags[0] ?? 'HCL Domino';
   const subject = article.en.title;
-  const prompt = `Wide editorial cover illustration for a tech news article.
+  const prompt = `Cinematic 3D rendered cover image for a technical blog post.
 Topic: "${subject}"
-Theme: ${primaryTag}, HCL Domino enterprise software, modern collaboration platform.
-Style: clean modern editorial illustration, soft and professional palette
-(deep blue, teal, warm coral accents), abstract technical motif suggesting
-data, networks, or productivity. Flat or semi-flat shading, slight depth.
-Strict requirements: NO text, NO words, NO letters, NO logos, NO brand marks
-visible anywhere in the image. Pure visual only. Landscape composition.`;
+Theme hint: ${primaryTag}, enterprise software, developer workflow, data systems.
+
+Style:
+- Photorealistic 3D render, soft cinematic lighting (golden hour or warm interior)
+- Slight depth-of-field / shallow focus, rich textures, premium production quality
+- Composition uses concrete props that suggest the topic (workshop tools, retro
+  hardware, books, terminals on screens, gears, blueprints, network cables, chess
+  pieces, robots, miniature figurines, etc.) staged like a designer set
+- Warm, harmonious palette — avoid harsh neon. Think editorial / ad photography.
+- Aspect: landscape, fills frame edge-to-edge.
+
+ABSOLUTE rules (must follow):
+- NO text, NO words, NO letters, NO numbers, NO logos, NO brand marks anywhere
+- NO UI screenshots, NO chat bubbles, NO charts with axis labels
+- NO recognizable real human faces
+
+The image should look like a real photograph of a thoughtfully-staged scene
+rather than an illustration.`;
 
   console.log(`[generate] Calling ${IMAGE_MODEL} (quality=${IMAGE_QUALITY}) for cover...`);
   try {
