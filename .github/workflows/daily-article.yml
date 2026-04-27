@@ -41,7 +41,7 @@ jobs:
           ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL || 'claude-sonnet-4-6' }}
         run: npm run generate:article
 
-      - name: Commit and push
+      - name: Commit and push (race-safe)
         id: commit
         run: |
           git config user.name "github-actions[bot]"
@@ -54,8 +54,17 @@ jobs:
           fi
           DATE=$(date -u +"%Y-%m-%d")
           git commit -m "Add daily article ($DATE)"
-          git push
-          echo "committed=true" >> "$GITHUB_OUTPUT"
+          for attempt in 1 2 3; do
+            if git push; then
+              echo "Pushed on attempt $attempt"
+              echo "committed=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt) — pulling and retrying..."
+            git pull --rebase
+          done
+          echo "Push still failing after 3 attempts."
+          exit 1
 
       - name: Trigger Pages deploy
         if: steps.commit.outputs.committed == 'true'

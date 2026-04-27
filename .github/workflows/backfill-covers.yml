@@ -43,7 +43,7 @@ jobs:
           FORCE_REGEN: ${{ inputs.force_regen && '1' || '0' }}
         run: npm run backfill:covers
 
-      - name: Commit and push
+      - name: Commit and push (race-safe)
         id: commit
         run: |
           git config user.name "github-actions[bot]"
@@ -55,8 +55,17 @@ jobs:
             exit 0
           fi
           git commit -m "Backfill cover images"
-          git push
-          echo "committed=true" >> "$GITHUB_OUTPUT"
+          for attempt in 1 2 3; do
+            if git push; then
+              echo "Pushed on attempt $attempt"
+              echo "committed=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt) — pulling and retrying..."
+            git pull --rebase
+          done
+          echo "Push still failing after 3 attempts."
+          exit 1
 
       - name: Trigger Pages deploy
         if: steps.commit.outputs.committed == 'true'
