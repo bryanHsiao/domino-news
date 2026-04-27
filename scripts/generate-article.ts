@@ -32,26 +32,48 @@ const SKIP_IMAGE = process.env.SKIP_IMAGE === '1';
 const LOOKBACK_DAYS = 30;
 const COVERS_DIR = join(ROOT, 'public', 'covers');
 
-const ALLOWED_TAGS = [
-  'Domino',
-  'Notes',
-  'REST API',
+// Tag taxonomy is split across 4 axes. See README "Tag taxonomy" for the
+// reasoning. Pick 2-4 tags per article, ideally one from each axis that
+// applies. Avoid umbrella tags like "Domino" / "HCL" — every post is by
+// definition Domino-related, so those add no signal.
+const TAGS_PRODUCT = [
+  'Domino Server',
+  'Notes Client',
+  'Domino Designer',
+  'Domino REST API',
   'Volt MX',
   'Nomad',
   'AppDev Pack',
   'Sametime',
-  'HCL',
+  'Domino IQ',
+] as const;
+
+const TAGS_TECH = [
+  'LotusScript',
+  'Formula',
+  'Java',
+  'XPages',
+  'JavaScript',
+  'DQL',
+  'OIDC',
+] as const;
+
+const TAGS_TOPIC = [
   'Security',
   'Performance',
   'Migration',
-  'LotusScript',
-  'XPages',
-  'Java',
+  'Backup',
   'DevOps',
-  'AI',
-  'Release Notes',
-  'Tutorial',
-  'Community',
+  'Admin',
+] as const;
+
+const TAGS_TYPE = ['Release Notes', 'Tutorial', 'News', 'Community'] as const;
+
+const ALLOWED_TAGS = [
+  ...TAGS_PRODUCT,
+  ...TAGS_TECH,
+  ...TAGS_TOPIC,
+  ...TAGS_TYPE,
 ] as const;
 
 const BANNED_HOSTS = new Set([
@@ -203,7 +225,7 @@ type Output =
   | { error: "insufficient_sources"; reason: string; queriesTried: string[] }
   | {
       slug: string;             // kebab-case ascii, max 60 chars, descriptive
-      tags: string[];           // 3-5 tags, choose ONLY from: ${ALLOWED_TAGS.join(', ')}
+      tags: string[];           // 2-4 tags, see TAG SELECTION below
       sources: { title: string; url: string }[]; // MINIMUM 2, MAXIMUM 6 real URLs you actually consulted
       zh: {
         title: string;          // 繁體中文標題, 25 字以內
@@ -217,9 +239,32 @@ type Output =
       };
     };
 
+TAG SELECTION — pick 2-4 tags drawn from these 4 axes. Prefer one from each
+axis that genuinely applies; never tag with all of them just to fill the slot.
+Tags are filters: a tag that fits every Domino post (e.g. "Domino", "HCL",
+"Notes") is forbidden because it adds zero signal. Pick the most specific
+tag that applies.
+
+  Axis 1 — Product / module (which thing is this post about):
+    ${TAGS_PRODUCT.join(', ')}
+
+  Axis 2 — Technology / language (what is the code in):
+    ${TAGS_TECH.join(', ')}
+
+  Axis 3 — Topic (what problem does the post address):
+    ${TAGS_TOPIC.join(', ')}
+
+  Axis 4 — Content type (what kind of article is this):
+    ${TAGS_TYPE.join(', ')}
+
+Examples:
+  - A Domino 2026 release announcement → ["Release Notes", "Domino Server", "Domino IQ"]
+  - A DQL hands-on tutorial in LotusScript → ["Tutorial", "DQL", "LotusScript"]
+  - A note on tightening ID vault security → ["Admin", "Security", "Domino Server"]
+
 CRITICAL RULES:
 - Use Traditional Chinese (zh-TW), NOT Simplified Chinese.
-- Tags MUST be exact strings from the allowed list above.
+- Tags MUST be exact strings from the axes above.
 - Every URL in "sources" MUST be a real URL you opened during web_search.
 - Both zh.markdown and en.markdown MUST contain at least 2 inline links of the form [text](https://...).
 - The zh and en versions cover the same story but read naturally — do not produce literal translation.
@@ -330,7 +375,7 @@ async function generate(): Promise<BilingualArticle> {
   article.tags = (article.tags ?? [])
     .filter((t): t is string => typeof t === 'string')
     .filter((t) => (ALLOWED_TAGS as readonly string[]).includes(t));
-  if (article.tags.length === 0) article.tags = ['Domino'];
+  if (article.tags.length === 0) article.tags = ['News'];
 
   article.slug = article.slug
     .toLowerCase()

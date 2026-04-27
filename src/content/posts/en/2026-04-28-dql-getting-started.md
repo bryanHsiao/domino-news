@@ -5,11 +5,10 @@ pubDate: 2026-04-28T08:30:00+08:00
 lang: en
 slug: dql-getting-started
 tags:
-  - "Domino"
-  - "REST API"
-  - "Java"
-  - "LotusScript"
   - "Tutorial"
+  - "DQL"
+  - "LotusScript"
+  - "Domino REST API"
 sources:
   - title: "Domino Query Language overview — HCL official docs"
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_overview.html"

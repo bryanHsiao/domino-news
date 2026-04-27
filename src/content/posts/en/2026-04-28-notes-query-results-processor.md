@@ -5,12 +5,10 @@ pubDate: 2026-04-28T17:25:00+08:00
 lang: en
 slug: notes-query-results-processor
 tags:
-  - "Domino"
-  - "Notes"
-  - "LotusScript"
-  - "Java"
-  - "Performance"
   - "Tutorial"
+  - "LotusScript"
+  - "DQL"
+  - "Performance"
 sources:
   - title: "NotesQueryResultsProcessor (LotusScript) — HCL official docs"
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESQUERYRESULTSPROCESSOR_CLASS.html"

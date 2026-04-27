@@ -36,27 +36,38 @@ const META: TagPalette = {
 };
 
 const TAG_CATEGORIES: Record<string, TagPalette> = {
-  Domino: PRODUCT,
-  Notes: PRODUCT,
+  // Product / module
+  'Domino Server': PRODUCT,
+  'Notes Client': PRODUCT,
+  'Domino Designer': PRODUCT,
+  'Domino REST API': PRODUCT,
   'Volt MX': PRODUCT,
   Nomad: PRODUCT,
-  Sametime: PRODUCT,
   'AppDev Pack': PRODUCT,
-  HCL: PRODUCT,
+  Sametime: PRODUCT,
+  'Domino IQ': PRODUCT,
 
-  'REST API': TECH,
+  // Technology / language
   LotusScript: TECH,
-  XPages: TECH,
+  Formula: TECH,
   Java: TECH,
+  XPages: TECH,
+  JavaScript: TECH,
+  DQL: TECH,
+  OIDC: TECH,
 
+  // Topic
   Security: TOPIC,
   Performance: TOPIC,
-  AI: TOPIC,
-  DevOps: TOPIC,
   Migration: TOPIC,
+  Backup: TOPIC,
+  DevOps: TOPIC,
+  Admin: TOPIC,
 
+  // Content type
   'Release Notes': META,
   Tutorial: META,
+  News: META,
   Community: META,
 };
 

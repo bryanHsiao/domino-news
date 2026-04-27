@@ -111,13 +111,29 @@ sources:
     url: "https://..."
 ```
 
-## 允許的 tag 列表
+## Tag 分類
 
-`Domino`, `Notes`, `REST API`, `Volt MX`, `Nomad`, `AppDev Pack`, `Sametime`, `HCL`, `Security`, `Performance`, `Migration`, `LotusScript`, `XPages`, `Java`, `DevOps`, `AI`, `Release Notes`, `Tutorial`, `Community`
+Tag 是篩選器 —— 每篇都會有的 tag（例如 `Domino`、`HCL`）等於沒篩選力，不收。
+每篇選 **2–4 個** tag，盡量從下列 4 軸各挑一個適用的；不適用就跳過該軸。
 
-要新增 tag 在兩處同步更新：
-- `scripts/generate-article.ts` 的 `ALLOWED_TAGS`
-- 視需要在 README 補充
+| 軸 | 顏色 | 用途 | Tag |
+|---|---|---|---|
+| **產品 / 模組** | 🔴 紅 | 這篇在講哪個東西 | `Domino Server`, `Notes Client`, `Domino Designer`, `Domino REST API`, `Volt MX`, `Nomad`, `AppDev Pack`, `Sametime`, `Domino IQ` |
+| **技術 / 語言** | 🔵 藍 | 用什麼寫的 | `LotusScript`, `Formula`, `Java`, `XPages`, `JavaScript`, `DQL`, `OIDC` |
+| **主題** | 🟣 紫 | 解決什麼問題 | `Security`, `Performance`, `Migration`, `Backup`, `DevOps`, `Admin` |
+| **內容類型** | ⚪ 灰 | 哪種文 | `Release Notes`, `Tutorial`, `News`, `Community` |
+
+範例：
+
+- HCL Domino 2026 發布 → `Release Notes` `Domino Server` `Domino IQ` `OIDC`
+- DQL 入門教學 → `Tutorial` `DQL` `LotusScript` `Domino REST API`
+- ID vault 加固 → `Admin` `Security` `Domino Server`
+
+要新增 tag 在 **3 處** 同步：
+
+1. `scripts/generate-article.ts` 的 `TAGS_PRODUCT` / `TAGS_TECH` / `TAGS_TOPIC` / `TAGS_TYPE`
+2. `src/lib/tags.ts` 的 `TAG_CATEGORIES`（決定顏色）
+3. 本 README 表格
 
 ## License
 
