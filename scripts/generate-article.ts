@@ -25,7 +25,15 @@ const ROOT = join(__dirname, '..');
 const POSTS_DIR = join(ROOT, 'src', 'content', 'posts');
 
 const MODEL = process.env.OPENAI_MODEL ?? 'gpt-4o';
+const IMAGE_MODEL = process.env.OPENAI_IMAGE_MODEL ?? 'gpt-image-1';
+const IMAGE_QUALITY = (process.env.OPENAI_IMAGE_QUALITY ?? 'medium') as
+  | 'low'
+  | 'medium'
+  | 'high'
+  | 'auto';
+const SKIP_IMAGE = process.env.SKIP_IMAGE === '1';
 const LOOKBACK_DAYS = 30;
+const COVERS_DIR = join(ROOT, 'public', 'covers');
 
 const ALLOWED_TAGS = [
   'Domino',
@@ -84,6 +92,7 @@ interface BilingualArticle {
   zh: { title: string; description: string; markdown: string };
   en: { title: string; description: string; markdown: string };
   sources: { title: string; url: string }[];
+  cover?: string;
 }
 
 function todayIso(): string {
@@ -355,17 +364,67 @@ async function writePost(
     slug,
     tags: data.tags,
     sources: data.sources,
+    cover: data.cover,
   });
   await writeFile(filepath, `${fm}${langData.markdown.trim()}\n`, 'utf8');
   return filepath;
 }
 
+async function generateCover(
+  client: OpenAI,
+  article: BilingualArticle
+): Promise<string | undefined> {
+  if (SKIP_IMAGE) {
+    console.log('[generate] SKIP_IMAGE=1, skipping cover image generation.');
+    return undefined;
+  }
+  const primaryTag = article.tags[0] ?? 'HCL Domino';
+  const subject = article.en.title;
+  const prompt = `Wide editorial cover illustration for a tech news article.
+Topic: "${subject}"
+Theme: ${primaryTag}, HCL Domino enterprise software, modern collaboration platform.
+Style: clean modern editorial illustration, soft and professional palette
+(deep blue, teal, warm coral accents), abstract technical motif suggesting
+data, networks, or productivity. Flat or semi-flat shading, slight depth.
+Strict requirements: NO text, NO words, NO letters, NO logos, NO brand marks
+visible anywhere in the image. Pure visual only. Landscape composition.`;
+
+  console.log(`[generate] Calling ${IMAGE_MODEL} (quality=${IMAGE_QUALITY}) for cover...`);
+  try {
+    const result = await client.images.generate({
+      model: IMAGE_MODEL,
+      prompt,
+      size: '1536x1024',
+      quality: IMAGE_QUALITY,
+      n: 1,
+    });
+    const b64 = result.data?.[0]?.b64_json;
+    if (!b64) {
+      console.warn('[generate] Image API returned no b64_json, skipping cover.');
+      return undefined;
+    }
+    await mkdir(COVERS_DIR, { recursive: true });
+    const filename = `${article.slug}.png`;
+    const filepath = join(COVERS_DIR, filename);
+    await writeFile(filepath, Buffer.from(b64, 'base64'));
+    console.log(`[generate] Cover saved: ${filepath}`);
+    return `/covers/${filename}`;
+  } catch (err) {
+    console.warn('[generate] Cover generation failed, continuing without cover:', err);
+    return undefined;
+  }
+}
+
 async function main() {
   const article = await generate();
+  const client = new OpenAI();
+  article.cover = await generateCover(client, article);
+
   const pubDate = todayIso();
   const zhPath = await writePost('zh-TW', article.slug, article, pubDate);
   const enPath = await writePost('en', article.slug, article, pubDate);
   console.log(`[generate] Wrote:\n  ${zhPath}\n  ${enPath}`);
+  if (article.cover) console.log(`[generate] Cover: ${article.cover}`);
   console.log(`[generate] Sources used:`);
   for (const s of article.sources) console.log(`  - ${s.title}: ${s.url}`);
 }

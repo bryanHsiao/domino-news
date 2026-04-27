@@ -2,6 +2,7 @@
 import { render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getPostsByLang } from '../../../lib/posts';
+import { tagPalette, slugGradient } from '../../../lib/tags';
 import { useTranslations, localizedPath } from '../../../i18n/ui';
 
 export async function getStaticPaths() {
@@ -16,61 +17,63 @@ const lang = 'en' as const;
 const t = useTranslations(lang);
 const { post } = Astro.props;
 const { Content } = await render(post);
+const base = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '');
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
 });
+const cover = post.data.cover ? `${base}${post.data.cover.startsWith('/') ? post.data.cover : `/${post.data.cover}`}` : null;
+const grad = slugGradient(post.data.slug);
 ---
 
 <BaseLayout lang={lang} title={post.data.title} description={post.data.description}>
-  <article>
+  <article class="post">
+    {cover ? (
+      <div class="post-cover" style={`background-image: url('${cover}')`} />
+    ) : (
+      <div class="post-cover fallback" style={`--g-from:${grad.from};--g-to:${grad.to}`}>
+        <span class="cover-icon">{post.data.slug.charAt(0).toUpperCase()}</span>
+      </div>
+    )}
+
     <h1>{post.data.title}</h1>
     <div class="meta">
-      {t('post.published')} {dateFormatter.format(post.data.pubDate)}
-      {
-        post.data.updatedDate && (
-          <>
-            {' · '}
-            {t('post.updated')} {dateFormatter.format(post.data.updatedDate)}
-          </>
-        )
-      }
+      <span>{t('post.published')} {dateFormatter.format(post.data.pubDate)}</span>
+      {post.data.updatedDate && (
+        <span>· {t('post.updated')} {dateFormatter.format(post.data.updatedDate)}</span>
+      )}
+      {post.data.tags.length > 0 && (
+        <div class="tag-cloud">
+          {post.data.tags.map((tag) => {
+            const pal = tagPalette(tag);
+            return (
+              <a class="tag" href={localizedPath(lang, `/tags/${tag}`)}
+                 style={`--tag-bg:${pal.bg};--tag-fg:${pal.fg}`}>
+                {tag}
+              </a>
+            );
+          })}
+        </div>
+      )}
     </div>
 
     <Content />
 
-    {
-      post.data.sources.length > 0 && (
-        <section>
-          <h2>{t('post.sources')}</h2>
-          <ul class="sources-list">
-            {post.data.sources.map((s) => (
-              <li>
-                <a href={s.url} target="_blank" rel="noopener noreferrer">
-                  {s.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )
-    }
-
-    {
-      post.data.tags.length > 0 && (
-        <section>
-          <h2>{t('post.tags')}</h2>
-          <div class="tag-cloud">
-            {post.data.tags.map((tag) => (
-              <a class="tag" href={localizedPath(lang, `/tags/${tag}`)}>
-                #{tag}
+    {post.data.sources.length > 0 && (
+      <section>
+        <h2>{t('post.sources')}</h2>
+        <ul class="sources-list">
+          {post.data.sources.map((s) => (
+            <li>
+              <a href={s.url} target="_blank" rel="noopener noreferrer">
+                {s.title}
               </a>
-            ))}
-          </div>
-        </section>
-      )
-    }
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
 
     <p><a href={localizedPath(lang, '/posts')}>{t('post.backToList')}</a></p>
   </article>

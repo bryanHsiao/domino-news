@@ -1,5 +1,6 @@
 ---
 import { localizedPath, type Lang } from '../i18n/ui';
+import { tagPalette, slugGradient } from '../lib/tags';
 
 interface PostItem {
   slug: string;
@@ -7,6 +8,7 @@ interface PostItem {
   description: string;
   pubDate: Date;
   tags: string[];
+  cover?: string;
 }
 
 interface Props {
@@ -15,6 +17,7 @@ interface Props {
 }
 
 const { lang, posts } = Astro.props;
+const base = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '');
 
 function formatDate(d: Date): string {
   const y = d.getFullYear();
@@ -22,27 +25,62 @@ function formatDate(d: Date): string {
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}.${m}.${day}`;
 }
+
+function coverUrl(cover?: string): string | null {
+  if (!cover) return null;
+  return `${base}${cover.startsWith('/') ? cover : `/${cover}`}`;
+}
+
+function initial(slug: string): string {
+  return slug.charAt(0).toUpperCase();
+}
 ---
 
-<ul class="post-list">
+<ul class="card-grid">
   {
-    posts.map((p) => (
-      <li>
-        <a class="post-title" href={localizedPath(lang, `/posts/${p.slug}`)}>
-          {p.title}
-        </a>
-        <div class="post-date">{formatDate(p.pubDate)}</div>
-        {p.description && <p class="post-desc">{p.description}</p>}
-        {p.tags.length > 0 && (
-          <div class="post-tags">
-            {p.tags.map((tag) => (
-              <a class="tag" href={localizedPath(lang, `/tags/${tag}`)}>
-                {tag}
-              </a>
-            ))}
+    posts.map((p) => {
+      const href = localizedPath(lang, `/posts/${p.slug}`);
+      const cover = coverUrl(p.cover);
+      const grad = slugGradient(p.slug);
+      const visibleTags = p.tags.slice(0, 2);
+      const extra = p.tags.length - visibleTags.length;
+      return (
+        <li class="card">
+          <a
+            class={`cover${cover ? '' : ' fallback'}`}
+            href={href}
+            style={
+              cover
+                ? `background-image: url('${cover}')`
+                : `--g-from:${grad.from};--g-to:${grad.to}`
+            }
+          >
+            {!cover && <span class="cover-icon">{initial(p.slug)}</span>}
+          </a>
+          <div class="body">
+            <div class="card-tags">
+              {visibleTags.map((t) => {
+                const pal = tagPalette(t);
+                return (
+                  <a
+                    class="tag"
+                    href={localizedPath(lang, `/tags/${t}`)}
+                    style={`--tag-bg:${pal.bg};--tag-fg:${pal.fg}`}
+                  >
+                    {t}
+                  </a>
+                );
+              })}
+              {extra > 0 && <span class="tag-more">+{extra}</span>}
+            </div>
+            <a class="card-title" href={href}>
+              {p.title}
+            </a>
+            {p.description && <p class="card-desc">{p.description}</p>}
+            <div class="card-date">{formatDate(p.pubDate)}</div>
           </div>
-        )}
-      </li>
-    ))
+        </li>
+      );
+    })
   }
 </ul>

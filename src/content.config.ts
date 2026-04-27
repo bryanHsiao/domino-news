@@ -19,6 +19,7 @@ const posts = defineCollection({
         })
       )
       .default([]),
+    cover: z.string().optional(),
     draft: z.boolean().default(false),
   }),
 });

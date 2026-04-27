@@ -44,7 +44,10 @@ const switchHref = localizedPath(otherLang, stripped || '/');
   <body>
     <header class="site-header">
       <div class="inner">
-        <a href={localizedPath(lang, '/')} class="brand">{siteTitle}</a>
+        <a href={localizedPath(lang, '/')} class="brand">
+          <span class="brand-mark">D</span>
+          <span>{siteTitle}</span>
+        </a>
         <nav>
           <a href={localizedPath(lang, '/posts')}>{t('nav.posts')}</a>
           <a href={localizedPath(lang, '/tags')}>{t('nav.tags')}</a>

@@ -19,6 +19,7 @@ const posts = await getPostsByLang(lang);
       description: p.data.description,
       pubDate: p.data.pubDate,
       tags: p.data.tags,
+      cover: p.data.cover,
     }))}
   />
 </BaseLayout>

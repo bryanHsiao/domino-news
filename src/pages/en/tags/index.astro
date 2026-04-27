@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getAllTags } from '../../../lib/posts';
+import { tagPalette } from '../../../lib/tags';
 import { useTranslations, localizedPath } from '../../../i18n/ui';
 
 const lang = 'en' as const;
@@ -12,11 +13,15 @@ const tags = await getAllTags(lang);
   <h1>{t('tags.title')}</h1>
   <div class="tag-cloud">
     {
-      tags.map(({ tag, count }) => (
-        <a class="tag" href={localizedPath(lang, `/tags/${tag}`)}>
-          #{tag} ({count})
-        </a>
-      ))
+      tags.map(({ tag, count }) => {
+        const pal = tagPalette(tag);
+        return (
+          <a class="tag" href={localizedPath(lang, `/tags/${tag}`)}
+             style={`--tag-bg:${pal.bg};--tag-fg:${pal.fg}`}>
+            {tag} <span style={`opacity:0.65`}>({count})</span>
+          </a>
+        );
+      })
     }
   </div>
 </BaseLayout>
