@@ -1,0 +1,67 @@
+---
+import '../styles/global.css';
+import { useTranslations, localizedPath, languages, defaultLang, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+}
+
+const { lang, title, description } = Astro.props;
+const t = useTranslations(lang);
+const siteTitle = t('site.title');
+const pageTitle = title ? `${title} · ${siteTitle}` : `${siteTitle} — ${t('site.tagline')}`;
+const pageDesc = description ?? t('site.description');
+
+// Build the "switch language" target by replacing the lang segment.
+const otherLang: Lang = lang === 'zh-TW' ? 'en' : 'zh-TW';
+const path = Astro.url.pathname.replace(import.meta.env.BASE_URL, '/').replace(/\/+/g, '/');
+const stripped = path.startsWith(`/${lang}/`)
+  ? path.slice(`/${lang}`.length)
+  : path === `/${lang}`
+    ? '/'
+    : path;
+const switchHref = localizedPath(otherLang, stripped || '/');
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={pageDesc} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${siteTitle} (${languages[lang]})`}
+      href={`${import.meta.env.BASE_URL}rss-${lang}.xml`}
+    />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="inner">
+        <a href={localizedPath(lang, '/')} class="brand">{siteTitle}</a>
+        <nav>
+          <a href={localizedPath(lang, '/posts')}>{t('nav.posts')}</a>
+          <a href={localizedPath(lang, '/tags')}>{t('nav.tags')}</a>
+          <a href={localizedPath(lang, '/about')}>{t('nav.about')}</a>
+          <a href={switchHref} class="lang-switch" aria-label="switch language">
+            {t('lang.switch')}
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div>{t('footer.poweredBy')}</div>
+    </footer>
+  </body>
+</html>
