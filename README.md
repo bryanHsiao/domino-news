@@ -3,7 +3,7 @@
 > AI-curated daily news for HCL Domino and its ecosystem (Notes, Domino REST API, Volt MX, Nomad, AppDev Pack, Sametime…).
 > Bilingual: Traditional Chinese (default) + English.
 
-🌐 **Site**: https://bryanHsiao.github.io/domino-news/ (待 GitHub Pages 啟用)
+🌐 **Site**: https://bryanhsiao.github.io/domino-news/
 
 ## 架構
 
@@ -64,7 +64,28 @@ npm run generate:article
 
 1. Settings → Pages → Source 選 **GitHub Actions**
 2. 推一次 commit 到 `main`，`deploy.yml` 會自動部署
-3. 完成後網址：`https://bryanHsiao.github.io/domino-news/`
+3. 完成後網址：`https://bryanhsiao.github.io/domino-news/`
+
+## SEO / 索引
+
+每頁 `<head>` 已內建：
+
+- `<meta name="description">`、Open Graph、Twitter Card
+- `<link rel="canonical">` + `hreflang` 中英互指
+- 文章頁 JSON-LD（`BlogPosting`）結構化資料
+- `<meta name="google-site-verification">`（綁定 Search Console）
+
+build 時自動產生：
+
+- `sitemap-index.xml`（含 `sitemap-0.xml`，所有中英頁面）
+- `robots.txt` 指向上述 sitemap
+- `rss-zh-TW.xml` / `rss-en.xml`
+
+### Google Search Console
+
+資源已驗證：`https://bryanhsiao.github.io/domino-news/`，sitemap 已提交。
+
+新文章 push 後 1–7 天會被自動收錄。要立刻推某篇加速：Search Console → 網址審查 → 貼文章 URL → **要求建立索引**（每天配額 ~10 篇）。
 
 ## 文章 schema
 
