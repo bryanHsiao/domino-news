@@ -67,7 +67,9 @@ export function getLangFromUrl(url: URL): Lang {
 }
 
 export function localizedPath(lang: Lang, path: string): string {
+  const base = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '');
   const clean = path.startsWith('/') ? path : `/${path}`;
-  if (lang === defaultLang) return clean;
-  return `/${lang}${clean === '/' ? '' : clean}`;
+  const localePart = lang === defaultLang ? '' : `/${lang}`;
+  const combined = `${base}${localePart}${clean === '/' ? '/' : clean}`;
+  return combined.replace(/\/{2,}/g, '/');
 }
