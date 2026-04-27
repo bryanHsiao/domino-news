@@ -12,7 +12,11 @@ GitHub Actions (cron 每天 00:30 UTC)
         ↓
 scripts/generate-article.ts
         ↓
-OpenAI Responses API + web_search_preview
+[1] OpenAI Responses API + web_search_preview  ← 產出雙語 markdown
+        ↓
+[2] Claude (Anthropic) 跨廠審稿                ← critical 直接 fail
+        ↓
+[3] OpenAI gpt-image-1 產封面圖                ← public/covers/<slug>.png
         ↓
 src/content/posts/{zh-TW,en}/YYYY-MM-DD-slug.md
         ↓
@@ -24,7 +28,9 @@ Astro build → GitHub Pages
 - **框架**：Astro 5（static site）
 - **內容**：Markdown + Astro Content Collections（含 schema 驗證）
 - **i18n**：路由式切換（`/` 繁中、`/en/` 英文）
-- **AI**：OpenAI Responses API（model 預設 `gpt-4o`，可改 `OPENAI_MODEL`）
+- **產文 AI**：OpenAI Responses API（預設 `gpt-4o`，可改 `OPENAI_MODEL`）
+- **審稿 AI**：Anthropic Claude（預設 `claude-sonnet-4-6`，可改 `ANTHROPIC_MODEL`）— 跨廠交叉檢查 API 名稱、版號、遺漏的替代方案；critical 等級會擋下發文
+- **封面 AI**：OpenAI `gpt-image-1`（品質可改 `OPENAI_IMAGE_QUALITY`）
 - **部署**：GitHub Pages
 
 ## 本地開發
