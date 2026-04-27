@@ -21,6 +21,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/12.0.2/basic/H_EXECUTETOJSON_METHOD.html"
   - title: "NotesJSONNavigator class — HCL official docs"
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESJSONNAVIGATOR_CLASS.html"
+cover: "/covers/notes-query-results-processor.png"
 ---
 
 ## Why NQRP exists
