@@ -11,13 +11,13 @@ tags:
   - "LotusScript"
   - "Tutorial"
 sources:
-cover: "/covers/dql-getting-started.png"
   - title: "HCL Domino Query Language (DQL) — official documentation"
     url: "https://help.hcl-software.com/domino/14.0.0/admin/conf_dql.html"
   - title: "Domino Query Language Syntax Reference"
     url: "https://help.hcl-software.com/domino/14.0.0/admin/conf_dql_syntax.html"
   - title: "OpenNTF: DQL examples and patterns"
     url: "https://www.openntf.org/main.nsf/project.xsp?r=project/Domino%20Query%20Language%20Examples"
+cover: "/covers/dql-getting-started.png"
 ---
 
 ## 為什麼需要 DQL

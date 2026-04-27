@@ -2,7 +2,13 @@ import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 const posts = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/posts' }),
+  loader: glob({
+    pattern: '**/*.{md,mdx}',
+    base: './src/content/posts',
+    // Derive id from path (e.g. "zh-TW/2026-04-28-foo") so the same slug
+    // can appear in both language directories without colliding.
+    generateId: ({ entry }) => entry.replace(/\.(md|mdx)$/, ''),
+  }),
   schema: z.object({
     title: z.string(),
     description: z.string(),

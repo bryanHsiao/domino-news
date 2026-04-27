@@ -79,14 +79,8 @@ function addCoverToFrontmatter(text: string, coverPath: string): string {
   if (/^cover:/m.test(fm)) {
     fm = fm.replace(/^cover:.*$/m, `cover: "${coverPath}"`);
   } else {
-    // insert after "sources:" block (or just append if not found)
-    const sourcesMatch = fm.match(/^sources:[\s\S]*?(?=\n\S|\n*$)/m);
-    if (sourcesMatch) {
-      const insertAt = sourcesMatch.index! + sourcesMatch[0].length;
-      fm = fm.slice(0, insertAt) + `\ncover: "${coverPath}"` + fm.slice(insertAt);
-    } else {
-      fm = fm + `\ncover: "${coverPath}"`;
-    }
+    // Append at the end of frontmatter — safest for nested YAML blocks.
+    fm = fm.replace(/\s*$/, '') + `\ncover: "${coverPath}"`;
   }
 
   return `---\n${fm}\n---\n${body}`;
