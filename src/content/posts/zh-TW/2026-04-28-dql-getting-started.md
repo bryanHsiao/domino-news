@@ -11,6 +11,7 @@ tags:
   - "LotusScript"
   - "Tutorial"
 sources:
+cover: "/covers/dql-getting-started.png"
   - title: "HCL Domino Query Language (DQL) — official documentation"
     url: "https://help.hcl-software.com/domino/14.0.0/admin/conf_dql.html"
   - title: "Domino Query Language Syntax Reference"
