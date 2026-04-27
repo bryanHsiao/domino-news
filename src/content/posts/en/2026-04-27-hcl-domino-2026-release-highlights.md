@@ -1,6 +1,6 @@
 ---
 title: "HCL Domino 2026 Release Highlights"
-description: "HCL Domino 2026 (version 14.5.1), released on March 19, 2026, introduces significant enhancements including UI improvements, AI integration, enhanced security, and performance upgrades."
+description: "HCL Domino 2026 (version 14.5.1) was officially released on March 19, 2026, introducing new features like Domino IQ, AutoUpdate, and OIDC support."
 pubDate: "2026-04-27"
 lang: "en"
 slug: "hcl-domino-2026-release-highlights"
@@ -17,33 +17,36 @@ sources:
     url: "https://www.madicon.de/blog/posts-blog/hcl-notesdomino-1451-is-here-all-new-features-at-a-glance/"
   - title: "HCL Notes 2026 (sneak peek)"
     url: "https://www.panagenda.com/blog/hcl-notes-2026-sneak-peek/"
-  - title: "HCL Domino+: Secure, AI-Powered Collaboration & App Development Platform"
-    url: "https://test.hcl-software.com/domino/home"
+cover: "/covers/hcl-domino-2026-release-highlights.png"
 ---
 ## HCL Domino 2026 (Version 14.5.1) Officially Released
 
-On March 19, 2026, HCL officially released HCL Domino 2026 (version 14.5.1), marking a significant upgrade to the platform with numerous new features and improvements for users and developers alike.
+On March 19, 2026, HCL officially released HCL Domino 2026 (version 14.5.1), bringing a host of new features and improvements to the Notes client, Domino server, and developer tools.
 
-### User Interface and Experience Enhancements
+### Key New Features
 
-The new Notes client introduces a completely redesigned Windows installer, with modules installed directly into the file system, similar to the fast Mac installation process. Additionally, the interface design has been optimized to provide a smoother user experience. ([madicon.de](https://www.madicon.de/blog/posts-blog/hcl-notesdomino-1451-is-here-all-new-features-at-a-glance/?utm_source=openai))
+- **Domino IQ**: Introduces built-in artificial intelligence capabilities, allowing for local execution of large language models. It provides Java and LotusScript classes, as well as OpenAI-compatible REST API support.
 
-### AI Integration: Domino IQ
+- **AutoUpdate**: Enhanced auto-update functionality now supports software updates, including major releases, on Windows and Linux platforms.
 
-Domino 2026 introduces a built-in AI feature named Domino IQ, allowing the execution of large language models locally and providing Java and LotusScript classes as well as OpenAI-compatible REST API support. ([test.hcl-software.com](https://test.hcl-software.com/domino/home?utm_source=openai))
+- **OIDC Support**: Domino can now function as an OIDC provider and enforce passkey-only authentication.
 
-### Enhanced Security and Performance
+### Notes Client Enhancements
 
-The new version enhances security by supporting OpenID Connect (OIDC) for more secure logins and improving administration and configuration tools. Additionally, XPages now supports multi-file uploads, making applications more flexible. ([developer.ds.hcl-software.com](https://developer.ds.hcl-software.com/t/hcl-domino-2026-14-5-1-is-here/172452?utm_source=openai))
+- **New Installer**: A completely redesigned Windows installer places modules directly in the file system, similar to the fast Mac installation process.
 
-### New Features in HCL Traveler 14.5.1
+- **User Interface Improvements**: Introduction of a new default font (Inter) and various UI cleanups across mail, calendar, dialogs, and templates.
 
-HCL Traveler 14.5.1 now supports online meeting synchronization with HCL Verse Mobile, including syncing the list of available online meeting services and automatically linking online meetings to new calendar entries. ([madicon.de](https://www.madicon.de/blog/posts-blog/hcl-traveler-1451-new-features-and-technical-changes/?utm_source=openai))
+- **Workspace Enhancements**: Clearer icon sizing enhances the user experience.
 
-### Participation in the Early Access Program
+### Server-Side Enhancements
 
-HCL has also launched an Early Access Program (EAP), allowing users to experience upcoming features in advance and provide feedback to help refine the final release. ([hcl-software.com](https://www.hcl-software.com/blog/domino/join-the-early-access-program-eap-and-explore-new-features-coming-in-domino-v14-5?utm_source=openai))
+- **Performance Boosts**: Improved server performance, stronger security, and better administration/configuration tools.
 
-### Conclusion
+- **XPages Multi-File Upload Support**: Allows for more flexible applications.
 
-HCL Domino 2026 (version 14.5.1) brings a host of new features and improvements, including UI enhancements, AI integration, enhanced security, and performance upgrades, providing users and developers with more powerful and flexible tools.
+### Traveler 14.5.1 New Features
+
+- **Online Meeting Support**: Extended server-side support for online meetings in conjunction with HCL Verse Mobile, including synchronization of available online meeting services, settings for automatically linking online meetings to new calendar entries, and the ability to update online meeting data directly from the mobile client.
+
+For more detailed information, refer to [HCL Domino 2026 (14.5.1) is here!](https://developer.ds.hcl-software.com/t/hcl-domino-2026-14-5-1-is-here/172452) and [HCL Notes/Domino 14.5.1 is Here – All New Features at a Glance](https://www.madicon.de/blog/posts-blog/hcl-notesdomino-1451-is-here-all-new-features-at-a-glance/).
