@@ -18,10 +18,7 @@ export default defineConfig({
   integrations: [
     expressiveCode({
       themes: ['github-light', 'github-dark'],
-      themeCssSelector: (theme) =>
-        theme.name === 'github-dark'
-          ? '@media (prefers-color-scheme: dark)'
-          : ':root',
+      useDarkModeMediaQuery: true,
       styleOverrides: {
         borderRadius: '10px',
         borderColor: 'var(--color-border)',
