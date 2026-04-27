@@ -8,7 +8,7 @@
 ## 架構
 
 ```
-GitHub Actions (cron 每天 00:30 UTC)
+GitHub Actions (cron 每天 23:00 UTC ≒ 台灣 07:00)
         ↓
 scripts/generate-article.ts
         ↓

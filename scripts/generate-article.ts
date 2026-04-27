@@ -115,7 +115,9 @@ interface BilingualArticle {
 }
 
 function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
+  // Stamp posts by Taipei calendar day so a 07:00 Taipei publish doesn't
+  // get a UTC-yesterday date.
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Taipei' });
 }
 
 function frontmatter(data: Record<string, unknown>): string {
