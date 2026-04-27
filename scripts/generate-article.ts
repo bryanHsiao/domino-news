@@ -145,39 +145,56 @@ async function loadRecentTitles(lang: 'zh-TW' | 'en'): Promise<string[]> {
 
 function buildPrompt(recentTitles: string[]): string {
   return `You are an editor for a daily HCL Domino news site. Your standards are:
-NEVER fabricate. EVERY factual claim must come from a real source you found via the
-web_search tool in this session. If you cannot find enough verified material for a
-solid article, return JSON {"error":"insufficient_sources"} instead of writing a
-weak piece.
+NEVER fabricate. EVERY factual claim must come from a real source you opened via
+the web_search tool in THIS session. Sources must be real URLs that load.
 
-TASK: Use the web_search tool to find ONE noteworthy story published in the last
-72 hours about HCL Domino, HCL Notes, or its ecosystem (Domino REST API, Volt MX,
-HCL Nomad, AppDev Pack, Sametime, etc.).
+TASK: Find material for ONE article about HCL Domino or its ecosystem
+(HCL Notes, Domino REST API, Volt MX, HCL Nomad, AppDev Pack, Sametime, OpenNTF, etc.).
 
-ACCEPTABLE SOURCE TYPES (in priority order):
+YOU MUST INVOKE web_search AT LEAST 3 TIMES with different queries before deciding
+there is nothing to write about. Suggested queries to rotate through:
+  - HCL Domino release 2025 OR 2026
+  - HCL Domino REST API
+  - HCL Nomad update
+  - OpenNTF project announcement
+  - HCL Volt MX
+  - HCL Sametime
+  - site:hcl-software.com Domino
+  - site:openntf.org
+  - HCL Ambassador blog Domino
+  - planetlotus.org
+
+CONTENT TIERS (pick the highest tier you can fully source):
+  TIER A — News from the last 14 days (release, security advisory, official announcement, conference recap)
+  TIER B — Technical post / tutorial / OpenNTF project from the last 60 days
+  TIER C — Deep-dive explainer on a HCL Domino topic, citing 2+ authoritative current sources (official docs published or updated within the last 12 months, plus a recent community article)
+
+ACCEPTABLE SOURCE TYPES (rough priority):
   1. Official HCL pages: hcl-software.com, hcltechsw.com, hcl.com, support.hcl-software.com
   2. HCL official documentation / help center pages
   3. HCL Ambassador or HCL Master blogs
   4. OpenNTF project pages and openntf.org articles
-  5. planetlotus.org aggregated posts (cite the original blog, not the aggregator)
-  6. GitHub release notes from hcl-org or recognized community repos
-  7. Reputable HCL business partners (panagenda, prominic, csi-international, belsoft, etc.)
+  5. planetlotus.org aggregated posts (cite the original blog when possible)
+  6. GitHub release notes / READMEs from hcl-org or recognized community repos
+  7. Reputable HCL business partners (panagenda, prominic, csi-international, belsoft, factor101, etc.)
   8. Conference recordings or slide decks (Engage, CollabSphere, OpenNTF webinars)
 
 UNACCEPTABLE:
-  - Speculation, rumors, "might", "could be" claims with no source
+  - Made-up version numbers, dates, quotes, or URLs
+  - Speculation with no source ("might", "could be")
   - AI-generated content farms
-  - Outdated material (anything older than ~6 months unless it is the canonical reference)
-  - Made-up version numbers, dates, or quotes
-  - Sources you did not actually open and read
+  - Sources you did not actually open during web_search
 
 DEDUP — REJECT topics whose title is similar to any of these recent posts:
 ${recentTitles.length === 0 ? '(none yet)' : recentTitles.map((t) => `- ${t}`).join('\n')}
 
+Only return {"error":"insufficient_sources"} if AFTER 3+ different web_search calls
+you genuinely cannot find 2 quality sources for any of Tier A, B, or C.
+
 REQUIRED OUTPUT — STRICT JSON, no markdown fences, no commentary:
 
 type Output =
-  | { error: "insufficient_sources"; reason: string }
+  | { error: "insufficient_sources"; reason: string; queriesTried: string[] }
   | {
       slug: string;             // kebab-case ascii, max 60 chars, descriptive
       tags: string[];           // 3-5 tags, choose ONLY from: ${ALLOWED_TAGS.join(', ')}
@@ -290,8 +307,12 @@ async function generate(): Promise<BilingualArticle> {
   }
 
   if (parsed && typeof parsed === 'object' && 'error' in parsed) {
-    const reason = (parsed as { reason?: string }).reason ?? 'unspecified';
-    throw new Error(`Model declined to write an article: ${reason}`);
+    const errObj = parsed as { reason?: string; queriesTried?: string[] };
+    const reason = errObj.reason ?? 'unspecified';
+    const tried = errObj.queriesTried?.length
+      ? `\n  queries tried: ${errObj.queriesTried.join(' | ')}`
+      : '\n  (model did not report which queries it tried — likely searched 0 times)';
+    throw new Error(`Model declined to write an article: ${reason}${tried}`);
   }
 
   const article = parsed as BilingualArticle;
