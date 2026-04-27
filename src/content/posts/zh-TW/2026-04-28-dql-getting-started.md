@@ -1,7 +1,7 @@
 ---
 title: "DQL 入門：用熟悉的查詢語法操作 Notes 文件"
 description: "Domino Query Language（DQL）讓你用近 SQL 的語法直接查詢 Notes 文件，免再寫 view、@Formula。本文介紹 DQL 的語法、執行方式與效能要點，附 LotusScript / Java / REST API 範例。"
-pubDate: 2026-04-28
+pubDate: 2026-04-28T08:30:00+08:00
 lang: zh-TW
 slug: dql-getting-started
 tags:

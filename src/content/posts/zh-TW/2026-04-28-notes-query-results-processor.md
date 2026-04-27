@@ -1,13 +1,14 @@
 ---
 title: "NotesQueryResultsProcessor 入門：DQL 之後的下一步"
 description: "NQRP 是 Domino V12 引入的 LotusScript 類別，讓你把 DQL（或任何 NotesDocumentCollection）的結果重新排序、分類、加欄位、輸出成 JSON 或暫存 view。本文整理建立流程、所有方法簽名、官方範例與安全用法。"
-pubDate: 2026-04-28
+pubDate: 2026-04-28T17:25:00+08:00
 lang: zh-TW
 slug: notes-query-results-processor
 tags:
   - "Domino"
   - "Notes"
   - "LotusScript"
+  - "Java"
   - "Performance"
   - "Tutorial"
 sources:
@@ -21,6 +22,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/12.0.2/basic/H_EXECUTETOJSON_METHOD.html"
   - title: "NotesJSONNavigator class — HCL official docs"
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESJSONNAVIGATOR_CLASS.html"
+  - title: "QueryResultsProcessor (Java) — HCL official docs"
+    url: "https://help.hcl-software.com/dom_designer/12.0.0/basic/H_QUERYRESULTSPROCESSOR_CLASS_JAVA.html"
 cover: "/covers/notes-query-results-processor.png"
 ---
 
@@ -197,7 +200,50 @@ qrp.TimeOutSec = 30         ' 執行秒數上限，超過直接拋錯
 
 公開 API 一定要設這兩個屬性，避免使用者送進來的 query 把 server 拖垮。
 
-## 完整範例：DQL + 排序 + JSON
+## Java 版的 QRP
+
+Java 端類別叫 `lotus.domino.QueryResultsProcessor`。命名跟 LotusScript 完全對應，只是去掉 `Notes` 前綴、改成 camelCase，且方法名沿用大寫 `JSON`：
+
+| LotusScript | Java |
+|---|---|
+| `db.CreateQueryResultsProcessor()` | `db.createQueryResultsProcessor()` |
+| `qrp.AddCollection(col)` | `qrp.addCollection(col)` |
+| `qrp.AddDominoQuery(dq, q, "")` | `qrp.addDominoQuery(dq, q, "")` |
+| `qrp.AddColumn(...)` | `qrp.addColumn(...)` |
+| `qrp.ExecuteToJSON()` | `qrp.executeToJSON()` |
+| `qrp.ExecuteToView(name, ...)` | `qrp.executeToView(name, ...)` |
+| `qrp.MaxEntries = 50000` | `qrp.setMaxEntries(50000)` |
+| `qrp.TimeOutSec = 30` | `qrp.setTimeoutSec(30)` |
+
+Java 對應的端到端範例：
+
+```java
+import lotus.domino.*;
+
+Session session = NotesFactory.createSession();
+Database db = session.getDatabase("", "orders.nsf");
+
+QueryResultsProcessor qrp = db.createQueryResultsProcessor();
+qrp.setMaxEntries(10000);
+qrp.setTimeoutSec(20);
+
+DominoQuery dq = db.createDominoQuery();
+qrp.addDominoQuery(dq,
+    "Form = 'Order' and OrderDate >= @dt('2026-01-01')", "");
+
+qrp.addColumn("region",  "",          "", QueryResultsProcessor.SORT_ASCENDING,  false, true);
+qrp.addColumn("total",   "Total NTD", "", QueryResultsProcessor.SORT_DESCENDING, false, false);
+qrp.addColumn("orderNo", "Order No",  "", QueryResultsProcessor.SORT_UNORDERED,  false, false);
+
+JSONNavigator json = qrp.executeToJSON();
+// 走訪 JSONNavigator API ...
+
+qrp.recycle();   // 跟所有 lotus.domino 物件一樣，記得 recycle
+```
+
+`recycle()` 是 `lotus.domino.Base` 的標準動作，避免 JVM 端持有 native handle 太久。
+
+## 完整範例：DQL + 排序 + JSON（LotusScript）
 
 ```vb
 Sub TopOrdersToJSON

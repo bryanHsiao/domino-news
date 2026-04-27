@@ -1,7 +1,7 @@
 ---
 title: "Getting Started with DQL: Query Notes Documents with Familiar Syntax"
 description: "Domino Query Language (DQL) lets you query Notes documents with a near-SQL syntax — no need to design a view or write @Formula. This intro covers DQL syntax, how to run it, and performance tips, with LotusScript / Java / REST API examples."
-pubDate: 2026-04-28
+pubDate: 2026-04-28T08:30:00+08:00
 lang: en
 slug: dql-getting-started
 tags:

@@ -13,11 +13,12 @@
  * Usage: npm run backfill:covers
  */
 
-import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
+import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import OpenAI from 'openai';
+import { generateCoverImage } from './lib/cover-prompt.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -25,12 +26,7 @@ const ROOT = join(__dirname, '..');
 const POSTS_DIR = join(ROOT, 'src', 'content', 'posts');
 const COVERS_DIR = join(ROOT, 'public', 'covers');
 
-const IMAGE_MODEL = process.env.OPENAI_IMAGE_MODEL ?? 'gpt-image-1';
-const IMAGE_QUALITY = (process.env.OPENAI_IMAGE_QUALITY ?? 'medium') as
-  | 'low'
-  | 'medium'
-  | 'high'
-  | 'auto';
+const FORCE_REGEN = process.env.FORCE_REGEN === '1';
 
 interface Frontmatter {
   title: string;
@@ -86,59 +82,6 @@ function addCoverToFrontmatter(text: string, coverPath: string): string {
   return `---\n${fm}\n---\n${body}`;
 }
 
-async function generateCoverImage(
-  client: OpenAI,
-  title: string,
-  primaryTag: string,
-  slug: string
-): Promise<string | null> {
-  const prompt = `Cinematic 3D rendered cover image for a technical blog post.
-Topic: "${title}"
-Theme hint: ${primaryTag}, enterprise software, developer workflow, data systems.
-
-Style:
-- Photorealistic 3D render, soft cinematic lighting (golden hour or warm interior)
-- Slight depth-of-field / shallow focus, rich textures, premium production quality
-- Composition uses concrete props that suggest the topic (workshop tools, retro
-  hardware, books, terminals on screens, gears, blueprints, network cables, chess
-  pieces, robots, miniature figurines, etc.) staged like a designer set
-- Warm, harmonious palette — avoid harsh neon. Think editorial / ad photography.
-- Aspect: landscape, fills frame edge-to-edge.
-
-ABSOLUTE rules (must follow):
-- NO text, NO words, NO letters, NO numbers, NO logos, NO brand marks anywhere
-- NO UI screenshots, NO chat bubbles, NO charts with axis labels
-- NO recognizable real human faces
-
-The image should look like a real photograph of a thoughtfully-staged scene
-rather than an illustration.`;
-
-  console.log(`[backfill] Generating cover for "${slug}" (${title})`);
-  try {
-    const result = await client.images.generate({
-      model: IMAGE_MODEL,
-      prompt,
-      size: '1536x1024',
-      quality: IMAGE_QUALITY,
-      n: 1,
-    });
-    const b64 = result.data?.[0]?.b64_json;
-    if (!b64) {
-      console.warn(`[backfill] No b64_json returned for ${slug}`);
-      return null;
-    }
-    await mkdir(COVERS_DIR, { recursive: true });
-    const filename = `${slug}.png`;
-    const filepath = join(COVERS_DIR, filename);
-    await writeFile(filepath, Buffer.from(b64, 'base64'));
-    console.log(`[backfill]   saved -> ${filepath}`);
-    return `/covers/${filename}`;
-  } catch (err) {
-    console.warn(`[backfill] Cover generation FAILED for ${slug}:`, err);
-    return null;
-  }
-}
-
 async function processLang(lang: 'zh-TW' | 'en'): Promise<Map<string, { file: string; fm: Frontmatter }>> {
   const dir = join(POSTS_DIR, lang);
   if (!existsSync(dir)) return new Map();
@@ -174,18 +117,29 @@ async function main() {
       (enEntry?.fm.cover && existsSync(join(ROOT, 'public', enEntry.fm.cover.replace(/^\//, '')))) ||
       (zhEntry?.fm.cover && existsSync(join(ROOT, 'public', zhEntry.fm.cover.replace(/^\//, '')))) ||
       existsSync(join(COVERS_DIR, `${slug}.png`));
-    if (hasCover) {
+    if (hasCover && !FORCE_REGEN) {
       console.log(`[backfill] skip "${slug}" — already has cover`);
       continue;
+    }
+    if (hasCover && FORCE_REGEN) {
+      console.log(`[backfill] FORCE_REGEN: regenerating cover for "${slug}"`);
     }
     const title = enEntry?.fm.title ?? zhEntry?.fm.title ?? slug;
     const primaryTag = enEntry?.fm.tags[0] ?? zhEntry?.fm.tags[0] ?? 'HCL Domino';
     todo.push({ slug, title, primaryTag });
   }
 
-  console.log(`[backfill] ${todo.length} post(s) need a cover.`);
+  console.log(
+    `[backfill] ${todo.length} post(s) need a cover. (FORCE_REGEN=${FORCE_REGEN ? '1' : '0'})`
+  );
   for (const item of todo) {
-    const coverPath = await generateCoverImage(client, item.title, item.primaryTag, item.slug);
+    const coverPath = await generateCoverImage(
+      client,
+      item.title,
+      item.primaryTag,
+      item.slug,
+      COVERS_DIR
+    );
     if (!coverPath) continue;
     // update both zh and en frontmatter
     for (const entry of [zh.get(item.slug), en.get(item.slug)]) {

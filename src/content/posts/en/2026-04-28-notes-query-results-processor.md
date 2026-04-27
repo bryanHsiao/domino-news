@@ -1,13 +1,14 @@
 ---
 title: "Getting Started with NotesQueryResultsProcessor: Life After DQL"
 description: "NQRP is a LotusScript class added in Domino V12 that lets you re-sort, categorise, project, and serialise the results of a DQL query (or any NotesDocumentCollection) — straight to JSON or to a temporary view. Walks through the create flow, every method signature, the official examples, and the safety knobs."
-pubDate: 2026-04-28
+pubDate: 2026-04-28T17:25:00+08:00
 lang: en
 slug: notes-query-results-processor
 tags:
   - "Domino"
   - "Notes"
   - "LotusScript"
+  - "Java"
   - "Performance"
   - "Tutorial"
 sources:
@@ -21,6 +22,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/12.0.2/basic/H_EXECUTETOJSON_METHOD.html"
   - title: "NotesJSONNavigator class — HCL official docs"
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESJSONNAVIGATOR_CLASS.html"
+  - title: "QueryResultsProcessor (Java) — HCL official docs"
+    url: "https://help.hcl-software.com/dom_designer/12.0.0/basic/H_QUERYRESULTSPROCESSOR_CLASS_JAVA.html"
 cover: "/covers/notes-query-results-processor.png"
 ---
 
@@ -197,7 +200,50 @@ qrp.TimeOutSec = 30         ' max execution seconds; throws if exceeded
 
 Public-facing endpoints should always set both, otherwise a malicious or accidental query can exhaust the server.
 
-## End-to-end: DQL + sort + JSON
+## The Java side
+
+The Java class is `lotus.domino.QueryResultsProcessor`. Naming maps 1:1 from LotusScript: drop the `Notes` prefix, switch to camelCase, and keep `JSON` upper-case in method names:
+
+| LotusScript | Java |
+|---|---|
+| `db.CreateQueryResultsProcessor()` | `db.createQueryResultsProcessor()` |
+| `qrp.AddCollection(col)` | `qrp.addCollection(col)` |
+| `qrp.AddDominoQuery(dq, q, "")` | `qrp.addDominoQuery(dq, q, "")` |
+| `qrp.AddColumn(...)` | `qrp.addColumn(...)` |
+| `qrp.ExecuteToJSON()` | `qrp.executeToJSON()` |
+| `qrp.ExecuteToView(name, ...)` | `qrp.executeToView(name, ...)` |
+| `qrp.MaxEntries = 50000` | `qrp.setMaxEntries(50000)` |
+| `qrp.TimeOutSec = 30` | `qrp.setTimeoutSec(30)` |
+
+The Java end-to-end equivalent:
+
+```java
+import lotus.domino.*;
+
+Session session = NotesFactory.createSession();
+Database db = session.getDatabase("", "orders.nsf");
+
+QueryResultsProcessor qrp = db.createQueryResultsProcessor();
+qrp.setMaxEntries(10000);
+qrp.setTimeoutSec(20);
+
+DominoQuery dq = db.createDominoQuery();
+qrp.addDominoQuery(dq,
+    "Form = 'Order' and OrderDate >= @dt('2026-01-01')", "");
+
+qrp.addColumn("region",  "",          "", QueryResultsProcessor.SORT_ASCENDING,  false, true);
+qrp.addColumn("total",   "Total NTD", "", QueryResultsProcessor.SORT_DESCENDING, false, false);
+qrp.addColumn("orderNo", "Order No",  "", QueryResultsProcessor.SORT_UNORDERED,  false, false);
+
+JSONNavigator json = qrp.executeToJSON();
+// walk the JSONNavigator API ...
+
+qrp.recycle();   // like every lotus.domino.Base, recycle when done
+```
+
+`recycle()` is the standard `lotus.domino.Base` discipline: native handles need to be released explicitly so the JVM doesn't hold onto them longer than necessary.
+
+## End-to-end: DQL + sort + JSON (LotusScript)
 
 ```vb
 Sub TopOrdersToJSON

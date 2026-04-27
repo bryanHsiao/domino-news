@@ -20,6 +20,7 @@ import { fileURLToPath } from 'node:url';
 import OpenAI from 'openai';
 import { verifyAll, extractMarkdownLinks } from './lib/verify-urls.js';
 import { reviewArticle, type ReviewIssue } from './lib/review-article.js';
+import { generateCoverImage } from './lib/cover-prompt.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -27,12 +28,6 @@ const ROOT = join(__dirname, '..');
 const POSTS_DIR = join(ROOT, 'src', 'content', 'posts');
 
 const MODEL = process.env.OPENAI_MODEL ?? 'gpt-4o';
-const IMAGE_MODEL = process.env.OPENAI_IMAGE_MODEL ?? 'gpt-image-1';
-const IMAGE_QUALITY = (process.env.OPENAI_IMAGE_QUALITY ?? 'medium') as
-  | 'low'
-  | 'medium'
-  | 'high'
-  | 'auto';
 const SKIP_IMAGE = process.env.SKIP_IMAGE === '1';
 const LOOKBACK_DAYS = 30;
 const COVERS_DIR = join(ROOT, 'public', 'covers');
@@ -381,52 +376,14 @@ async function generateCover(
     return undefined;
   }
   const primaryTag = article.tags[0] ?? 'HCL Domino';
-  const subject = article.en.title;
-  const prompt = `Cinematic 3D rendered cover image for a technical blog post.
-Topic: "${subject}"
-Theme hint: ${primaryTag}, enterprise software, developer workflow, data systems.
-
-Style:
-- Photorealistic 3D render, soft cinematic lighting (golden hour or warm interior)
-- Slight depth-of-field / shallow focus, rich textures, premium production quality
-- Composition uses concrete props that suggest the topic (workshop tools, retro
-  hardware, books, terminals on screens, gears, blueprints, network cables, chess
-  pieces, robots, miniature figurines, etc.) staged like a designer set
-- Warm, harmonious palette — avoid harsh neon. Think editorial / ad photography.
-- Aspect: landscape, fills frame edge-to-edge.
-
-ABSOLUTE rules (must follow):
-- NO text, NO words, NO letters, NO numbers, NO logos, NO brand marks anywhere
-- NO UI screenshots, NO chat bubbles, NO charts with axis labels
-- NO recognizable real human faces
-
-The image should look like a real photograph of a thoughtfully-staged scene
-rather than an illustration.`;
-
-  console.log(`[generate] Calling ${IMAGE_MODEL} (quality=${IMAGE_QUALITY}) for cover...`);
-  try {
-    const result = await client.images.generate({
-      model: IMAGE_MODEL,
-      prompt,
-      size: '1536x1024',
-      quality: IMAGE_QUALITY,
-      n: 1,
-    });
-    const b64 = result.data?.[0]?.b64_json;
-    if (!b64) {
-      console.warn('[generate] Image API returned no b64_json, skipping cover.');
-      return undefined;
-    }
-    await mkdir(COVERS_DIR, { recursive: true });
-    const filename = `${article.slug}.png`;
-    const filepath = join(COVERS_DIR, filename);
-    await writeFile(filepath, Buffer.from(b64, 'base64'));
-    console.log(`[generate] Cover saved: ${filepath}`);
-    return `/covers/${filename}`;
-  } catch (err) {
-    console.warn('[generate] Cover generation failed, continuing without cover:', err);
-    return undefined;
-  }
+  const cover = await generateCoverImage(
+    client,
+    article.en.title,
+    primaryTag,
+    article.slug,
+    COVERS_DIR
+  );
+  return cover ?? undefined;
 }
 
 async function gateUrls(article: BilingualArticle): Promise<void> {
