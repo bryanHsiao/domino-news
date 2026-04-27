@@ -25,9 +25,40 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
 });
 const cover = post.data.cover ? `${base}${post.data.cover.startsWith('/') ? post.data.cover : `/${post.data.cover}`}` : null;
 const grad = slugGradient(post.data.slug);
+
+const siteOrigin = Astro.site?.origin ?? 'https://bryanhsiao.github.io';
+const canonical = new URL(Astro.url.pathname, Astro.site ?? siteOrigin).toString();
+const absCover = post.data.cover
+  ? `${siteOrigin}${base}${post.data.cover.startsWith('/') ? post.data.cover : `/${post.data.cover}`}`
+  : undefined;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.pubDate.toISOString(),
+  ...(post.data.updatedDate ? { dateModified: post.data.updatedDate.toISOString() } : {}),
+  inLanguage: 'en',
+  mainEntityOfPage: canonical,
+  url: canonical,
+  ...(absCover ? { image: absCover } : {}),
+  keywords: post.data.tags.join(', '),
+  publisher: {
+    '@type': 'Organization',
+    name: 'Domino News',
+    url: siteOrigin + base + '/',
+  },
+};
 ---
 
-<BaseLayout lang={lang} title={post.data.title} description={post.data.description}>
+<BaseLayout
+  lang={lang}
+  title={post.data.title}
+  description={post.data.description}
+  cover={post.data.cover}
+  ogType="article"
+  jsonLd={jsonLd}
+>
   <article class="post">
     {cover ? (
       <div class="post-cover" style={`background-image: url('${cover}')`} />

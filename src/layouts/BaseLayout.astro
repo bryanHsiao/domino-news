@@ -6,9 +6,15 @@ interface Props {
   lang: Lang;
   title?: string;
   description?: string;
+  /** Path under public/ (e.g. "/covers/foo.png"). Used for og:image / twitter:image. */
+  cover?: string;
+  /** "article" for post pages, "website" elsewhere. Defaults to "website". */
+  ogType?: 'article' | 'website';
+  /** Optional JSON-LD object (e.g. BlogPosting). Will be JSON.stringify'd. */
+  jsonLd?: unknown;
 }
 
-const { lang, title, description } = Astro.props;
+const { lang, title, description, cover, ogType = 'website', jsonLd } = Astro.props;
 const t = useTranslations(lang);
 const siteTitle = t('site.title');
 const pageTitle = title ? `${title} · ${siteTitle}` : `${siteTitle} — ${t('site.tagline')}`;
@@ -24,6 +30,16 @@ const stripped = path.startsWith(`/${lang}/`)
     : path;
 const switchHref = localizedPath(otherLang, stripped || '/');
 const baseNoSlash = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '');
+
+// Absolute URLs for SEO/social tags
+const siteOrigin = Astro.site ? Astro.site.origin : 'https://bryanhsiao.github.io';
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? siteOrigin).toString();
+const defaultOgImage = `${siteOrigin}${baseNoSlash}/covers/welcome.png`;
+const ogImageUrl = cover
+  ? `${siteOrigin}${baseNoSlash}${cover.startsWith('/') ? cover : `/${cover}`}`
+  : defaultOgImage;
+const otherLangPath = stripped || '/';
+const otherLangUrl = new URL(localizedPath(otherLang, otherLangPath), Astro.site ?? siteOrigin).toString();
 ---
 
 <!doctype html>
@@ -40,7 +56,31 @@ const baseNoSlash = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '');
       title={`${siteTitle} (${languages[lang]})`}
       href={`${baseNoSlash}/rss-${lang}.xml`}
     />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang={lang} href={canonicalUrl} />
+    <link rel="alternate" hreflang={otherLang} href={otherLangUrl} />
+    <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+    {/* Open Graph */}
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={siteTitle} />
+    <meta property="og:title" content={title ?? siteTitle} />
+    <meta property="og:description" content={pageDesc} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:locale" content={lang === 'zh-TW' ? 'zh_TW' : 'en_US'} />
+
+    {/* Twitter / X card */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title ?? siteTitle} />
+    <meta name="twitter:description" content={pageDesc} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
     <title>{pageTitle}</title>
+
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
   </head>
   <body>
     <header class="site-header">

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bryanhsiao.github.io/domino-news/sitemap-index.xml
