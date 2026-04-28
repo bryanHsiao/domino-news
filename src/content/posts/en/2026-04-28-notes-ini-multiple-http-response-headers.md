@@ -16,6 +16,7 @@ sources:
     url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0038786"
   - title: "Notes.ini Entry — HTTPAdditionalRespHeader (admincamp.de)"
     url: "https://admincamp.de/customer/notesini.nsf/85255a87005060c585255a850068ca6f/cd0d86347059d1a9c1257fb6004a41e2?OpenDocument="
+cover: "/covers/notes-ini-multiple-http-response-headers.png"
 ---
 
 ## Why this matters
