@@ -16,17 +16,22 @@ sources:
     url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0038786"
   - title: "Notes.ini Entry — HTTPAdditionalRespHeader (admincamp.de)"
     url: "https://admincamp.de/customer/notesini.nsf/85255a87005060c585255a850068ca6f/cd0d86347059d1a9c1257fb6004a41e2?OpenDocument="
+  - title: "KB0100440 — Difference between 'Tell HTTP Restart' and 'Tell HTTP refresh' commands (HCL Software Customer Support)"
+    url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0100440"
 cover: "/covers/notes-ini-multiple-http-response-headers.png"
 ---
 
 ## 為什麼這篇對你重要
 
-Domino 站台要設安全 HTTP 標頭（HSTS、CSP、X-Frame-Options 等）通常有兩個入口：
+Domino 站台要設安全 HTTP 標頭（HSTS、CSP、X-Frame-Options 等），組織通常會落在下列兩種設定模型之一：
 
-1. **Internet Site 文件**或 Web Site Rules — 走 GUI、可細到「每個站台不一樣」
-2. **`notes.ini` 的 `HTTPAdditionalRespHeader`** — 整台 server 通用
+1. **走 Internet Site 文件 + Web Site Rules** — GUI 設定、可 per-site 不同政策。要設 custom HTTP 標頭，用 Web Site Rule 文件。
+2. **走 Server document（不啟用 Internet Sites）+ `notes.ini`** — 比較簡單、整台 server 一份設定。要設 custom 標頭，[只能用 `HTTPAdditionalRespHeader`](https://admincamp.de/customer/notesini.nsf/85255a87005060c585255a850068ca6f/cd0d86347059d1a9c1257fb6004a41e2?OpenDocument=) 這個 notes.ini 參數。
 
-平常當然用前者，但當 HTTP task 起不來、admin client 也沒辦法登進去操作的時候，第二條路是唯一能救火的方法。這時你會遇到尷尬的事實：[`HTTPAdditionalRespHeader` 從 9.0.1 FP6 引進](https://admincamp.de/customer/notesini.nsf/85255a87005060c585255a850068ca6f/cd0d86347059d1a9c1257fb6004a41e2?OpenDocument=)以來，**只支援一個 header**。寫第二行 `HTTPAdditionalRespHeader=...` 會直接覆蓋上一行（notes.ini 後寫贏前寫的特性），等於只能挑一個安全項目（X-Frame-Options 或 CSP，二選一），其他全裸。
+走模型 2 的組織，**`notes.ini` 是唯一的安全標頭設定點**，不是 fallback 而是日常。
+走模型 1 的組織，`notes.ini` 也是 HTTP task 起不來、admin client 進不去時的救火稻草。
+
+兩種情境都會踩到同一個歷史限制：[`HTTPAdditionalRespHeader` 從 9.0.1 FP6 引進](https://admincamp.de/customer/notesini.nsf/85255a87005060c585255a850068ca6f/cd0d86347059d1a9c1257fb6004a41e2?OpenDocument=)以來，**只支援一個 header**。寫第二行 `HTTPAdditionalRespHeader=...` 會直接覆蓋上一行（notes.ini 後寫贏前寫的特性），等於只能挑一個安全項目（X-Frame-Options 或 CSP，二選一），其他全裸。
 
 HCL 在 [Domino V12.0.x 起](https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0124025) 用一個簡單的命名規則把這個限制拿掉了。
 
@@ -71,12 +76,19 @@ HTTPAdditionalRespHeader04=Content-Security-Policy: default-src 'self'; img-src 
 
 CSP 那行幾乎一定要按你站台實際情況調整 —— `unsafe-inline` 嚴格說不應該開，但很多 Notes Web 應用 inline 樣式很多，先求站台不破再慢慢收斂。HSTS 的 `max-age=31536000` 是一年，第一次上線建議先放小一點（例如 `300` 五分鐘）試水溫，確定全 HTTPS 化沒問題再拉長。
 
-## 還是建議走 Internet Site 文件
+## 兩種模型的取捨
 
-`notes.ini` 寫法的主要使用情境是 **救火** 跟 **整台 server 統一基線**。常態還是建議走 Internet Site 文件 + Web Site Rules，因為：
+如果你的環境**有啟用 Internet Sites**，Web Site Rules 在大部分情境下還是比較適合長期管理，因為：
 
-- 可以 per-site 設不同政策（`*.example.com` 跟 `api.example.com` 可以不一樣）
-- 改了不用重啟 HTTP task
+- 可以 per-site 設不同政策（`*.example.com` 跟 `api.example.com` 可以套不同 rule）
 - 變更歷史看得出來（誰改了、什麼時候改）
+- 改完只要 [`tell http refresh`](https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0100440)，不用 `tell http restart` —— refresh 不掉 user sessions 也不清快取，比較溫和
 
-把 `notes.ini` 當作 **最後一道網** 就對了 —— 平常用不到，但出事的時候很慶幸它在那。
+如果你的環境**只用 Server document、沒啟用 Internet Sites**，那 `notes.ini` 本來就是你唯一的選擇。V12 的多 header 支援是真正的功能解鎖，不是「fallback 的補丁」。
+
+注意 `tell http refresh` 跟 `tell http restart` 觸發的範圍不同：
+
+- **`tell http refresh`** 只重讀 Web Site documents（含 rules、file protection、authentication realms）
+- **`tell http restart`** 才會重讀 Server document、`notes.ini`、HTTPD.CNF、Servlets
+
+所以這次改 `notes.ini` 的 `HTTPAdditionalRespHeader` 一定要 `tell http restart` 才會生效。

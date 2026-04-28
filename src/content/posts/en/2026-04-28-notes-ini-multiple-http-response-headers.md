@@ -16,17 +16,21 @@ sources:
     url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0038786"
   - title: "Notes.ini Entry — HTTPAdditionalRespHeader (admincamp.de)"
     url: "https://admincamp.de/customer/notesini.nsf/85255a87005060c585255a850068ca6f/cd0d86347059d1a9c1257fb6004a41e2?OpenDocument="
+  - title: "KB0100440 — Difference between 'Tell HTTP Restart' and 'Tell HTTP refresh' commands (HCL Software Customer Support)"
+    url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0100440"
 cover: "/covers/notes-ini-multiple-http-response-headers.png"
 ---
 
 ## Why this matters
 
-Setting security HTTP headers (HSTS, CSP, X-Frame-Options, etc.) on a Domino web server gives you two entry points:
+Domino shops typically configure security HTTP headers (HSTS, CSP, X-Frame-Options, etc.) using one of two models:
 
-1. **Internet Site documents** or Web Site Rules — UI-driven, per-site
-2. **`HTTPAdditionalRespHeader` in `notes.ini`** — server-wide
+1. **Internet Site documents + Web Site Rules** — UI-driven, per-site policies. Custom HTTP headers go in a Web Site Rule document.
+2. **Server document only (no Internet Sites enabled) + `notes.ini`** — simpler, server-wide. Custom headers can [only be set via `HTTPAdditionalRespHeader`](https://admincamp.de/customer/notesini.nsf/85255a87005060c585255a850068ca6f/cd0d86347059d1a9c1257fb6004a41e2?OpenDocument=) in notes.ini.
 
-The first is the right default. But when the HTTP task won't start, the Internet Site documents are unreachable, and the admin client can't get in either, the second path is your only firefighting option. And until recently you hit an awkward fact: [`HTTPAdditionalRespHeader` has been around since 9.0.1 FP6](https://admincamp.de/customer/notesini.nsf/85255a87005060c585255a850068ca6f/cd0d86347059d1a9c1257fb6004a41e2?OpenDocument=), but **only ever supported one header**. A second `HTTPAdditionalRespHeader=...` line silently overwrote the first (notes.ini's last-write-wins behaviour), so you had to pick one security control (X-Frame-Options OR CSP, never both) and ship with the rest exposed.
+For shops on model 2, `notes.ini` is the **only** place to put security headers — not a fallback, just the day-to-day config surface. For shops on model 1, `notes.ini` is also the firefighting path when the HTTP task won't start and the admin client can't get in.
+
+Both situations hit the same historical limit: [`HTTPAdditionalRespHeader` has been around since 9.0.1 FP6](https://admincamp.de/customer/notesini.nsf/85255a87005060c585255a850068ca6f/cd0d86347059d1a9c1257fb6004a41e2?OpenDocument=), but **only ever supported one header**. A second `HTTPAdditionalRespHeader=...` line silently overwrote the first (notes.ini's last-write-wins behaviour), so you had to pick one security control (X-Frame-Options OR CSP, never both) and ship with the rest exposed.
 
 HCL [removed that cap in Domino V12.0.x](https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0124025) with a small naming convention.
 
@@ -71,12 +75,19 @@ HTTPAdditionalRespHeader04=Content-Security-Policy: default-src 'self'; img-src 
 
 The CSP line will almost certainly need tuning for your application — `unsafe-inline` is technically wrong, but Notes-style web apps lean heavily on inline styles, so start loose enough that nothing breaks, then tighten it. For HSTS, `max-age=31536000` is one year — the first time you enable it, ship with something small (say `300` for five minutes) until you've confirmed every endpoint really is HTTPS-clean, then bump it up.
 
-## Internet Site documents are still the right default
+## Choosing between the two models
 
-The notes.ini path is for **firefighting** and for **a server-wide baseline**. Day-to-day, prefer Internet Site documents + Web Site Rules:
+If your environment **has Internet Sites enabled**, Web Site Rules tend to be the better long-term home for custom headers:
 
-- Per-site policies (`*.example.com` differs from `api.example.com`)
-- Changes apply without restarting the HTTP task
-- Edit history (who changed what, when) is preserved
+- Per-site policies (`*.example.com` can differ from `api.example.com`)
+- Edit history is preserved (who changed what, when)
+- Changes pick up on [`tell http refresh`](https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0100440) instead of `tell http restart` — refresh keeps user sessions alive and doesn't blow away the in-memory caches
 
-Treat `notes.ini` as the **last line of defence** — you rarely use it, but you'll be glad it's there when HTTP won't start.
+If your environment **only uses the Server document and never enabled Internet Sites**, `notes.ini` was always your only option. The V12 multi-header support is a real feature unlock for you, not a "fallback patch".
+
+Note that `tell http refresh` and `tell http restart` cover different scopes:
+
+- **`tell http refresh`** reloads only Web Site documents (and the rules / file protection / authentication realms attached to them)
+- **`tell http restart`** reloads the Server document, `notes.ini`, HTTPD.CNF, servlets — everything else
+
+So changes to `HTTPAdditionalRespHeader` in `notes.ini` always require `tell http restart` (or a full server restart) to take effect.
