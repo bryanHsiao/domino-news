@@ -453,7 +453,22 @@ async function generate(opts: GenerateOptions): Promise<BilingualArticle> {
     model: MODEL,
     tools: [{ type: 'web_search_preview' }],
     input: prompt,
+    // Bilingual article (~600-1200 zh chars + ~500-1000 en words) plus the
+    // JSON wrapper easily blows past the default cap. 16k leaves headroom
+    // for the model to write a full TIER-C tutorial without truncation.
+    max_output_tokens: 16000,
   });
+
+  // Detect truncation up front so the error message is actionable.
+  if (response.status === 'incomplete') {
+    const reason = response.incomplete_details?.reason ?? 'unknown';
+    throw new Error(
+      `OpenAI response incomplete (reason="${reason}"). ` +
+        (reason === 'max_output_tokens'
+          ? 'Bump max_output_tokens or shorten the prompt.'
+          : 'Check Responses API docs for this reason code.')
+    );
+  }
 
   const text = response.output_text?.trim() ?? '';
   if (!text) throw new Error('Empty response from OpenAI.');
@@ -463,7 +478,10 @@ async function generate(opts: GenerateOptions): Promise<BilingualArticle> {
   try {
     parsed = JSON.parse(cleaned);
   } catch (err) {
-    console.error('[generate] Failed to parse JSON. Raw output:\n', text);
+    console.error(
+      `[generate] Failed to parse JSON. Response status="${response.status}" length=${text.length}. ` +
+        `Raw output:\n${text}`
+    );
     throw err;
   }
 
