@@ -549,7 +549,6 @@ async function generate(opts: GenerateOptions): Promise<BilingualArticle> {
     .replace(/^-+|-+$/g, '')
     .slice(0, 60);
 
-  validate(article, opts.forbiddenSlugs);
   return article;
 }
 
@@ -744,6 +743,19 @@ async function attempt(
     article = await generate({ forbiddenSlugs, forceTierC });
   } catch (err) {
     return { ok: false, failure: { stage: 'generate', reason: String(err instanceof Error ? err.message : err) } };
+  }
+
+  // Slug collision is a "model ignored the directive" failure — we don't
+  // want to save these as drafts (the content is on the wrong topic by
+  // definition). Other validate() failures (broken sources, link-diversity,
+  // etc.) ARE content quality issues worth salvaging, so they get tagged
+  // with stage='validate' instead of 'generate'.
+  try {
+    validate(article, forbiddenSlugs);
+  } catch (err) {
+    const msg = String(err instanceof Error ? err.message : err);
+    const stage = msg.includes('Slug collision') ? 'generate' : 'validate';
+    return { ok: false, article, failure: { stage, reason: msg } };
   }
 
   try {
