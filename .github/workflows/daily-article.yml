@@ -51,6 +51,29 @@ jobs:
           retention-days: 30
           if-no-files-found: ignore
 
+      - name: Commit rejected drafts to _drafts/ (on failure)
+        if: failure() && hashFiles('_drafts/*.md') != ''
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add _drafts/
+          if git diff --cached --quiet; then
+            echo "No drafts to commit."
+            exit 0
+          fi
+          DATE=$(TZ=Asia/Taipei date +"%Y-%m-%d")
+          git commit -m "Save rejected drafts ($DATE) — needs manual salvage"
+          for attempt in 1 2 3; do
+            if git push; then
+              echo "Pushed drafts on attempt $attempt"
+              exit 0
+            fi
+            echo "Draft push rejected (attempt $attempt) — pulling and retrying..."
+            git pull --rebase
+          done
+          echo "Draft push still failing after 3 attempts."
+          exit 1
+
       - name: Commit and push (race-safe)
         id: commit
         if: steps.generate.outputs.published == 'true'

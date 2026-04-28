@@ -93,6 +93,78 @@ build 時自動產生：
 
 新文章 push 後 1–7 天會被自動收錄。要立刻推某篇加速：Search Console → 網址審查 → 貼文章 URL → **要求建立索引**（每天配額 ~10 篇）。
 
+## 兩段產文 + 失敗草稿救援
+
+每天 07:00 (Taipei) 的流程允許**兩次嘗試**：
+
+1. **Attempt 1** — 正常模式（TIER A/B/C 都可）。若 Claude 審稿過關（無 critical fact error 且無 topic overlap）→ 發布、收工。
+2. **Attempt 2** — TIER C-only fallback。觸發條件是 Attempt 1 任一原因失敗。Prompt 強制 AI 從 HCL docs 挖一個沒寫過的 class/method/feature 寫深度教學。被 Attempt 1 退回的 slug 也加進 forbidden list，避免它再撞同主題。
+
+**封面圖**只在 review pass 之後產，retry 不會浪費 $0.05。
+
+### 失敗時：草稿救援區
+
+當 **Attempt 2 也失敗**，workflow 會把兩次嘗試的草稿 commit 到 `_drafts/`：
+
+```
+_drafts/
+  2026-04-29-attempt1-foo-bar.zh-TW.md
+  2026-04-29-attempt1-foo-bar.en.md
+  2026-04-29-attempt2-baz-qux.zh-TW.md
+  2026-04-29-attempt2-baz-qux.en.md
+```
+
+每個草稿檔頭有一段 HTML 註解，列出 Claude 找到的 review issues，例如：
+
+```html
+<!--
+REJECTED DRAFT — review: 3 critical fact issue(s)
+attempt: 2
+slug: domino-rest-api-quickstart
+issues:
+  [critical] Step 4: 'Create a schema … This can be done using Domino Designer.'
+      problem: schemas are NOT created in Domino Designer ...
+      fix:     Replace with: 'Create a schema using the Domino REST API Admin UI ...'
+-->
+```
+
+### 救援方式 A — 用 Claude Code（推薦）
+
+```bash
+git pull           # 把 _drafts/ 拉下來
+claude code        # 在 repo 目錄開
+```
+
+跟 Claude 說一句：
+
+> 救 `_drafts/2026-04-29-attempt2-domino-rest-api-quickstart`，把所有重複的連結改成正確的（Postman→postman.com、OpenNTF Discord→discord.gg/openntf），schema 那段改成「在 Domino REST API Admin UI 建 schema」
+
+Claude 會：
+1. 讀草稿 + 內嵌的 review issues
+2. 套用你的指示修文（zh + en 兩篇）
+3. 移到 `src/content/posts/{zh-TW,en}/`
+4. 產封面（如果 `public/covers/<slug>.png` 還沒有）
+5. 從 `_drafts/` 刪掉
+6. commit + push → 部署
+
+### 救援方式 B — 手動
+
+1. 直接編輯 `_drafts/` 裡的 .md 檔
+2. 拿掉 frontmatter 的 `draft: true`
+3. 把檔名改成 `YYYY-MM-DD-<slug>.md`，搬到 `src/content/posts/{zh-TW,en}/`
+4. 從 `_drafts/` 刪掉草稿
+5. 補封面到 `public/covers/<slug>.png`（手動或執行 `npm run generate:cover -- --slug <slug>`，如果有這個 script）
+6. `git add` + `git commit` + `git push`
+
+### 失敗通知
+
+| 機制 | 觸發時機 | 怎麼看 |
+|---|---|---|
+| GitHub Email | workflow 紅燈 | 你 GitHub 註冊信箱 |
+| Step Summary | 每次 run 都寫 | run 頁面頂端 markdown 摘要：用了 fallback 嗎、失敗原因、發了什麼 |
+| Commit message | 用了 fallback 但成功時 | `git log` 帶 `[fallback: ...]` 後綴 |
+| `_drafts/` 增加檔案 | 兩次都失敗 | `git pull` 後本地就看到 |
+
 ## 文章 schema
 
 每篇文章 frontmatter 必填欄位（見 `src/content.config.ts`）：
