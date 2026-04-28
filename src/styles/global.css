@@ -240,17 +240,22 @@ main > h2::before {
 /* Stretched-link pattern: card-title's pseudo-element covers the entire
    card so any click on the body / description / date area opens the
    article. Tags and the cover image sit above this layer (z-index)
-   so their own hrefs still work. */
+   so their own hrefs still work.
+
+   IMPORTANT: .card-title itself must NOT have position:relative — if it
+   did, its ::after's inset:0 would cover only the title's box, not the
+   whole card. The ::after walks up to .card (the nearest positioned
+   ancestor) and fills that instead. */
 .card .card-title::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
+  cursor: pointer;
 }
 
 .card .cover,
-.card .card-tags,
-.card .card-title {
+.card .card-tags {
   position: relative;
   z-index: 2;
 }
