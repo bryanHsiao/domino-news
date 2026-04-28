@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # Claude Code local state
 .claude/
+
+# rejected article drafts (uploaded as workflow artifact, not committed)
+_drafts/

@@ -34,6 +34,7 @@ jobs:
         run: npm ci
 
       - name: Generate article
+        id: generate
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-4o' }}
@@ -41,8 +42,22 @@ jobs:
           ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL || 'claude-sonnet-4-6' }}
         run: npm run generate:article
 
+      - name: Upload rejected drafts (always)
+        if: always() && hashFiles('_drafts/**') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: rejected-drafts-${{ github.run_id }}
+          path: _drafts/
+          retention-days: 30
+          if-no-files-found: ignore
+
       - name: Commit and push (race-safe)
         id: commit
+        if: steps.generate.outputs.published == 'true'
+        env:
+          FALLBACK: ${{ steps.generate.outputs.fallback }}
+          FALLBACK_REASON: ${{ steps.generate.outputs.fallback_reason }}
+          SLUG: ${{ steps.generate.outputs.slug }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -53,7 +68,12 @@ jobs:
             exit 0
           fi
           DATE=$(TZ=Asia/Taipei date +"%Y-%m-%d")
-          git commit -m "Add daily article ($DATE)"
+          if [ "$FALLBACK" = "true" ]; then
+            MSG="Add daily article ($DATE) [fallback: $FALLBACK_REASON]"
+          else
+            MSG="Add daily article ($DATE)"
+          fi
+          git commit -m "$MSG"
           for attempt in 1 2 3; do
             if git push; then
               echo "Pushed on attempt $attempt"
