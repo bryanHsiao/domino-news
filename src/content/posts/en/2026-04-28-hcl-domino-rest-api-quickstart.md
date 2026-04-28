@@ -15,14 +15,7 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/references/usingdominorestapi/index.html"
   - title: "Domino REST API walkthrough - HCL Domino REST API Documentation"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/tutorial/walkthrough/index.html"
-draft: true
 ---
-<!--
-REJECTED DRAFT — Article validation failed:
-  - Inline-link diversity check failed: "https://opensource.hcltechsw.com/Domino-rest-api/tutorial/quickstart.html" appears 4/4 times in inline links (>=40%). Likely a copy-paste error — each anchor should point to its own destination.
-attempt: 2
-slug: hcl-domino-rest-api-quickstart
--->
 
 ## Introduction
 
@@ -30,22 +23,22 @@ The HCL Domino REST API provides a secure and modern way for developers to acces
 
 ## Step 1: Download the Domino REST API
 
-First, log in to the [HCLSoftware Portal](https://opensource.hcltechsw.com/Domino-rest-api/tutorial/quickstart.html) and download the latest version of the Domino REST API installer or Docker image.
+Get the latest installer or Docker image from the [Domino REST API project home](https://opensource.hcltechsw.com/Domino-rest-api/).
 
 ## Step 2: Install and Run the Domino REST API
 
-Follow the [installation and configuration guide](https://opensource.hcltechsw.com/Domino-rest-api/tutorial/quickstart.html) to install and start the REST API on your Domino server or Notes client. After installation, complete the necessary post-installation steps to ensure proper operation.
+Follow the [Quickstart installation guide](https://opensource.hcltechsw.com/Domino-rest-api/tutorial/quickstart.html) to install and start the REST API on your Domino server or Notes client. After installation, complete the necessary post-installation steps to ensure proper operation.
 
 ## Step 3: Familiarize Yourself with Domino REST API Tools
 
 - **Admin UI**: Use the web interface to manage API configurations.
-- **Postman and curl**: These tools help in testing and debugging API requests.
-- **Swagger UI**: Provides interactive API documentation, allowing you to explore available endpoints.
+- **[Postman](https://www.postman.com/)** and **[curl](https://curl.se/)**: For testing and debugging API requests.
+- **[Swagger UI](https://swagger.io/tools/swagger-ui/)**: Provides interactive API documentation, allowing you to explore available endpoints.
 
 ## Step 4: Configure Your First Database
 
-1. **Choose a Database**: Select an existing Domino database or use a sample database like demo.nsf.
-2. **Create a Schema**: Define the data structure you want to expose via the REST API, including forms, views, and fields.
+1. **Choose a Database**: Select an existing Domino database or use a sample database like `demo.nsf`.
+2. **Create a Schema**: Through the Admin UI, define the data structure you want to expose via the REST API — including forms, views, and fields. Schemas are a REST API concept managed by the Admin UI or REST API management calls; the underlying NSF forms and views are still designed in HCL Domino Designer.
 3. **Create a Scope**: Through the Admin UI, create a scope that serves as an externally visible alias for your database.
 
 ## Step 5: Test the API
@@ -58,8 +51,4 @@ Use one of the following methods to test your API:
 
 ## Further Learning
 
-- **Dive Deeper into Installation and Configuration**: Learn more about the installation and configuration details.
-- **Using Admin UI**: Understand how to manage your API through the Admin UI.
-- **Using Postman and curl**: Master how to test APIs using these tools.
-
-By following this guide, you'll be able to quickly get started with the HCL Domino REST API and begin integrating it into your applications.
+For a complete tutorial covering configuration, authentication, and advanced database operations, see the [Domino REST API walkthrough](https://opensource.hcltechsw.com/Domino-rest-api/tutorial/walkthrough/index.html).
