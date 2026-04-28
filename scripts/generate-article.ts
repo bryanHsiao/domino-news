@@ -29,7 +29,7 @@ const POSTS_DIR = join(ROOT, 'src', 'content', 'posts');
 
 const MODEL = process.env.OPENAI_MODEL ?? 'gpt-4o';
 const SKIP_IMAGE = process.env.SKIP_IMAGE === '1';
-const LOOKBACK_DAYS = 30;
+const TITLE_LOOKBACK_DAYS = 14;
 const COVERS_DIR = join(ROOT, 'public', 'covers');
 
 // Tag taxonomy is split across 4 axes. See README "Tag taxonomy" for the
@@ -159,7 +159,7 @@ async function loadRecentTitles(lang: 'zh-TW' | 'en'): Promise<string[]> {
   const dir = join(POSTS_DIR, lang);
   if (!existsSync(dir)) return [];
   const files = await readdir(dir);
-  const cutoff = Date.now() - LOOKBACK_DAYS * 24 * 60 * 60 * 1000;
+  const cutoff = Date.now() - TITLE_LOOKBACK_DAYS * 24 * 60 * 60 * 1000;
   const titles: string[] = [];
   for (const f of files) {
     if (!f.endsWith('.md') && !f.endsWith('.mdx')) continue;
@@ -167,13 +167,35 @@ async function loadRecentTitles(lang: 'zh-TW' | 'en'): Promise<string[]> {
     const ts = Date.parse(datePart);
     if (Number.isNaN(ts) || ts < cutoff) continue;
     const raw = await readFile(join(dir, f), 'utf8');
-    const m = raw.match(/^title:\s*"?([^"\n]+)"?/m);
+    const m = raw.match(/^title:\s*"?([^"\n]+?)"?\s*$/m);
     if (m) titles.push(m[1].trim());
   }
   return titles;
 }
 
-function buildPrompt(recentTitles: string[]): string {
+/**
+ * Returns every slug ever used across both languages (zh-TW + en union).
+ * Slugs are URL identities and must be unique forever — no time window.
+ * Used both as a soft hint in the prompt ("forbidden slugs") and as a
+ * hard reject in validate().
+ */
+async function loadAllSlugs(): Promise<Set<string>> {
+  const slugs = new Set<string>();
+  for (const lang of ['zh-TW', 'en'] as const) {
+    const dir = join(POSTS_DIR, lang);
+    if (!existsSync(dir)) continue;
+    const files = await readdir(dir);
+    for (const f of files) {
+      if (!f.endsWith('.md') && !f.endsWith('.mdx')) continue;
+      const raw = await readFile(join(dir, f), 'utf8');
+      const m = raw.match(/^slug:\s*"?([^"\n]+?)"?\s*$/m);
+      if (m) slugs.add(m[1].trim());
+    }
+  }
+  return slugs;
+}
+
+function buildPrompt(recentTitles: string[], forbiddenSlugs: string[]): string {
   return `You are an editor for a daily HCL Domino news site. Your standards are:
 NEVER fabricate. EVERY factual claim must come from a real source you opened via
 the web_search tool in THIS session. Sources must be real URLs that load.
@@ -194,10 +216,30 @@ there is nothing to write about. Suggested queries to rotate through:
   - HCL Ambassador blog Domino
   - planetlotus.org
 
-CONTENT TIERS (pick the highest tier you can fully source):
+CONTENT TIERS (pick the highest tier you can fully source — but NEVER reuse a
+forbidden slug or rewrite a topic from "Recent topics" below):
   TIER A — News from the last 14 days (release, security advisory, official announcement, conference recap)
   TIER B — Technical post / tutorial / OpenNTF project from the last 60 days
-  TIER C — Deep-dive explainer on a HCL Domino topic, citing 2+ authoritative current sources (official docs published or updated within the last 12 months, plus a recent community article)
+  TIER C — Deep-dive tutorial on an under-covered Notes/Domino API or feature.
+           This is the FALLBACK when TIER A and B yield only stories already
+           covered. Pick ONE class / method / @Formula function / admin task
+           from the official docs and write a focused, hands-on explainer.
+
+           Doc roots to mine (search inside these for under-covered topics):
+             - help.hcl-software.com/dom_designer/14.0.0/basic/   (LotusScript classes & methods)
+             - help.hcl-software.com/dom_designer/14.0.0/Java/    (Java back-end classes)
+             - help.hcl-software.com/dom_designer/14.0.0/Formula/ (@Formula functions)
+             - help.hcl-software.com/dom_designer/14.0.0/XPages/  (XPages controls & SSJS)
+             - help.hcl-software.com/domino_rest_api/             (Domino REST API endpoints)
+             - help.hcl-software.com/domino/14.0.0/admin/         (server admin tasks)
+
+           The class / method / function name in kebab-case is the slug.
+           Examples that look NOT covered yet (verify against forbidden slugs!):
+             notes-view-navigator, notes-xml-processor, notes-note-collection,
+             db-column-formula, picklist-formula, notes-directory-navigator,
+             nsf-replication-events, drapi-bulk-operations, etc.
+
+           Cite 2+ official doc URLs and (if possible) one community article.
 
 ACCEPTABLE SOURCE TYPES (rough priority):
   1. Official HCL pages: hcl-software.com, hcltechsw.com, hcl.com, support.hcl-software.com
@@ -215,11 +257,20 @@ UNACCEPTABLE:
   - AI-generated content farms
   - Sources you did not actually open during web_search
 
-DEDUP — REJECT topics whose title is similar to any of these recent posts:
+FORBIDDEN SLUGS — your "slug" output MUST NOT equal any of these (every slug
+ever published, both languages). The script will hard-reject the article if
+you reuse one. Pick a different topic / angle:
+${forbiddenSlugs.length === 0 ? '(none yet)' : forbiddenSlugs.map((s) => `- ${s}`).join('\n')}
+
+Recent topics (last ${TITLE_LOOKBACK_DAYS} days) — your title and angle should
+be substantially different from these so readers don't see the same story
+twice in two weeks:
 ${recentTitles.length === 0 ? '(none yet)' : recentTitles.map((t) => `- ${t}`).join('\n')}
 
-Only return {"error":"insufficient_sources"} if AFTER 3+ different web_search calls
-you genuinely cannot find 2 quality sources for any of Tier A, B, or C.
+Only return {"error":"insufficient_sources"} as a LAST resort. If TIER A and B
+yield only forbidden topics, fall back to TIER C — the doc roots above contain
+hundreds of un-covered classes/methods. There is essentially always a TIER C
+topic available; refusing to write one is almost never the right call.
 
 REQUIRED OUTPUT — STRICT JSON, no markdown fences, no commentary:
 
@@ -289,8 +340,15 @@ function countInlineLinks(markdown: string): number {
   return matches ? matches.length : 0;
 }
 
-function validate(article: BilingualArticle): void {
+function validate(article: BilingualArticle, forbiddenSlugs: Set<string>): void {
   const errors: string[] = [];
+
+  if (forbiddenSlugs.has(article.slug)) {
+    errors.push(
+      `Slug collision: "${article.slug}" already exists. The model ignored ` +
+        `the FORBIDDEN SLUGS list — refusing to overwrite an existing post.`
+    );
+  }
 
   if (!article.sources || article.sources.length < 2) {
     errors.push(`Need >= 2 sources, got ${article.sources?.length ?? 0}.`);
@@ -337,9 +395,13 @@ async function generate(): Promise<BilingualArticle> {
   const recentTitlesZh = await loadRecentTitles('zh-TW');
   const recentTitlesEn = await loadRecentTitles('en');
   const recentTitles = [...new Set([...recentTitlesZh, ...recentTitlesEn])];
+  const forbiddenSlugs = await loadAllSlugs();
 
-  const prompt = buildPrompt(recentTitles);
-  console.log(`[generate] Calling ${MODEL} with web_search...`);
+  const prompt = buildPrompt(recentTitles, [...forbiddenSlugs].sort());
+  console.log(
+    `[generate] Calling ${MODEL} with web_search... ` +
+      `(${forbiddenSlugs.size} forbidden slugs, ${recentTitles.length} recent titles)`
+  );
 
   const response = await client.responses.create({
     model: MODEL,
@@ -385,7 +447,7 @@ async function generate(): Promise<BilingualArticle> {
     .replace(/^-+|-+$/g, '')
     .slice(0, 60);
 
-  validate(article);
+  validate(article, forbiddenSlugs);
   return article;
 }
 
