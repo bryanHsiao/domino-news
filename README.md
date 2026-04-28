@@ -142,10 +142,10 @@ claude code        # 在 repo 目錄開
 Claude 會：
 1. 讀草稿 + 內嵌的 review issues
 2. 套用你的指示修文（zh + en 兩篇）
-3. 移到 `src/content/posts/{zh-TW,en}/`
-4. 產封面（如果 `public/covers/<slug>.png` 還沒有）
-5. 從 `_drafts/` 刪掉
-6. commit + push → 部署
+3. 移到 `src/content/posts/{zh-TW,en}/`（暫時不要寫 `cover:` 欄位）
+4. 從 `_drafts/` 刪掉
+5. commit + push → 部署
+6. **觸發 backfill 補封面**：`gh workflow run backfill-covers.yml`（~45 秒，自動掃沒封面的 post 補上 + 寫回 `cover:` 欄位）
 
 ### 救援方式 B — 手動
 
@@ -153,8 +153,8 @@ Claude 會：
 2. 拿掉 frontmatter 的 `draft: true`
 3. 把檔名改成 `YYYY-MM-DD-<slug>.md`，搬到 `src/content/posts/{zh-TW,en}/`
 4. 從 `_drafts/` 刪掉草稿
-5. 補封面到 `public/covers/<slug>.png`（手動或執行 `npm run generate:cover -- --slug <slug>`，如果有這個 script）
-6. `git add` + `git commit` + `git push`
+5. `git add` + `git commit` + `git push`
+6. 觸發 `gh workflow run backfill-covers.yml` 補封面（同上）
 
 ### 失敗通知
 
