@@ -1,7 +1,7 @@
 ---
 title: "Domino V12 lets notes.ini hold multiple HTTPAdditionalRespHeader entries"
 description: "Older Domino releases let you put exactly one HTTPAdditionalRespHeader in notes.ini — a second line silently overwrote the first. HCL added a numbered convention (HTTPAdditionalRespHeader01, 02, …) in V12.0.x so you can ship a full security-header baseline through notes.ini alone, which is the only path that still works when HTTP won't start and the Internet Site documents are unreachable."
-pubDate: "2026-04-28"
+pubDate: "2026-04-28T18:00:00+08:00"
 lang: "en"
 slug: "notes-ini-multiple-http-response-headers"
 tags:

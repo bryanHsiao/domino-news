@@ -117,8 +117,24 @@ interface BilingualArticle {
 
 function todayIso(): string {
   // Stamp posts by Taipei calendar day so a 07:00 Taipei publish doesn't
-  // get a UTC-yesterday date.
+  // get a UTC-yesterday date. Used for the YYYY-MM-DD- filename prefix.
   return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Taipei' });
+}
+
+function nowTaipeiTimestamp(): string {
+  // Full Taipei timestamp, e.g. "2026-04-28T18:30:42+08:00". Used as the
+  // pubDate so posts are sortable down to the second — without this every
+  // post on the same day would tie at UTC-midnight and fall back to slug
+  // alphabetical, making newer hand-edits look older than alphabetically
+  // earlier siblings.
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Taipei',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false,
+  }).formatToParts(new Date());
+  const get = (t: string) => parts.find((p) => p.type === t)!.value;
+  return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}:${get('second')}+08:00`;
 }
 
 function frontmatter(data: Record<string, unknown>): string {
@@ -556,17 +572,18 @@ async function writePost(
   lang: 'zh-TW' | 'en',
   slug: string,
   data: BilingualArticle,
-  pubDate: string
+  dateForFilename: string,
+  pubDateIso: string
 ): Promise<string> {
   const langDir = join(POSTS_DIR, lang);
   await mkdir(langDir, { recursive: true });
-  const filename = `${pubDate}-${slug}.md`;
+  const filename = `${dateForFilename}-${slug}.md`;
   const filepath = join(langDir, filename);
   const langData = data[lang === 'zh-TW' ? 'zh' : 'en'];
   const fm = frontmatter({
     title: langData.title,
     description: langData.description,
-    pubDate,
+    pubDate: pubDateIso,
     lang,
     slug,
     tags: data.tags,
@@ -677,6 +694,7 @@ async function saveDraft(
 ): Promise<void> {
   await mkdir(DRAFTS_DIR, { recursive: true });
   const date = todayIso();
+  const pubDateIso = nowTaipeiTimestamp();
   const stem = `${date}-attempt${attempt}-${article.slug}`;
   const note =
     `<!--\nREJECTED DRAFT — ${reason}\nattempt: ${attempt}\nslug: ${article.slug}\n` +
@@ -689,7 +707,7 @@ async function saveDraft(
   const fmZh = frontmatter({
     title: article.zh.title,
     description: article.zh.description,
-    pubDate: date,
+    pubDate: pubDateIso,
     lang: 'zh-TW',
     slug: article.slug,
     tags: article.tags,
@@ -699,7 +717,7 @@ async function saveDraft(
   const fmEn = frontmatter({
     title: article.en.title,
     description: article.en.description,
-    pubDate: date,
+    pubDate: pubDateIso,
     lang: 'en',
     slug: article.slug,
     tags: article.tags,
@@ -795,9 +813,10 @@ async function publish(article: BilingualArticle, fallbackReason: string | null)
   const client = new OpenAI();
   article.cover = await generateCover(client, article);
 
-  const pubDate = todayIso();
-  const zhPath = await writePost('zh-TW', article.slug, article, pubDate);
-  const enPath = await writePost('en', article.slug, article, pubDate);
+  const dateForFilename = todayIso();
+  const pubDateIso = nowTaipeiTimestamp();
+  const zhPath = await writePost('zh-TW', article.slug, article, dateForFilename, pubDateIso);
+  const enPath = await writePost('en', article.slug, article, dateForFilename, pubDateIso);
   console.log(`[publish] Wrote:\n  ${zhPath}\n  ${enPath}`);
   if (article.cover) console.log(`[publish] Cover: ${article.cover}`);
   console.log(`[publish] Sources used:`);

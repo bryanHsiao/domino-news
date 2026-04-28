@@ -1,7 +1,7 @@
 ---
 title: "Domino V12 起 notes.ini 支援多個 HTTPAdditionalRespHeader"
 description: "舊版 Domino 的 notes.ini 只能塞一個 HTTPAdditionalRespHeader，第二行會把第一行蓋掉。HCL 在 V12.0.x 加了編號式的 HTTPAdditionalRespHeader01、02 寫法，讓你能用純 notes.ini 設好整套安全標頭——特別是當 web 站台還沒能起來、Internet Site 文件也用不了的時候，這是唯一的 fallback。"
-pubDate: "2026-04-28"
+pubDate: "2026-04-28T18:00:00+08:00"
 lang: "zh-TW"
 slug: "notes-ini-multiple-http-response-headers"
 tags:
