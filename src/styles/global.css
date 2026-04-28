@@ -346,12 +346,34 @@ main > h2::before {
   overflow: hidden;
 }
 
+.card .card-foot {
+  margin-top: auto;
+  padding-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 .card .card-date {
   color: var(--color-muted);
   font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
-  margin-top: auto;
-  padding-top: 0.25rem;
+}
+
+/* Affordance arrow: subtle at rest, slides right + amber on card hover */
+.card .card-arrow {
+  font-size: 1.1rem;
+  line-height: 1;
+  color: color-mix(in srgb, var(--color-muted) 55%, transparent);
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover .card-arrow {
+  color: var(--color-accent);
+  transform: translateX(4px);
 }
 
 /* ---------- tag chip ---------- */

@@ -73,7 +73,10 @@ function coverUrl(cover?: string): string | null {
               {p.title}
             </a>
             {p.description && <p class="card-desc">{p.description}</p>}
-            <div class="card-date">{formatDate(p.pubDate)}</div>
+            <div class="card-foot">
+              <span class="card-date">{formatDate(p.pubDate)}</span>
+              <span class="card-arrow" aria-hidden="true">→</span>
+            </div>
           </div>
         </li>
       );
