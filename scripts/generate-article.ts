@@ -302,10 +302,18 @@ ever published, both languages). The script will hard-reject the article if
 you reuse one. Pick a different topic / angle:
 ${forbiddenSlugs.length === 0 ? '(none yet)' : forbiddenSlugs.map((s) => `- ${s}`).join('\n')}
 
-Recent topics (last ${TITLE_LOOKBACK_DAYS} days) — your title and angle should
-be substantially different from these so readers don't see the same story
-twice in two weeks:
+Recent topics (last ${TITLE_LOOKBACK_DAYS} days) — these stories are CLOSED
+for two weeks. DO NOT write another article on any of these subjects, even
+if your search returns fresh-looking news items about them, even with a
+different framing or "in-depth" angle. The reviewer (a separate Claude
+instance) will flag the article as a topic-overlap rewrite and the workflow
+will retry / fail. This includes:
 ${recentTitles.length === 0 ? '(none yet)' : recentTitles.map((t) => `- ${t}`).join('\n')}
+
+Common trap: search results will keep surfacing the latest HCL Domino
+release notes for weeks after publication. If the previous days already
+covered the current release, DO NOT write another release-notes piece —
+move down to TIER B (community tutorial) or TIER C (HCL docs deep-dive).
 
 Only return {"error":"insufficient_sources"} as a LAST resort. If TIER A and B
 yield only forbidden topics, fall back to TIER C — the doc roots above contain
@@ -360,6 +368,13 @@ CRITICAL RULES:
 - Tags MUST be exact strings from the axes above.
 - Every URL in "sources" MUST be a real URL you opened during web_search.
 - Both zh.markdown and en.markdown MUST contain at least 2 inline links of the form [text](https://...).
+- Every \`[text](url)\` link MUST point to a UNIQUE destination — never reuse
+  the same URL for two different anchors. If five anchors all link to
+  https://opensource.hcltechsw.com/.../quickstart.html, four of them are
+  wrong. Look up the actual URL for each anchor (Postman → postman.com,
+  OpenNTF Discord → discord.gg/openntf, etc.) before emitting the link.
+  The script counts duplicates and rejects the article when one URL
+  dominates the link list.
 - The zh and en versions cover the same story but read naturally — do not produce literal translation.
 - If unsure of any fact (date, version number, name), omit it entirely instead of guessing.`;
 }
@@ -378,6 +393,11 @@ function isValidUrl(url: string): boolean {
 function countInlineLinks(markdown: string): number {
   const matches = markdown.match(/\[[^\]]+\]\(https?:\/\/[^\s)]+\)/g);
   return matches ? matches.length : 0;
+}
+
+function inlineLinkUrls(markdown: string): string[] {
+  const matches = [...markdown.matchAll(/\[[^\]]+\]\((https?:\/\/[^\s)]+)\)/g)];
+  return matches.map((m) => m[1]);
 }
 
 function validate(article: BilingualArticle, forbiddenSlugs: Set<string>): void {
@@ -420,6 +440,24 @@ function validate(article: BilingualArticle, forbiddenSlugs: Set<string>): void 
   const enLinks = countInlineLinks(article.en?.markdown ?? '');
   if (zhLinks < 2) errors.push(`zh body must have >= 2 inline links, got ${zhLinks}.`);
   if (enLinks < 2) errors.push(`en body must have >= 2 inline links, got ${enLinks}.`);
+
+  // Catch the copy-paste-same-URL bug: if one URL dominates inline-link
+  // destinations, the model just slapped the same href onto every anchor.
+  const allLinkUrls = [
+    ...inlineLinkUrls(article.zh?.markdown ?? ''),
+    ...inlineLinkUrls(article.en?.markdown ?? ''),
+  ];
+  if (allLinkUrls.length >= 4) {
+    const counts = new Map<string, number>();
+    for (const u of allLinkUrls) counts.set(u, (counts.get(u) ?? 0) + 1);
+    const [topUrl, topCount] = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
+    if (topCount / allLinkUrls.length >= 0.4) {
+      errors.push(
+        `Inline-link diversity check failed: "${topUrl}" appears ${topCount}/${allLinkUrls.length} ` +
+          `times in inline links (>=40%). Likely a copy-paste error — each anchor should point to its own destination.`
+      );
+    }
+  }
 
   if (errors.length > 0) {
     throw new Error(`Article validation failed:\n  - ${errors.join('\n  - ')}`);
