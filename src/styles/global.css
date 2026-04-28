@@ -233,6 +233,26 @@ main > h2::before {
     border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
+  /* Anchor for the stretched-link click target on .card-title::after */
+  position: relative;
+}
+
+/* Stretched-link pattern: card-title's pseudo-element covers the entire
+   card so any click on the body / description / date area opens the
+   article. Tags and the cover image sit above this layer (z-index)
+   so their own hrefs still work. */
+.card .card-title::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.card .cover,
+.card .card-tags,
+.card .card-title {
+  position: relative;
+  z-index: 2;
 }
 
 .card:hover {
