@@ -17,7 +17,8 @@
     "@astrojs/rss": "^4.0.0",
     "@astrojs/sitemap": "^3.2.0",
     "astro": "^5.0.0",
-    "astro-expressive-code": "^0.41.7"
+    "astro-expressive-code": "^0.41.7",
+    "rehype-external-links": "^3.0.0"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.91.1",

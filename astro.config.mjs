@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import expressiveCode from 'astro-expressive-code';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import rehypeExternalLinks from 'rehype-external-links';
 
 // https://astro.build/config
 export default defineConfig({
@@ -14,6 +15,20 @@ export default defineConfig({
     routing: {
       prefixDefaultLocale: false,
     },
+  },
+  markdown: {
+    rehypePlugins: [
+      // Open external links in a new tab so readers don't lose their place
+      // in the article when they click a citation. Internal anchors and
+      // same-origin links are left alone.
+      [
+        rehypeExternalLinks,
+        {
+          target: '_blank',
+          rel: ['noopener', 'noreferrer'],
+        },
+      ],
+    ],
   },
   integrations: [
     expressiveCode({
