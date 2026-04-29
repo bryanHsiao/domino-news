@@ -10,7 +10,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "generate:article": "tsx scripts/generate-article.ts",
-    "backfill:covers": "tsx scripts/backfill-covers.ts"
+    "backfill:covers": "tsx scripts/backfill-covers.ts",
+    "generate:hero": "tsx scripts/generate-hero-banner.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",
