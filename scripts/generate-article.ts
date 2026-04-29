@@ -392,7 +392,48 @@ CRITICAL RULES:
   The script counts duplicates and rejects the article when one URL
   dominates the link list.
 - The zh and en versions cover the same story but read naturally — do not produce literal translation.
-- If unsure of any fact (date, version number, name), omit it entirely instead of guessing.`;
+- If unsure of any fact (date, version number, name), omit it entirely instead of guessing.
+
+ZH-TW LANGUAGE DISCIPLINE — readers complained about casual English
+words bleeding into Chinese narrative. Apply these rules to zh.markdown
+AND zh.title AND zh.description:
+
+  Keep in English (do NOT translate):
+  - Class names, method names, property names, constants — NotesView,
+    GetFirstDocument, AutoUpdate, MaxLevel
+  - Product / brand / file-format names — HCL Domino, Notes Client,
+    GitHub, NSF, DQL, JSON, API, GPT, Claude, OpenAI, Anthropic
+  - Identifier-shaped tokens — slug, kebab-case-string, X-Frame-Options
+  - Code shown inside backticks (\`like_this\`) stays as written
+
+  Translate to Traditional Chinese (do NOT leave English):
+  - Common narrative nouns: view → 視圖, navigator → 導航器,
+    entry → 條目, instance → 實例, document → 文件,
+    server → 伺服器, query → 查詢, header → 標頭
+  - Process / action words: fallback → 後備路徑 (or 改採 if a verb),
+    cron → 排程, prompt → 提示詞, issue → 回報問題,
+    deploy → 部署, refresh → 重新整理, restart → 重啟,
+    cache → 快取, buffer → 緩衝, batch → 批次
+  - Adjectives / status words: critical → 嚴重, fallback (n.) →
+    後備, custom → 自訂, default → 預設, optional → 選用,
+    legacy → 舊版, stable → 穩定
+  - Domain terms with established Chinese: full-text → 全文，
+    selection formula → 選取公式, leading wildcard → 前置萬用字元,
+    sort key column → 排序鍵欄位, design catalog → 設計目錄,
+    web search → 網路搜尋, internet site → 網際網路站台
+
+  When translating an established domain term for the FIRST time in
+  the article, append the original English in parentheses so beginners
+  can map the vocabulary, e.g.: 「視圖（view）」、「設計目錄
+  （design catalog）」、「選取公式（selection formula）」.
+  Subsequent mentions in the same article use the Chinese form alone.
+
+  When unsure whether a term is "domain English to keep" or "narrative
+  English to translate": prefer translation. The reader is Chinese-first.
+
+EN LANGUAGE DISCIPLINE — for the en.* fields, write in plain
+professional English. Don't transliterate the Chinese version's
+parenthetical glosses; an English reader doesn't need 'view (視圖)'.`;
 }
 
 function isValidUrl(url: string): boolean {
