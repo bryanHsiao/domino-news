@@ -1,6 +1,6 @@
 ---
 title: "Domino V12 起 notes.ini 支援多個 HTTPAdditionalRespHeader"
-description: "舊版 Domino 的 notes.ini 只能塞一個 HTTPAdditionalRespHeader，第二行會把第一行蓋掉。HCL 在 V12.0.x 加了編號式的 HTTPAdditionalRespHeader01、02 寫法，讓你能用純 notes.ini 設好整套安全標頭——特別是當 web 站台還沒能起來、Internet Site 文件也用不了的時候，這是唯一的 fallback。"
+description: "舊版 Domino 的 notes.ini 只能塞一個 HTTPAdditionalRespHeader，第二行會把第一行蓋掉。HCL 在 V12.0.x 加了編號式的 HTTPAdditionalRespHeader01、02 寫法，讓你能用純 notes.ini 設好整套安全標頭——尤其是當網頁伺服器（HTTP task）起不來、Internet Site 文件也用不了的時候，這是唯一的後備路徑。"
 pubDate: "2026-04-28T18:00:00+08:00"
 lang: "zh-TW"
 slug: "notes-ini-multiple-http-response-headers"
@@ -25,13 +25,13 @@ cover: "/covers/notes-ini-multiple-http-response-headers.png"
 
 Domino 站台要設安全 HTTP 標頭（HSTS、CSP、X-Frame-Options 等），組織通常會落在下列兩種設定模型之一：
 
-1. **走 Internet Site 文件 + Web Site Rules** — GUI 設定、可 per-site 不同政策。要設 custom HTTP 標頭，用 Web Site Rule 文件。
-2. **走 Server document（不啟用 Internet Sites）+ `notes.ini`** — 比較簡單、整台 server 一份設定。要設 custom 標頭，[只能用 `HTTPAdditionalRespHeader`](https://admincamp.de/customer/notesini.nsf/85255a87005060c585255a850068ca6f/cd0d86347059d1a9c1257fb6004a41e2?OpenDocument=) 這個 notes.ini 參數。
+1. **走 Internet Site 文件 + Web Site Rules（站台規則）** —— 圖形介面設定、可針對每個站台設不同政策。要設自訂 HTTP 標頭，用 Web Site Rule 文件。
+2. **走 Server 文件（不啟用 Internet Sites）+ `notes.ini`** —— 比較簡單、整台伺服器一份設定。要設自訂標頭，[只能用 `HTTPAdditionalRespHeader`](https://admincamp.de/customer/notesini.nsf/85255a87005060c585255a850068ca6f/cd0d86347059d1a9c1257fb6004a41e2?OpenDocument=) 這個 notes.ini 參數。
 
-走模型 2 的組織，**`notes.ini` 是唯一的安全標頭設定點**，不是 fallback 而是日常。
-走模型 1 的組織，`notes.ini` 也是 HTTP task 起不來、admin client 進不去時的救火稻草。
+走模型 2 的組織，**`notes.ini` 是唯一的安全標頭設定點**，不是後備而是日常。
+走模型 1 的組織，`notes.ini` 也是當網頁伺服器（HTTP task）起不來、管理用戶端（admin client）進不去時的救火稻草。
 
-兩種情境都會踩到同一個歷史限制：[`HTTPAdditionalRespHeader` 從 9.0.1 FP6 引進](https://admincamp.de/customer/notesini.nsf/85255a87005060c585255a850068ca6f/cd0d86347059d1a9c1257fb6004a41e2?OpenDocument=)以來，**只支援一個 header**。寫第二行 `HTTPAdditionalRespHeader=...` 會直接覆蓋上一行（notes.ini 後寫贏前寫的特性），等於只能挑一個安全項目（X-Frame-Options 或 CSP，二選一），其他全裸。
+兩種情境都會踩到同一個歷史限制：[`HTTPAdditionalRespHeader` 從 9.0.1 FP6 引進](https://admincamp.de/customer/notesini.nsf/85255a87005060c585255a850068ca6f/cd0d86347059d1a9c1257fb6004a41e2?OpenDocument=)以來，**只支援一個標頭**。寫第二行 `HTTPAdditionalRespHeader=...` 會直接覆蓋上一行（notes.ini 後寫贏前寫的特性），等於只能挑一個安全項目（X-Frame-Options 或 CSP，二選一），其他全裸。
 
 HCL 在 [Domino V12.0.x 起](https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0124025) 用一個簡單的命名規則把這個限制拿掉了。
 
@@ -43,9 +43,9 @@ HTTPAdditionalRespHeader=X-Frame-Options: SAMEORIGIN
 
 第二行的 `HTTPAdditionalRespHeader=...` 會把第一行覆蓋掉，因此事實上只能設一個。要在站台沒起來的情況下同時開 HSTS、CSP、X-Frame-Options，這條路是走不通的。
 
-## 新寫法（V12.0.x 起，多個）
+## 新寫法（V12.0.x 起，可放多個）
 
-第一個 header 維持原語法（不加編號），其餘 header 用**兩位數編號**從 `01` 開始：
+第一個標頭維持原語法（不加編號），其餘標頭用 **兩位數編號** 從 `01` 開始：
 
 ```ini
 HTTPAdditionalRespHeader=X-Frame-Options: SAMEORIGIN
@@ -59,7 +59,7 @@ HTTPAdditionalRespHeader04=X-Content-Type-Options: nosniff
 
 - **編號從 `01` 開始，不是 `1`**（兩位數，`HTTPAdditionalRespHeader1` 會被忽略）
 - 編號順序不影響行為（Domino 全部讀進去），但連號 `01/02/03` 比較好維護
-- 改完要 `tell http restart` 或重啟整個 server 才生效
+- 改完要 `tell http restart` 或重啟整個伺服器才生效
 - 適用 **HCL Domino 12.0.x 與更新版本**（更舊的版本還是只能一個）
 
 ## 一份「最低安全標頭」基礎組
@@ -74,21 +74,21 @@ HTTPAdditionalRespHeader03=Referrer-Policy: strict-origin-when-cross-origin
 HTTPAdditionalRespHeader04=Content-Security-Policy: default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'
 ```
 
-CSP 那行幾乎一定要按你站台實際情況調整 —— `unsafe-inline` 嚴格說不應該開，但很多 Notes Web 應用 inline 樣式很多，先求站台不破再慢慢收斂。HSTS 的 `max-age=31536000` 是一年，第一次上線建議先放小一點（例如 `300` 五分鐘）試水溫，確定全 HTTPS 化沒問題再拉長。
+CSP 那行幾乎一定要按你站台實際情況調整 —— `unsafe-inline`（允許行內樣式）嚴格說不應該開，但很多 Notes 網頁應用的行內樣式很多，先求站台不破再慢慢收斂。HSTS 的 `max-age=31536000` 是一年，第一次上線建議先放小一點（例如 `300` 五分鐘）試水溫，確定全 HTTPS 化沒問題再拉長。
 
 ## 兩種模型的取捨
 
 如果你的環境**有啟用 Internet Sites**，Web Site Rules 在大部分情境下還是比較適合長期管理，因為：
 
-- 可以 per-site 設不同政策（`*.example.com` 跟 `api.example.com` 可以套不同 rule）
+- 可以針對每個站台設不同政策（`*.example.com` 跟 `api.example.com` 可以套不同規則）
 - 變更歷史看得出來（誰改了、什麼時候改）
-- 改完只要 [`tell http refresh`](https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0100440)，不用 `tell http restart` —— refresh 不掉 user sessions 也不清快取，比較溫和
+- 改完只要 [`tell http refresh`](https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0100440)，不用 `tell http restart` —— refresh 不會踢掉使用者連線也不清快取，比較溫和
 
-如果你的環境**只用 Server document、沒啟用 Internet Sites**，那 `notes.ini` 本來就是你唯一的選擇。V12 的多 header 支援是真正的功能解鎖，不是「fallback 的補丁」。
+如果你的環境**只用 Server 文件、沒啟用 Internet Sites**，那 `notes.ini` 本來就是你唯一的選擇。V12 的多標頭支援是真正的功能解鎖，不是「後備路徑的補丁」。
 
 注意 `tell http refresh` 跟 `tell http restart` 觸發的範圍不同：
 
-- **`tell http refresh`** 只重讀 Web Site documents（含 rules、file protection、authentication realms）
-- **`tell http restart`** 才會重讀 Server document、`notes.ini`、HTTPD.CNF、Servlets
+- **`tell http refresh`** 只重讀 Web Site 文件（含站台規則、檔案保護、認證範圍）
+- **`tell http restart`** 才會重讀 Server 文件、`notes.ini`、HTTPD.CNF、Servlets
 
 所以這次改 `notes.ini` 的 `HTTPAdditionalRespHeader` 一定要 `tell http restart` 才會生效。
