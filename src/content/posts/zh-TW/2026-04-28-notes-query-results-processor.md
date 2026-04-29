@@ -33,9 +33,9 @@ cover: "/covers/notes-query-results-processor.png"
 - 把結果分類（categorized）
 - 套用 `@Formula` 計算或覆蓋欄位值
 - 直接吐 JSON 給前端 / API
-- 把結果存成一個暫時性的 view 給使用者瀏覽
+- 把結果存成一個暫存視圖給使用者瀏覽
 
-過去都得自己迴圈處理，或乾脆建一個專用 view。**NotesQueryResultsProcessor（NQRP）** 是 Domino V12 引入的 LotusScript 類別，把這些後處理動作收進一個流式 API。
+過去都得自己迴圈處理，或乾脆建一個專用視圖。**NotesQueryResultsProcessor（NQRP）** 是 Domino V12 引入的 LotusScript 類別，把這些後處理動作收進一個流式 API。
 
 ## 建立 NQRP 物件
 
@@ -100,7 +100,7 @@ Call qrp.AddColumn(String Name, _
 | 參數 | 用途 |
 |---|---|
 | `Name` | 欄位的程式名稱（必須唯一） |
-| `Title` | 產 view 時顯示的欄位標題 |
+| `Title` | 產生視圖時顯示的欄位標題 |
 | `Formula` | 預設值的 `@Formula`（不指定就直接讀同名欄位） |
 | `SortOrder` | `SORT_UNORDERED` / `SORT_ASCENDING` / `SORT_DESCENDING` |
 | `Hidden` | true = 只用來排序、不輸出 |
@@ -152,7 +152,7 @@ Set json = qrp.ExecuteToJSON()
 - 多值欄位會輸出為 JSON array
 - 聚合函式（`@@sum()`、`@@avg()`、`@@count()`）會以特殊 key 出現
 
-### B. ExecuteToView — 變成可瀏覽的暫存 view
+### B. ExecuteToView — 變成可瀏覽的暫存視圖
 
 ```vb
 Set myview = qrp.ExecuteToView(ByVal Name As String, _
@@ -164,10 +164,10 @@ Set myview = qrp.ExecuteToView(ByVal Name As String, _
 
 | 參數 | 用途 |
 |---|---|
-| `Name` | 要建立的 view 名稱 |
+| `Name` | 要建立的視圖名稱 |
 | `ExpireHours` | 多少小時後自動刪除（預設 24） |
-| `Readers` | 單一名稱或名稱陣列（canonical），限制可讀對象 |
-| `DesignSrcDB` / `DesignSrcViewName` | 用既有 view 的設計當模板 |
+| `Readers` | 單一名稱或名稱陣列（標準格式 canonical），限制可讀對象 |
+| `DesignSrcDB` / `DesignSrcViewName` | 用既有視圖的設計當模板 |
 
 官方範例：
 
@@ -187,16 +187,16 @@ Set qrp = db.CreateQueryResultsProcessor()
 Set myview = qrp.ExecuteToView("MyNewResultsView", 2, theReaders)
 ```
 
-這支 view 由系統自動清掉，不會把 NSF 設計越塞越大。
+這支視圖由系統自動清掉，不會把 NSF 設計越塞越大。
 
-## 安全屬性：別讓 query 跑不停
+## 安全屬性：別讓查詢跑不停
 
 ```vb
 qrp.MaxEntries = 50000      ' 輸入文件數上限，超過直接拋錯
 qrp.TimeOutSec = 30         ' 執行秒數上限，超過直接拋錯
 ```
 
-公開 API 一定要設這兩個屬性，避免使用者送進來的 query 把 server 拖垮。
+公開 API 一定要設這兩個屬性，避免使用者送進來的查詢把伺服器拖垮。
 
 ## Java 版的 QRP
 
@@ -273,11 +273,11 @@ End Sub
 
 | 需求 | 建議 |
 |---|---|
-| 單純取單筆文件 by key | 直接 `view.GetDocumentByKey()` |
+| 單純用鍵取單筆文件 | 直接 `view.GetDocumentByKey()` |
 | 全文搜尋關鍵字 | `db.FTSearch()` |
 | 結構化條件查詢 | DQL（`NotesDominoQuery`） |
 | DQL 結果還要排序 / 分類 / 投影 / JSON | **NQRP** |
-| API 介面、需要 categorized 視圖 | **NQRP + ExecuteToJSON** |
-| 給使用者瀏覽的暫時表格 | **NQRP + ExecuteToView** |
+| API 介面、需要分類視圖 | **NQRP + ExecuteToJSON** |
+| 給使用者瀏覽的暫存表格 | **NQRP + ExecuteToView** |
 
 NQRP 從 V12 起穩定，是寫 Domino-as-API、Domino REST API 後端、報表批次的好幫手。

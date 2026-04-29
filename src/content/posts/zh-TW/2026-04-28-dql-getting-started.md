@@ -1,6 +1,6 @@
 ---
 title: "DQL 入門：用熟悉的查詢語法操作 Notes 文件"
-description: "Domino Query Language（DQL）讓你用近 SQL 的語法直接查詢 Notes 文件，免再寫 view、@Formula。本文介紹 DQL 的語法、執行方式與效能要點，附 LotusScript / Java / REST API 範例。"
+description: "Domino Query Language（DQL）讓你用近 SQL 的語法直接查詢 Notes 文件，免再寫視圖、@Formula。本文介紹 DQL 的語法、執行方式與效能要點，附 LotusScript / Java / REST API 範例。"
 pubDate: 2026-04-28T08:30:00+08:00
 lang: zh-TW
 slug: dql-getting-started
@@ -25,14 +25,14 @@ cover: "/covers/dql-getting-started.png"
 
 長期寫 Notes 應用的開發者，過去主要靠以下三種方式找文件：
 
-1. **View 查詢**（`NotesView.GetDocumentByKey`、`GetAllDocumentsByKey`、`GetAllEntriesByKey`）
-   — 最快、最直覺：先建好 view 並設定 sort key column，按 key 直接取。缺點是每種查詢條件幾乎都要建一個對應 view，design 會越長越多。
-2. **`NotesDatabase.Search`（公式全檔掃）**
-   — 用 `@Formula` 表達選取條件，整個 NSF 文件逐一比對。不用 view，但每次都掃完整資料庫，文件多就慢；適合一次性管理任務。
+1. **視圖查詢**（`NotesView.GetDocumentByKey`、`GetAllDocumentsByKey`、`GetAllEntriesByKey`）
+   — 最快、最直覺：先建好視圖並設定排序鍵欄位（sort key column），按鍵值直接取。缺點是每種查詢條件幾乎都要建一個對應視圖，設計會越長越多。
+2. **`NotesDatabase.Search`（公式全檔掃描）**
+   — 用 `@Formula` 表達選取條件，整個 NSF 文件逐一比對。不用視圖，但每次都掃完整資料庫，文件多就慢；適合一次性管理任務。
 3. **`NotesDatabase.FTSearch`（全文索引搜尋）**
-   — 走 full-text 索引、支援詞綴與布林關鍵字。適合「找含某幾個字的文件」這種需求；缺點是需要先建 FT 索引，而且對結構化欄位（數值、範圍、邏輯組合）的支援不如 view。
+   — 走全文索引（full-text index）、支援詞綴與布林關鍵字。適合「找含某幾個字的文件」這種需求；缺點是需要先建全文索引，而且對結構化欄位（數值、範圍、邏輯組合）的支援不如視圖。
 
-**Domino Query Language（DQL）** 是 HCL 從 V10 引入、在 V12 之後穩定的**第四種選擇**：用接近 SQL 的語法直接查詢文件，**底層會自動利用 design catalog 與既有的 view 索引**，找不到時 fallback 到全檔掃。優勢是不必為每種查詢條件預先設計新 view，且查詢語法可組合、可從 LotusScript / Java / REST API 統一呼叫。
+**Domino Query Language（DQL）** 是 HCL 從 V10 引入、在 V12 之後穩定的**第四種選擇**：用接近 SQL 的語法直接查詢文件，**底層會自動利用 design catalog（設計目錄）與既有的視圖索引**，找不到時改採全檔掃描。優勢是不必為每種查詢條件預先設計新視圖，且查詢語法可組合、可從 LotusScript / Java / REST API 統一呼叫。
 
 ## DQL 範例：第一個查詢
 
@@ -61,27 +61,27 @@ Form in ('Invoice', 'CreditNote') and Status = 'Open'
 Subject contains 'Domino' and Author like 'Bryan%'
 ```
 
-## 啟用 DQL：建立 design catalog
+## 啟用 DQL：建立 design catalog（設計目錄）
 
-DQL 在沒有任何索引時也能跑（會掃整個 NSF），但效能差。要讓 DQL 用上索引，必須先建立 **design catalog**（`GQFDsgn.cat`）：
+DQL 在沒有任何索引時也能跑（會掃整個 NSF），但效能差。要讓 DQL 用上索引，必須先建立 **design catalog（設計目錄）**（`GQFDsgn.cat`）：
 
 ```text
 load updall -e
 ```
 
-或者在 server console 執行：
+或者在伺服器主控台（server console）執行：
 
 ```text
 load design
 ```
 
-之後每加一個 view，DQL 引擎都能自動考慮使用。如果你有特定欄位想被 DQL 用，可以在 view 的 selection formula 加上：
+之後每加一個視圖，DQL 引擎都能自動考慮使用。如果你有特定欄位想被 DQL 用，可以在視圖的選取公式（selection formula）加上：
 
 ```text
 SELECT @IsAvailable($DQLField)
 ```
 
-讓 view 變成 DQL 可用的索引來源。
+讓視圖變成 DQL 可用的索引來源。
 
 ## 從 LotusScript 呼叫 DQL
 
@@ -188,22 +188,22 @@ Content-Type: application/json
 | 部分字串 | `Subject contains 'urgent'` |
 | 萬用字元 | `Author like 'B%'` |
 | 日期 | `Created >= @dt('2026-01-01')` |
-| 用 view 做基底 | `'Customers'.Country = 'Taiwan'`（單引號中是 view 名） |
+| 用視圖做基底 | `'Customers'.Country = 'Taiwan'`（單引號中是視圖名稱） |
 
 ## 效能要點
 
-1. **盡量用 view 索引**：`'ViewName'.Field = ...` 比裸欄位快
-2. **避免 leading wildcard**：`like '%abc'` 無法用索引
-3. **打開 explain 觀察**：`dq.Explain = True` 印出實際執行路徑
-4. **first hits 模式**：要少量結果用 `Execute(query, "", 0, 10)` 限制筆數
-5. **大查詢開 thread pool**：透過 notes.ini `QUERY_MAX_NUMBER_THREADS=4` 平行掃 NSF
+1. **盡量用視圖索引**：`'ViewName'.Field = ...` 比裸欄位快
+2. **避免前置萬用字元（leading wildcard）**：`like '%abc'` 無法用索引
+3. **打開執行計畫觀察**：`dq.Explain = True` 印出實際執行路徑
+4. **取少量結果模式**：要少量結果用 `Execute(query, "", 0, 10)` 限制筆數
+5. **大查詢開執行緒池（thread pool）**：透過 notes.ini `QUERY_MAX_NUMBER_THREADS=4` 平行掃 NSF
 
 ## 常見錯誤
 
-- **"No design catalog found"** — 跑 `load updall -e` 建 catalog
-- **"Field is not selectable in any view"** — DQL 找不到對應的 view，會 fallback 整檔掃，加 view 或加 `$DQLField` 標記
-- **中文欄位值要 case-sensitive 比對**：DQL 預設大小寫敏感，視需要先轉小寫存
+- **「No design catalog found」** — 跑 `load updall -e` 建立設計目錄
+- **「Field is not selectable in any view」** — DQL 找不到對應的視圖，會改採整檔掃描，請補建視圖或加上 `$DQLField` 標記
+- **中文欄位值需區分大小寫比對**：DQL 預設大小寫敏感，視需要先轉小寫存
 
 ## 延伸閱讀
 
-DQL 還支援 substitution variables、JOIN（透過 view link）、AGGREGATE 函式等進階功能，建議搭配官方 syntax reference 查表使用。
+DQL 還支援代換變數（substitution variables）、JOIN（透過視圖連結）、聚合函式（AGGREGATE）等進階功能，建議搭配官方語法參考（syntax reference）查表使用。
