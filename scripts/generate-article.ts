@@ -215,6 +215,48 @@ async function loadRecentPostsMeta(): Promise<RecentPost[]> {
   return posts;
 }
 
+interface SaturatedSource {
+  url: string;
+  citedBySlug: string;
+  citedDate: string;
+}
+
+/**
+ * URLs cited as `sources:` in posts published within the last
+ * TITLE_LOOKBACK_DAYS days. These are "saturated" — citing them again
+ * means writing about a topic that's already been covered, so they
+ * are blocked at the validate() stage. The 14-day window matches
+ * recentTitles so the rule has a natural expiry — after 14 days a
+ * source can be re-cited from a different angle if needed.
+ */
+async function loadSaturatedSources(): Promise<Map<string, SaturatedSource>> {
+  const sat = new Map<string, SaturatedSource>();
+  const cutoff = Date.now() - TITLE_LOOKBACK_DAYS * 24 * 60 * 60 * 1000;
+  for (const lang of ['zh-TW', 'en'] as const) {
+    const dir = join(POSTS_DIR, lang);
+    if (!existsSync(dir)) continue;
+    const files = await readdir(dir);
+    for (const f of files) {
+      if (!f.endsWith('.md') && !f.endsWith('.mdx')) continue;
+      const datePart = f.slice(0, 10);
+      const ts = Date.parse(datePart);
+      if (Number.isNaN(ts) || ts < cutoff) continue;
+      const raw = await readFile(join(dir, f), 'utf8');
+      const slug = raw.match(/^slug:\s*"?([^"\n]+?)"?\s*$/m)?.[1]?.trim() ?? f;
+      // Extract the YAML sources block: `sources:` then indented `- url: ...` items
+      const sourcesBlock = raw.match(/^sources:\s*\n((?:\s+.*\n)+)/m)?.[1];
+      if (!sourcesBlock) continue;
+      const urlMatches = sourcesBlock.matchAll(/^\s+url:\s*"?([^"\n]+?)"?\s*$/gm);
+      for (const m of urlMatches) {
+        const url = m[1].trim();
+        // First post to cite this URL "owns" it for the saturation window
+        if (!sat.has(url)) sat.set(url, { url, citedBySlug: slug, citedDate: datePart });
+      }
+    }
+  }
+  return sat;
+}
+
 /**
  * Returns every slug ever used across both languages (zh-TW + en union).
  * Slugs are URL identities and must be unique forever — no time window.
@@ -238,8 +280,9 @@ async function loadAllSlugs(): Promise<Set<string>> {
 }
 
 function buildPrompt(
-  recentTitles: string[],
+  recentPosts: RecentPost[],
   forbiddenSlugs: string[],
+  saturatedSources: SaturatedSource[],
   forceTierC: boolean
 ): string {
   const tierConstraint = forceTierC
@@ -252,15 +295,58 @@ the same news topic — go to the docs.
 
 `
     : '';
+  const recentBlock = recentPosts.length === 0
+    ? '(none yet)'
+    : recentPosts.map((p) => `- [${p.slug}] ${p.title}\n    covered: ${p.description}`).join('\n');
+  const saturatedBlock = saturatedSources.length === 0
+    ? '(none yet)'
+    : saturatedSources.map((s) => `- ${s.url} (cited by [${s.citedBySlug}] on ${s.citedDate})`).join('\n');
   return `${tierConstraint}You are an editor for a daily HCL Domino news site. Your standards are:
 NEVER fabricate. EVERY factual claim must come from a real source you opened via
 the web_search tool in THIS session. Sources must be real URLs that load.
 
-TASK: Find material for ONE article about HCL Domino or its ecosystem
+============================================================
+HARD CONSTRAINTS — read these BEFORE picking a topic
+============================================================
+
+The script will hard-reject the article if any of these are violated.
+Read them first so you don't waste a generation on a doomed topic.
+
+(1) FORBIDDEN SLUGS — your "slug" output MUST NOT equal any of these.
+    Every slug ever published, both languages, no time window:
+${forbiddenSlugs.length === 0 ? '    (none yet)' : forbiddenSlugs.map((s) => `    - ${s}`).join('\n')}
+
+(2) RECENT TOPICS — these stories were already published in the last
+    ${TITLE_LOOKBACK_DAYS} days. They are CLOSED. Do NOT write another article on the
+    same subject, even with a different angle or different slug.
+    The Claude reviewer compares the description below against your draft
+    and flags overlap; the workflow then retries or fails.
+
+${recentBlock}
+
+(3) SATURATED SOURCE URLS — these URLs were cited as the primary source
+    of a published post in the last ${TITLE_LOOKBACK_DAYS} days. Do NOT include any
+    of them in your "sources" array. If the topic you want to write
+    requires citing one of these, that's your signal that the topic is
+    a duplicate — pick a different topic.
+
+${saturatedBlock}
+
+(4) NOTORIOUSLY OVER-COVERED TOPIC: HCL Domino 2026 / 14.5.1 release.
+    Search results will keep surfacing this for months. If a forbidden
+    slug or recent topic already covers it, DO NOT write another angle
+    on the release notes. Move straight to TIER B / TIER C below.
+
+============================================================
+TASK
+============================================================
+
+Find material for ONE article about HCL Domino or its ecosystem
 (HCL Notes, Domino REST API, Volt MX, HCL Nomad, AppDev Pack, Sametime, OpenNTF, etc.).
 
-YOU MUST INVOKE web_search AT LEAST 3 TIMES with different queries before deciding
-there is nothing to write about. Suggested queries to rotate through:
+YOU MUST INVOKE web_search AT LEAST 3 TIMES with different queries before
+deciding there is nothing to write about. Suggested queries to rotate
+through (skip any that obviously map to a forbidden slug above):
   - HCL Domino release 2025 OR 2026
   - HCL Domino REST API
   - HCL Nomad update
@@ -272,14 +358,17 @@ there is nothing to write about. Suggested queries to rotate through:
   - HCL Ambassador blog Domino
   - planetlotus.org
 
-CONTENT TIERS (pick the highest tier you can fully source — but NEVER reuse a
-forbidden slug or rewrite a topic from "Recent topics" below):
-  TIER A — News from the last 14 days (release, security advisory, official announcement, conference recap)
-  TIER B — Technical post / tutorial / OpenNTF project from the last 60 days
+CONTENT TIERS (TIER C is the safe default; TIER A only when you find
+genuinely new news that does NOT overlap a recent topic above):
+  TIER A — News from the last 14 days (release, security advisory, official announcement, conference recap).
+           BEFORE choosing TIER A: confirm the story is NOT in "Recent
+           topics" above and the URLs you'd cite are NOT in "Saturated
+           source URLs" above. If either check fails, do not use TIER A.
+  TIER B — Technical post / tutorial / OpenNTF project from the last 60 days.
   TIER C — Deep-dive tutorial on an under-covered Notes/Domino API or feature.
-           This is the FALLBACK when TIER A and B yield only stories already
-           covered. Pick ONE class / method / @Formula function / admin task
-           from the official docs and write a focused, hands-on explainer.
+           Use this any day when TIER A genuinely has no fresh story.
+           Pick ONE class / method / @Formula function / admin task from
+           the official docs and write a focused, hands-on explainer.
 
            Doc roots to mine (search inside these for under-covered topics):
              - help.hcl-software.com/dom_designer/14.0.0/basic/   (LotusScript classes & methods)
@@ -291,8 +380,11 @@ forbidden slug or rewrite a topic from "Recent topics" below):
 
            The class / method / function name in kebab-case is the slug.
            Examples that look NOT covered yet (verify against forbidden slugs!):
-             notes-view-navigator, notes-xml-processor, notes-note-collection,
-             db-column-formula, picklist-formula, notes-directory-navigator,
+             notes-xml-processor, notes-acl, notes-acl-entry,
+             notes-rich-text-item, notes-mime-entity, notes-stream,
+             notes-calendar, notes-newsletter, notes-registration,
+             notes-outline, notes-form, notes-embedded-object,
+             db-column-formula, picklist-formula, dblookup-formula,
              nsf-replication-events, drapi-bulk-operations, etc.
 
            Cite 2+ official doc URLs and (if possible) one community article.
@@ -312,24 +404,6 @@ UNACCEPTABLE:
   - Speculation with no source ("might", "could be")
   - AI-generated content farms
   - Sources you did not actually open during web_search
-
-FORBIDDEN SLUGS — your "slug" output MUST NOT equal any of these (every slug
-ever published, both languages). The script will hard-reject the article if
-you reuse one. Pick a different topic / angle:
-${forbiddenSlugs.length === 0 ? '(none yet)' : forbiddenSlugs.map((s) => `- ${s}`).join('\n')}
-
-Recent topics (last ${TITLE_LOOKBACK_DAYS} days) — these stories are CLOSED
-for two weeks. DO NOT write another article on any of these subjects, even
-if your search returns fresh-looking news items about them, even with a
-different framing or "in-depth" angle. The reviewer (a separate Claude
-instance) will flag the article as a topic-overlap rewrite and the workflow
-will retry / fail. This includes:
-${recentTitles.length === 0 ? '(none yet)' : recentTitles.map((t) => `- ${t}`).join('\n')}
-
-Common trap: search results will keep surfacing the latest HCL Domino
-release notes for weeks after publication. If the previous days already
-covered the current release, DO NOT write another release-notes piece —
-move down to TIER B (community tutorial) or TIER C (HCL docs deep-dive).
 
 Only return {"error":"insufficient_sources"} as a LAST resort. If TIER A and B
 yield only forbidden topics, fall back to TIER C — the doc roots above contain
@@ -457,7 +531,11 @@ function inlineLinkUrls(markdown: string): string[] {
   return matches.map((m) => m[1]);
 }
 
-function validate(article: BilingualArticle, forbiddenSlugs: Set<string>): void {
+function validate(
+  article: BilingualArticle,
+  forbiddenSlugs: Set<string>,
+  saturatedSources: Map<string, SaturatedSource>
+): void {
   const errors: string[] = [];
 
   if (forbiddenSlugs.has(article.slug)) {
@@ -465,6 +543,22 @@ function validate(article: BilingualArticle, forbiddenSlugs: Set<string>): void 
       `Slug collision: "${article.slug}" already exists. The model ignored ` +
         `the FORBIDDEN SLUGS list — refusing to overwrite an existing post.`
     );
+  }
+
+  // Hard reject if any sources URL was already cited by a recent post.
+  // This catches "different slug, same news story citing the same official
+  // announcement" — the most common topic-overlap pattern that slips past
+  // the slug check.
+  for (const s of article.sources ?? []) {
+    const sat = s.url ? saturatedSources.get(s.url) : undefined;
+    if (sat) {
+      errors.push(
+        `Saturated source URL: "${s.url}" was already cited by [${sat.citedBySlug}] ` +
+          `on ${sat.citedDate}. Re-citing it within ${TITLE_LOOKBACK_DAYS} days means writing ` +
+          `about a covered topic. Pick a different topic or a different angle that ` +
+          `doesn't lean on this URL.`
+      );
+    }
   }
 
   if (!article.sources || article.sources.length < 2) {
@@ -523,6 +617,8 @@ function validate(article: BilingualArticle, forbiddenSlugs: Set<string>): void 
 
 interface GenerateOptions {
   forbiddenSlugs: Set<string>;
+  saturatedSources: Map<string, SaturatedSource>;
+  recentPosts: RecentPost[];
   forceTierC: boolean;
 }
 
@@ -532,14 +628,16 @@ async function generate(opts: GenerateOptions): Promise<BilingualArticle> {
   }
   const client = new OpenAI();
 
-  const recentTitlesZh = await loadRecentTitles('zh-TW');
-  const recentTitlesEn = await loadRecentTitles('en');
-  const recentTitles = [...new Set([...recentTitlesZh, ...recentTitlesEn])];
-
-  const prompt = buildPrompt(recentTitles, [...opts.forbiddenSlugs].sort(), opts.forceTierC);
+  const prompt = buildPrompt(
+    opts.recentPosts,
+    [...opts.forbiddenSlugs].sort(),
+    [...opts.saturatedSources.values()].sort((a, b) => b.citedDate.localeCompare(a.citedDate)),
+    opts.forceTierC
+  );
   console.log(
     `[generate] Calling ${MODEL} with web_search... ` +
-      `(${opts.forbiddenSlugs.size} forbidden slugs, ${recentTitles.length} recent titles${
+      `(${opts.forbiddenSlugs.size} forbidden slugs, ${opts.recentPosts.length} recent posts, ` +
+      `${opts.saturatedSources.size} saturated source URLs${
         opts.forceTierC ? ', forceTierC=true' : ''
       })`
   );
@@ -794,12 +892,13 @@ interface AttemptResult {
 
 async function attempt(
   forbiddenSlugs: Set<string>,
+  saturatedSources: Map<string, SaturatedSource>,
   forceTierC: boolean,
   recentPosts: RecentPost[]
 ): Promise<AttemptResult> {
   let article: BilingualArticle;
   try {
-    article = await generate({ forbiddenSlugs, forceTierC });
+    article = await generate({ forbiddenSlugs, saturatedSources, recentPosts, forceTierC });
   } catch (err) {
     return { ok: false, failure: { stage: 'generate', reason: String(err instanceof Error ? err.message : err) } };
   }
@@ -807,10 +906,10 @@ async function attempt(
   // Slug collision is a "model ignored the directive" failure — we don't
   // want to save these as drafts (the content is on the wrong topic by
   // definition). Other validate() failures (broken sources, link-diversity,
-  // etc.) ARE content quality issues worth salvaging, so they get tagged
-  // with stage='validate' instead of 'generate'.
+  // saturated URL, etc.) ARE content quality issues worth salvaging, so
+  // they get tagged with stage='validate' instead of 'generate'.
   try {
-    validate(article, forbiddenSlugs);
+    validate(article, forbiddenSlugs, saturatedSources);
   } catch (err) {
     const msg = String(err instanceof Error ? err.message : err);
     const stage = msg.includes('Slug collision') ? 'generate' : 'validate';
@@ -876,11 +975,12 @@ async function publish(article: BilingualArticle, fallbackReason: string | null)
 async function main() {
   const recentPosts = await loadRecentPostsMeta();
   const forbiddenSlugs = await loadAllSlugs();
+  const saturatedSources = await loadSaturatedSources();
   const summary: string[] = ['# Daily article run\n'];
 
   // Attempt 1 — normal mode
   console.log('[main] Attempt 1: normal mode (TIER A/B/C all allowed)');
-  const r1 = await attempt(forbiddenSlugs, false, recentPosts);
+  const r1 = await attempt(forbiddenSlugs, saturatedSources, false, recentPosts);
   if (r1.ok && r1.article) {
     summary.push(
       `**Result:** ✅ Published \`${r1.article.slug}\` on first try.`,
@@ -919,7 +1019,7 @@ async function main() {
   // Attempt 2 — TIER C only, forbidden set extended
   console.log('[main] Attempt 2: TIER C-only fallback');
   summary.push('## Attempt 2 — TIER C-only fallback', '');
-  const r2 = await attempt(forbiddenSlugs, true, recentPosts);
+  const r2 = await attempt(forbiddenSlugs, saturatedSources, true, recentPosts);
   if (r2.ok && r2.article) {
     summary.push(
       `**Result:** ✅ Published \`${r2.article.slug}\` via TIER C fallback.`,
