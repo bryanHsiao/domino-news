@@ -13,17 +13,21 @@ const t = useTranslations(lang);
     API, Volt MX, Nomad, AppDev Pack, and more) — covering the latest news and technical articles.
   </p>
   <p>
-    A daily GitHub Actions cron triggers the publishing flow: an LLM drafts each article, a second
-    LLM vendor cross-reviews it for factual accuracy (a critical factual issue blocks publication
-    and forces a rewrite), and a human engineer adds hands-on context. Topics are drawn from the
-    last 24–72 hours of official HCL announcements, HCL Ambassador blogs, and OpenNTF activity —
-    when there's no news on a given day, the post is a deep-dive on an under-covered class or
-    feature from the official docs instead. Every source is cited at the end of the post.
+    A daily GitHub Actions cron triggers the publishing flow:
+    <strong>OpenAI GPT drafts the article</strong> →
+    <strong>Anthropic Claude cross-reviews it</strong> (to reduce single-model
+    bias and hallucination; critical factual issues block publication and force
+    a rewrite) → <strong>the consultant adds hands-on context and corrections</strong>.
+    Topics are drawn from the last 24–72 hours of official HCL announcements,
+    HCL Ambassador blogs, and OpenNTF activity — when there's no news on a
+    given day, the post is a deep-dive on an under-covered class or feature
+    from the official docs instead. Every source is cited at the end of the post.
   </p>
   <p>
-    Traditional Chinese and English versions are published together. Every article goes through the
-    cross-LLM review and human-checkpoint flow before going live, avoiding the failure modes typical
-    of pure AI content. Source code and the full workflow are open on
-    <a href="https://github.com/bryanHsiao/domino-news">GitHub</a>.
+    Traditional Chinese and English versions are published together. The
+    two-model review plus human checkpoint exists specifically to catch the
+    failure modes typical of pure AI content — factual mistakes, hallucinated
+    API names, and miscited sources. Source code and the full workflow are
+    open on <a href="https://github.com/bryanHsiao/domino-news">GitHub</a>.
   </p>
 </BaseLayout>

@@ -13,14 +13,16 @@ const t = useTranslations(lang);
     的最新動態與技術文章。
   </p>
   <p>
-    每日由 GitHub Actions 觸發產文流程：LLM 寫初稿 → 跨廠商審稿（不同 LLM
-    互審事實正確性，事實錯誤直接擋下重寫）→ 實戰工程師人工複核與補充。
+    每日由 GitHub Actions 觸發產文流程：<strong>OpenAI GPT 主筆草稿</strong> →
+    <strong>Anthropic Claude 交叉覆核</strong>（降低單一模型的偏誤與幻覺；
+    事實錯誤直接擋下重寫）→ <strong>顧問實戰補充與校訂</strong>。
     題材主要來自過去 24–72 小時內的官方公告、HCL Ambassador 部落格與 OpenNTF
-    動態；當天若沒新聞則改寫官方文檔深度教學。所有來源都會列在文章末尾。
+    動態；當天若無新聞，則改寫官方文檔深度教學。所有來源都會列在文章末尾。
   </p>
   <p>
-    繁體中文與英文版同步發布；每篇文章都附「跨 LLM 廠商審稿」與「人工複核」
-    的品質流程，避免單純 AI 內容容易出錯的問題。程式碼與整套工作流開源於
+    繁體中文與英文版同步發布。雙模型交叉驗證 + 人工把關的設計，是為了避免
+    單純 AI 內容容易出現的事實錯誤、API 名稱幻覺、以及來源誤標等問題。
+    程式碼與整套工作流開源於
     <a href="https://github.com/bryanHsiao/domino-news">GitHub</a>。
   </p>
 </BaseLayout>
