@@ -11,7 +11,7 @@ export const ui = {
   'zh-TW': {
     'site.title': 'Domino News',
     'site.tagline': 'HCL Domino 每日新知',
-    'site.description': '由 AI 每日整理的 HCL Domino 新聞、技術與生態系動態。',
+    'site.description': '由 Domino 開發顧問運營。每日結合 LLM 寫稿、跨廠商審稿與實戰補充，整理 HCL Domino 與其生態系最新動態。',
     'nav.home': '首頁',
     'nav.posts': '所有文章',
     'nav.tags': '標籤',
@@ -32,12 +32,12 @@ export const ui = {
     'tags.posts': '篇文章',
     'about.title': '關於本站',
     'lang.switch': 'English',
-    'footer.poweredBy': '由 Astro + GitHub Actions + OpenAI 驅動',
+    'footer.poweredBy': '由 Astro 與 GitHub Actions 驅動',
   },
   en: {
     'site.title': 'Domino News',
     'site.tagline': 'Daily HCL Domino Insights',
-    'site.description': 'AI-curated daily news, technology, and ecosystem updates for HCL Domino.',
+    'site.description': 'Run by a Domino development consultant. Every post is drafted by an LLM, cross-reviewed by a second LLM vendor, and supplemented with hands-on experience.',
     'nav.home': 'Home',
     'nav.posts': 'All Posts',
     'nav.tags': 'Tags',
@@ -58,7 +58,7 @@ export const ui = {
     'tags.posts': 'posts',
     'about.title': 'About',
     'lang.switch': '繁體中文',
-    'footer.poweredBy': 'Powered by Astro + GitHub Actions + OpenAI',
+    'footer.poweredBy': 'Powered by Astro and GitHub Actions',
   },
 } as const;
 
