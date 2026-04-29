@@ -18,6 +18,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEWNAVIGATOR_METHODS.html"
   - title: "NotesView CreateViewNav method — HCL Domino 14.0 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_CREATEVIEWNAV_METHOD_VIEW.html"
+cover: "/covers/notes-view-navigator.png"
 ---
 
 ## Why not just use GetFirstDocument?
