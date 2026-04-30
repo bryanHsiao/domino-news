@@ -123,10 +123,9 @@ Call nc.BuildCollection()
 | `GetFirstNoteID` | 取第一個 Note ID（字串形式，如 `"NT00001ABC"`） |
 | `GetNextNoteID(currentID)` | 取下一個 Note ID |
 
-> 注意：文檔**沒有** `GetLastNoteID`、`GetPrevNoteID`、`Merge`、`Subtract`、`GetUNID`。
-> AI 寫 NotesNoteCollection 文章時常常幻覺出這些方法 —— 都不存在，請以官方文檔為準。
+文檔**沒有** `GetLastNoteID`、`GetPrevNoteID`、`Merge`、`Subtract`、`GetUNID` 這些方法，撰寫程式時請以官方文檔為準。
 
-## 典型用法：批次撈所有代理程式做盤點
+## 實戰範例 1：批次撈所有代理程式做盤點
 
 ```lotusscript
 Sub AuditAgents(db As NotesDatabase)
@@ -156,6 +155,49 @@ End Sub
 2. `nc.SelectAgents = True` —— 只開代理程式
 3. `BuildCollection()` —— 一定要呼叫才會真的蒐集到 note
 4. `GetFirstNoteID` / `GetNextNoteID` —— 注意是 **Note ID 字串**，不是 `NotesDocument` 物件，要再用 `db.GetDocumentByID()` 撈出來
+
+## 實戰範例 2：列出所有視圖名稱（兩種寫法比較）
+
+實務上常見需求：「**我想拿到資料庫裡所有視圖的名稱清單**」。NotesNoteCollection 可以做，但有更短的路：
+
+```lotusscript
+' 方法 A：用 NotesNoteCollection
+Set nc = db.CreateNoteCollection(False)
+nc.SelectViews = True
+Call nc.BuildCollection()
+
+noteID = nc.GetFirstNoteID()
+Do Until noteID = ""
+    Set doc = db.GetDocumentByID(noteID)
+    Print doc.GetItemValue("$TITLE")(0)   ' $TITLE 是「主名稱|別名|別名」
+    noteID = nc.GetNextNoteID(noteID)
+Loop
+```
+
+```lotusscript
+' 方法 B：直接用 db.Views
+ForAll v In db.Views
+    Print v.Name      ' v.Name 已自動處理掉別名
+    ' v.Aliases 是別名陣列
+End ForAll
+```
+
+兩種寫法的取捨：
+
+| | 方法 A（NotesNoteCollection） | 方法 B（`db.Views`） |
+|---|---|---|
+| 單純拿視圖名單 | 殺雞用牛刀 | ✅ 標準作法 |
+| 一次撈視圖 + 資料夾 + 代理程式 | ✅ 加 `SelectFolders=True`、`SelectAgents=True` 即可 | ❌ 要分別呼叫 `db.Views` / `db.Folders` / `db.Agents` |
+| 用 `SelectionFormula` 或 `SinceTime` 篩選（如「過去 7 天改過的視圖」） | ✅ 內建支援 | ❌ 要拿全部後自己過濾 |
+| 配合 `NotesDXLExporter` 匯出 | ✅ 直接餵給匯出器 | ❌ 要自己組 collection |
+| 拿到的物件 | Note ID 字串（要再 `GetDocumentByID`） | 直接是 `NotesView` 物件，可呼叫 `view.AllEntries` 等 |
+
+**選擇原則**：
+
+- 「**就是要視圖名單**」 → `db.Views`，3 行寫完
+- 有「**混合多種類型**、**時間/條件篩選**、**接著做 DXL 匯出**」任一需求 → NotesNoteCollection
+
+順帶一提：`db.Views` **包含資料夾**（folder 是 view 的特化）。要嚴格只要視圖、不要資料夾，用 `view.IsFolder` 過濾，或方法 A 只開 `SelectViews=True`（資料夾走獨立的 `SelectFolders` 旗標）。
 
 ## 最常用的場景：DXL 匯出
 

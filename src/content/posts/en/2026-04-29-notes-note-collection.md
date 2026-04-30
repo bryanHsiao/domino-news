@@ -123,9 +123,9 @@ Call nc.BuildCollection()
 | `GetFirstNoteID` | Returns the first Note ID (string form, e.g. `"NT00001ABC"`) |
 | `GetNextNoteID(currentID)` | Returns the next Note ID |
 
-> Note: the documentation does **not** define `GetLastNoteID`, `GetPrevNoteID`, `Merge`, `Subtract`, or `GetUNID`. AI-generated articles about this class often hallucinate those methods — they don't exist. Trust the docs.
+The documentation does **not** define `GetLastNoteID`, `GetPrevNoteID`, `Merge`, `Subtract`, or `GetUNID` — verify against the official docs when writing code.
 
-## A practical example: audit every agent in a database
+## Worked example 1: audit every agent in a database
 
 ```lotusscript
 Sub AuditAgents(db As NotesDatabase)
@@ -155,6 +155,49 @@ Four things this snippet gets right:
 2. `nc.SelectAgents = True` — agents only
 3. `BuildCollection()` — mandatory; the collection is empty without it
 4. `GetFirstNoteID` / `GetNextNoteID` return **Note ID strings**, not `NotesDocument` objects — you fetch the document yourself with `db.GetDocumentByID()`
+
+## Worked example 2: list every view name (two ways compared)
+
+A common real-world need: "**get me a list of every view name in this database**". `NotesNoteCollection` can do it, but there's a much shorter path:
+
+```lotusscript
+' Method A: NotesNoteCollection
+Set nc = db.CreateNoteCollection(False)
+nc.SelectViews = True
+Call nc.BuildCollection()
+
+noteID = nc.GetFirstNoteID()
+Do Until noteID = ""
+    Set doc = db.GetDocumentByID(noteID)
+    Print doc.GetItemValue("$TITLE")(0)   ' $TITLE is "Name|Alias|Alias"
+    noteID = nc.GetNextNoteID(noteID)
+Loop
+```
+
+```lotusscript
+' Method B: db.Views
+ForAll v In db.Views
+    Print v.Name      ' v.Name is the resolved primary name
+    ' v.Aliases is the alias array
+End ForAll
+```
+
+Trade-offs:
+
+| | Method A (`NotesNoteCollection`) | Method B (`db.Views`) |
+|---|---|---|
+| Just want view names | Overkill | ✅ The standard idiom |
+| Pick up views + folders + agents in one pass | ✅ Add `SelectFolders=True`, `SelectAgents=True` | ❌ Three separate calls (`db.Views` / `db.Folders` / `db.Agents`) |
+| Filter with `SelectionFormula` or `SinceTime` (e.g. "views modified in the last 7 days") | ✅ Built in | ❌ Pull all, filter yourself |
+| Feed `NotesDXLExporter` | ✅ Direct input | ❌ Build the collection yourself |
+| What you actually get back | Note ID strings (call `GetDocumentByID` separately) | `NotesView` objects ready to use (`view.AllEntries`, etc.) |
+
+**Picking the right one:**
+
+- "**Just give me the view names**" → `db.Views`. Three lines, done.
+- "**Mixed types**, **time/condition filtering**, or **DXL export pipeline**" → `NotesNoteCollection`.
+
+One subtle point: `db.Views` **includes folders** (a folder is a specialised view). To strictly exclude folders, filter with `view.IsFolder`, or use Method A with `SelectViews=True` only — folders have their own `SelectFolders` flag.
 
 ## The most common real use: DXL export
 
