@@ -12,12 +12,10 @@ tags:
 sources:
   - title: "NotesViewNavigator (LotusScript) — HCL Domino 14.0 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEWNAVIGATOR_CLASS.html"
-  - title: "NotesViewNavigator properties — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEWNAVIGATOR_PROPERTIES.html"
-  - title: "NotesViewNavigator methods — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEWNAVIGATOR_METHODS.html"
   - title: "NotesView CreateViewNav method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_CREATEVIEWNAV_METHOD_VIEW.html"
+    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_CREATEVIEWNAV_METHOD_1631.html"
+  - title: "NotesView (LotusScript) — HCL Domino 14.0 Designer Help"
+    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEW_CLASS.html"
 cover: "/covers/notes-view-navigator.png"
 ---
 
@@ -40,7 +38,7 @@ Loop
 - 你需要走**類別總計列**或**類別本身**，不只是文件
 - 你想用**樹狀**方式爬 —— 子 → 父 → 兄弟姊妹，而不是平面的下一個 / 上一個
 
-導航器由 [`NotesView` 的 `CreateViewNav*` 系列方法](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_CREATEVIEWNAV_METHOD_VIEW.html) 建立。
+導航器由 [`NotesView`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEW_CLASS.html) 的 `CreateViewNav*` 系列方法建立。
 
 ## 屬性（只有 4 個）
 

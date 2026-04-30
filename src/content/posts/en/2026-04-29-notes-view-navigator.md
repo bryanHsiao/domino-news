@@ -12,12 +12,10 @@ tags:
 sources:
   - title: "NotesViewNavigator (LotusScript) — HCL Domino 14.0 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEWNAVIGATOR_CLASS.html"
-  - title: "NotesViewNavigator properties — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEWNAVIGATOR_PROPERTIES.html"
-  - title: "NotesViewNavigator methods — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEWNAVIGATOR_METHODS.html"
   - title: "NotesView CreateViewNav method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_CREATEVIEWNAV_METHOD_VIEW.html"
+    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_CREATEVIEWNAV_METHOD_1631.html"
+  - title: "NotesView (LotusScript) — HCL Domino 14.0 Designer Help"
+    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEW_CLASS.html"
 cover: "/covers/notes-view-navigator.png"
 ---
 
@@ -40,7 +38,7 @@ Short, readable, fine for most cases. But [`NotesViewNavigator`](https://help.hc
 - You want to walk **category headers or totals**, not just documents
 - You want a **tree-shaped** traversal — child / parent / siblings — instead of flat next/prev
 
-Navigators are produced by [`NotesView`'s `CreateViewNav*` family](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_CREATEVIEWNAV_METHOD_VIEW.html).
+Navigators are produced by [`NotesView`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEW_CLASS.html)'s `CreateViewNav*` family.
 
 ## Properties (just four)
 
