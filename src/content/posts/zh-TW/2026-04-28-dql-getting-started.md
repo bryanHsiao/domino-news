@@ -1,6 +1,6 @@
 ---
-title: "DQL 入門：用熟悉的查詢語法操作 Notes 文件"
-description: "Domino Query Language（DQL）讓你用近 SQL 的語法直接查詢 Notes 文件，免再寫視圖、@Formula。本文介紹 DQL 的語法、執行方式與效能要點，附 LotusScript / Java / REST API 範例。"
+title: "DQL 實戰指南：類 SQL 語法表面熟悉，Notes 慣例遍地是雷"
+description: "Domino Query Language（DQL）的語法表面像 SQL，但底層是 Notes 引擎，自帶一整套踩雷集 —— Design Catalog 何時必備、view selection 會限縮結果範圍、`'view'.column` 的 column 不是文件欄位名、`@formula` 跟 DQL 原生的兩個 parser context、空白與反斜線 escape、字串日期欄位處理等等。本文整理從踩雷到能用的完整路線，附 LotusScript / Java / REST API 範例。"
 pubDate: 2026-04-28T08:30:00+08:00
 lang: zh-TW
 slug: dql-getting-started
@@ -37,6 +37,21 @@ cover: "/covers/dql-getting-started.png"
    — 走全文索引（full-text index）、支援詞綴與布林關鍵字。適合「找含某幾個字的文件」這種需求；缺點是需要先建全文索引，而且對結構化欄位（數值、範圍、邏輯組合）的支援不如視圖。
 
 **Domino Query Language（DQL）** 是 HCL 從 V10 引入、在 V12 之後穩定的**第四種選擇**：用接近 SQL 的語法直接查詢文件，**底層會自動利用 design catalog（設計目錄）與既有的視圖索引**，找不到時改採全檔掃描。優勢是不必為每種查詢條件預先設計新視圖，且查詢語法可組合、可從 LotusScript / Java / REST API 統一呼叫。
+
+### 先講重話：DQL 的「熟悉」是表面的
+
+剛接觸 DQL 的開發者很容易被「near-SQL 語法」這個賣點誤導，以為從 SQL / 傳統 Notes API 過來能無痛上手。**實際上不是**。本文後面整理了至少 8 個踩雷點：
+
+- **Design Catalog 不會自動更新**，新增 view 後必須觸發同步否則 query 失敗
+- **`'view'.column` 的 column 指的是直欄程式名稱（programmatic name）**，不是文件欄位名，常常是 `$55` 這種自動編號
+- **view selection 不是 `Select @All` 時，結果會被默默限縮在 view 範圍內**（不會噴錯）
+- **比較運算子兩邊必須有空白**（`Form='X'` 噴錯，`Form = 'X'` 才行）
+- **view 名稱含反斜線時要 escape**（`(個人\\待簽核文件)`），錯誤訊息會誤導你去查 catalog
+- **`@formula(...)` 內是獨立的 Formula Language parser**，DQL 原生 `@dt` 寫進去會 compile 失敗
+- **字串存的日期欄位**要用 `@TextToTime` 轉換，DQL 原生 `@dt` 比較幫不上忙
+- **欄位需要 collated 才能用視圖索引**，不然強制噴錯
+
+每個踩雷點底下都有實測案例 + HCL 官方文件對照 + 可用的解法。本文不是 SQL 速成班，是**從踩雷整理出能 ship 的指南**。
 
 ## DQL 範例：第一個查詢
 

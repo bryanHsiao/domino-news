@@ -1,6 +1,6 @@
 ---
-title: "Getting Started with DQL: Query Notes Documents with Familiar Syntax"
-description: "Domino Query Language (DQL) lets you query Notes documents with a near-SQL syntax — no need to design a view or write @Formula. This intro covers DQL syntax, how to run it, and performance tips, with LotusScript / Java / REST API examples."
+title: "DQL in Practice: SQL-Looking Syntax, Notes-Specific Traps Everywhere"
+description: "Domino Query Language (DQL)'s syntax looks SQL-like on the surface, but the engine underneath is Notes — and it comes with a full set of traps: when the Design Catalog is required, view selection silently scoping results, the `'view'.column` referring to the column's programmatic name (not a doc field), the two parser contexts of `@formula` vs DQL-native, whitespace and backslash escapes, string-stored date fields, and more. This guide walks the path from trap to working query, with LotusScript / Java / REST API examples."
 pubDate: 2026-04-28T08:30:00+08:00
 lang: en
 slug: dql-getting-started
@@ -48,6 +48,21 @@ falling back to a full scan when no index can answer the query. The advantage
 is that you don't need a dedicated view per query shape, conditions compose
 naturally, and the same query string runs from LotusScript, Java, and the
 Domino REST API.
+
+### The hard truth: DQL's "familiar syntax" is only skin deep
+
+Developers picking up DQL often get misled by the "near-SQL syntax" pitch and assume it'll be a smooth ride coming from SQL or the traditional Notes API. **It isn't.** This article catalogs at least eight traps:
+
+- **The Design Catalog doesn't auto-update** — adding a view requires a sync trigger or your queries fail
+- **The `column` in `'view'.column` means the column's programmatic name**, not a document field name — and that programmatic name is often an auto-generated `$55`
+- **When the view's selection isn't `Select @All`, results are silently scoped to the view** (no error)
+- **Comparison operators require whitespace on both sides** (`Form='X'` errors out, `Form = 'X'` works)
+- **Backslashes in view names need escaping** (`(personal\\pendingSignDoc)`); the resulting error message points you at the catalog instead
+- **Inside `@formula(...)` you're in a separate Formula Language parser** — DQL-native `@dt` placed there fails to compile
+- **String-stored date fields need `@TextToTime`** to convert; native `@dt` comparison won't help
+- **Columns must be collated** to be usable as a view-index entry; otherwise DQL errors out
+
+Every trap below comes with a real test case, an HCL doc cross-reference, and a working fix. This isn't a SQL crash course — it's **a "trap-to-shippable" field guide**.
 
 ## A first DQL query
 
