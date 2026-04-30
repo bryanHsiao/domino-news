@@ -336,6 +336,49 @@ DQL 在底層**直接使用 Notes view 既有的 column index**，而 view 的 c
 
 這條規則 DQL 會強制 —— 欄位不是 collated 會直接噴錯，不像 selection 是默默限縮範圍。
 
+## `'view'.column` 的 column 指的是直欄程式名稱，不是文件欄位名
+
+這個是踩雷頻率很高的概念誤解。`'vwMyJob'.wdocAuthor` 看起來像「在 vwMyJob 這個 view 裡查 `wdocAuthor` 欄位」—— 但 DQL 實際上**不是**用文件欄位名稱去找，而是用 **view 直欄的「程式設計時使用 → 名稱」**。
+
+兩者很多時候**剛好同名**，你會以為是查欄位 —— 但下面任一情況就會直接噴錯：
+
+1. **直欄是 Designer 自動產生的名稱**（像 `$55`、`$3`）—— 你建直欄時沒手動設名稱，Designer 會自動編號
+2. **直欄是公式而不是單純顯示某個欄位**，例如 `WDocAuthor:WDocAuthorAgent` 把兩個欄位串起來
+3. **直欄程式名稱跟欄位名故意取不一樣**
+
+實際錯誤訊息（直欄 `簽核者` 在 Designer 裡程式名稱是 `$55`，公式是 `WDocAuthor:WDocAuthorAgent`，被誤用 `'vwMyJob'.wdocAuthor` 查詢）：
+
+```text
+Domino Query execution error:
+Entry not found in index -  驗證錯誤
+
+Error validating view column name - ['vwMyJob'.wdocAuthor]
+ ..  incorrect column name or no valid sorted column (bad position, collation or categorized)
+
+'vwMyJob'.wdocAuthor = 'CN=user01/O=TheNet'
+
+(Call hint: NSFCalls::NSFItemInfo, Core call #0)
+```
+
+「incorrect column name」就是 DQL 在說「我在 `vwMyJob` 找不到叫 `wdocAuthor` 的直欄」—— 因為那個直欄的程式名稱是 `$55`，不是 `wdocAuthor`。
+
+### 怎麼找直欄的程式名稱
+
+Designer 開啟 view → 點選那個直欄 → 右側屬性面板 → 切到「**程式設計時使用**」分頁 → 「**名稱**」欄位就是 DQL 認得的名字。
+
+如果是 `$N` 這種自動編號，建議手動改成有意義的名字（例如 `wdocAuthor`），DQL 才能直接用。
+
+### 兩個解法
+
+1. **改直欄程式名稱**：在 Designer 把「程式設計時使用 → 名稱」改成你想用的名字，存檔後 refresh catalog
+2. **用 `in()` 語法繞開**：
+
+   ```sql
+   in ('vwMyJob') and wdocAuthor = 'CN=user01/O=TheNet'
+   ```
+
+   `in()` 語法**不靠直欄程式名稱**，DQL 會直接用文件欄位 `wdocAuthor` 比對 —— view 內部直欄怎麼設都不影響。
+
 ## 語法上的兩個小雷（實測踩到才會發現）
 
 ### 1. 比較運算子兩邊一定要有空白

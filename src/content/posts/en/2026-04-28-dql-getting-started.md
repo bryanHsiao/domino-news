@@ -346,6 +346,49 @@ Beyond the selection consideration, the referenced column must be **collated** (
 
 This rule IS enforced — DQL errors out if the column isn't collated, unlike the selection rule which silently scopes the result.
 
+## The `column` in `'view'.column` is the column's programmatic name, not the field name
+
+This is a high-frequency conceptual trap. `'vwMyJob'.wdocAuthor` reads like "look up the `wdocAuthor` field in view `vwMyJob`" — but DQL **doesn't** look up document fields here. It looks up the **view column's "Name for programmatic use"** in Designer's column properties.
+
+The two often **happen to match**, which is why people assume they're the same thing — but any of these break that assumption and produce an immediate error:
+
+1. **The column has an auto-generated name** (`$55`, `$3` etc.) — Designer assigns these when you create a column without explicitly setting a name
+2. **The column is a formula, not a single field**, e.g. `WDocAuthor:WDocAuthorAgent` (concatenating two fields)
+3. **The column's programmatic name was intentionally set to something different from the field**
+
+Actual error message (column `Approver` has programmatic name `$55` in Designer, formula `WDocAuthor:WDocAuthorAgent`; queried as `'vwMyJob'.wdocAuthor`):
+
+```text
+Domino Query execution error:
+Entry not found in index -  validation error
+
+Error validating view column name - ['vwMyJob'.wdocAuthor]
+ ..  incorrect column name or no valid sorted column (bad position, collation or categorized)
+
+'vwMyJob'.wdocAuthor = 'CN=user01/O=TheNet'
+
+(Call hint: NSFCalls::NSFItemInfo, Core call #0)
+```
+
+"Incorrect column name" is DQL saying "there's no column named `wdocAuthor` in `vwMyJob`" — because the column's programmatic name is `$55`, not `wdocAuthor`.
+
+### Where to find the programmatic name
+
+In Designer, open the view → click the column → right-side properties panel → switch to the **"Programmatic use"** (程式設計時使用) tab → **"Name"** is what DQL knows the column by.
+
+If you see `$N` auto-numbering there, rename it to something meaningful (e.g. `wdocAuthor`) so DQL can resolve it.
+
+### Two fixes
+
+1. **Rename the column's programmatic name** in Designer's "Programmatic use → Name", save, then refresh the catalog
+2. **Switch to `in()` syntax**:
+
+   ```sql
+   in ('vwMyJob') and wdocAuthor = 'CN=user01/O=TheNet'
+   ```
+
+   `in()` **doesn't depend on column programmatic names** — DQL evaluates `wdocAuthor` directly against the document fields, regardless of how the columns inside the view are named.
+
 ## Two more syntax gotchas (the kind you only find by hitting them)
 
 ### 1. Comparison operators require whitespace on both sides
