@@ -267,11 +267,23 @@ Content-Type: application/json
 | 部分字串 | `Subject contains 'urgent'` |
 | 萬用字元 | `Author like 'B%'` |
 | 日期 | `Created >= @dt('2026-01-01')` |
-| 用視圖做基底 | `'Customers'.Country = 'Taiwan'`（單引號中是視圖名稱） |
+| 用視圖做基底（直接讀欄位）¹ | `'Customers'.Country = 'Taiwan'` |
+| 用視圖做基底（限縮範圍）² | `in ('Customers') and Country = 'Taiwan'` |
+
+> ¹ **`'view'.column = value` 語法的兩個前提條件**（容易踩雷）
+>
+> 引用的 view 必須**同時**符合下面兩個條件，否則執行會直接噴錯（HCL 官方 [View column requirements](https://help.hcl-software.com/dom_designer/12.0.0/basic/dql_view_column.html)）：
+>
+> 1. View 用 `Select @All` 作為 selection criteria
+> 2. 引用的欄位必須是 **collated**（任一條件成立即可）：
+>    - View 的最左欄勾了「Sort order: Ascending」
+>    - 該欄位本身勾了「Click on column header to sort: Ascending」
+>
+> ² 不確定 view 設計是否符合 ¹ 的條件，或者 view 的設計權不在你手上 → 改用 `in ('viewname') and field = value` 比較保險。`in()` 形式只要 view 名稱在 Design Catalog 內就能用，不管欄位設定，代價是查詢規劃器可能退化成全表掃。
 
 ## 效能要點
 
-1. **盡量用視圖索引**：`'ViewName'.Field = ...` 比裸欄位快
+1. **盡量用視圖索引**：`'ViewName'.Field = ...` 比裸欄位快（前提：view 用 `Select @All` 且該欄位 collated；不符合就改用 `in ('ViewName') and Field = ...` 至少限縮掃描範圍）
 2. **避免前置萬用字元（leading wildcard）**：`like '%abc'` 無法用索引
 3. **打開執行計畫觀察**：`dq.Explain = True` 印出實際執行路徑
 4. **取少量結果模式**：要少量結果用 `Execute(query, "", 0, 10)` 限制筆數

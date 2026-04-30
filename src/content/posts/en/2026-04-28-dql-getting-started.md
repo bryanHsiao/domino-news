@@ -278,11 +278,23 @@ Response:
 | Substring | `Subject contains 'urgent'` |
 | Wildcard | `Author like 'B%'` |
 | Date | `Created >= @dt('2026-01-01')` |
-| View as base | `'Customers'.Country = 'Taiwan'` (view name in single quotes) |
+| View as base — read column directly¹ | `'Customers'.Country = 'Taiwan'` |
+| View as base — scope query² | `in ('Customers') and Country = 'Taiwan'` |
+
+> ¹ **Two prerequisites for the `'view'.column = value` syntax** (easy to trip on)
+>
+> The view you reference must satisfy **both** conditions below or the query errors out (HCL [View column requirements](https://help.hcl-software.com/dom_designer/12.0.0/basic/dql_view_column.html)):
+>
+> 1. View uses `Select @All` as its selection criteria
+> 2. The referenced column is **collated** — either of these counts:
+>    - View's leftmost column has "Sort order: Ascending" checked
+>    - That column itself has "Click on column header to sort: Ascending" checked
+>
+> ² Not sure the view design meets ¹, or the view design isn't yours to control? Use `in ('viewname') and field = value` instead. The `in()` form only requires the view name to exist in the Design Catalog — column settings don't matter, at the cost that the planner may fall back to an NSF scan.
 
 ## Performance tips
 
-1. **Use a view as the base** — `'ViewName'.Field = ...` is faster than a bare field
+1. **Use a view as the base** — `'ViewName'.Field = ...` is faster than a bare field (prerequisites: view uses `Select @All` and the column is collated; if those don't hold, fall back to `in ('ViewName') and Field = ...` to at least scope the scan)
 2. **Avoid leading wildcards** — `like '%abc'` cannot use an index
 3. **Turn on `Explain`** — `dq.Explain = True` shows the actual execution path
 4. **First-hits mode** — when you only need a few results, use `Execute(query, "", 0, 10)` to cap the count
