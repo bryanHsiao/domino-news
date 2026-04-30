@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_simple_examples.html"
   - title: "DQL Explorer — OpenNTF community project"
     url: "https://www.openntf.org/main.nsf/project.xsp?r=project/DQL+Explorer"
+  - title: "NotesDominoQuery class (LotusScript) — HCL Domino 14.0 Designer Help"
+    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDOMINOQUERY_CLASS.html"
 cover: "/covers/dql-getting-started.png"
 ---
 
@@ -110,7 +112,37 @@ This is the part that bites everyone. The scenario:
 3. You run `in ('Vtest')` → boom, `does not exist or open failed`
 4. You spend an hour debugging before remembering: you never ran `load updall apps\crm.nsf -d`
 
-For production, consider scheduling `-d` as part of a nightly maintenance job. For development, build the muscle memory of running it manually after every design change.
+### The pragmatic fix: refresh the catalog from code (recommended)
+
+In real deployments, **leaning on an admin to remember `load updall -d` is rarely workable**: there are too many NSFs, deploys are frequent, and the developer pushing the design change usually doesn't have server-console access. Pushing catalog sync onto the admin team is just burying the landmine in the handoff.
+
+`NotesDominoQuery` exposes two properties that let the app side trigger catalog sync itself:
+
+| Property | Equivalent console command | Purpose |
+|---|---|---|
+| `RefreshDesignCatalog = True` | `load updall <db-path> -d` | **Incremental refresh**: applies design deltas, cheap — use this day-to-day |
+| `RebuildDesignCatalog = True` | `load updall <db-path> -e` | **Full rebuild**: throws the catalog out and rebuilds it, expensive — for first-time setup or suspected corruption |
+
+Set either property to `True` and the next `Execute` or `Explain` will sync the catalog before running the query. Example:
+
+```vb
+Dim dq As NotesDominoQuery
+Set dq = db.CreateDominoQuery()
+
+' First DQL call after app startup / deploy — sync the catalog once
+dq.RefreshDesignCatalog = True
+
+Dim result As NotesDocumentCollection
+Set result = dq.Execute("in ('Vtest') and Form = 'Ftest'")
+```
+
+> ⚠️ **Don't leave these properties on for every query.** Every `True` adds a catalog-sync round-trip in front of the next `Execute`, which eats the DQL speed advantage. The three sane moments to flip them on are:
+>
+> 1. App startup, once per process
+> 2. Right after a CI/CD pipeline deploys design changes
+> 3. As a one-shot retry when a query fails with `does not exist or open failed`
+
+Two sibling properties are worth knowing about while you're here: `RefreshFullText` (refreshes the FT index before the query) and `RefreshViews` (refreshes any view the query will touch).
 
 ### Version note: where the catalog lives
 

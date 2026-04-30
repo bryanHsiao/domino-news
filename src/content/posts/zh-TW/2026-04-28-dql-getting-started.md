@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_simple_examples.html"
   - title: "DQL Explorer — OpenNTF community project"
     url: "https://www.openntf.org/main.nsf/project.xsp?r=project/DQL+Explorer"
+  - title: "NotesDominoQuery class (LotusScript) — HCL Domino 14.0 Designer Help"
+    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDOMINOQUERY_CLASS.html"
 cover: "/covers/dql-getting-started.png"
 ---
 
@@ -99,7 +101,37 @@ Error opening view name or named document set - [Vtest] does not exist or open f
 3. 你用 `in ('Vtest')` 查詢 → 噴 `does not exist or open failed`
 4. 卡半天才想起：忘了下 `load updall apps\crm.nsf -d`
 
-正式環境可以考慮把 `-d` 排進每天的維護排程；開發環境就請養成「改完設計手動跑一次」的習慣。
+### 更務實的解法：從程式面同步 catalog（推薦）
+
+現實世界裡，**靠管理員手動下 `load updall -d` 通常不可行**：DB 數量多、應用部署頻繁、寫程式的人跟有 server console 權限的人通常還不是同一個。把同步 catalog 的責任丟回給管理員，就是把雷埋在交接縫隙裡。
+
+`NotesDominoQuery` 物件提供了兩個屬性，讓 app 端可以**自己**觸發 catalog 同步：
+
+| 屬性 | 對應 console 指令 | 用途 |
+|---|---|---|
+| `RefreshDesignCatalog = True` | `load updall <db路徑> -d` | **增量更新**：只處理設計變更，便宜，日常用這個 |
+| `RebuildDesignCatalog = True` | `load updall <db路徑> -e` | **完整重建**：清掉重灌，昂貴，第一次啟用 / 懷疑 catalog 損壞時用 |
+
+設成 `True` 之後，下一次 `Execute` 或 `Explain` 之前會自動先同步 catalog。範例：
+
+```vb
+Dim dq As NotesDominoQuery
+Set dq = db.CreateDominoQuery()
+
+' app 啟動 / 部署後第一次呼叫，先同步一次 catalog
+dq.RefreshDesignCatalog = True
+
+Dim result As NotesDocumentCollection
+Set result = dq.Execute("in ('Vtest') and Form = 'Ftest'")
+```
+
+> ⚠️ **不要每次查詢都把這兩個屬性開起來**。每設一次 `True`，下一次 `Execute` 都要先付一次 catalog 同步成本，會把 DQL 的速度優勢吃掉。實務上的開法只有三個時機：
+>
+> 1. App 啟動時開一次（讓這個 process 第一次查詢時補齊 catalog）
+> 2. 確定剛部署過設計變更（CI/CD pipeline 部署完接著呼叫一次）
+> 3. 攔到 `does not exist or open failed` 錯誤時，設 `True` 重試一次
+
+同個物件還有兩個鄰居屬性可以一併認識：`RefreshFullText`（查詢前 refresh FT index）、`RefreshViews`（refresh 查詢會用到的 view）。
 
 ### 版本差異：catalog 存在哪裡
 
