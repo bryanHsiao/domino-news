@@ -19,22 +19,26 @@ sources:
 cover: "/covers/notes-note-collection.png"
 ---
 
-## 跟 NotesDocumentCollection 不一樣的點
+## NotesNoteCollection 是什麼
 
-`NotesDocumentCollection` 處理的是「資料文件」—— 你建一筆 Memo、一筆 Customer，都是它的範圍。`NotesNoteCollection` 處理的是 NSF 裡**所有種類的 note**：
+`NotesNoteCollection` 是 LotusScript 用來**批次操作「note」的類別**。
 
-- 資料文件（跟 NotesDocumentCollection 一樣的對象）
-- 設計元素：表單（Forms）、視圖（Views）、資料夾（Folders）、代理程式（Agents）、頁面（Pages）、子表單（Subforms）、共用欄位（Shared Fields）
-- 程式碼：ScriptLibraries、JavaResources、ActionBar、DatabaseScript
-- 資源：圖片資源（ImageResources）、樣式表（StyleSheetResources）
-- 安全：ACL、Profile 文件
-- 雜項：複寫公式（ReplicationFormulas）、設計索引（MiscIndexElements）、格式元素（MiscFormatElements）
+「note」是 NSF 的內部儲存單位 —— **任何能被分配到一個 Note ID 的東西都算**：資料文件、表單、視圖、資料夾、代理程式、ACL、Profile、樣式表等等都是。
 
-「note」是 NSF 內部的概念 —— 任何能被分配到一個 Note ID 的東西都算。所以 NotesNoteCollection 的甜蜜點是：
+所以這個類別涵蓋的範圍很廣，可以用旗標控制要哪幾類：
 
-> **「我要批次處理一個資料庫的某類設計元素，例如全部的代理程式、全部的視圖、或者連同資料一起做 DXL 匯出。」**
+- **資料**：資料文件
+- **設計元素**：表單（Forms）、視圖（Views）、資料夾（Folders）、頁面（Pages）、子表單（Subforms）、共用欄位（Shared Fields）
+- **程式碼**：代理程式（Agents）、Script Libraries、Java Resources、ActionBar、DatabaseScript
+- **資源**：圖片資源（Image Resources）、樣式表（Style Sheet Resources）
+- **安全 / 設定**：ACL、Profile 文件、複寫公式（Replication Formulas）
+- **雜項**：設計索引（Misc Index Elements）、格式元素（Misc Format Elements）、程式碼元素（Misc Code Elements）
 
-`NotesDocumentCollection` 做不到這件事，它只看資料文件。
+它的甜蜜點是：
+
+> **「我要批次處理 NSF 裡的某類 note —— 例如盤點所有代理程式、把整個資料庫的設計做 DXL 匯出版本控制、或一次撈出最近一週改過的所有 note 做稽核。」**
+
+如果你熟悉 `NotesDocumentCollection`：兩者是不同工具。`NotesDocumentCollection` 只處理資料文件；`NotesNoteCollection` 處理 note 級別的所有東西。下面會在範例後面有完整對比表。
 
 ## 建立：`CreateNoteCollection(Boolean)`
 
@@ -282,7 +286,9 @@ End Sub
 
 這就是「templating tool」式的用法 —— 要把一整個範本資料庫的設計另存 XML 做版本控制、跨環境部署、或單純備份，這條路是首選。
 
-## 跟 NotesDocumentCollection 的對比
+## 進階：跟 NotesDocumentCollection 的完整對比
+
+如果你已經熟悉 `NotesDocumentCollection`，這個對比表能幫你快速定位兩者差別：
 
 | | `NotesDocumentCollection` | `NotesNoteCollection` |
 |---|---|---|

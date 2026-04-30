@@ -19,22 +19,26 @@ sources:
 cover: "/covers/notes-note-collection.png"
 ---
 
-## Why this is not a `NotesDocumentCollection` variant
+## What NotesNoteCollection is
 
-`NotesDocumentCollection` is for data documents — a Memo, a Customer record. `NotesNoteCollection` is for **every kind of note in the NSF**:
+`NotesNoteCollection` is the LotusScript class for **batch-operating on "notes"**.
 
-- Data documents (the same things `NotesDocumentCollection` covers)
-- Design elements: forms, views, folders, agents, pages, subforms, shared fields
-- Code: script libraries, Java resources, action bars, the database script
-- Resources: image resources, style sheets
-- Security: ACL, profile documents
-- Misc: replication formulas, design indices, format elements
+A "note" is the NSF's internal storage unit — **anything that gets a Note ID**: data documents, forms, views, folders, agents, ACLs, profile documents, style sheets. Every one of those is a note.
 
-A "note" is the NSF's internal storage concept — anything that gets a Note ID. So the sweet spot for `NotesNoteCollection` is:
+So this class covers a wide surface, controlled by per-class flags:
 
-> **"I need to batch-process a database's design elements — every agent, every view, the entire design plus data for a DXL export."**
+- **Data**: data documents
+- **Design elements**: forms, views, folders, pages, subforms, shared fields
+- **Code**: agents, script libraries, Java resources, action bars, the database script
+- **Resources**: image resources, style sheets
+- **Security / config**: ACL, profile documents, replication formulas
+- **Misc**: design indices, format elements, code elements
 
-`NotesDocumentCollection` cannot do that. It only sees data documents.
+Its sweet spot:
+
+> **"I need to batch-process some class of note in the NSF — audit every agent, DXL-export the entire design for version control, harvest every note modified in the last week."**
+
+If you already know `NotesDocumentCollection`: these are different tools. `NotesDocumentCollection` only deals with data documents; `NotesNoteCollection` handles everything at the note level. There's a full side-by-side comparison after the worked examples below.
 
 ## Construction: `CreateNoteCollection(Boolean)`
 
@@ -282,7 +286,9 @@ End Sub
 
 This is the "templating tool" pattern — exporting an entire template database's design as XML for version control, cross-environment deployment, or backup. `NotesNoteCollection` + `NotesDXLExporter` is the canonical path.
 
-## Side-by-side with `NotesDocumentCollection`
+## Advanced: full side-by-side with `NotesDocumentCollection`
+
+If you already know `NotesDocumentCollection`, this table maps the differences at a glance:
 
 | | `NotesDocumentCollection` | `NotesNoteCollection` |
 |---|---|---|
