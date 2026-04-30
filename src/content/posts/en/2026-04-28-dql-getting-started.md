@@ -72,27 +72,62 @@ Form in ('Invoice', 'CreditNote') and Status = 'Open'
 Subject contains 'Domino' and Author like 'Bryan%'
 ```
 
-## Enable DQL: build the design catalog
+## Enable DQL: build the Design Catalog — skip this and DQL blows up
 
-DQL works without any index (it will scan the entire NSF), but performance is poor. To let DQL use indexes, build the **design catalog** (`GQFDsgn.cat`):
+This section is the #1 DQL gotcha, so the punchline first: **DQL relies entirely on the per-NSF Design Catalog to resolve view names and column names (the `'viewname'.column` and `in ('view1', 'view2')` syntaxes). Without the catalog, DQL has no way to know which views exist in this NSF, what they're called, or what columns they expose.**
 
-```text
-load updall -e
+The classic trap: a developer adds a view called `Vtest` and tries to scope a query to it using the documented syntax:
+
+```sql
+in ('Vtest') and Form = 'Ftest'
 ```
 
-Or, on the server console:
+You get this error:
 
 ```text
-load design
+Domino Query execution error: Unexpected internal error - validation error
+Error opening view name or named document set - [Vtest] does not exist or open failed
+(Call hint: NSFCalls::NSFDbGetNamedObjectID, Core call #0)
 ```
 
-After that, every view you add becomes a candidate index for DQL. To expose a specific field, add this to the view's selection formula:
+The message reads as "the view doesn't exist", but the view is right there in Designer and opens fine. The real cause is that **this NSF's Design Catalog hasn't been built yet, or hasn't been refreshed since the design change.**
+
+### The two server-console commands to remember
+
+| When | Command |
+|---|---|
+| First-time DQL enablement (build the Design Catalog for this NSF) | `load updall <db-path> -e` |
+| After any design change (added/modified/removed view, renamed columns, etc.) | `load updall <db-path> -d` |
+
+`<db-path>` is relative to `Domino\Data`, e.g. `apps\crm.nsf`.
+
+### The big warning: the Design Catalog does NOT auto-update
+
+This is the part that bites everyone. The scenario:
+
+1. You ran `load updall apps\crm.nsf -e` once and DQL works fine
+2. A developer adds a new view named `Vtest` in Designer
+3. You run `in ('Vtest')` → boom, `does not exist or open failed`
+4. You spend an hour debugging before remembering: you never ran `load updall apps\crm.nsf -d`
+
+For production, consider scheduling `-d` as part of a nightly maintenance job. For development, build the muscle memory of running it manually after every design change.
+
+### Version note: where the catalog lives
+
+- **Domino 10.x**: the Design Catalog is a standalone file `GQFdsgn.cat`, sitting next to the NSF in the data directory
+- **Domino 11+**: the Design Catalog moved inside the NSF as hidden design elements (not visible in Designer by default). No `.cat` files appear at the filesystem level anymore, but the `load updall -e` / `-d` workflow is identical
+
+After upgrading an older NSF to 11+, you still need to run `load updall <db-path> -e` once to populate the catalog inside the NSF.
+
+### Advanced: explicitly mark fields as DQL-usable
+
+If you have specific fields you want DQL to use as query conditions through a view index, add this to the view's selection formula:
 
 ```text
 SELECT @IsAvailable($DQLField)
 ```
 
-The view then becomes a usable index source for DQL.
+That view then becomes a candidate index source for DQL — the query planner will prefer it over a full NSF scan.
 
 ## Calling DQL from LotusScript
 

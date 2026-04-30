@@ -61,27 +61,62 @@ Form in ('Invoice', 'CreditNote') and Status = 'Open'
 Subject contains 'Domino' and Author like 'Bryan%'
 ```
 
-## 啟用 DQL：建立 design catalog（設計目錄）
+## 啟用 DQL：建立 Design Catalog（設計目錄）—— 不做就會炸
 
-DQL 在沒有任何索引時也能跑（會掃整個 NSF），但效能差。要讓 DQL 用上索引，必須先建立 **design catalog（設計目錄）**（`GQFDsgn.cat`）：
+這一節是踩雷重災區，先講結論：**DQL 要解析 view 名稱、欄位名稱（`'viewname'.column` 或 `in ('view1', 'view2')` 語法），完全靠每個 NSF 內部的 Design Catalog（設計目錄）。沒有 catalog，DQL 就不知道這個 NSF 裡有哪些 view、view 叫什麼名字、view 裡有哪些欄位。**
 
-```text
-load updall -e
+最常見的踩雷情境：開發者新增了一個叫 `Vtest` 的 view，想用下面這段官方範例語法把查詢限定在這個 view：
+
+```sql
+in ('Vtest') and Form = 'Ftest'
 ```
 
-或者在伺服器主控台（server console）執行：
+執行下去就是這個錯誤訊息：
 
 ```text
-load design
+Domino Query 執行錯誤: Unexpected internal error - 驗證錯誤
+Error opening view name or named document set - [Vtest] does not exist or open failed
+(Call hint: NSFCalls::NSFDbGetNamedObjectID, Core call #0)
 ```
 
-之後每加一個視圖，DQL 引擎都能自動考慮使用。如果你有特定欄位想被 DQL 用，可以在視圖的選取公式（selection formula）加上：
+訊息看起來像「view 不存在」，但 view 明明在 Designer 裡看得到、也能正常開啟 —— 真正的原因是 **這個 NSF 的 Design Catalog 還沒建立 / 還沒更新**。
+
+### 兩個必須記住的 Server Console 指令
+
+| 時機 | 指令 |
+|---|---|
+| 第一次啟用 DQL（為這個 NSF 建立 Design Catalog） | `load updall <db路徑> -e` |
+| 設計變更後（新增/修改/刪除 view、改 view 名稱、改欄位）| `load updall <db路徑> -d` |
+
+`<db路徑>` 是相對於 `Domino\Data` 的路徑，例如 `apps\crm.nsf`。
+
+### 重點警告：Design Catalog 不會自動更新
+
+這是最容易忘記的地方。情境長這樣：
+
+1. 你已經跑過 `load updall apps\crm.nsf -e`，DQL 一切正常
+2. 開發者在 Designer 新增了一個 view 叫 `Vtest`
+3. 你用 `in ('Vtest')` 查詢 → 噴 `does not exist or open failed`
+4. 卡半天才想起：忘了下 `load updall apps\crm.nsf -d`
+
+正式環境可以考慮把 `-d` 排進每天的維護排程；開發環境就請養成「改完設計手動跑一次」的習慣。
+
+### 版本差異：catalog 存在哪裡
+
+- **Domino 10.x**：Design Catalog 是一個獨立檔案 `GQFdsgn.cat`，跟 NSF 平行擺在資料目錄裡
+- **Domino 11 之後**：Design Catalog 移到 NSF 內部，存在隱藏的設計元素裡（Designer 預設看不到）。檔案層級不會再多出 `.cat` 檔，但 `load updall -e` / `-d` 的操作方式完全一樣
+
+升級到 11+ 之後的舊 NSF，第一次仍然要手動跑一次 `load updall <db路徑> -e`，把 catalog 灌進 NSF 內部。
+
+### 進階：把欄位明確標成 DQL 可用
+
+如果你有特定欄位想被 DQL 直接用作查詢條件、走 view 索引，可以在 view 的選取公式（selection formula）加上：
 
 ```text
 SELECT @IsAvailable($DQLField)
 ```
 
-讓視圖變成 DQL 可用的索引來源。
+這個 view 就會成為 DQL 可用的索引來源，查詢規劃器會優先考慮走這個 view 而不是全表掃描。
 
 ## 從 LotusScript 呼叫 DQL
 
