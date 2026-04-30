@@ -524,6 +524,65 @@ docno like '056%'
 2. Formula 內部的字串用**雙引號**（避開跟外面單引號衝突）
 3. 函式參數分隔符是 **`;`**（Formula Language 的慣例，不是逗號）
 
+### 重要：`@formula` 內是獨立的 Formula Language parser
+
+DQL 其實有**兩個解析環境**，互相不認得對方的 `@` 函式：
+
+| Parser 環境 | 寫在哪 | 認得哪些 `@` |
+|---|---|---|
+| **DQL 原生** | query 主體 | `@dt`、`@all`、`@formula` / `@fl` / `@FORMULA`、`@ftsearch` / `@fts`、`@Created`、`@DocumentUniqueID`、`@ModifiedInThisFile` |
+| **Formula Language** | `@formula('...')` 引號內部 | Formula Language 的 `@Function` 子集（`@Year`、`@Left`、`@Contains`、`@Length`、`@Matches`、`@Modulo`、`@Lowercase`...） |
+
+**`@formula` 內部 _不認得_ DQL 原生的 `@dt` / `@all` / `@ftsearch`**，反過來 DQL 主體也不認 Formula Language 的 `@Year` / `@Left`（必須包在 `@formula` 裡）。兩個 parser 是隔開的。
+
+#### 實際踩雷案例：`@dt` 寫進 `@formula` 裡
+
+```sql
+'vwMyJob'.wdocAuthor = 'CN=USER05/O=thenet'
+  and @formula('@Year(@dt(ApplyDate)) = "2021"')
+```
+
+DQL 把 `@formula('...')` 引號內整段交給 Formula compiler 處理，Formula compiler 看到 `@dt` 不認，於是噴：
+
+```text
+Formula Error -  規劃及產生樹狀結構時發生錯誤
+Error filling node for @Year(@dt(ApplyDate)) = "2021"
+
+(Call hint: NSFCalls::NSFFormulaCompile, Core call #0)
+```
+
+正確寫法分兩種，看你的意圖：
+
+**意圖 A：取 `ApplyDate` 的年份是不是 2021** —— 用 Formula Language
+
+```sql
+@formula('@Year(ApplyDate) = 2021')
+```
+
+`ApplyDate` 本來就是 date 欄位，Formula 直接取 `@Year` 就好，**不用 `@dt` 轉換**。比較值用數字 `2021`，不用字串 `"2021"`（`@Year` 回傳數字，跟字串比會失敗）。
+
+**意圖 B：日期區間比對 + 用得上 view 索引** —— 改用 DQL 原生 `@dt`
+
+```sql
+ApplyDate >= @dt('2021-01-01') and ApplyDate < @dt('2022-01-01')
+```
+
+這個寫法**比 `@formula` 版快**，因為 DQL 原生條件能用 view 索引最佳化。能不用 `@formula` 就不用是常見原則（呼應前面的「原生粗篩、@formula 細篩」）。
+
+#### DQL 原生 `@` 函式速查
+
+| 函式 | 用途 |
+|---|---|
+| `@dt('YYYY-MM-DD[Thh:mm:ss]')` | 日期/時間字面值（ISO8601 格式） |
+| `@all` | 所有文件 |
+| `@formula(...)` / `@fl(...)` | 嵌入 Formula Language |
+| `@ftsearch(...)` / `@fts(...)` | 全文檢索（Domino 14+） |
+| `@Created` | 文件建立時間（特殊欄位） |
+| `@DocumentUniqueID` | 文件 UNID |
+| `@ModifiedInThisFile` | 本檔最後修改時間 |
+
+這些**只能寫在 DQL 主體**，塞進 `@formula(...)` 內就會噴 Formula compile 錯誤。
+
 ### 什麼時候真的需要 `@formula`
 
 當條件複雜到原生 DQL 寫不出來：

@@ -534,6 +534,65 @@ Three details that catch people out:
 2. Strings inside the formula use **double quotes** (avoiding the outer single-quote conflict)
 3. Function arguments are separated by **`;`** (Formula Language convention, not commas)
 
+### Important: inside `@formula` you're in a separate Formula Language parser
+
+DQL actually has **two parser contexts** that don't recognize each other's `@` functions:
+
+| Parser context | Where you write it | Recognizes |
+|---|---|---|
+| **DQL native** | the query body | `@dt`, `@all`, `@formula` / `@fl` / `@FORMULA`, `@ftsearch` / `@fts`, `@Created`, `@DocumentUniqueID`, `@ModifiedInThisFile` |
+| **Formula Language** | inside the `@formula('...')` quotes | the supported Formula Language `@Function` subset (`@Year`, `@Left`, `@Contains`, `@Length`, `@Matches`, `@Modulo`, `@Lowercase`, …) |
+
+**Inside `@formula`, DQL-native `@dt` / `@all` / `@ftsearch` are not recognized**, and vice versa — DQL-native syntax doesn't recognize Formula Language `@Year` / `@Left` outside `@formula`. The two parsers are isolated.
+
+#### Real-world trap: `@dt` written inside `@formula`
+
+```sql
+'vwMyJob'.wdocAuthor = 'CN=USER05/O=thenet'
+  and @formula('@Year(@dt(ApplyDate)) = "2021"')
+```
+
+DQL hands the contents of `@formula('...')` to the Formula compiler, which sees `@dt` and doesn't recognize it:
+
+```text
+Formula Error -  error during planning and tree generation
+Error filling node for @Year(@dt(ApplyDate)) = "2021"
+
+(Call hint: NSFCalls::NSFFormulaCompile, Core call #0)
+```
+
+Two correct rewrites, depending on intent:
+
+**Intent A: check whether `ApplyDate`'s year is 2021** — use Formula Language
+
+```sql
+@formula('@Year(ApplyDate) = 2021')
+```
+
+`ApplyDate` is already a date field, so Formula's `@Year` reads it directly — **no `@dt` conversion needed.** Compare against the number `2021`, not the string `"2021"` (`@Year` returns a number; comparing to a string fails).
+
+**Intent B: do a date range comparison and let view indexes help** — use DQL native, drop `@formula` entirely
+
+```sql
+ApplyDate >= @dt('2021-01-01') and ApplyDate < @dt('2022-01-01')
+```
+
+This is **faster than the `@formula` version** because native DQL conditions can use view indexes. "If native syntax can express it, prefer native" is the general rule (echoing the optimization pattern below).
+
+#### DQL-native `@` function reference
+
+| Function | Purpose |
+|---|---|
+| `@dt('YYYY-MM-DD[Thh:mm:ss]')` | Date/time literal (ISO 8601) |
+| `@all` | All documents |
+| `@formula(...)` / `@fl(...)` | Embed Formula Language |
+| `@ftsearch(...)` / `@fts(...)` | Full-text search (Domino 14+) |
+| `@Created` | Document creation timestamp (special field) |
+| `@DocumentUniqueID` | Document UNID |
+| `@ModifiedInThisFile` | Last modified-in-this-file timestamp |
+
+These work **only in the DQL body** — putting them inside `@formula(...)` triggers a Formula compile error.
+
 ### When you actually need `@formula`
 
 Conditions that native DQL syntax can't express:
