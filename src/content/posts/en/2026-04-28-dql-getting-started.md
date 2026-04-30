@@ -141,49 +141,259 @@ This is the part that bites everyone. The scenario:
 3. You run `in ('Vtest')` → boom, `does not exist or open failed`
 4. You spend an hour debugging before remembering: you never ran `load updall apps\crm.nsf -d`
 
-### The pragmatic fix: refresh the catalog from code (recommended)
+### Recommended: sync the catalog from code
 
 In real deployments, **leaning on an admin to remember `load updall -d` is rarely workable**: there are too many NSFs, deploys are frequent, and the developer pushing the design change usually doesn't have server-console access. Pushing catalog sync onto the admin team is just burying the landmine in the handoff.
 
-`NotesDominoQuery` exposes a property that lets the app side trigger catalog sync itself:
+`NotesDominoQuery` exposes two properties to trigger catalog sync from app code:
+
+| Property | Equivalent console command | Behavior |
+|---|---|---|
+| `RefreshDesignCatalog = True` | `load updall <db> -d` | Before the next `Execute` / `Explain`, **incrementally sync** the catalog |
+| `RebuildDesignCatalog = True` | `load updall <db> -e` | Before the next `Execute` / `Explain`, **fully rebuild** the catalog |
+
+#### Three field-tested facts (Domino 12.x)
+
+**Fact 1: The Catalog is NSF-persistent state (Domino 11+)**
+
+The catalog lives inside the NSF as hidden design elements — not in-memory state. **It survives server restart, HTTP task restart, JVM restart**. An NSF only needs its catalog built once; after that it persists permanently (unless the NSF itself is deleted and recreated).
+
+Field log (first round of queries after a server restart — every NSF returns successfully with no harvest activity):
+
+```
+03:23:35  HTTP JVM: DB [dorm] 找到 1 筆
+03:23:35  HTTP JVM: DB [docdb] 找到 6 筆
+... (12 NSFs all succeed, zero harvest log lines)
+```
+
+**Fact 2: `RefreshDesignCatalog = True` is a ~0ms no-op when the catalog is already current**
+
+HCL checks internally whether the catalog needs updating before doing real harvest work. When nothing's changed, the console gets no `harvested` message and the cost is essentially zero — so you can **safely turn it on for every query**.
+
+Field log (every query carries `setRefreshDesignCatalog(true)`, no design changes):
+
+```
+04:06:40  HTTP JVM: DB [dorm] 找到 3 筆
+04:06:40  HTTP JVM: DB [law] 找到 14 筆
+... (12 NSFs, zero harvest log lines, all near-instant)
+```
+
+**Fact 3: `RefreshDesignCatalog` automatically does an incremental harvest on stale catalogs**
+
+When the design has just changed, the next query carrying Refresh detects it and updates the catalog automatically — **no manual reset, no in-memory cache, no scheduled agent**.
+
+Field log (after editing the design of LAW and EForm):
+
+```
+04:07:59  FCB\LAW\LCM_Ext2.nsf harvested, ... 278.534 msecs
+04:07:59  HTTP JVM: DB [law] 找到 14 筆
+04:08:00  FCB\EForm.nsf harvested, ... 468.698 msecs
+04:08:00  HTTP JVM: DB [EForm] 找到 4 筆
+```
+
+**Exception: Refresh cannot bootstrap a brand-new NSF**
+
+For an NSF that's never been catalogued, `RefreshDesignCatalog = True` **fails**; you must use `RebuildDesignCatalog = True` for the first build. The HCL doc on `updall -d` says "If the catalog doesn't already exist, updall automatically creates it" — **but the API behaves differently from the console command**. Refresh does not auto-bootstrap.
+
+Field log (a freshly added workorder.nsf that's never been catalogued):
+
+```
+04:06:27  HTTP JVM: DQL: catalog 缺失於 [FCB\Safety\workorder.nsf] — 執行 Rebuild 後重試
+04:06:28  FCB\Safety\workorder.nsf harvested, ... 963.684 msecs
+04:06:28  HTTP JVM: DB [workorder] 找到 0 筆
+```
+
+When the catalog is missing, DQL surfaces this marker phrase in the error: **`needs to be cataloged via updall -e`**.
+
+#### Final pattern: always Refresh + catch Rebuild
+
+Combining the three facts and the one exception, the recommended pattern is:
 
 ```vb
-Private gDqlBootstrapped As Boolean    ' module-level
-
+' LotusScript
 Function RunDql(db As NotesDatabase, query As String) As NotesDocumentCollection
     Dim dq As NotesDominoQuery
+
+    ' Phase 1: Refresh + execute (current catalog ~0ms / stale auto-incremental)
+    On Error Goto RebuildAndRetry
     Set dq = db.CreateDominoQuery()
+    dq.RefreshDesignCatalog = True
+    Set RunDql = dq.Execute(query)
+    Exit Function
 
-    ' First DQL call in this process: sync the catalog once
-    ' (auto-creates the catalog if missing; incremental refresh otherwise)
-    If Not gDqlBootstrapped Then
-        dq.RefreshDesignCatalog = True
-        gDqlBootstrapped = True
-    End If
-
+RebuildAndRetry:
+    ' Phase 2: brand-new NSF (no catalog) → Rebuild + retry
+    If InStr(Error$, "needs to be cataloged via updall -e") = 0 Then Error Err
+    Set dq = db.CreateDominoQuery()
+    dq.RebuildDesignCatalog = True
     Set RunDql = dq.Execute(query)
 End Function
 ```
 
-The line that does the work is `dq.RefreshDesignCatalog = True` — set it to `True` and the next `Execute` or `Explain` syncs the catalog first (equivalent to `load updall -d`). **For an NSF that has never been catalogued, the first call auto-bootstraps the catalog**, so this single code path covers both "brand-new NSF" and "design just changed" — no try-catch fallback needed.
-
-> ⚠️ **Don't leave the property on for every query.** Every `True` adds a catalog-sync round-trip before the next `Execute`, which eats the DQL speed advantage. The module-level flag ensures each process pays the cost exactly once.
->
-> Extra insurance: if you have a CI/CD pipeline, fire one warmup query with `RefreshDesignCatalog = True` right after deploying a design change. The sync cost moves into the deploy step and live requests pay nothing.
-
-#### `RebuildDesignCatalog` vs `RefreshDesignCatalog`
-
-`NotesDominoQuery` also has a `RebuildDesignCatalog` property that maps to `load updall -e` — a **full teardown and rebuild**, much more expensive than Refresh. App code almost never needs it. Keep it for these maintenance scenarios:
-
-- Suspected catalog corruption (weird query results, inconsistencies)
-- After upgrading from 10.x to 11+, to migrate the catalog from file to in-NSF storage
-- Scheduled maintenance (e.g. weekly full rebuild as a defensive habit)
-
-Default to Refresh; reach for Rebuild only when you deliberately want a clean slate.
+Properties:
+- ✅ 99% of queries: ~0ms overhead
+- ✅ Design changes: auto incremental refresh
+- ✅ Brand-new NSF: catch + Rebuild bootstraps it once
+- ✅ **No in-memory cache, no reset, no SOP needed**
 
 #### Sibling properties
 
 Two more "sync before next query" properties live on the same object: `RefreshFullText` (refreshes the FT index before the query) and `RefreshViews` (refreshes any view the query will touch). Same `True` → next-`Execute`-syncs pattern.
+
+### Permissions: catalog operations require Designer-level ACL
+
+Both `RefreshDesignCatalog` and `RebuildDesignCatalog` write into the NSF's catalog design elements, which requires **at minimum Designer-level ACL**. Regular users (Reader / Author / Editor) running the operation get:
+
+```text
+NotesException: DQL execution failed ... cause=[
+Domino Query execution error:
+您沒有權限執行此作業 (You don't have permission to perform this operation)
+]
+```
+
+> ⚠️ The Final pattern above looks fine in code, but **deploy it to production where regular users trigger it and you'll wall straight into permissions**. Catalog operations cannot run as the end user.
+
+#### Why some contexts hit this and some don't: execution identity
+
+Catalog operations run as **the identity in effect when DQL is invoked**. Different deployment models have different identities:
+
+| Deployment model | Catalog op runs as | Permission issue? |
+|---|---|---|
+| **Scheduled / event-triggered agent** | Agent's signer (typically admin / server ID) | ✅ OK, agent self-elevates |
+| **XPages SSJS using sessionAsSigner** | XPages app's signer (admin) | ✅ OK, sessionAsSigner elevates |
+| **XPages SSJS calling a Java helper (no elevation)** | **Logged-in user** | ⚠️ Regular users hit permission errors ← **the case in this article** |
+| **Domino REST API task receiving external HTTP** | The user authenticated by the request | ⚠️ Depends on the user's permissions |
+
+The key observation: **a Java helper class doesn't "automatically carry" signer identity**. Even if the Java code was written by the developer and the JAR was signed by an admin, when called from SSJS it inherits the calling identity (the logged-in user). **Elevation must happen on the SSJS side**, by opening the Database via `sessionAsSigner.getDatabase()` and passing that into Java. The Java side can't elevate by itself.
+
+#### XPages solution: `sessionAsSigner`
+
+XPages SSJS has a `sessionAsSigner` global that returns a Session for the identity who signed the XPages app (typically an admin / Designer):
+
+```javascript
+var dbPath = "FCB/EForm.nsf";
+
+// Open the DB as the signer — catalog operations now have permission
+var db = sessionAsSigner.getDatabase("", dbPath);
+
+var util = new service.DQLUtil();
+var result = util.executeQuery(db, dqlQuery);
+```
+
+**Prerequisite**: The XPages app must have been signed by an ID with at least Designer / Manager rights. Check Domino Designer → `File → Application → Properties → Design` tab → the "Signed by" field.
+
+#### Safety caveat: reader-fields bypass
+
+⚠️ Running queries via signer is essentially running them with admin rights — **reader fields and ACL get bypassed**. If your NSF uses reader fields to control "who sees which docs", users running queries through your code may see docs they shouldn't → **data leak**.
+
+Defenses (recommended top-down):
+
+1. **Bake the user identity filter into the query** (simplest): every query gets a `wdocAuthor = 'CN=...'` style explicit user filter; never write "list all" queries
+2. **Two-DB architecture**: queries go through `session.getDatabase()` (user DB, ACL applies); catalog operations go through `sessionAsSigner.getDatabase()` (signer DB). The Java API splits into two parameters — more complex but safe
+
+#### Outside XPages
+
+`sessionAsSigner` only exists inside the XPages context. Alternatives elsewhere:
+
+- **Scheduled agent**: write a scheduled agent with "Run on" set to the right server, signed by an admin ID, running catalog maintenance on schedule or on demand
+- **`NotesFactory.createSessionWithFullAccess()`**: pure-Java path to an admin session, requires `notes.ini` to list `FullAccessAdministrator`. More dangerous, generally not recommended
+
+#### Java production-ready example
+
+The full-pattern helper, including error enrichment and pairing with `sessionAsSigner`:
+
+```java
+package service;
+
+import lotus.domino.Database;
+import lotus.domino.DocumentCollection;
+import lotus.domino.DominoQuery;
+import lotus.domino.NotesException;
+
+public class DQLUtil {
+
+    /**
+     * Execute a DQL query.
+     * @param db must be opened via sessionAsSigner.getDatabase() because catalog
+     *           operations require Designer-level ACL
+     * @param dqlQuery the DQL query string
+     */
+    public DocumentCollection executeQuery(Database db, String dqlQuery) throws NotesException {
+        if (db == null) throw new NotesException(0, "DQLUtil: Database is null");
+        if (!db.isOpen()) throw new NotesException(0, "DQLUtil: Database is not open");
+        if (dqlQuery == null || dqlQuery.trim().isEmpty()) {
+            throw new NotesException(0, "DQLUtil: query is empty");
+        }
+
+        String dbPath = safeFilePath(db);
+
+        // Phase 1: Refresh + execute
+        DominoQuery dql = null;
+        try {
+            dql = db.createDominoQuery();
+            dql.setRefreshDesignCatalog(true);
+            DocumentCollection col = dql.execute(dqlQuery);
+            if (col == null) throw new NotesException(0, "DQL execute returned null");
+            return col;
+        } catch (NotesException firstError) {
+            if (!isCatalogMissingError(firstError)) {
+                throw rethrowWithContext(firstError, dbPath, dqlQuery);
+            }
+            System.out.println("DQL: catalog missing on [" + dbPath + "] — running Rebuild + retry");
+        } finally {
+            recycle(dql);
+        }
+
+        // Phase 2: Rebuild + retry (only reached for brand-new NSFs)
+        DominoQuery dqlRebuild = null;
+        try {
+            dqlRebuild = db.createDominoQuery();
+            dqlRebuild.setRebuildDesignCatalog(true);
+            DocumentCollection col = dqlRebuild.execute(dqlQuery);
+            if (col == null) throw new NotesException(0, "DQL execute returned null (after Rebuild)");
+            return col;
+        } catch (NotesException secondError) {
+            throw rethrowWithContext(secondError, dbPath, dqlQuery);
+        } finally {
+            recycle(dqlRebuild);
+        }
+    }
+
+    private static boolean isCatalogMissingError(NotesException ne) {
+        String text = ne.text;
+        return text != null && text.contains("needs to be cataloged via updall -e");
+    }
+
+    private static NotesException rethrowWithContext(NotesException ne, String dbPath, String query) {
+        String causeText = (ne.text != null) ? ne.text : "(no text)";
+        String enrichedMsg = String.format(
+            "DQL execute failed [%s] query=[%s] cause=[%s]", dbPath, query, causeText
+        );
+        NotesException rethrow = new NotesException(ne.id, enrichedMsg);
+        rethrow.setStackTrace(ne.getStackTrace());
+        return rethrow;
+    }
+
+    private static void recycle(DominoQuery dql) {
+        if (dql != null) {
+            try { dql.recycle(); } catch (NotesException ignore) {}
+        }
+    }
+
+    private static String safeFilePath(Database db) {
+        try { return db != null ? db.getFilePath() : "null"; }
+        catch (NotesException e) { return "<unable to get path>"; }
+    }
+}
+```
+
+SSJS caller:
+
+```javascript
+var db = sessionAsSigner.getDatabase("", "FCB/EForm.nsf");
+var util = new service.DQLUtil();
+var result = util.executeQuery(db, dqlQuery);
+```
 
 ### Version note: where the catalog lives
 
@@ -658,7 +868,9 @@ The DQL planner uses `Form = 'Order'` first (with view-index optimization if ava
 
 ## Common errors
 
-- **"No design catalog found"** — run `load updall -e` to build the catalog
+- **"No design catalog found"** — run `load updall -e` to build the catalog, or trigger it from app code via `setRebuildDesignCatalog(true)`
+- **"needs to be cataloged via updall -e"** — the NSF has never been catalogued. Refresh doesn't auto-bootstrap — catch and retry with `setRebuildDesignCatalog(true)`
+- **"您沒有權限執行此作業" (You don't have permission)** — catalog operations require Designer-level ACL. In XPages, switch to a Database opened via `sessionAsSigner.getDatabase()`
 - **"Field is not selectable in any view"** — DQL has no matching view and falls back to a full scan; add a view or mark the field with `$DQLField`
 
 ## Going further
