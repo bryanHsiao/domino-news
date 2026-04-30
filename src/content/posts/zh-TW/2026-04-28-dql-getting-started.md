@@ -551,15 +551,25 @@ Error filling node for @Year(@dt(ApplyDate)) = "2021"
 (Call hint: NSFCalls::NSFFormulaCompile, Core call #0)
 ```
 
-正確寫法分兩種，看你的意圖：
+正確寫法看兩件事：**意圖**（取年份 vs 區間比對）跟**`ApplyDate` 是哪種欄位**（真正的 date 還是字串）。
 
 **意圖 A：取 `ApplyDate` 的年份是不是 2021** —— 用 Formula Language
+
+如果 `ApplyDate` 是真正的 date 欄位：
 
 ```sql
 @formula('@Year(ApplyDate) = 2021')
 ```
 
-`ApplyDate` 本來就是 date 欄位，Formula 直接取 `@Year` 就好，**不用 `@dt` 轉換**。比較值用數字 `2021`，不用字串 `"2021"`（`@Year` 回傳數字，跟字串比會失敗）。
+如果 `ApplyDate` **是用字串存的**（舊 Notes app 很常這樣），要先用 Formula Language 的 `@TextToTime` 轉成日期再取年份：
+
+```sql
+@formula('@Year(@TextToTime(ApplyDate)) = 2021')
+```
+
+> 💡 **實測 tip（讀者回報）**：很多現場的 Notes 應用 `ApplyDate` 都是字串型別，直接 `@Year(ApplyDate)` 會失敗 —— `@TextToTime` 是必經的一步。字串格式要是 Notes 認得的（例如 `"2021/05/15"` 或 `"2021-05-15"`）`@TextToTime` 才能 parse 成功。
+
+兩種寫法的比較值都用**數字 `2021`** 而不是字串 `"2021"`（`@Year` 回傳數字，跟字串比會失敗）。
 
 **意圖 B：日期區間比對 + 用得上 view 索引** —— 改用 DQL 原生 `@dt`
 
@@ -567,7 +577,9 @@ Error filling node for @Year(@dt(ApplyDate)) = "2021"
 ApplyDate >= @dt('2021-01-01') and ApplyDate < @dt('2022-01-01')
 ```
 
-這個寫法**比 `@formula` 版快**，因為 DQL 原生條件能用 view 索引最佳化。能不用 `@formula` 就不用是常見原則（呼應前面的「原生粗篩、@formula 細篩」）。
+這個寫法**比 `@formula` 版快**，因為 DQL 原生條件能用 view 索引最佳化 —— **但前提是 `ApplyDate` 是真的 date 型別**。如果是字串欄位，DQL 原生比較會做字串比對而不是日期比對，結果可能不正確（除非你的字串剛好是 ISO 8601 這種 sortable 格式，字串排序才會等同日期排序）。
+
+能不用 `@formula` 就不用是常見原則（呼應前面的「原生粗篩、@formula 細篩」）。但對字串日期，現實上你可能只剩 `@formula('@Year(@TextToTime(...))') = 2021)` 這條路 —— **要走原生最佳化，欄位型別也得乾淨**。
 
 #### DQL 原生 `@` 函式速查
 

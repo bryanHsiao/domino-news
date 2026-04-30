@@ -561,15 +561,25 @@ Error filling node for @Year(@dt(ApplyDate)) = "2021"
 (Call hint: NSFCalls::NSFFormulaCompile, Core call #0)
 ```
 
-Two correct rewrites, depending on intent:
+The right rewrite depends on two things: **the intent** (extract the year vs range comparison) and **what `ApplyDate` actually is** (a real date field or a string).
 
 **Intent A: check whether `ApplyDate`'s year is 2021** — use Formula Language
+
+If `ApplyDate` is a true date field:
 
 ```sql
 @formula('@Year(ApplyDate) = 2021')
 ```
 
-`ApplyDate` is already a date field, so Formula's `@Year` reads it directly — **no `@dt` conversion needed.** Compare against the number `2021`, not the string `"2021"` (`@Year` returns a number; comparing to a string fails).
+If `ApplyDate` **is stored as a string** (very common in older Notes apps), you have to convert it with Formula's `@TextToTime` first:
+
+```sql
+@formula('@Year(@TextToTime(ApplyDate)) = 2021')
+```
+
+> 💡 **Field-tested (reader-reported)**: lots of real-world Notes apps store `ApplyDate` as a string. `@Year(ApplyDate)` directly fails on a string — `@TextToTime` is the missing step. The string format has to be one Notes recognises (e.g. `"2021/05/15"` or `"2021-05-15"`) for `@TextToTime` to parse.
+
+In both cases the comparison value is the **number `2021`**, not the string `"2021"` (`@Year` returns a number; comparing it to a string fails).
 
 **Intent B: do a date range comparison and let view indexes help** — use DQL native, drop `@formula` entirely
 
@@ -577,7 +587,9 @@ Two correct rewrites, depending on intent:
 ApplyDate >= @dt('2021-01-01') and ApplyDate < @dt('2022-01-01')
 ```
 
-This is **faster than the `@formula` version** because native DQL conditions can use view indexes. "If native syntax can express it, prefer native" is the general rule (echoing the optimization pattern below).
+This is **faster than the `@formula` version** because native DQL conditions can use view indexes — **but only if `ApplyDate` is actually a date field**. If it's a string, native DQL does a string comparison rather than a date comparison, and the result may be wrong unless your strings happen to be in a sortable format like ISO 8601 (where string ordering equals date ordering).
+
+"If native syntax can express it, prefer native" is the general rule (echoing the optimization pattern below) — but for string-stored dates, you may be stuck with `@formula('@Year(@TextToTime(...)) = 2021')`. **To get the native-optimization path, the field type also has to be clean.**
 
 #### DQL-native `@` function reference
 
