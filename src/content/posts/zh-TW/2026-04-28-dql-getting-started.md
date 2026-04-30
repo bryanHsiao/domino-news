@@ -268,22 +268,87 @@ Content-Type: application/json
 | 萬用字元 | `Author like 'B%'` |
 | 日期 | `Created >= @dt('2026-01-01')` |
 | 用視圖做基底（直接讀欄位）¹ | `'Customers'.Country = 'Taiwan'` |
-| 用視圖做基底（限縮範圍）² | `in ('Customers') and Country = 'Taiwan'` |
+| 用視圖做基底（限縮範圍） | `in ('Customers') and Country = 'Taiwan'` |
 
-> ¹ **`'view'.column = value` 語法的兩個前提條件**（容易踩雷）
->
-> 引用的 view 必須**同時**符合下面兩個條件，否則執行會直接噴錯（HCL 官方 [View column requirements](https://help.hcl-software.com/dom_designer/12.0.0/basic/dql_view_column.html)）：
->
-> 1. View 用 `Select @All` 作為 selection criteria
-> 2. 引用的欄位必須是 **collated**（任一條件成立即可）：
->    - View 的最左欄勾了「Sort order: Ascending」
->    - 該欄位本身勾了「Click on column header to sort: Ascending」
->
-> ² 不確定 view 設計是否符合 ¹ 的條件，或者 view 的設計權不在你手上 → 改用 `in ('viewname') and field = value` 比較保險。`in()` 形式只要 view 名稱在 Design Catalog 內就能用，不管欄位設定，代價是查詢規劃器可能退化成全表掃。
+¹ **重要陷阱**：`'view'.column` 有 silent filter 風險，**詳見下節，務必看完再用**。
+
+## 陷阱：`'view'.column` 的 silent filter（一定要看）
+
+`'view'.column = value` 看起來是「**用 view 的 column index 做查詢**」，實測 Domino 12 證實 —— **view 的 selection 條件會被當作隱性 filter 偷偷疊加到查詢結果上，不會噴錯，但會默默少回傳 doc**。
+
+這是 silent data loss bug：開發者不會收到錯誤訊息，count 對不對也不會主動檢查，問題會默默潛伏到客戶投訴「資料漏了」才被發現。
+
+### 實測情境
+
+view `Vtest` 的 selection 寫成這樣（很常見的 Notes 寫法，不是 `Select @All`）：
+
+```text
+SELECT Form="Ftest" & deleteFlag !="1"
+```
+
+DB 裡建 3 筆 doc：
+
+| Doc | 欄位 | 是否在 view 內 |
+|---|---|---|
+| A | `Form="Ftest"`, `deleteFlag=""` | ✅ 在 view 內 |
+| B | `Form="Ftest"`, `deleteFlag="1"` | ❌ 被 selection 排除 |
+| C | `Form="Other"` | ❌ 被 selection 排除 |
+
+跑兩個查詢：
+
+| 查詢 | 語意上應該回傳 | 實測 Count | 漏掉的 doc |
+|---|---|---|---|
+| `'Vtest'.Form = 'Ftest'` | A + B 共 **2 筆** | **1** | Doc B 被默默吃掉 |
+| `'Vtest'.Form = 'Other'` | C 共 **1 筆** | **0** | Doc C 被默默吃掉 |
+
+**沒有任何錯誤訊息、沒有警告**。Doc B / C 在 DB 裡好好的，但 DQL 裝作沒看到。
+
+### 為什麼會這樣
+
+`'view'.column` 在 DQL 內部的語意其實是：「**先用 view 的 selection 篩出範圍，再用 column index 在這個範圍內查 value**」。所以 view selection 自動成為查詢的一部分 —— 你寫的 query 條件之外，還會被偷偷加上 view 自己的 selection 條件。
+
+HCL 官方 [View column requirements](https://help.hcl-software.com/dom_designer/12.0.0/basic/dql_view_column.html) 寫「only additional requirement is the view must use Select @All」就是在規避這個問題：**只有 Select @All 才能保證 view 涵蓋整個 DB，column index 的語意才乾淨**。
+
+### 三種防範作法
+
+按可靠度排序：
+
+1. **改用 `in('viewname')` 語法**（推薦，零改動）
+
+   ```sql
+   in ('Vtest') and Form = 'Ftest'
+   ```
+
+   這個語法**不受 view selection 影響**，Form 條件由 DQL 自己評估每一筆 doc。代價是查詢規劃器可能退化成全表掃，但結果一定正確。
+
+2. **建立 DQL 專用 view**（一次性工程，最理想）
+
+   為 DQL 查詢建立**專屬的 index view**（命名建議用 `dql` 前綴或放進獨立的 `($DQL)` 類別），跟給 UI 看的 view 分開：
+   - selection 寫 `Select @All`
+   - 把要查的欄位都放上去
+   - 設好排序
+
+   這樣 `'dqlVtest'.Form = 'Ftest'` 就能既快速又語意正確。
+
+3. **裸欄位查詢**（讓 DQL 自己找索引）
+
+   ```sql
+   Form = 'Ftest'
+   ```
+
+   DQL 規劃器會自己找符合條件的 view 來用，找不到就全表掃。沒有 silent filter 風險，效能介於 #1 跟 #2 之間。
+
+### 順便：欄位 collation 是另一條規則
+
+除了 Select @All 之外，引用的欄位必須是 **collated**（任一條件成立即可）：
+- View 的最左欄勾了「Sort order: Ascending」
+- 該欄位本身勾了「Click on column header to sort: Ascending」
+
+這條規則 DQL 會強制（不符合會噴錯，不像 Select @All 是 silent filter）。
 
 ## 效能要點
 
-1. **盡量用視圖索引**：`'ViewName'.Field = ...` 比裸欄位快（前提：view 用 `Select @All` 且該欄位 collated；不符合就改用 `in ('ViewName') and Field = ...` 至少限縮掃描範圍）
+1. **盡量用視圖索引**：`'ViewName'.Field = ...` 比裸欄位快 —— **但前提是 view 用 `Select @All` 且欄位 collated**，不然會有 silent filter 風險（見上一節）。view 設計不滿足就改用 `in ('ViewName') and Field = ...` 至少限縮掃描範圍
 2. **避免前置萬用字元（leading wildcard）**：`like '%abc'` 無法用索引
 3. **打開執行計畫觀察**：`dq.Explain = True` 印出實際執行路徑
 4. **取少量結果模式**：要少量結果用 `Execute(query, "", 0, 10)` 限制筆數

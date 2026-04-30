@@ -279,22 +279,85 @@ Response:
 | Wildcard | `Author like 'B%'` |
 | Date | `Created >= @dt('2026-01-01')` |
 | View as base — read column directly¹ | `'Customers'.Country = 'Taiwan'` |
-| View as base — scope query² | `in ('Customers') and Country = 'Taiwan'` |
+| View as base — scope query | `in ('Customers') and Country = 'Taiwan'` |
 
-> ¹ **Two prerequisites for the `'view'.column = value` syntax** (easy to trip on)
->
-> The view you reference must satisfy **both** conditions below or the query errors out (HCL [View column requirements](https://help.hcl-software.com/dom_designer/12.0.0/basic/dql_view_column.html)):
->
-> 1. View uses `Select @All` as its selection criteria
-> 2. The referenced column is **collated** — either of these counts:
->    - View's leftmost column has "Sort order: Ascending" checked
->    - That column itself has "Click on column header to sort: Ascending" checked
->
-> ² Not sure the view design meets ¹, or the view design isn't yours to control? Use `in ('viewname') and field = value` instead. The `in()` form only requires the view name to exist in the Design Catalog — column settings don't matter, at the cost that the planner may fall back to an NSF scan.
+¹ **Important pitfall**: `'view'.column` has a silent-filter risk — **read the next section in full before using this syntax**.
+
+## Pitfall: the silent filter in `'view'.column` (must read)
+
+`'view'.column = value` looks like "use the view's column index to find docs", but Domino 12 testing confirms — **the view's selection formula is silently merged in as an additional filter on the result. No error is raised, but documents quietly disappear from the result.**
+
+This is a silent data-loss bug: the developer gets no error, the count looks plausible, the problem stays buried until a customer reports "we're missing data."
+
+### What we tested
+
+A view called `Vtest` with this selection (very common Notes-style, **not** `Select @All`):
+
+```text
+SELECT Form="Ftest" & deleteFlag !="1"
+```
+
+Three documents in the NSF:
+
+| Doc | Fields | In the view? |
+|---|---|---|
+| A | `Form="Ftest"`, `deleteFlag=""` | ✅ in view |
+| B | `Form="Ftest"`, `deleteFlag="1"` | ❌ excluded by selection |
+| C | `Form="Other"` | ❌ excluded by selection |
+
+Two queries:
+
+| Query | What it should return | Actual count | Lost doc |
+|---|---|---|---|
+| `'Vtest'.Form = 'Ftest'` | A + B = **2** | **1** | Doc B silently dropped |
+| `'Vtest'.Form = 'Other'` | C = **1** | **0** | Doc C silently dropped |
+
+**No error, no warning.** Docs B and C are sitting in the NSF perfectly fine; DQL just pretends not to see them.
+
+### Why this happens
+
+Internally `'view'.column` means "**filter to docs that satisfy the view's selection, then look up `value` in the column index within that scope**". So the view's selection becomes part of the query — on top of whatever conditions you wrote, the view's selection sneaks in as an extra filter.
+
+The HCL [View column requirements](https://help.hcl-software.com/dom_designer/12.0.0/basic/dql_view_column.html) doc requires `Select @All` for exactly this reason: **only `Select @All` guarantees the view spans the whole DB, which is the only way the column index has clean semantics.**
+
+### Three defenses, ranked
+
+1. **Switch to `in('viewname')` syntax** (recommended, zero design changes)
+
+   ```sql
+   in ('Vtest') and Form = 'Ftest'
+   ```
+
+   This form **isn't affected by view selection** — the `Form` condition is evaluated by DQL on each candidate doc. The cost is the planner may fall back to an NSF scan, but the result is always correct.
+
+2. **Build dedicated DQL index views** (one-time engineering, ideal long term)
+
+   Create **separate index views for DQL** (naming convention: `dql` prefix or a hidden `($DQL)` category), distinct from the views your UI uses:
+   - selection: `Select @All`
+   - put the columns you query on
+   - sort order configured
+
+   `'dqlVtest'.Form = 'Ftest'` is then both fast and semantically correct.
+
+3. **Bare-field query** (let DQL pick an index)
+
+   ```sql
+   Form = 'Ftest'
+   ```
+
+   The planner will look for a view with a collated `Form` column; failing that, it scans the NSF. No silent-filter risk; perf sits between options 1 and 2.
+
+### Sidebar: column collation is a separate rule
+
+Beyond the `Select @All` requirement, the referenced column must be **collated** (either condition counts):
+- View's leftmost column has "Sort order: Ascending" checked
+- The column itself has "Click on column header to sort: Ascending" checked
+
+Unlike `Select @All`, this rule IS enforced — DQL errors out if the column isn't collated, no silent filter.
 
 ## Performance tips
 
-1. **Use a view as the base** — `'ViewName'.Field = ...` is faster than a bare field (prerequisites: view uses `Select @All` and the column is collated; if those don't hold, fall back to `in ('ViewName') and Field = ...` to at least scope the scan)
+1. **Use a view as the base** — `'ViewName'.Field = ...` is faster than a bare field, **provided the view uses `Select @All` and the column is collated**, otherwise you're exposed to the silent-filter pitfall (see above). If the view design doesn't satisfy that, fall back to `in ('ViewName') and Field = ...` to at least scope the scan
 2. **Avoid leading wildcards** — `like '%abc'` cannot use an index
 3. **Turn on `Explain`** — `dq.Explain = True` shows the actual execution path
 4. **First-hits mode** — when you only need a few results, use `Execute(query, "", 0, 10)` to cap the count
