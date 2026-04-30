@@ -20,6 +20,8 @@ sources:
     url: "https://www.openntf.org/main.nsf/project.xsp?r=project/DQL+Explorer"
   - title: "NotesDominoQuery class (LotusScript) — HCL Domino 14.0 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDOMINOQUERY_CLASS.html"
+  - title: "Formula Language in DQL — HCL Domino 14.0 Designer Help"
+    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_formulalanguage.html"
 cover: "/covers/dql-getting-started.png"
 ---
 
@@ -292,6 +294,7 @@ Response:
 | Date | `Created >= @dt('2026-01-01')` |
 | View as base — read column directly¹ | `'Customers'.Country = 'Taiwan'` |
 | View as base — scope query | `in ('Customers') and Country = 'Taiwan'` |
+| Embed Formula Language | `@formula('@Year(orderDate) = 2026')` |
 
 ¹ When the view's selection isn't `Select @All`, DQL scopes the result to whatever docs the view's selection has filtered in — see the section below.
 
@@ -491,6 +494,73 @@ The view name, the column programmatic name, and the value comparison — all th
 Accent-insensitivity is a bonus — `'café'` matches `'cafe'` and vice versa, useful for European-language data.
 
 ⚠️ **If you actually need a case-sensitive comparison**, DQL's `=` doesn't have a case-sensitive variant — you'll need to filter the results in app code (LotusScript `StrCompare`, Java string compare, etc.) after fetching.
+
+## Advanced: embedding Formula Language in DQL (`@formula` clause)
+
+One of the most common questions from Notes developers: "Can DQL use the `@Functions` I already know?" — yes. DQL provides `@formula(...)` (also writable as `@fl()` or `@FORMULA()`, case-insensitive) to **embed a Formula Language expression** into a query.
+
+### Case study: find documents whose `docno` starts with `056`
+
+Say `docno` looks like `"056123456789"` and you want all documents whose first three characters are `056`.
+
+Two ways:
+
+```sql
+-- Option A: embed @Left via @formula
+@formula('@Left(docno;3) = "056"')
+
+-- Option B: native DQL like + wildcard (recommended)
+docno like '056%'
+```
+
+Same result, **very different performance**:
+
+| Form | Can use a view index? | Speed |
+|---|---|---|
+| `docno like '056%'` | ✅ Yes (if there's a collated `docno` column) | Fast |
+| `@formula('@Left(docno;3) = "056"')` | ❌ Always falls back to NSF summary scan | Slow |
+
+**`@formula` conditions don't get optimized by the view index.** Use native `like` / `contains` / `=` / `in` / `between` whenever they can express the predicate. Reach for `@formula` only when native syntax can't.
+
+### `@formula` syntax notes
+
+```sql
+@formula('@Left(docno;3) = "056"')
+```
+
+Three details that catch people out:
+
+1. The whole formula is wrapped in **single quotes**
+2. Strings inside the formula use **double quotes** (avoiding the outer single-quote conflict)
+3. Function arguments are separated by **`;`** (Formula Language convention, not commas)
+
+### When you actually need `@formula`
+
+Conditions that native DQL syntax can't express:
+
+```sql
+@formula('@Year(orderDate) = 2026')              -- date functions
+@formula('@Length(content) > 1000')              -- string length
+@formula('@Modulo(amount; 100) = 0')             -- numeric arithmetic
+@formula('@Matches(title; "[A-Z]??-2026-*")')    -- pattern matching
+```
+
+### Optimization pattern: native pre-filter + `@formula` fine-filter
+
+`@formula` and native DQL conditions compose with `and` / `or`. The recommended pattern: **let native conditions do the coarse filter and `@formula` do the fine filter**.
+
+```sql
+Form = 'Order' and @formula('@Year(orderDate) = 2026')
+```
+
+The DQL planner uses `Form = 'Order'` first (with view-index optimization if available) to narrow the candidate set, then applies the `@formula` predicate on what's left. Much faster than throwing a single `@formula` at the whole NSF.
+
+### Restrictions (HCL [Formula Language in DQL](https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_formulalanguage.html))
+
+- Each `@formula` text term is capped at **256 bytes**
+- Not every `@Function` is supported — HCL lists a 130+ supported subset (`@Left`, `@Year`, `@Contains`, `@Matches`, `@Length`, `@Modulo`, `@Lowercase`, etc. — most common ones are in)
+- DQL doesn't validate Formula syntax before executing — errors surface only at runtime
+- Substitution variables (`?varname`) don't work *inside* `@formula`, but they do work *outside* the clause: `@fl('@doclength') > ?doclengthval`
 
 ## Performance tips
 
