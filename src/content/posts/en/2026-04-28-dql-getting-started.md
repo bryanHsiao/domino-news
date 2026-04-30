@@ -463,6 +463,35 @@ LotusScript string literals don't escape `\` (the way to embed a quote is `""` d
 
 Real-world report: an engineer hit this in Node.js / JSON and wrote a single `\` in source. JSON parsing ate it, DQL never saw any `\`, and the view name turned into `(personalpendingSignDoc)` instead of the real `(personal\pendingSignDoc)`.
 
+## DQL is case-insensitive (and accent-insensitive)
+
+The HCL [DQL syntax](https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_syntax.html) doc states explicitly:
+
+> "Text string evaluation is **case insensitive** and **accent insensitive**."
+
+Real-world behavior:
+
+| Element | Behavior | Source |
+|---|---|---|
+| String value comparisons (also accent-insensitive) | Case-insensitive | Official docs |
+| View name in `'view'.column` | Case-insensitive | Verified by testing |
+| Column programmatic name in `'view'.column` | Case-insensitive | Verified by testing |
+| Keywords (`and` / `or` / `in` / `contains` / `like`) | Case-insensitive | Notes/SQL convention |
+
+All three of these are equivalent:
+
+```sql
+'vwMyJob'.wdocAuthor = 'CN=user01/O=TheNet'
+'VWMYJOB'.WDOCAUTHOR = 'cn=USER01/o=thenet'
+'vwmyjob'.WdocAuthor = 'cn=user01/o=thenet'
+```
+
+The view name, the column programmatic name, and the value comparison — all three are case-insensitive.
+
+Accent-insensitivity is a bonus — `'café'` matches `'cafe'` and vice versa, useful for European-language data.
+
+⚠️ **If you actually need a case-sensitive comparison**, DQL's `=` doesn't have a case-sensitive variant — you'll need to filter the results in app code (LotusScript `StrCompare`, Java string compare, etc.) after fetching.
+
 ## Performance tips
 
 1. **Use a view as the base** — `'ViewName'.Field = ...` is faster than a bare field, but note that when the view isn't `Select @All`, results are scoped to whatever the view selection filters in (see the dedicated section above). If the view design isn't yours to change, fall back to `in ('ViewName') and Field = ...`
@@ -475,7 +504,6 @@ Real-world report: an engineer hit this in Node.js / JSON and wrote a single `\`
 
 - **"No design catalog found"** — run `load updall -e` to build the catalog
 - **"Field is not selectable in any view"** — DQL has no matching view and falls back to a full scan; add a view or mark the field with `$DQLField`
-- **Case sensitivity** — DQL is case-sensitive by default; normalize to lower-case at write time if you need case-insensitive matching
 
 ## Going further
 
