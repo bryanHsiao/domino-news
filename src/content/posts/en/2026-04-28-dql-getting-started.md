@@ -74,9 +74,21 @@ Form in ('Invoice', 'CreditNote') and Status = 'Open'
 Subject contains 'Domino' and Author like 'Bryan%'
 ```
 
-## Enable DQL: build the Design Catalog — skip this and DQL blows up
+## Enable DQL: build the Design Catalog — required when your query names a view
 
-This section is the #1 DQL gotcha, so the punchline first: **DQL relies entirely on the per-NSF Design Catalog to resolve view names and column names (the `'viewname'.column` and `in ('view1', 'view2')` syntaxes). Without the catalog, DQL has no way to know which views exist in this NSF, what they're called, or what columns they expose.**
+Let's clarify when the Design Catalog is strictly required before getting into how to build it.
+
+**Bottom line up front**:
+
+| Your query shape | Design Catalog needed? |
+|---|---|
+| `Form = 'Customer'` (bare-field query) | ❌ No. DQL falls back to a full NSF scan — slow but works |
+| `'Customers'.Country = 'Taiwan'` (view name + column) | ✅ Required, otherwise errors out |
+| `in ('Customers') and Country = 'Taiwan'` (scoped by view) | ✅ Required, otherwise errors out |
+
+**As soon as your query mentions a view name** (the single-quoted form), you need the Design Catalog — because that catalog is DQL's **only** way to know what view names exist and what columns each view exposes. Without it, DQL can't tell what `'Customers'` even refers to.
+
+If your query never references a view name and just uses bare-field conditions like `Form = 'X' and Total > 100`, DQL runs without the catalog — it just falls back to a full NSF scan. Slow, but no error.
 
 The classic trap: a developer adds a view called `Vtest` and tries to scope a query to it using the documented syntax:
 
@@ -360,6 +372,49 @@ Beyond the `Select @All` requirement, the referenced column must be **collated**
 - The column itself has "Click on column header to sort: Ascending" checked
 
 Unlike `Select @All`, this rule IS enforced — DQL errors out if the column isn't collated, no silent filter.
+
+## Two more syntax gotchas (the kind you only find by hitting them)
+
+### 1. Comparison operators require whitespace on both sides
+
+The DQL parser is stricter about token whitespace than SQL parsers ——
+
+| Form | Result |
+|---|---|
+| `Form='Customer'` | ❌ Parser error |
+| `Form = 'Customer'` | ✅ Works |
+
+Treat **`=`, `<`, `>`, `<=`, `>=`, `!=`** as always needing a space on each side.
+
+This trips up anyone coming from SQL — `Form='Customer'` and `Form = 'Customer'` are interchangeable in SQL parsers, but not in DQL.
+
+### 2. Backslash (`\`) in view names needs escaping
+
+Notes view names can contain backslashes for hierarchical categorization, e.g. `Customers\Active`. Writing this raw in DQL trips the parser's escape handling — you have to double the backslash:
+
+| Form | Result |
+|---|---|
+| `in ('Customers\Active')` | ❌ Parser treats `\A` as an escape sequence |
+| `in ('Customers\\Active')` | ✅ Works |
+
+Same for the `'view'.column` syntax:
+
+```sql
+'Customers\\Active'.Country = 'Taiwan'
+```
+
+⚠️ **If the query lives in a LotusScript string**, LotusScript string literals don't process `\` as an escape (they pass it through verbatim). So writing `\\` in LotusScript sends `\\` to DQL, which DQL then parses as a single `\`:
+
+```vb
+Dim query As String
+query = "in ('Customers\\Active') and Country = 'Taiwan'"
+'                       ↑↑
+'                       LotusScript passes this through verbatim
+'                       DQL parses "\\" as "\"
+Set result = dq.Execute(query)
+```
+
+For languages that DO escape `\` in string literals (Java, Node.js, etc.), you need `\\\\` at the source level: language layer turns `\\\\` into the string value `\\`, DQL receives `\\`, DQL parses it as `\`.
 
 ## Performance tips
 

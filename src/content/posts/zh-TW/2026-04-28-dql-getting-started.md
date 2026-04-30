@@ -63,9 +63,21 @@ Form in ('Invoice', 'CreditNote') and Status = 'Open'
 Subject contains 'Domino' and Author like 'Bryan%'
 ```
 
-## 啟用 DQL：建立 Design Catalog（設計目錄）—— 不做就會炸
+## 啟用 DQL：建立 Design Catalog（設計目錄）—— 用到 view 名稱就一定要
 
-這一節是踩雷重災區，先講結論：**DQL 要解析 view 名稱、欄位名稱（`'viewname'.column` 或 `in ('view1', 'view2')` 語法），完全靠每個 NSF 內部的 Design Catalog（設計目錄）。沒有 catalog，DQL 就不知道這個 NSF 裡有哪些 view、view 叫什麼名字、view 裡有哪些欄位。**
+這一節先把「Design Catalog 到底什麼時候非要不可」釐清，再講怎麼建。
+
+**結論先講**：
+
+| 你的 query 形式 | 需要 Design Catalog 嗎？ |
+|---|---|
+| `Form = 'Customer'`（裸欄位查詢） | ❌ 不需要。DQL 會直接掃整個 NSF，效能差但能跑 |
+| `'Customers'.Country = 'Taiwan'`（view 名稱 + 欄位） | ✅ 必須有，否則噴錯 |
+| `in ('Customers') and Country = 'Taiwan'`（用 view 限縮範圍） | ✅ 必須有，否則噴錯 |
+
+**只要 query 裡出現 view 名稱**（單引號包起來的那種），就一定要 Design Catalog —— 因為 catalog 是 DQL **唯一**認得 view 名稱、view 裡有哪些欄位的管道。沒 catalog，DQL 不知道你寫的 `'Customers'` 是什麼鬼。
+
+如果你的 query 完全不引用 view 名稱、純粹寫 `Form = 'X' and Total > 100` 這種裸欄位條件，DQL 還是能跑 —— 只是退化成 NSF 全表掃描，效能差而已，不會噴錯。
 
 最常見的踩雷情境：開發者新增了一個叫 `Vtest` 的 view，想用下面這段官方範例語法把查詢限定在這個 view：
 
@@ -351,6 +363,49 @@ HCL 官方 [View column requirements](https://help.hcl-software.com/dom_designer
 - 該欄位本身勾了「Click on column header to sort: Ascending」
 
 這條規則 DQL 會強制（不符合會噴錯，不像 Select @All 是 silent filter）。
+
+## 語法上的兩個小雷（實測踩到才會發現）
+
+### 1. 比較運算子兩邊一定要有空白
+
+DQL parser 對 token 之間的空白比 SQL parser 嚴格 ——
+
+| 寫法 | 結果 |
+|---|---|
+| `Form='Customer'` | ❌ Parser 報錯 |
+| `Form = 'Customer'` | ✅ 正常 |
+
+**`=`、`<`、`>`、`<=`、`>=`、`!=`** 都建議當作「兩邊各留一個空白」處理比較保險。
+
+從 SQL 背景過來的人最容易踩這個 —— SQL 的 `Form='Customer'` 跟 `Form = 'Customer'` parser 都收，DQL 不收。
+
+### 2. View 名稱含反斜線（`\`）要 escape
+
+Notes view 名稱可以有反斜線做階層分類，例如 `Customers\Active`。直接寫進 DQL 會被 parser 當成 escape 序列處理，要把 `\` 改成 `\\`：
+
+| 寫法 | 結果 |
+|---|---|
+| `in ('Customers\Active')` | ❌ Parser 把 `\A` 當 escape 處理 |
+| `in ('Customers\\Active')` | ✅ 正常 |
+
+`'view'.column` 語法一樣：
+
+```sql
+'Customers\\Active'.Country = 'Taiwan'
+```
+
+⚠️ **如果 query 是放在 LotusScript 字串裡**，因為 LotusScript 的字串 literal 不對 `\` 做 escape（直接傳出去），所以 LotusScript 寫一個 `\\`，DQL parser 就收到 `\\`，正好對應到一個 `\`。也就是：
+
+```vb
+Dim query As String
+query = "in ('Customers\\Active') and Country = 'Taiwan'"
+'                       ↑↑
+'                       LotusScript 不 escape，原封不動傳給 DQL
+'                       DQL parse "\\" → "\"
+Set result = dq.Execute(query)
+```
+
+如果 query 來自 Java / Node.js 等會對 `\` 做 escape 的語言，就要在那層先寫 `\\\\`（語言 escape 兩次：語言層 `\\\\` → 字串值 `\\` → DQL 收到 `\\` → DQL parse 成 `\`）。
 
 ## 效能要點
 
