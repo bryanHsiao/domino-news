@@ -27,7 +27,68 @@ async function fetchWithTimeout(url: string, init: RequestInit): Promise<Respons
   }
 }
 
+/**
+ * Hosts that serve a single-page app: every URL returns HTTP 200 with the
+ * SPA shell. If the route doesn't match a real document, the SPA renders a
+ * "Page Not Found" view inside that 200 — soft 404. We need to GET the body
+ * and check the title to know if it's a real page.
+ *
+ * help.hcl-software.com is the headline offender (HCL Domino docs). Add
+ * other SPAs here when we cite them.
+ */
+const SPA_HOSTS_NEED_TITLE_CHECK = new Set(['help.hcl-software.com']);
+const SPA_404_TITLE_PATTERNS: RegExp[] = [
+  /404\s*Page/i, // HCL: "<title>HCL Software 404 Page</title>"
+  /Page\s*Not\s*Found/i,
+];
+
+async function deepCheckSpa404(url: string): Promise<UrlCheckResult | null> {
+  const headers = { 'User-Agent': UA, Accept: 'text/html,*/*' };
+  try {
+    const res = await fetchWithTimeout(url, {
+      method: 'GET',
+      redirect: 'follow',
+      headers,
+    });
+    if (res.status >= 400) {
+      return { url, status: res.status, ok: false };
+    }
+    const body = await res.text();
+    const titleMatch = body.match(/<title>([^<]+)<\/title>/i);
+    const title = titleMatch?.[1]?.trim() ?? '';
+    const isSoft404 = SPA_404_TITLE_PATTERNS.some((re) => re.test(title));
+    if (isSoft404) {
+      return {
+        url,
+        status: res.status,
+        ok: false,
+        reason: `SPA soft-404 (page title: "${title}")`,
+      };
+    }
+    return { url, status: res.status, ok: true };
+  } catch (err) {
+    return {
+      url,
+      status: 0,
+      ok: false,
+      reason: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
+
 export async function verifyUrl(url: string): Promise<UrlCheckResult> {
+  // SPA hosts need a body-level check because every path returns 200.
+  let host = '';
+  try {
+    host = new URL(url).hostname.toLowerCase();
+  } catch {
+    /* fall through to normal check */
+  }
+  if (SPA_HOSTS_NEED_TITLE_CHECK.has(host)) {
+    const r = await deepCheckSpa404(url);
+    if (r) return r;
+  }
+
   const headers = { 'User-Agent': UA, Accept: '*/*' };
   try {
     let res = await fetchWithTimeout(url, {

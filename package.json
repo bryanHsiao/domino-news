@@ -11,7 +11,8 @@
     "astro": "astro",
     "generate:article": "tsx scripts/generate-article.ts",
     "backfill:covers": "tsx scripts/backfill-covers.ts",
-    "generate:hero": "tsx scripts/generate-hero-banner.ts"
+    "generate:hero": "tsx scripts/generate-hero-banner.ts",
+    "check:urls": "tsx scripts/check-post-urls.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",
