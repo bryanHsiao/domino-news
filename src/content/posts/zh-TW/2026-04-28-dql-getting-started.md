@@ -305,9 +305,15 @@ DB 裡建 3 筆 doc：
 
 ### 為什麼會這樣
 
-`'view'.column` 在 DQL 內部的語意其實是：「**先用 view 的 selection 篩出範圍，再用 column index 在這個範圍內查 value**」。所以 view selection 自動成為查詢的一部分 —— 你寫的 query 條件之外，還會被偷偷加上 view 自己的 selection 條件。
+更精確的講法是：DQL **並不是**在你的查詢上「偷加 filter」，它做的事情其實是 **直接使用 Notes view 的 column index** —— 而 Notes view 的 column index 從建立的那一刻就只包含「符合 selection 條件」的 doc。DQL 用了這個 index，自然只看得到那些 doc，被 selection 排除的就消失了。
+
+換句話說，這不是 DQL 多做了什麼隱藏動作，而是 **「DQL 直接拿 Notes view 既有的 index 來用」這個務實設計選擇的必然後果** —— HCL 選擇複用既有 view index（拿到 Notes 引擎現成的速度），代價就是繼承 view selection 的副作用。
 
 HCL 官方 [View column requirements](https://help.hcl-software.com/dom_designer/12.0.0/basic/dql_view_column.html) 寫「only additional requirement is the view must use Select @All」就是在規避這個問題：**只有 Select @All 才能保證 view 涵蓋整個 DB，column index 的語意才乾淨**。
+
+> 🔬 **實測補充（Domino 12）**：runtime **並沒有強制檢查** view 必須是 Select @All —— 不是 Select @All 也能正常執行 `'view'.column` 查詢，沒有錯誤、沒有警告。實際發生的事情是：**DQL 會以該 view selection 篩出來的 doc 為範圍**做查詢。這就是為什麼官方文件用「requirement」這個詞，但實作沒擋 —— 不是疏漏，是底層 Notes view index 架構的本質，HCL 沒辦法強制（除非另蓋一套 DQL 專用的全表 column store）。
+>
+> 結論：**官方文件那句「require Select @All」要當「強烈建議」讀，不是「不寫會被擋」**。不寫不會錯，但會默默漏 doc。
 
 ### 三種防範作法
 

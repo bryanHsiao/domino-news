@@ -316,9 +316,15 @@ Two queries:
 
 ### Why this happens
 
-Internally `'view'.column` means "**filter to docs that satisfy the view's selection, then look up `value` in the column index within that scope**". So the view's selection becomes part of the query — on top of whatever conditions you wrote, the view's selection sneaks in as an extra filter.
+The more accurate framing: DQL **isn't** secretly adding a filter to your query — it **uses the Notes view's column index directly**, and a Notes view's column index by definition only contains the docs that satisfy the view's selection formula. DQL reads from that index, so it only sees those docs; anything excluded by the selection is invisible.
+
+In other words, this isn't DQL doing something behind your back — it's **the inevitable consequence of the pragmatic choice to reuse the existing Notes view index** instead of building a separate DQL-only column store. HCL gets the speed of the existing Notes engine for free; the trade-off is inheriting the side effects of view selection.
 
 The HCL [View column requirements](https://help.hcl-software.com/dom_designer/12.0.0/basic/dql_view_column.html) doc requires `Select @All` for exactly this reason: **only `Select @All` guarantees the view spans the whole DB, which is the only way the column index has clean semantics.**
+
+> 🔬 **Live test note (Domino 12)**: the runtime does **not** actually enforce the `Select @All` rule — `'view'.column` queries run fine against views with any selection formula, no error, no warning. What actually happens is **DQL operates against the docs that the view's selection has filtered in**. That's why the docs say "requirement" but the implementation doesn't block it — it's not an oversight, it's the nature of the underlying Notes view index, which HCL can't enforce around (short of building a separate DQL-only column store).
+>
+> Bottom line: **read the official "require Select @All" as a strong recommendation, not a runtime check.** Skip it and the query won't fail — it'll just silently miss docs.
 
 ### Three defenses, ranked
 
