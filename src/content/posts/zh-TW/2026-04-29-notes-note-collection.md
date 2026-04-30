@@ -199,6 +199,56 @@ End ForAll
 
 順帶一提：`db.Views` **包含資料夾**（folder 是 view 的特化）。要嚴格只要視圖、不要資料夾，用 `view.IsFolder` 過濾，或方法 A 只開 `SelectViews=True`（資料夾走獨立的 `SelectFolders` 旗標）。
 
+## 實戰範例 3：取資料文件（可以做，但通常不該這樣寫）
+
+NotesNoteCollection **可以**用來抓資料文件 —— 開 `SelectDocuments = True` 就行：
+
+```lotusscript
+Set nc = db.CreateNoteCollection(False)
+nc.SelectDocuments = True       ' 只開資料文件
+Call nc.BuildCollection()
+
+noteID = nc.GetFirstNoteID()
+Do Until noteID = ""
+    Set doc = db.GetDocumentByID(noteID)
+    Print doc.UniversalID & " | Form=" & doc.Form(0)
+    noteID = nc.GetNextNoteID(noteID)
+Loop
+```
+
+或者用快捷方法 `nc.SelectAllDataNotes(True)` 一次設好所有「資料相關」旗標。
+
+但是 —— **通常你不會這樣寫取資料**。標準作法各有更短的路：
+
+| 需求 | 標準作法 | 為什麼比 NotesNoteCollection 好 |
+|---|---|---|
+| 拿全部資料文件 | `db.AllDocuments` | 一行就好；直接回 `NotesDocumentCollection`，不用再 `GetDocumentByID` |
+| 條件查詢 | DQL（`NotesDominoQuery`），結果再用 [NQRP](/domino-news/posts/notes-query-results-processor) 處理 | 接近 SQL 語法，引擎自動用索引 |
+| 公式選取 | `db.Search(formula, ...)` | 直接吃 `@Formula` |
+| 走某個視圖的所有條目 | [`NotesViewNavigator`](/domino-news/posts/notes-view-navigator) 或 `view.AllEntries` | 可同時拿到視圖欄位等中介資料 |
+
+### NotesNoteCollection 取資料的甜蜜點
+
+它在以下三種情境才會贏過上面的標準作法：
+
+1. **混合一次撈：資料 + 設計** —— 例如「過去 7 天改過的所有 note（含資料、視圖、代理）」做稽核或備份
+   ```lotusscript
+   Call nc.SelectAllNotes(True)
+   nc.SinceTime = New NotesDateTime(Now - 7)
+   Call nc.BuildCollection()
+   ```
+2. **配合 `NotesDXLExporter`** —— 想連同資料一起匯出做版本控制
+3. **需要 Note ID 字串而非 NotesDocument 物件** —— 寫工具或寫日誌時直接記 NoteID
+
+### 一個小細節
+
+`SelectDocuments = True` **不會**包含：
+
+- 刪除存根（deletion stubs）
+- 衝突文件（conflict documents）的處理也跟 `NotesDocumentCollection` 略有不同
+
+要做「完整資料庫稽核」需要另外處理這些邊界情況。
+
 ## 最常用的場景：DXL 匯出
 
 `NotesNoteCollection` 在實務上最常見的用途是搭配 [`NotesDXLExporter`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDXLEXPORTER_CLASS.html)：

@@ -199,6 +199,56 @@ Trade-offs:
 
 One subtle point: `db.Views` **includes folders** (a folder is a specialised view). To strictly exclude folders, filter with `view.IsFolder`, or use Method A with `SelectViews=True` only — folders have their own `SelectFolders` flag.
 
+## Worked example 3: pulling data documents (you can, but you usually shouldn't)
+
+`NotesNoteCollection` **can** harvest data documents — just turn on `SelectDocuments`:
+
+```lotusscript
+Set nc = db.CreateNoteCollection(False)
+nc.SelectDocuments = True       ' data documents only
+Call nc.BuildCollection()
+
+noteID = nc.GetFirstNoteID()
+Do Until noteID = ""
+    Set doc = db.GetDocumentByID(noteID)
+    Print doc.UniversalID & " | Form=" & doc.Form(0)
+    noteID = nc.GetNextNoteID(noteID)
+Loop
+```
+
+Or use the bulk preset `nc.SelectAllDataNotes(True)` to flip every data-related flag at once.
+
+But — **this isn't usually how you reach for data**. Each standard idiom has a shorter path:
+
+| Need | Standard idiom | Why it beats `NotesNoteCollection` |
+|---|---|---|
+| All data documents | `db.AllDocuments` | One line; returns `NotesDocumentCollection` directly, no `GetDocumentByID` round-trip |
+| Conditional query | DQL (`NotesDominoQuery`), then [NQRP](/domino-news/en/posts/notes-query-results-processor) for post-processing | SQL-like syntax; the engine uses indexes automatically |
+| Formula selection | `db.Search(formula, ...)` | Native `@Formula` input |
+| Walking a view's entries | [`NotesViewNavigator`](/domino-news/en/posts/notes-view-navigator) or `view.AllEntries` | Gives you the view's own column metadata |
+
+### Where NotesNoteCollection actually beats them for data
+
+There are three situations where it wins:
+
+1. **Mixed harvest: data + design in one pass** — e.g. "every note modified in the last 7 days, including views and agents" for an audit or backup
+   ```lotusscript
+   Call nc.SelectAllNotes(True)
+   nc.SinceTime = New NotesDateTime(Now - 7)
+   Call nc.BuildCollection()
+   ```
+2. **Feeding `NotesDXLExporter`** — when you want data plus design exported together for version control
+3. **Note IDs instead of `NotesDocument` objects** — writing tooling or audit logs that just need the IDs
+
+### One subtlety
+
+`SelectDocuments = True` does **not** include:
+
+- Deletion stubs
+- Conflict documents are handled slightly differently from `NotesDocumentCollection`
+
+If you're doing a "complete database audit" you'll need to handle those edge cases separately.
+
 ## The most common real use: DXL export
 
 In practice, the dominant use case for `NotesNoteCollection` is feeding [`NotesDXLExporter`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDXLEXPORTER_CLASS.html):
