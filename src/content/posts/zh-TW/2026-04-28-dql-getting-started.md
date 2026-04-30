@@ -372,40 +372,71 @@ DQL parser 對 token 之間的空白比 SQL parser 嚴格 ——
 
 | 寫法 | 結果 |
 |---|---|
-| `Form='Customer'` | ❌ Parser 報錯 |
-| `Form = 'Customer'` | ✅ 正常 |
+| `wdocAuthor='CN=user01/O=TheNet'` | ❌ Parser 報錯 |
+| `wdocAuthor = 'CN=user01/O=TheNet'` | ✅ 正常 |
 
-**`=`、`<`、`>`、`<=`、`>=`、`!=`** 都建議當作「兩邊各留一個空白」處理比較保險。
+不加空白時的實際錯誤訊息（看起來會讓人很困惑）：
+
+```text
+Domino Query execution error:
+Query is not understandable -  語法錯誤   - 必須有至少一個運算子
+
+'(個人\待簽核文件)'.wdocAuthor='CN=user01/O=TheNet'
+
+(Call hint: OSCalls::OSLocalAllc, Core call #0)
+```
+
+「必須有至少一個運算子」這句訊息誤導性很強 —— `=` 明明就在那裡，但 DQL tokenizer 用空白切 token，沒有空白就把 `wdocAuthor='CN=user01/O=TheNet'` 整段當成一個身分不明的 token，找不到運算子。**訊息看起來不像在說空白，但解法就是加空白**。
+
+**`=`、`<`、`>`、`<=`、`>=`、`!=`** 都建議當作「兩邊各留一個空白」處理。
 
 從 SQL 背景過來的人最容易踩這個 —— SQL 的 `Form='Customer'` 跟 `Form = 'Customer'` parser 都收，DQL 不收。
 
 ### 2. View 名稱含反斜線（`\`）要 escape
 
-Notes view 名稱可以有反斜線做階層分類，例如 `Customers\Active`。直接寫進 DQL 會被 parser 當成 escape 序列處理，要把 `\` 改成 `\\`：
+Notes view 名稱可以有反斜線做階層分類，例如**隱藏視圖** `(個人\待簽核文件)`（括號開頭代表隱藏，反斜線代表階層）。直接寫進 DQL，反斜線會在某一層 escape 處理掉，**錯誤訊息會跟「Design Catalog 沒建好」長得一模一樣**：
 
-| 寫法 | 結果 |
-|---|---|
-| `in ('Customers\Active')` | ❌ Parser 把 `\A` 當 escape 處理 |
-| `in ('Customers\\Active')` | ✅ 正常 |
+```text
+Domino Query execution error:
+Entry not found in index -  語法錯誤
 
-`'view'.column` 語法一樣：
+Error validating view column name - ['(個人待簽核文件)'.wdocAuthor]
+ ..  invalid view name or database needs to be cataloged via updall -e
+
+'(個人待簽核文件)'.wdocAuthor = 'CN=user01/O=TheNet'
+
+(Call hint: NSFCalls::NSFDbGetNamedObjectID, Core call #0)
+```
+
+注意錯誤訊息裡的 view 名稱變成了 `(個人待簽核文件)` —— **反斜線被吃掉了**！訊息建議「請跑 `updall -e`」會把人帶進岔路，因為真正的問題不是 catalog，是 escape。
+
+寫法對照：
+
+| 寫法 | DQL 收到的 view 名稱 | 結果 |
+|---|---|---|
+| `'(個人\待簽核文件)'.wdocAuthor` | `(個人待簽核文件)`（`\` 被吃掉）| ❌ view 找不到 |
+| `'(個人\\待簽核文件)'.wdocAuthor` | `(個人\待簽核文件)`（正確）| ✅ 正常 |
+
+`in()` 語法也一樣：
 
 ```sql
-'Customers\\Active'.Country = 'Taiwan'
+in ('(個人\\待簽核文件)') and wdocAuthor = 'CN=user01/O=TheNet'
 ```
 
-⚠️ **如果 query 是放在 LotusScript 字串裡**，因為 LotusScript 的字串 literal 不對 `\` 做 escape（直接傳出去），所以 LotusScript 寫一個 `\\`，DQL parser 就收到 `\\`，正好對應到一個 `\`。也就是：
+#### 為什麼要寫雙反斜線？
 
-```vb
-Dim query As String
-query = "in ('Customers\\Active') and Country = 'Taiwan'"
-'                       ↑↑
-'                       LotusScript 不 escape，原封不動傳給 DQL
-'                       DQL parse "\\" → "\"
-Set result = dq.Execute(query)
-```
+**DQL parser 本身就把 `\\` 視為單一 `\`**（DQL 字串裡 `\` 是 escape 字元）。所以你想要 view 名稱裡有一個真正的 `\`，傳給 DQL parser 的查詢字串裡就要有兩個 `\`。
 
-如果 query 來自 Java / Node.js 等會對 `\` 做 escape 的語言，就要在那層先寫 `\\\\`（語言 escape 兩次：語言層 `\\\\` → 字串值 `\\` → DQL 收到 `\\` → DQL parse 成 `\`）。
+但「源碼寫幾個 `\`」會被你用的語言放大或縮小：
+
+| 來源語言 / 格式 | 源碼寫幾個 `\` | 字串值 | DQL 收到 | DQL parse 後 |
+|---|---|---|---|---|
+| LotusScript（不 escape `\`）| `"\\"` | `\\` | `\\` | `\` ✅ |
+| Java / Node.js / JSON（`\` 是 escape 字元）| `"\\\\"` | `\\` | `\\` | `\` ✅ |
+
+LotusScript 字串 literal 不對 `\` 做 escape（要轉義引號是 `""` 雙引號），所以源碼寫兩個就是兩個。Java / Node.js / JSON 字串 literal 會把 `\\` 縮成一個 `\`，所以源碼要寫四個 `\` 才能讓字串值有兩個 `\`。
+
+實際工程師回報的踩雷情境：他在 Node.js / JSON 環境下源碼只寫一個 `\`，結果 JSON 解析就把它吃掉了，DQL 完全沒收到 `\`，view 名稱直接變成 `(個人待簽核文件)`。
 
 ## 效能要點
 

@@ -381,8 +381,21 @@ The DQL parser is stricter about token whitespace than SQL parsers ——
 
 | Form | Result |
 |---|---|
-| `Form='Customer'` | ❌ Parser error |
-| `Form = 'Customer'` | ✅ Works |
+| `wdocAuthor='CN=user01/O=TheNet'` | ❌ Parser error |
+| `wdocAuthor = 'CN=user01/O=TheNet'` | ✅ Works |
+
+The actual error message when you skip the spaces (heads up: it's misleading):
+
+```text
+Domino Query execution error:
+Query is not understandable -  syntax error   - must have at least one operator
+
+'(personal\pendingSignDoc)'.wdocAuthor='CN=user01/O=TheNet'
+
+(Call hint: OSCalls::OSLocalAllc, Core call #0)
+```
+
+"Must have at least one operator" is wildly misleading — `=` is right there. The DQL tokenizer splits tokens on whitespace, so without spaces the whole `wdocAuthor='CN=user01/O=TheNet'` becomes one mystery token with no recognized operator inside. **The error doesn't sound like it's about whitespace, but the fix is to add whitespace.**
 
 Treat **`=`, `<`, `>`, `<=`, `>=`, `!=`** as always needing a space on each side.
 
@@ -390,31 +403,49 @@ This trips up anyone coming from SQL — `Form='Customer'` and `Form = 'Customer
 
 ### 2. Backslash (`\`) in view names needs escaping
 
-Notes view names can contain backslashes for hierarchical categorization, e.g. `Customers\Active`. Writing this raw in DQL trips the parser's escape handling — you have to double the backslash:
+Notes view names can contain backslashes for hierarchical categorization, e.g. the **hidden view** `(personal\pendingSignDoc)` (parens = hidden, backslash = nested category). Writing the backslash raw in DQL gets it eaten somewhere along the way, and **the resulting error message looks identical to "Design Catalog isn't built"**:
 
-| Form | Result |
-|---|---|
-| `in ('Customers\Active')` | ❌ Parser treats `\A` as an escape sequence |
-| `in ('Customers\\Active')` | ✅ Works |
+```text
+Domino Query execution error:
+Entry not found in index -  syntax error
 
-Same for the `'view'.column` syntax:
+Error validating view column name - ['(personalpendingSignDoc)'.wdocAuthor]
+ ..  invalid view name or database needs to be cataloged via updall -e
+
+'(personalpendingSignDoc)'.wdocAuthor = 'CN=user01/O=TheNet'
+
+(Call hint: NSFCalls::NSFDbGetNamedObjectID, Core call #0)
+```
+
+Notice the view name in the error is `(personalpendingSignDoc)` — **the backslash is gone.** The "please run `updall -e`" hint sends you down the wrong rabbit hole; the real issue is escaping, not the catalog.
+
+Side-by-side:
+
+| Form | View name DQL receives | Result |
+|---|---|---|
+| `'(personal\pendingSignDoc)'.wdocAuthor` | `(personalpendingSignDoc)` (`\` eaten) | ❌ view not found |
+| `'(personal\\pendingSignDoc)'.wdocAuthor` | `(personal\pendingSignDoc)` (correct) | ✅ Works |
+
+Same for `in()` syntax:
 
 ```sql
-'Customers\\Active'.Country = 'Taiwan'
+in ('(personal\\pendingSignDoc)') and wdocAuthor = 'CN=user01/O=TheNet'
 ```
 
-⚠️ **If the query lives in a LotusScript string**, LotusScript string literals don't process `\` as an escape (they pass it through verbatim). So writing `\\` in LotusScript sends `\\` to DQL, which DQL then parses as a single `\`:
+#### Why the double backslash?
 
-```vb
-Dim query As String
-query = "in ('Customers\\Active') and Country = 'Taiwan'"
-'                       ↑↑
-'                       LotusScript passes this through verbatim
-'                       DQL parses "\\" as "\"
-Set result = dq.Execute(query)
-```
+**The DQL parser itself treats `\\` as a single `\`** (`\` is an escape character in DQL string literals). So if you want a literal `\` in the view name, the query string DQL receives must contain `\\`.
 
-For languages that DO escape `\` in string literals (Java, Node.js, etc.), you need `\\\\` at the source level: language layer turns `\\\\` into the string value `\\`, DQL receives `\\`, DQL parses it as `\`.
+But how many `\` you write in source gets multiplied or chewed by your language's string handling:
+
+| Source language / format | Write in source | String value | DQL receives | DQL parses to |
+|---|---|---|---|---|
+| LotusScript (no `\` escape) | `"\\"` | `\\` | `\\` | `\` ✅ |
+| Java / Node.js / JSON (`\` is an escape char) | `"\\\\"` | `\\` | `\\` | `\` ✅ |
+
+LotusScript string literals don't escape `\` (the way to embed a quote is `""` doubled), so two slashes in source = two slashes in the value. Java / Node.js / JSON string literals collapse `\\` to a single `\`, so you need four backslashes in source to end up with two in the string value.
+
+Real-world report: an engineer hit this in Node.js / JSON and wrote a single `\` in source. JSON parsing ate it, DQL never saw any `\`, and the view name turned into `(personalpendingSignDoc)` instead of the real `(personal\pendingSignDoc)`.
 
 ## Performance tips
 
