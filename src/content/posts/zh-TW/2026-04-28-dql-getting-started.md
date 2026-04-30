@@ -105,33 +105,45 @@ Error opening view name or named document set - [Vtest] does not exist or open f
 
 現實世界裡，**靠管理員手動下 `load updall -d` 通常不可行**：DB 數量多、應用部署頻繁、寫程式的人跟有 server console 權限的人通常還不是同一個。把同步 catalog 的責任丟回給管理員，就是把雷埋在交接縫隙裡。
 
-`NotesDominoQuery` 物件提供了兩個屬性，讓 app 端可以**自己**觸發 catalog 同步：
-
-| 屬性 | 對應 console 指令 | 用途 |
-|---|---|---|
-| `RefreshDesignCatalog = True` | `load updall <db路徑> -d` | **增量更新**：只處理設計變更，便宜，日常用這個 |
-| `RebuildDesignCatalog = True` | `load updall <db路徑> -e` | **完整重建**：清掉重灌，昂貴，第一次啟用 / 懷疑 catalog 損壞時用 |
-
-設成 `True` 之後，下一次 `Execute` 或 `Explain` 之前會自動先同步 catalog。範例：
+`NotesDominoQuery` 物件提供了一個屬性，讓 app 端自己觸發 catalog 同步：
 
 ```vb
-Dim dq As NotesDominoQuery
-Set dq = db.CreateDominoQuery()
+Private gDqlBootstrapped As Boolean    ' module-level
 
-' app 啟動 / 部署後第一次呼叫，先同步一次 catalog
-dq.RefreshDesignCatalog = True
+Function RunDql(db As NotesDatabase, query As String) As NotesDocumentCollection
+    Dim dq As NotesDominoQuery
+    Set dq = db.CreateDominoQuery()
 
-Dim result As NotesDocumentCollection
-Set result = dq.Execute("in ('Vtest') and Form = 'Ftest'")
+    ' 這個 process 第一次跑 DQL：先同步一次 catalog
+    ' （catalog 不存在會自動建立，存在就做增量更新）
+    If Not gDqlBootstrapped Then
+        dq.RefreshDesignCatalog = True
+        gDqlBootstrapped = True
+    End If
+
+    Set RunDql = dq.Execute(query)
+End Function
 ```
 
-> ⚠️ **不要每次查詢都把這兩個屬性開起來**。每設一次 `True`，下一次 `Execute` 都要先付一次 catalog 同步成本，會把 DQL 的速度優勢吃掉。實務上的開法只有三個時機：
->
-> 1. App 啟動時開一次（讓這個 process 第一次查詢時補齊 catalog）
-> 2. 確定剛部署過設計變更（CI/CD pipeline 部署完接著呼叫一次）
-> 3. 攔到 `does not exist or open failed` 錯誤時，設 `True` 重試一次
+關鍵在 `dq.RefreshDesignCatalog = True` 這一行 —— 設成 `True` 之後，下一次 `Execute` 或 `Explain` 之前會自動先同步 catalog（對應 `load updall -d`）。**catalog 不存在的 NSF，第一次呼叫會自動 bootstrap 建立**，所以這一段邏輯涵蓋了「全新 DB」跟「設計剛改過」兩種情境，不需要寫 try-catch fallback。
 
-同個物件還有兩個鄰居屬性可以一併認識：`RefreshFullText`（查詢前 refresh FT index）、`RefreshViews`（refresh 查詢會用到的 view）。
+> ⚠️ **不要每次查詢都把這個屬性開起來**。每設一次 `True`，下一次 `Execute` 都要先付一次 catalog 同步成本，會把 DQL 的速度優勢吃掉。Module-level flag 確保每個 process 只付一次。
+>
+> 進一步保險：如果你有 CI/CD pipeline，部署完設計變更後直接呼叫一次帶 `RefreshDesignCatalog = True` 的暖機查詢，把同步成本擠到部署階段，正式請求就完全免成本。
+
+#### `RebuildDesignCatalog` 屬性 vs `RefreshDesignCatalog`
+
+`NotesDominoQuery` 還有一個對應 `load updall -e` 的 `RebuildDesignCatalog` 屬性 —— **完整清掉重建**，比 Refresh 昂貴很多。實務上 app 程式幾乎用不到，留給以下異常維運場景：
+
+- 懷疑 catalog 損壞（資料怪、查詢結果不一致）
+- 從 10.x 升級到 11+ 後，要把 catalog 從檔案搬進 NSF
+- 排程式維運（例如每週做一次完整重建作為防呆）
+
+日常一律 Refresh，Rebuild 只在「刻意整個重來」時才動。
+
+#### 鄰居屬性
+
+同個物件還有兩個查詢前同步用的屬性可以一併認識：`RefreshFullText`（查詢前 refresh FT index）、`RefreshViews`（refresh 查詢會用到的 view）。一樣是「設 `True`，下一次 `Execute` 前同步」的 pattern。
 
 ### 版本差異：catalog 存在哪裡
 

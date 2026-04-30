@@ -116,33 +116,45 @@ This is the part that bites everyone. The scenario:
 
 In real deployments, **leaning on an admin to remember `load updall -d` is rarely workable**: there are too many NSFs, deploys are frequent, and the developer pushing the design change usually doesn't have server-console access. Pushing catalog sync onto the admin team is just burying the landmine in the handoff.
 
-`NotesDominoQuery` exposes two properties that let the app side trigger catalog sync itself:
-
-| Property | Equivalent console command | Purpose |
-|---|---|---|
-| `RefreshDesignCatalog = True` | `load updall <db-path> -d` | **Incremental refresh**: applies design deltas, cheap — use this day-to-day |
-| `RebuildDesignCatalog = True` | `load updall <db-path> -e` | **Full rebuild**: throws the catalog out and rebuilds it, expensive — for first-time setup or suspected corruption |
-
-Set either property to `True` and the next `Execute` or `Explain` will sync the catalog before running the query. Example:
+`NotesDominoQuery` exposes a property that lets the app side trigger catalog sync itself:
 
 ```vb
-Dim dq As NotesDominoQuery
-Set dq = db.CreateDominoQuery()
+Private gDqlBootstrapped As Boolean    ' module-level
 
-' First DQL call after app startup / deploy — sync the catalog once
-dq.RefreshDesignCatalog = True
+Function RunDql(db As NotesDatabase, query As String) As NotesDocumentCollection
+    Dim dq As NotesDominoQuery
+    Set dq = db.CreateDominoQuery()
 
-Dim result As NotesDocumentCollection
-Set result = dq.Execute("in ('Vtest') and Form = 'Ftest'")
+    ' First DQL call in this process: sync the catalog once
+    ' (auto-creates the catalog if missing; incremental refresh otherwise)
+    If Not gDqlBootstrapped Then
+        dq.RefreshDesignCatalog = True
+        gDqlBootstrapped = True
+    End If
+
+    Set RunDql = dq.Execute(query)
+End Function
 ```
 
-> ⚠️ **Don't leave these properties on for every query.** Every `True` adds a catalog-sync round-trip in front of the next `Execute`, which eats the DQL speed advantage. The three sane moments to flip them on are:
->
-> 1. App startup, once per process
-> 2. Right after a CI/CD pipeline deploys design changes
-> 3. As a one-shot retry when a query fails with `does not exist or open failed`
+The line that does the work is `dq.RefreshDesignCatalog = True` — set it to `True` and the next `Execute` or `Explain` syncs the catalog first (equivalent to `load updall -d`). **For an NSF that has never been catalogued, the first call auto-bootstraps the catalog**, so this single code path covers both "brand-new NSF" and "design just changed" — no try-catch fallback needed.
 
-Two sibling properties are worth knowing about while you're here: `RefreshFullText` (refreshes the FT index before the query) and `RefreshViews` (refreshes any view the query will touch).
+> ⚠️ **Don't leave the property on for every query.** Every `True` adds a catalog-sync round-trip before the next `Execute`, which eats the DQL speed advantage. The module-level flag ensures each process pays the cost exactly once.
+>
+> Extra insurance: if you have a CI/CD pipeline, fire one warmup query with `RefreshDesignCatalog = True` right after deploying a design change. The sync cost moves into the deploy step and live requests pay nothing.
+
+#### `RebuildDesignCatalog` vs `RefreshDesignCatalog`
+
+`NotesDominoQuery` also has a `RebuildDesignCatalog` property that maps to `load updall -e` — a **full teardown and rebuild**, much more expensive than Refresh. App code almost never needs it. Keep it for these maintenance scenarios:
+
+- Suspected catalog corruption (weird query results, inconsistencies)
+- After upgrading from 10.x to 11+, to migrate the catalog from file to in-NSF storage
+- Scheduled maintenance (e.g. weekly full rebuild as a defensive habit)
+
+Default to Refresh; reach for Rebuild only when you deliberately want a clean slate.
+
+#### Sibling properties
+
+Two more "sync before next query" properties live on the same object: `RefreshFullText` (refreshes the FT index before the query) and `RefreshViews` (refreshes any view the query will touch). Same `True` → next-`Execute`-syncs pattern.
 
 ### Version note: where the catalog lives
 
