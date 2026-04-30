@@ -293,17 +293,15 @@ Response:
 | View as base — read column directly¹ | `'Customers'.Country = 'Taiwan'` |
 | View as base — scope query | `in ('Customers') and Country = 'Taiwan'` |
 
-¹ **Important pitfall**: `'view'.column` has a silent-filter risk — **read the next section in full before using this syntax**.
+¹ When the view's selection isn't `Select @All`, DQL scopes the result to whatever docs the view's selection has filtered in — see the section below.
 
-## Pitfall: the silent filter in `'view'.column` (must read)
+## Using a view as the base: view selection scopes the result
 
-`'view'.column = value` looks like "use the view's column index to find docs", but Domino 12 testing confirms — **the view's selection formula is silently merged in as an additional filter on the result. No error is raised, but documents quietly disappear from the result.**
+The HCL [View column requirements](https://help.hcl-software.com/dom_designer/12.0.0/basic/dql_view_column.html) doc states that the `'view'.column` syntax requires the view to use `Select @All`.
 
-This is a silent data-loss bug: the developer gets no error, the count looks plausible, the problem stays buried until a customer reports "we're missing data."
+What actually happens if the view's selection isn't `Select @All`? We tested it on Domino 12.
 
-### What we tested
-
-A view called `Vtest` with this selection (very common Notes-style, **not** `Select @All`):
+A view called `Vtest` with this selection (very common Notes pattern, **not** `Select @All`):
 
 ```text
 SELECT Form="Ftest" & deleteFlag !="1"
@@ -313,65 +311,40 @@ Three documents in the NSF:
 
 | Doc | Fields | In the view? |
 |---|---|---|
-| A | `Form="Ftest"`, `deleteFlag=""` | ✅ in view |
-| B | `Form="Ftest"`, `deleteFlag="1"` | ❌ excluded by selection |
-| C | `Form="Other"` | ❌ excluded by selection |
+| A | `Form="Ftest"`, `deleteFlag=""` | ✅ |
+| B | `Form="Ftest"`, `deleteFlag="1"` | ❌ |
+| C | `Form="Other"` | ❌ |
 
 Two queries:
 
-| Query | What it should return | Actual count | Lost doc |
-|---|---|---|---|
-| `'Vtest'.Form = 'Ftest'` | A + B = **2** | **1** | Doc B silently dropped |
-| `'Vtest'.Form = 'Other'` | C = **1** | **0** | Doc C silently dropped |
+| Query | DB-wide expected | Actual count |
+|---|---|---|
+| `'Vtest'.Form = 'Ftest'` | A + B = 2 | **1** (only A) |
+| `'Vtest'.Form = 'Other'` | C = 1 | **0** |
 
-**No error, no warning.** Docs B and C are sitting in the NSF perfectly fine; DQL just pretends not to see them.
+**Result**: the runtime doesn't reject queries against views that aren't `Select @All` — no error, no warning. But **DQL scopes the result to the docs the view's selection has filtered in**, so docs the selection excludes don't show up.
 
-### Why this happens
+### Why
 
-The more accurate framing: DQL **isn't** secretly adding a filter to your query — it **uses the Notes view's column index directly**, and a Notes view's column index by definition only contains the docs that satisfy the view's selection formula. DQL reads from that index, so it only sees those docs; anything excluded by the selection is invisible.
+DQL reuses the **Notes view's existing column index** directly, and that column index only contains docs satisfying the view's selection formula. So "results are scoped to the view's selection" is just the natural consequence of the underlying Notes architecture — HCL gets the speed of the existing Notes engine for free, in exchange for inheriting the scope of the view selection.
 
-In other words, this isn't DQL doing something behind your back — it's **the inevitable consequence of the pragmatic choice to reuse the existing Notes view index** instead of building a separate DQL-only column store. HCL gets the speed of the existing Notes engine for free; the trade-off is inheriting the side effects of view selection.
+The official "require Select @All" reads more like a strong recommendation: it's the way to ensure the view spans the whole DB, so the column index has clean DB-wide semantics.
 
-The HCL [View column requirements](https://help.hcl-software.com/dom_designer/12.0.0/basic/dql_view_column.html) doc requires `Select @All` for exactly this reason: **only `Select @All` guarantees the view spans the whole DB, which is the only way the column index has clean semantics.**
+### Practical guidance
 
-> 🔬 **Live test note (Domino 12)**: the runtime does **not** actually enforce the `Select @All` rule — `'view'.column` queries run fine against views with any selection formula, no error, no warning. What actually happens is **DQL operates against the docs that the view's selection has filtered in**. That's why the docs say "requirement" but the implementation doesn't block it — it's not an oversight, it's the nature of the underlying Notes view index, which HCL can't enforce around (short of building a separate DQL-only column store).
->
-> Bottom line: **read the official "require Select @All" as a strong recommendation, not a runtime check.** Skip it and the query won't fail — it'll just silently miss docs.
+- **View design under your control**: change the selection to `Select @All` to match the official recommendation
+- **View design not under your control** (e.g. someone else's view, can't change it): use `in ('viewname') and field = value` instead — that form isn't scoped by view selection (the cost is the planner may fall back to an NSF scan)
+- **Don't want to deal with views at all**: bare-field `field = value`, let DQL find a view with a collated column for you
 
-### Three defenses, ranked
-
-1. **Switch to `in('viewname')` syntax** (recommended, zero design changes)
-
-   ```sql
-   in ('Vtest') and Form = 'Ftest'
-   ```
-
-   This form **isn't affected by view selection** — the `Form` condition is evaluated by DQL on each candidate doc. The cost is the planner may fall back to an NSF scan, but the result is always correct.
-
-2. **Build dedicated DQL index views** (one-time engineering, ideal long term)
-
-   Create **separate index views for DQL** (naming convention: `dql` prefix or a hidden `($DQL)` category), distinct from the views your UI uses:
-   - selection: `Select @All`
-   - put the columns you query on
-   - sort order configured
-
-   `'dqlVtest'.Form = 'Ftest'` is then both fast and semantically correct.
-
-3. **Bare-field query** (let DQL pick an index)
-
-   ```sql
-   Form = 'Ftest'
-   ```
-
-   The planner will look for a view with a collated `Form` column; failing that, it scans the NSF. No silent-filter risk; perf sits between options 1 and 2.
+For a cleaner long-term solution: build **dedicated DQL index views** (use a `dql` prefix or a hidden `($DQL)` category), `Select @All` selection, separate from the views your UI uses. `'dqlVtest'.Form = 'Ftest'` then runs fast and has clean semantics.
 
 ### Sidebar: column collation is a separate rule
 
-Beyond the `Select @All` requirement, the referenced column must be **collated** (either condition counts):
+Beyond the selection consideration, the referenced column must be **collated** (either condition counts):
 - View's leftmost column has "Sort order: Ascending" checked
 - The column itself has "Click on column header to sort: Ascending" checked
 
-Unlike `Select @All`, this rule IS enforced — DQL errors out if the column isn't collated, no silent filter.
+This rule IS enforced — DQL errors out if the column isn't collated, unlike the selection rule which silently scopes the result.
 
 ## Two more syntax gotchas (the kind you only find by hitting them)
 
@@ -449,7 +422,7 @@ Real-world report: an engineer hit this in Node.js / JSON and wrote a single `\`
 
 ## Performance tips
 
-1. **Use a view as the base** — `'ViewName'.Field = ...` is faster than a bare field, **provided the view uses `Select @All` and the column is collated**, otherwise you're exposed to the silent-filter pitfall (see above). If the view design doesn't satisfy that, fall back to `in ('ViewName') and Field = ...` to at least scope the scan
+1. **Use a view as the base** — `'ViewName'.Field = ...` is faster than a bare field, but note that when the view isn't `Select @All`, results are scoped to whatever the view selection filters in (see the dedicated section above). If the view design isn't yours to change, fall back to `in ('ViewName') and Field = ...`
 2. **Avoid leading wildcards** — `like '%abc'` cannot use an index
 3. **Turn on `Explain`** — `dq.Explain = True` shows the actual execution path
 4. **First-hits mode** — when you only need a few results, use `Execute(query, "", 0, 10)` to cap the count
