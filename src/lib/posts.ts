@@ -31,7 +31,11 @@ export function postReadingStats(body: string, lang: Lang): { words: number; min
 }
 
 export async function getPostsByLang(lang: Lang): Promise<Post[]> {
-  const all = await getCollection('posts', ({ data }) => !data.draft && data.lang === lang);
+  const now = new Date();
+  const all = await getCollection(
+    'posts',
+    ({ data }) => !data.draft && data.lang === lang && data.pubDate <= now
+  );
   return all.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 }
 

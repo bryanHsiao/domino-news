@@ -1,0 +1,30 @@
+name: Nightly Rebuild
+
+# Reveals scheduled posts whose pubDate has just become "now or earlier".
+# getPostsByLang() filters out future-dated posts at build time, so we need
+# at least one rebuild per day to surface them — independent of whether the
+# daily-article workflow succeeded.
+
+on:
+  schedule:
+    # 每天 23:30 UTC (台灣 07:30) 觸發，
+    # 排在 daily-article (23:00 UTC) 之後 30 分鐘，避開競爭。
+    - cron: '30 23 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: nightly-rebuild
+  cancel-in-progress: false
+
+jobs:
+  trigger-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Pages deploy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main --repo "$GITHUB_REPOSITORY"
