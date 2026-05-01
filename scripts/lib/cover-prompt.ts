@@ -1,10 +1,11 @@
 /**
  * Shared cover-image prompt + generation helper.
  *
- * Design intent: avoid the "all covers look the same" failure by REMOVING
- * the prop list (which the model otherwise echoes) and instead asking it
- * to invent a scene that only makes sense for this specific topic, plus a
- * negative list that bans the patterns we have already over-used.
+ * Design intent: avoid the "all covers look the same" failure by
+ * (1) randomly rotating the visual style per cover instead of pinning
+ *     "photorealistic 3D render with warm lighting" — gpt-image-1 funnels
+ *     that combo straight into "wooden desk + brass + amber glow", and
+ * (2) keeping a negative list to ban patterns we over-use.
  */
 
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -18,42 +19,56 @@ const IMAGE_QUALITY = (process.env.OPENAI_IMAGE_QUALITY ?? 'medium') as
   | 'high'
   | 'auto';
 
+const STYLE_VARIANTS = [
+  'photorealistic 3D render, soft cinematic lighting, shallow depth of field, premium editorial photo aesthetic',
+  'editorial illustration with bold flat colors and clean geometric shapes, like a contemporary magazine opinion column header — no photorealism',
+  'hand-painted watercolor on textured paper, cream and dusty-blue palette, visible brush strokes and slight pigment bleed — no photorealism',
+  'paper-craft diorama with layered cut paper, crisp shadow lines, overhead studio lighting — sculptural, not photographic',
+  'high-contrast black-and-white macro photography, sharp tonal separation, cool tones only, almost graphic-novel feel',
+  'isometric vector illustration with three pastel colors and subtle line work — flat, no gradients, no photorealism',
+  'risograph print aesthetic with slightly misregistered two-color overprint and grainy paper texture',
+  'minimalist single-subject composition on a saturated solid color background, dramatic side lighting, almost surreal stillness',
+];
+
+function pickStyle(): string {
+  return STYLE_VARIANTS[Math.floor(Math.random() * STYLE_VARIANTS.length)];
+}
+
 export function buildCoverPrompt(title: string, primaryTag: string): string {
-  return `Create a cinematic 3D rendered cover photo for an editorial tech blog post.
+  const style = pickStyle();
+  return `Create a cover image for an editorial tech blog post.
 
 Article subject: "${title}"
 Primary tag: ${primaryTag}
 
 Your job: imagine ONE cohesive scene that is a visual metaphor for THIS
-specific subject. Great editorial covers show a concrete real-world moment
-or arrangement that surprises the reader. Be specific. Pick props and a
-setting that ONLY make sense for this subject — if the same image could
-illustrate any tech article, it is too generic and you must try again.
+specific subject. Great editorial covers show a concrete moment or
+arrangement that surprises the reader. Be specific. Pick a scene that
+ONLY makes sense for this subject — if the same image could illustrate
+any tech article, it is too generic and you must try again.
 
-Examples of strong editorial scene-thinking:
-- "Query language" → a wooden library card-catalog drawer half-open, an
-  index card being lifted by tweezers under a brass desk lamp.
-- "Sort/categorise results" → marbles flowing through a tilted wooden tray
-  into separated channels at golden hour.
-- "Data migration" → a nautical chart spread out with a brass sextant,
-  compass, ink well, and a half-rolled scroll.
-- "Security / authentication" → an antique leather ledger chained to an
-  oak desk, brass keys hanging on iron hooks.
-- "AI integration" → a single porcelain teapot pouring into many small
-  cups arranged in perfect symmetry on a black slate.
+Examples of strong editorial scene-thinking (use the IDEA, not the
+materials — never echo "wooden / brass / oak / leather / desk lamp"
+unless the chosen STYLE for this cover happens to call for it):
+- "Query language" → a card-catalog drawer half-open, one index card
+  being lifted out under a single light source.
+- "Sort/categorise results" → marbles flowing through a tilted tray into
+  separated channels.
+- "Data migration" → a nautical chart spread out with a sextant, compass,
+  and a half-rolled scroll.
+- "Security / authentication" → a chained ledger and a row of keys hanging
+  on hooks.
+- "AI integration" → one teapot pouring into many small cups arranged in
+  perfect symmetry.
 - "Release notes / changelog" → freshly printed letterpress proofs hanging
-  on a clothesline with the ink still drying.
-- "Performance / benchmarking" → a stopwatch on red felt next to a
-  precision balance scale weighing brass weights.
+  on a clothesline.
+- "Performance / benchmarking" → a stopwatch next to a precision balance
+  scale weighing weights.
 
-Vary the SETTING per subject. Rotate among: craftsman workshop, library
-archive, minimalist studio, outdoor blueprint table at dusk, kitchen
-counter, game table, vintage office, clean modern lab, botanical still
-life, observatory. Pick the one that fits the topic's mood, not the one
-that fits "generic technology".
-
-STYLE: photorealistic 3D render, soft cinematic lighting, shallow depth
-of field, premium editorial photo. Landscape composition that fills frame.
+STYLE for this specific cover: ${style}.
+Landscape composition that fills the frame. Treat the STYLE as binding —
+do not collapse back into "warm wooden desk with brass props" unless the
+chosen style explicitly calls for that.
 
 ABSOLUTE bans (must NOT appear):
 - Text, words, letters, numbers, logos, brand marks
@@ -64,8 +79,8 @@ ABSOLUTE bans (must NOT appear):
 - Orange ethernet cables piled on a desk
 - Real human faces
 
-The scene must look like a real photograph staged for one specific story,
-not a stock image of "tech stuff".`;
+The scene must look like a deliberately art-directed cover for one
+specific story, not a stock image of "tech stuff".`;
 }
 
 export async function generateCoverImage(
