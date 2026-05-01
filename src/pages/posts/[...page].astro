@@ -16,7 +16,7 @@ export const getStaticPaths = (async ({ paginate }) => {
       tags: p.data.tags,
       cover: p.data.cover,
     })),
-    { pageSize: 12 }
+    { pageSize: 6 }
   );
 }) satisfies GetStaticPaths;
 
