@@ -11,7 +11,7 @@ export const ui = {
   'zh-TW': {
     'site.title': 'Domino News',
     'site.tagline': 'HCL Domino 每日新知',
-    'site.description': '由 Domino 開發顧問運營。採雙模型協作流程：GPT 主筆草稿、Claude 交叉覆核，最後由顧問實戰補充與校訂，整理 HCL Domino 與其生態系最新動態。',
+    'site.description': 'HCL Domino 中英雙語新知站，整理生態系最新動態與技術深度文章。',
     'nav.home': '首頁',
     'nav.posts': '所有文章',
     'nav.tags': '標籤',
@@ -37,7 +37,7 @@ export const ui = {
   en: {
     'site.title': 'Domino News',
     'site.tagline': 'Daily HCL Domino Insights',
-    'site.description': 'Run by a Domino development consultant. Two-model workflow: GPT drafts each post, Claude cross-reviews it, and the consultant adds hands-on context and corrections — covering HCL Domino and its ecosystem.',
+    'site.description': 'A bilingual HCL Domino site — covering the latest news and technical deep-dives across the ecosystem.',
     'nav.home': 'Home',
     'nav.posts': 'All Posts',
     'nav.tags': 'Tags',
