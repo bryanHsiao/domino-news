@@ -93,7 +93,7 @@ const otherLangUrl = new URL(localizedPath(otherLang, otherLangPath), Astro.site
         <nav>
           <a href={localizedPath(lang, '/posts')}>{t('nav.posts')}</a>
           <a href={localizedPath(lang, '/tags')}>{t('nav.tags')}</a>
-          <a href={localizedPath(lang, '/about')}>{t('nav.about')}</a>
+          <a href={localizedPath(lang, '/posts/welcome')}>{t('nav.about')}</a>
           <a href={switchHref} class="lang-switch" aria-label="switch language">
             {t('lang.switch')}
           </a>
