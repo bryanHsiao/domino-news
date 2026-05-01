@@ -15,7 +15,6 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_OPEN_METHOD_STREAM.html"
   - title: "NotesStream.Truncate method — HCL Domino 14.0 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_TRUNCATE_METHOD_STREAM.html"
-cover: "/covers/notes-stream.png"
 ---
 
 ## What NotesStream actually is
