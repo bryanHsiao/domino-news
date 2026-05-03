@@ -1,7 +1,7 @@
 ---
 title: "DQL Production-Ready: Catalog Maintenance, Permissions, and sessionAsSigner"
 description: "The two real walls when shipping DQL to production: how the Design Catalog gets maintained automatically (bootstrapping brand-new NSFs, incremental refresh after design changes), and why regular users hit the 'You don't have permission' error — plus the sessionAsSigner / scheduled-agent solutions. The final pattern is verified against Domino 12 production logs, with a production-ready Java helper class to drop in."
-pubDate: 2026-05-01T08:30:00+08:00
+pubDate: 2026-05-03T08:30:00+08:00
 lang: en
 slug: dql-production
 tags:
@@ -143,9 +143,9 @@ When the design has just changed, the next query carrying Refresh detects it and
 Field log (after editing the design of LAW and EForm):
 
 ```
-04:07:59  FCB\LAW\LCM_Ext2.nsf harvested, ... 278.534 msecs
+04:07:59  CTI\LAW\LCM_Ext2.nsf harvested, ... 278.534 msecs
 04:07:59  HTTP JVM: DB [law] 找到 14 筆
-04:08:00  FCB\EForm.nsf harvested, ... 468.698 msecs
+04:08:00  CTI\EForm.nsf harvested, ... 468.698 msecs
 04:08:00  HTTP JVM: DB [EForm] 找到 4 筆
 ```
 
@@ -156,8 +156,8 @@ For an NSF that's never been catalogued, `RefreshDesignCatalog = True` **fails**
 Field log (a freshly added workorder.nsf that's never been catalogued):
 
 ```
-04:06:27  HTTP JVM: DQL: catalog 缺失於 [FCB\Safety\workorder.nsf] — 執行 Rebuild 後重試
-04:06:28  FCB\Safety\workorder.nsf harvested, ... 963.684 msecs
+04:06:27  HTTP JVM: DQL: catalog 缺失於 [CTI\Safety\workorder.nsf] — 執行 Rebuild 後重試
+04:06:28  CTI\Safety\workorder.nsf harvested, ... 963.684 msecs
 04:06:28  HTTP JVM: DB [workorder] 找到 0 筆
 ```
 
@@ -229,7 +229,7 @@ The key observation: **a Java helper class doesn't "automatically carry" signer 
 XPages SSJS has a `sessionAsSigner` global that returns a Session for the identity who signed the XPages app (typically an admin / Designer):
 
 ```javascript
-var dbPath = "FCB/EForm.nsf";
+var dbPath = "CTI/EForm.nsf";
 
 // Open the DB as the signer — catalog operations now have permission
 var db = sessionAsSigner.getDatabase("", dbPath);
@@ -348,7 +348,7 @@ public class DQLUtil {
 SSJS caller:
 
 ```javascript
-var db = sessionAsSigner.getDatabase("", "FCB/EForm.nsf");
+var db = sessionAsSigner.getDatabase("", "CTI/EForm.nsf");
 var util = new service.DQLUtil();
 var result = util.executeQuery(db, dqlQuery);
 ```
