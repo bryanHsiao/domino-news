@@ -228,13 +228,17 @@ interface SaturatedSource {
  * are blocked at the validate() stage. The 14-day window matches
  * recentTitles so the rule has a natural expiry — after 14 days a
  * source can be re-cited from a different angle if needed.
+ *
+ * Also includes URLs from rejected drafts in _drafts/ — if a topic just
+ * failed validation yesterday, the same source URLs should be blocked
+ * today, otherwise the model keeps re-proposing the identical article.
  */
 async function loadSaturatedSources(): Promise<Map<string, SaturatedSource>> {
   const sat = new Map<string, SaturatedSource>();
   const cutoff = Date.now() - TITLE_LOOKBACK_DAYS * 24 * 60 * 60 * 1000;
-  for (const lang of ['zh-TW', 'en'] as const) {
-    const dir = join(POSTS_DIR, lang);
-    if (!existsSync(dir)) continue;
+
+  const collect = async (dir: string): Promise<void> => {
+    if (!existsSync(dir)) return;
     const files = await readdir(dir);
     for (const f of files) {
       if (!f.endsWith('.md') && !f.endsWith('.mdx')) continue;
@@ -253,21 +257,30 @@ async function loadSaturatedSources(): Promise<Map<string, SaturatedSource>> {
         if (!sat.has(url)) sat.set(url, { url, citedBySlug: slug, citedDate: datePart });
       }
     }
+  };
+
+  for (const lang of ['zh-TW', 'en'] as const) {
+    await collect(join(POSTS_DIR, lang));
   }
+  await collect(DRAFTS_DIR);
   return sat;
 }
 
 /**
- * Returns every slug ever used across both languages (zh-TW + en union).
- * Slugs are URL identities and must be unique forever — no time window.
+ * Returns every slug ever used across both languages (zh-TW + en union)
+ * AND every slug from rejected drafts in _drafts/. Slugs are URL
+ * identities and must be unique forever — no time window. Including
+ * draft slugs prevents the model from re-proposing the same topic that
+ * already failed validation (e.g. the nomad-1.0.19 release draft that
+ * showed up as attempt 1 three days running).
+ *
  * Used both as a soft hint in the prompt ("forbidden slugs") and as a
  * hard reject in validate().
  */
 async function loadAllSlugs(): Promise<Set<string>> {
   const slugs = new Set<string>();
-  for (const lang of ['zh-TW', 'en'] as const) {
-    const dir = join(POSTS_DIR, lang);
-    if (!existsSync(dir)) continue;
+  const collect = async (dir: string): Promise<void> => {
+    if (!existsSync(dir)) return;
     const files = await readdir(dir);
     for (const f of files) {
       if (!f.endsWith('.md') && !f.endsWith('.mdx')) continue;
@@ -275,7 +288,11 @@ async function loadAllSlugs(): Promise<Set<string>> {
       const m = raw.match(/^slug:\s*"?([^"\n]+?)"?\s*$/m);
       if (m) slugs.add(m[1].trim());
     }
+  };
+  for (const lang of ['zh-TW', 'en'] as const) {
+    await collect(join(POSTS_DIR, lang));
   }
+  await collect(DRAFTS_DIR);
   return slugs;
 }
 
