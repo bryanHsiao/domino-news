@@ -16,7 +16,6 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_CREATEVIEWNAV_METHOD_1631.html"
   - title: "NotesView (LotusScript) — HCL Domino 14.0 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEW_CLASS.html"
-cover: "/covers/notes-view-navigator.png"
 ---
 
 ## 為什麼不用 GetFirstDocument 就好？

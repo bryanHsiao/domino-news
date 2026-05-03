@@ -18,7 +18,6 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_simple_examples.html"
   - title: "DQL Explorer — OpenNTF community project"
     url: "https://www.openntf.org/main.nsf/project.xsp?r=project/DQL+Explorer"
-cover: "/covers/dql-getting-started.png"
 ---
 
 > 📚 **The "DQL Trilogy" series**

@@ -16,7 +16,6 @@ sources:
     url: "https://www.madicon.de/blog/posts-blog/hcl-notesdomino-1451-is-here-all-new-features-at-a-glance/"
   - title: "HCL Notes 2026 (sneak peek)"
     url: "https://www.panagenda.com/blog/hcl-notes-2026-sneak-peek/"
-cover: "/covers/hcl-domino-2026-release-highlights.png"
 ---
 ## HCL Domino 2026 (Version 14.5.1) Officially Released
 
