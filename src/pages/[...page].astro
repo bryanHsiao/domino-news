@@ -1,0 +1,96 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../components/PostList.astro';
+import { getPostsByLang } from '../lib/posts';
+import { useTranslations } from '../i18n/ui';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = await getPostsByLang('zh-TW');
+  return paginate(
+    posts.map((p) => ({
+      slug: p.data.slug,
+      title: p.data.title,
+      description: p.data.description,
+      pubDate: p.data.pubDate,
+      tags: p.data.tags,
+      cover: p.data.cover,
+    })),
+    { pageSize: 9 }
+  );
+}) satisfies GetStaticPaths;
+
+const lang = 'zh-TW' as const;
+const t = useTranslations(lang);
+const { page } = Astro.props;
+const isFirstPage = page.currentPage === 1;
+const base = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '');
+const pageOfText = t('pagination.pageOf')
+  .replace('{n}', String(page.currentPage))
+  .replace('{m}', String(page.lastPage));
+---
+
+<BaseLayout lang={lang}>
+  {
+    isFirstPage && (
+      <>
+        <div class="hero" aria-hidden="true">
+          <img src={`${base}/covers/welcome.png`} alt="" loading="eager" />
+        </div>
+        <h1>{t('site.tagline')}</h1>
+        <p class="lead">{t('site.description')}</p>
+        <h2>{t('home.latest')}</h2>
+      </>
+    )
+  }
+
+  <PostList lang={lang} posts={page.data} />
+
+  {
+    page.lastPage > 1 && (
+      <nav class="pagination" aria-label="Pagination">
+        {page.url.prev ? (
+          <a href={page.url.prev} rel="prev">
+            ← {t('pagination.prev')}
+          </a>
+        ) : (
+          <span class="pagination-disabled">← {t('pagination.prev')}</span>
+        )}
+        <span class="pagination-info">{pageOfText}</span>
+        {page.url.next ? (
+          <a href={page.url.next} rel="next">
+            {t('pagination.next')} →
+          </a>
+        ) : (
+          <span class="pagination-disabled">{t('pagination.next')} →</span>
+        )}
+      </nav>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color, #e5e5e5);
+    font-size: 0.95rem;
+  }
+  .pagination a {
+    color: var(--link, #0a66c2);
+    text-decoration: none;
+  }
+  .pagination a:hover {
+    text-decoration: underline;
+  }
+  .pagination-info {
+    color: var(--text-muted, #666);
+  }
+  .pagination-disabled {
+    color: var(--text-disabled, #bbb);
+  }
+</style>
