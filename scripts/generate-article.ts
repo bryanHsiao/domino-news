@@ -113,6 +113,7 @@ interface BilingualArticle {
   en: { title: string; description: string; markdown: string };
   sources: { title: string; url: string }[];
   cover?: string;
+  coverStyle?: string;
 }
 
 function todayIso(): string {
@@ -213,6 +214,28 @@ async function loadRecentPostsMeta(): Promise<RecentPost[]> {
     if (slug && title) posts.push({ slug, title, description: description ?? '' });
   }
   return posts;
+}
+
+/**
+ * Read the `coverStyle:` frontmatter field from the N most recent posts
+ * (by filename date prefix). Used to seed sampling-without-replacement
+ * when generating a new cover so consecutive posts don't repeat styles.
+ */
+async function loadRecentCoverStyles(n: number): Promise<string[]> {
+  const dir = join(POSTS_DIR, 'en');
+  if (!existsSync(dir)) return [];
+  const files = (await readdir(dir))
+    .filter((f) => f.endsWith('.md') || f.endsWith('.mdx'))
+    .sort()
+    .reverse()
+    .slice(0, n);
+  const styles: string[] = [];
+  for (const f of files) {
+    const raw = await readFile(join(dir, f), 'utf8');
+    const cs = raw.match(/^coverStyle:\s*"?([^"\n]+?)"?\s*$/m)?.[1]?.trim();
+    if (cs) styles.push(cs);
+  }
+  return styles;
 }
 
 interface SaturatedSource {
@@ -745,6 +768,7 @@ async function writePost(
     tags: data.tags,
     sources: data.sources,
     cover: data.cover,
+    coverStyle: data.coverStyle,
   });
   await writeFile(filepath, `${fm}${langData.markdown.trim()}\n`, 'utf8');
   return filepath;
@@ -753,20 +777,24 @@ async function writePost(
 async function generateCover(
   client: OpenAI,
   article: BilingualArticle
-): Promise<string | undefined> {
+): Promise<{ coverPath: string; styleId: string } | undefined> {
   if (SKIP_IMAGE) {
     console.log('[generate] SKIP_IMAGE=1, skipping cover image generation.');
     return undefined;
   }
   const primaryTag = article.tags[0] ?? 'HCL Domino';
-  const cover = await generateCoverImage(
+  // Sampling without replacement: avoid re-using the styles of the 6
+  // most recent posts so consecutive covers stay visually distinct.
+  const recentStyles = await loadRecentCoverStyles(6);
+  const result = await generateCoverImage(
     client,
     article.en.title,
     primaryTag,
     article.slug,
-    COVERS_DIR
+    COVERS_DIR,
+    recentStyles
   );
-  return cover ?? undefined;
+  return result ?? undefined;
 }
 
 async function gateUrls(article: BilingualArticle): Promise<void> {
@@ -968,14 +996,18 @@ async function attempt(
 
 async function publish(article: BilingualArticle, fallbackReason: string | null): Promise<void> {
   const client = new OpenAI();
-  article.cover = await generateCover(client, article);
+  const cover = await generateCover(client, article);
+  if (cover) {
+    article.cover = cover.coverPath;
+    article.coverStyle = cover.styleId;
+  }
 
   const dateForFilename = todayIso();
   const pubDateIso = nowTaipeiTimestamp();
   const zhPath = await writePost('zh-TW', article.slug, article, dateForFilename, pubDateIso);
   const enPath = await writePost('en', article.slug, article, dateForFilename, pubDateIso);
   console.log(`[publish] Wrote:\n  ${zhPath}\n  ${enPath}`);
-  if (article.cover) console.log(`[publish] Cover: ${article.cover}`);
+  if (article.cover) console.log(`[publish] Cover: ${article.cover} (style=${article.coverStyle})`);
   console.log(`[publish] Sources used:`);
   for (const s of article.sources) console.log(`  - ${s.title}: ${s.url}`);
 
