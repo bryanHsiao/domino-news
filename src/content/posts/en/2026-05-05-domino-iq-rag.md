@@ -18,6 +18,7 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.1/admin/conf_security_considerations_for_iq.html"
   - title: "Domino IQ — HCL Domino Admin Help"
     url: "https://help.hcl-software.com/domino/14.5.1/admin/domino_iq_server.html"
+cover: "/covers/domino-iq-rag.png"
 ---
 
 ## What RAG looks like inside Domino IQ
