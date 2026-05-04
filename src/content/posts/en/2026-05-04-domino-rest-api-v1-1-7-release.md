@@ -1,6 +1,6 @@
 ---
-title: "Domino REST API v1.1.7 Released"
-description: "HCL released Domino REST API v1.1.7 on April 7, 2026, introducing new features and fixes that enhance calendar and email management capabilities."
+title: "Domino REST API: v1.1.7 Is the Current Latest — New Endpoints and Fixes"
+description: "HCL Domino REST API's current latest release is v1.1.7 (shipped April 7, 2026), adding endpoints for calendar profiles, PIM unread state, and message updates, plus fixes for attachment download, Microsoft Entra ID auth, and meeting invitations."
 pubDate: "2026-05-04T07:20:47+08:00"
 lang: "en"
 slug: "domino-rest-api-v1-1-7-release"
@@ -13,17 +13,11 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/whatsnew/v1.1.7.html"
   - title: "What's new - HCL Domino REST API Documentation"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/whatsnew/index.html"
-draft: true
+  - title: "HCL Domino REST API Documentation (home)"
+    url: "https://opensource.hcltechsw.com/Domino-rest-api/"
 ---
-<!--
-REJECTED DRAFT — Article validation failed:
-  - zh body must have >= 2 inline links, got 1.
-  - en body must have >= 2 inline links, got 1.
-attempt: 1
-slug: domino-rest-api-v1-1-7-release
--->
 
-HCL released Domino REST API v1.1.7 on April 7, 2026, bringing several new features and improvements for developers and administrators, particularly in calendar and email management.
+HCL Domino REST API's current latest release is [v1.1.7](https://opensource.hcltechsw.com/Domino-rest-api/whatsnew/v1.1.7.html), shipped on April 7, 2026, bringing several new features and improvements for developers and administrators — particularly in calendar and email management.
 
 ## New Features
 
@@ -59,4 +53,4 @@ HCL released Domino REST API v1.1.7 on April 7, 2026, bringing several new featu
   - For Domino 14: `domino-rest-api:1.1.7-r14`
   - For Domino 12: `domino-rest-api:1.1.7-r12`
 
-For the complete release notes and detailed information, please refer to the [Domino REST API v1.1.7 Release Notes](https://opensource.hcltechsw.com/Domino-rest-api/whatsnew/v1.1.7.html).
+The full endpoint reference and installation guide are at the [HCL Domino REST API documentation](https://opensource.hcltechsw.com/Domino-rest-api/); the [What's new index page](https://opensource.hcltechsw.com/Domino-rest-api/whatsnew/index.html) lists every prior version's release notes.
