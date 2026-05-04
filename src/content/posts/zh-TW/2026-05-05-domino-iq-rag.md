@@ -19,6 +19,7 @@ sources:
   - title: "Domino IQ — HCL Domino Admin Help"
     url: "https://help.hcl-software.com/domino/14.5.1/admin/domino_iq_server.html"
 cover: "/covers/domino-iq-rag.png"
+coverStyle: "art-deco"
 ---
 
 ## RAG 在 Domino IQ 是怎麼一回事

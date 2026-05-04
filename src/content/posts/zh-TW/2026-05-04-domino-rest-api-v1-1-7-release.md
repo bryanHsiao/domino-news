@@ -16,6 +16,7 @@ sources:
   - title: "HCL Domino REST API Documentation (home)"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/"
 cover: "/covers/domino-rest-api-v1-1-7-release.png"
+coverStyle: "minimalist-mono"
 ---
 
 HCL Domino REST API 截至目前的最新版本是 [v1.1.7](https://opensource.hcltechsw.com/Domino-rest-api/whatsnew/v1.1.7.html)（2026 年 4 月 7 日釋出），為開發者和管理員帶來了多項新功能和改進，特別是在日曆和電子郵件管理方面。

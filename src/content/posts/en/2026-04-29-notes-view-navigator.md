@@ -17,6 +17,7 @@ sources:
   - title: "NotesView (LotusScript) — HCL Domino 14.0 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEW_CLASS.html"
 cover: "/covers/notes-view-navigator.png"
+coverStyle: "risograph"
 ---
 
 ## Why not just use GetFirstDocument?

@@ -19,6 +19,7 @@ sources:
   - title: "DQL Explorer — OpenNTF community project"
     url: "https://www.openntf.org/main.nsf/project.xsp?r=project/DQL+Explorer"
 cover: "/covers/dql-getting-started.png"
+coverStyle: "art-deco"
 ---
 
 > 📚 **「DQL 三部曲」系列**

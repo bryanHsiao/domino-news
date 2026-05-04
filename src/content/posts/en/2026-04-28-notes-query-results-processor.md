@@ -23,6 +23,7 @@ sources:
   - title: "QueryResultsProcessor (Java) — HCL official docs"
     url: "https://help.hcl-software.com/dom_designer/12.0.0/basic/H_QUERYRESULTSPROCESSOR_CLASS_JAVA.html"
 cover: "/covers/notes-query-results-processor.png"
+coverStyle: "bw-grain"
 ---
 
 ## Why NQRP exists

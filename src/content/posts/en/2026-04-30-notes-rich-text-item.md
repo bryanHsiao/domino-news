@@ -18,6 +18,7 @@ sources:
   - title: "NotesEmbeddedObject (LotusScript) — HCL Domino 14.0 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESEMBEDDEDOBJECT_CLASS.html"
 cover: "/covers/notes-rich-text-item.png"
+coverStyle: "photoreal-3d"
 ---
 
 ## A premise the docs put up front: it inherits from NotesItem

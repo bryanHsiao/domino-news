@@ -19,6 +19,7 @@ sources:
   - title: "KB0100440 — Difference between 'Tell HTTP Restart' and 'Tell HTTP refresh' commands (HCL Software Customer Support)"
     url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0100440"
 cover: "/covers/notes-ini-multiple-http-response-headers.png"
+coverStyle: "collage"
 ---
 
 ## Why this matters
