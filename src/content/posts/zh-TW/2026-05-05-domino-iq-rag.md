@@ -26,14 +26,14 @@ coverStyle: "art-deco"
 
 ## RAG 在 Domino IQ 是怎麼一回事
 
-[Domino 14.5.1 開始支援 RAG](https://help.hcl-software.com/domino/14.5.1/admin/conf_iq_rag_support.html)（Retrieval-Augmented Generation）—— LLM 在生成回答前，先從你指定的 NSF 取回語意相關的文件當 context，回應因此「更貼近你的領域、更貼近你的當下資料」。一般 RAG 你可能聽過 OpenAI + Pinecone + LangChain 那條龍，Domino IQ 把這整條全部內建到 server 任務裡。
+[Domino 14.5.1 開始支援 RAG](https://help.hcl-software.com/domino/14.5.1/admin/conf_iq_rag_support.html)（Retrieval-Augmented Generation）—— LLM[^llm] 在生成回答前，先從你指定的 NSF 取回語意相關的文件當 context，回應因此「更貼近你的領域、更貼近你的當下資料」。一般 RAG 你可能聽過 OpenAI + Pinecone + LangChain 那條龍，Domino IQ 把這整條全部內建到 server 任務裡。
 
 當你把一個 Command document 設成 RAG 模式，Domino IQ 任務在 server 程序裡會啟動：
 
 - 一個 `llama-server` instance 跑 LLM 推論模型
-- 一個 `llama-server` instance 跑 Embedding 模型
+- 一個 `llama-server` instance 跑 Embedding 模型[^embedding]
 - 一個 vector database server
-- 可選：一個 `llama-server` instance 跑 guard model
+- 可選：一個 `llama-server` instance 跑 guard model[^guard]
 
 使用者送 prompt 進來時，prompt 先被語意搜尋打到 vector DB，命中的 RAG source NSF 文件被取出，與 prompt 一起送給 LLM —— 全部在你自己的 Domino server 上跑完。
 
@@ -124,3 +124,6 @@ RAG 模式下 prompt 變大，預設 LLM 上下文大小不夠用：到 dominoiq
 Domino IQ RAG 的設計把這 4 件事一起處理掉 —— 代價是你要在自己的 server 跑得起 GGUF 模型，也就是要備一張 NVIDIA GPU（最低 compute capability 5.2+，生產建議 8.0+）跑在 64-bit Windows / Linux 上（純 CPU 模式不支援，macOS 跟 ARM 也不行）。對 Domino 既有客戶來說，這個 trade-off 通常划算。
 
 [^gguf]: GGUF（GPT-Generated Unified Format）是 llama.cpp 生態系常見的單檔二進位模型格式，把模型權重、tokenizer、metadata 打包成一個檔，可直接 mmap 載入記憶體 — 是 on-device 推論常用的分發格式。
+[^llm]: LLM（Large Language Model，大型語言模型）是以海量文字訓練的神經網路模型 — 例如 GPT、Claude、Llama 等 — 能依輸入提示生成自然語言回應。
+[^embedding]: Embedding 模型把文字轉成固定維度的向量（例如 768 或 1024 維），讓「語意相近」的句子在向量空間中也接近 — RAG 用它把 NSF 文件變成可被語意搜尋的索引。
+[^guard]: Guard model 是另一個小型 LLM，跑在主 LLM 之前 / 之後當「過濾層」，攔截可能不適當的輸入（例如越獄提示、敏感問題）或輸出（例如有害內容、敏感原文外流）。

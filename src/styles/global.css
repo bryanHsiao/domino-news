@@ -766,3 +766,32 @@ article.post hr {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Markdown footnotes (remark-gfm + custom rehype label) ---------- */
+.footnotes {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+.footnotes h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  color: var(--color-fg);
+}
+.footnotes ol {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+.footnotes li {
+  margin-bottom: 0.5rem;
+}
+.footnotes li p {
+  margin: 0;
+}
+.footnotes [data-footnote-backref] {
+  margin-left: 0.25rem;
+  text-decoration: none;
+}

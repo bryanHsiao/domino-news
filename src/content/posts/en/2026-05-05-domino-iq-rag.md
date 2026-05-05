@@ -26,14 +26,14 @@ coverStyle: "art-deco"
 
 ## What RAG looks like inside Domino IQ
 
-[Domino 14.5.1 ships RAG](https://help.hcl-software.com/domino/14.5.1/admin/conf_iq_rag_support.html) (Retrieval-Augmented Generation) support — before the LLM answers, it pulls semantically-relevant documents from an NSF you point it at, so the response is "grounded, current, and domain-specific." A typical RAG stack out in the wild involves OpenAI plus Pinecone plus LangChain glue. Domino IQ packs the whole stack into server tasks.
+[Domino 14.5.1 ships RAG](https://help.hcl-software.com/domino/14.5.1/admin/conf_iq_rag_support.html) (Retrieval-Augmented Generation) support — before the LLM[^llm] answers, it pulls semantically-relevant documents from an NSF you point it at, so the response is "grounded, current, and domain-specific." A typical RAG stack out in the wild involves OpenAI plus Pinecone plus LangChain glue. Domino IQ packs the whole stack into server tasks.
 
 When you mark a Command document as RAG-enabled, the DominoIQ task in the Domino server process spins up locally:
 
 - a `llama-server` instance with the LLM inference model,
-- a `llama-server` instance with the embedding model,
+- a `llama-server` instance with the embedding model[^embedding],
 - a vector database server,
-- optionally, a `llama-server` instance with a guard model.
+- optionally, a `llama-server` instance with a guard model[^guard].
 
 When a user sends a prompt, it gets semantically searched against the vector DB, the matching NSF documents are pulled and prepended to the prompt, and the whole package goes to the LLM — never leaving your Domino server.
 
@@ -126,3 +126,6 @@ Building a comparable RAG pipeline with OpenAI / Anthropic + a hosted vector DB 
 Domino IQ RAG collapses those four concerns into one configured Command document. The cost is you do need a server that can run a GGUF model — specifically, an NVIDIA GPU (compute capability 5.2+ minimum, 8.0+ recommended for production) on 64-bit Windows or Linux (no CPU-only mode, no macOS, no ARM). For most existing Domino shops that's a fair trade.
 
 [^gguf]: GGUF (GPT-Generated Unified Format) is a single-file binary model format from the llama.cpp ecosystem, packaging weights, tokenizer, and metadata into one file that can be mmap-loaded directly into memory — a common distribution format for on-device inference.
+[^llm]: LLM (Large Language Model) — neural networks like GPT, Claude, or Llama, trained on massive text corpora to generate natural-language responses from a prompt.
+[^embedding]: An embedding model maps text into fixed-dimensional vectors (e.g. 768 or 1024 dimensions) so that semantically-related sentences land near each other in vector space — RAG uses it to index NSF documents for semantic search.
+[^guard]: A guard model is a separate small LLM that runs before or after the main inference model, filtering inappropriate input (jailbreak prompts, sensitive questions) or output (harmful content, leaks of sensitive source text).
