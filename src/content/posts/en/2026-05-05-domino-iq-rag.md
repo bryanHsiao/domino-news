@@ -56,7 +56,7 @@ When a user sends a prompt, it gets semantically searched against the vector DB,
   nomic-embed-text, snowflake-arctic-embed, etc.)
 ```
 
-Pick the embedding model based on your content's language and the vector dimensionality you want.
+Pick the embedding model based on your content's language and the vector dimensionality you want — keep in mind it must be in GGUF[^gguf] format (llama.cpp's standard distribution format).
 
 ## Configuration walkthrough
 
@@ -124,3 +124,5 @@ Building a comparable RAG pipeline with OpenAI / Anthropic + a hosted vector DB 
 - LLM API billing and per-token usage monitoring.
 
 Domino IQ RAG collapses those four concerns into one configured Command document. The cost is you do need a server that can run a GGUF model — specifically, an NVIDIA GPU (compute capability 5.2+ minimum, 8.0+ recommended for production) on 64-bit Windows or Linux (no CPU-only mode, no macOS, no ARM). For most existing Domino shops that's a fair trade.
+
+[^gguf]: GGUF (GPT-Generated Unified Format) is a single-file binary model format from the llama.cpp ecosystem, packaging weights, tokenizer, and metadata into one file that can be mmap-loaded directly into memory — a common distribution format for on-device inference.

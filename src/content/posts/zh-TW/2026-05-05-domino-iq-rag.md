@@ -55,7 +55,7 @@ coverStyle: "art-deco"
 ✓ 選好 GGUF 格式的 embedding model（mxbai-embed-large、bge-me、nomic-embed-text、snowflake-arctic-embed 等）
 ```
 
-選 embedding model 時要看你的內容語言跟想要的維度大小。
+選 embedding model 時要看你的內容語言、想要的維度大小，以及它必須是 GGUF[^gguf] 格式（llama.cpp 生態系的標準分發格式）。
 
 ## 設定步驟
 
@@ -94,13 +94,13 @@ coverStyle: "art-deco"
 
 ## 安全性：ACL + Readers field 自動套用
 
-[Domino IQ 安全性的核心](https://help.hcl-software.com/domino/14.5.1/admin/conf_security_considerations_for_iq.html)是「LLM command 用 authenticated session 的 Notes DN 同時套 ACL 跟 Readers」。一般 RAG 系統裡，「向量搜尋結果該不該給這個 user 看」要靠你在 application layer 自己過濾、極容易出包；Domino IQ 把這事內建成 server-side 強制執行，從架構上規避了「不小心把別人的私文件當 context 餵給 LLM」這種 leakage。
+[Domino IQ 安全性的核心](https://help.hcl-software.com/domino/14.5.1/admin/conf_security_considerations_for_iq.html)是「LLM command 用 authenticated session 的 Notes DN 同時套 ACL 跟 Readers」。一般 RAG 系統裡，「向量搜尋結果該不該給這個 user 看」要靠你在 應用層 自己過濾、極容易出包；Domino IQ 把這事內建成 server-side 強制執行，從架構上規避了「不小心把別人的私文件當 context 餵給 LLM」這種 leakage。
 
 延伸：HCL 也建議你的 LLM 模型「應支援 paraphrase 能力」，讓 RAG 內容在被回應時不被原樣複製出來，進一步降低敏感原文外流風險。
 
 ## 容量與效能調優
 
-RAG 模式下 prompt 變大，預設 LLM context size 不夠用：到 dominoiq.nsf 的 Advanced 分頁，`Special parameters` 加類似 `-c 65000`、配合 `concurrent requests` 數量 —— 例如 10 個 concurrent + `-c 65000` 約等於每個請求 6500 token context。GPU 卸載參數也在同一頁可調。
+RAG 模式下 prompt 變大，預設 LLM 上下文大小不夠用：到 dominoiq.nsf 的 Advanced 分頁，`Special parameters` 加類似 `-c 65000`、配合並行請求數量 —— 例如 10 個並行請求 + `-c 65000` 約等於每個請求 6500 token 的上下文。GPU 卸載參數也在同一頁可調。
 
 「沒命中怎麼辦」也是要設定的：在 Command 對應的 system prompt 文件裡，明確告訴 LLM「找不到相關文件時要回什麼」—— 不寫的話 LLM 會自己編造一個合理但無依據的答案，這正是 RAG 想避免的。
 
@@ -117,8 +117,10 @@ RAG 模式下 prompt 變大，預設 LLM context size 不夠用：到 dominoiq.n
 
 純粹用 OpenAI / Anthropic API + 自己接 vector DB 蓋一條 RAG，技術上可行，但你會撞到：
 - 資料要先 ETL 出 Domino → 違反法規／違反客戶合約常見 case
-- ACL/Readers field 要在 application layer 重做一次過濾邏輯
+- ACL/Readers field 要在 應用層 重做一次過濾邏輯
 - vector DB 帳號 / 流量 / 限額另外管
 - LLM API call 計費跟 token usage 要監控
 
 Domino IQ RAG 的設計把這 4 件事一起處理掉 —— 代價是你要在自己的 server 跑得起 GGUF 模型，也就是要備一張 NVIDIA GPU（最低 compute capability 5.2+，生產建議 8.0+）跑在 64-bit Windows / Linux 上（純 CPU 模式不支援，macOS 跟 ARM 也不行）。對 Domino 既有客戶來說，這個 trade-off 通常划算。
+
+[^gguf]: GGUF（GPT-Generated Unified Format）是 llama.cpp 生態系常見的單檔二進位模型格式，把模型權重、tokenizer、metadata 打包成一個檔，可直接 mmap 載入記憶體 — 是 on-device 推論常用的分發格式。
