@@ -29,6 +29,7 @@ const grad = slugGradient(post.data.slug);
 const stats = postReadingStats(post.body ?? '', lang);
 const wordCountLabel = t('post.wordCount').replace('{n}', stats.words.toLocaleString('en-US'));
 const dateLabel = post.data.pubDate.toLocaleDateString('en-US', {
+  timeZone: 'Asia/Taipei',
   year: 'numeric', month: 'short', day: 'numeric',
 });
 
