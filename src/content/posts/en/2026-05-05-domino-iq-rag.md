@@ -22,6 +22,8 @@ cover: "/covers/domino-iq-rag.png"
 coverStyle: "art-deco"
 ---
 
+> 📚 This is the deep-dive half of a two-part Domino IQ series. If you haven't seen the overview — the architecture, install flow, and how `NotesLLMRequest` / `NotesLLMResponse` work from application code — read [Domino IQ: What It Means to Run an LLM Inside the Domino Server](/domino-news/en/posts/domino-iq) first, then come back here for how RAG layers on top.
+
 ## What RAG looks like inside Domino IQ
 
 [Domino 14.5.1 ships RAG](https://help.hcl-software.com/domino/14.5.1/admin/conf_iq_rag_support.html) (Retrieval-Augmented Generation) support — before the LLM answers, it pulls semantically-relevant documents from an NSF you point it at, so the response is "grounded, current, and domain-specific." A typical RAG stack out in the wild involves OpenAI plus Pinecone plus LangChain glue. Domino IQ packs the whole stack into server tasks.

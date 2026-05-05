@@ -22,6 +22,8 @@ cover: "/covers/domino-iq-rag.png"
 coverStyle: "art-deco"
 ---
 
+> 📚 這篇是 Domino IQ 雙篇系列的「深入篇」。沒看過 Domino IQ 整體架構、安裝流程、與 `NotesLLMRequest` / `NotesLLMResponse` 怎麼從應用程式呼叫的，建議先讀 [Domino IQ 入門：把 LLM 跑進 Domino server 是什麼概念](/domino-news/posts/domino-iq) 再回來看 RAG 怎麼運作。
+
 ## RAG 在 Domino IQ 是怎麼一回事
 
 [Domino 14.5.1 開始支援 RAG](https://help.hcl-software.com/domino/14.5.1/admin/conf_iq_rag_support.html)（Retrieval-Augmented Generation）—— LLM 在生成回答前，先從你指定的 NSF 取回語意相關的文件當 context，回應因此「更貼近你的領域、更貼近你的當下資料」。一般 RAG 你可能聽過 OpenAI + Pinecone + LangChain 那條龍，Domino IQ 把這整條全部內建到 server 任務裡。
