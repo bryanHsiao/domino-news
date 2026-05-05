@@ -123,4 +123,4 @@ Building a comparable RAG pipeline with OpenAI / Anthropic + a hosted vector DB 
 - a separate vector DB account, traffic shaping, and rate-limit budgeting,
 - LLM API billing and per-token usage monitoring.
 
-Domino IQ RAG collapses those four concerns into one configured Command document. The cost is you do need a server that can run a GGUF model (GPU optional, but it helps). For most existing Domino shops that's a fair trade.
+Domino IQ RAG collapses those four concerns into one configured Command document. The cost is you do need a server that can run a GGUF model — specifically, an NVIDIA GPU (compute capability 5.2+ minimum, 8.0+ recommended for production) on 64-bit Windows or Linux (no CPU-only mode, no macOS, no ARM). For most existing Domino shops that's a fair trade.

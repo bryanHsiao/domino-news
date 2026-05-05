@@ -121,4 +121,4 @@ RAG 模式下 prompt 變大，預設 LLM context size 不夠用：到 dominoiq.n
 - vector DB 帳號 / 流量 / 限額另外管
 - LLM API call 計費跟 token usage 要監控
 
-Domino IQ RAG 的設計把這 4 件事一起處理掉 —— 代價是你要在自己的 server 跑得起 GGUF 模型（GPU 不必但有更好）。對 Domino 既有客戶來說，這個 trade-off 通常划算。
+Domino IQ RAG 的設計把這 4 件事一起處理掉 —— 代價是你要在自己的 server 跑得起 GGUF 模型，也就是要備一張 NVIDIA GPU（最低 compute capability 5.2+，生產建議 8.0+）跑在 64-bit Windows / Linux 上（純 CPU 模式不支援，macOS 跟 ARM 也不行）。對 Domino 既有客戶來說，這個 trade-off 通常划算。
