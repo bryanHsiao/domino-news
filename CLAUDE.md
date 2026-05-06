@@ -4,6 +4,13 @@ This file pins down the editorial voice, infrastructure patterns, and
 open decisions for this site so we don't re-derive them each session.
 Update it whenever a convention solidifies or a decision is made.
 
+**Procedural workflows live in skills, not here.** When the user asks
+to draft a technical deep-dive article, invoke the
+**`domino-news-tech-article`** skill (under `.claude/skills/`) — it
+owns the step-by-step author flow (topic selection → research →
+write → ship) and references the facts below. This file is the
+reference; the skill is the workflow.
+
 ---
 
 ## Editorial voice
@@ -111,36 +118,12 @@ Built 2026-05-07.
   an LS post but not yet written about" — that's the natural pool
   of "topics worth a single-language deep-dive next."
 
-### Topic-selection workflow (mandatory before drafting a new technical article)
-
-Before drafting a new LotusScript / Java / SSJS deep-dive — the
-agent **must** run this sequence first:
-
-1. `npm run coverage` — regenerates `docs/coverage.md`.
-2. Open `docs/coverage.md` and read the `## ⨯ Uncovered classes`
-   table — that's the canonical pool of "classes we haven't written
-   about yet" (currently 81 / 97).
-3. Prefer picking from a category that is **at 0% coverage** —
-   right now: UI, Admin, Session, Calendar, GPS, DominoIQ,
-   Composite Apps. Going zero-to-one in a category is more valuable
-   than adding a 5th post to an already-covered category.
-4. Sanity-check the candidate is worth writing about. Some classes
-   are thin (e.g. `NotesGPSCoordinates` is just lat / long). For
-   thin classes, group siblings into one article (e.g. "the GPS
-   trio: `NotesGPS` / `NotesGPSCoordinates` / `NotesGPSPosition`").
-5. **Alternative path**: a deep-dive on a specific method or
-   property of an already-covered class (e.g. `NotesStream` is
-   covered, but its multi-byte `Position` semantics could be a
-   piece of its own).
-6. Once the class is picked, follow the standard flow — NotebookLM
-   cross-check (see "NotebookLM usage"), WebFetch the official HCL
-   doc pages, write zh + en, fill `relatedJava` / `relatedSsjs`
-   frontmatter while researching, end with the "What about Java
-   and SSJS?" comparison section.
-
-This step is **skipped** for news articles (release notes, OpenNTF
-tool intros, ecosystem updates) — those don't tie to a specific
-class and the coverage tracker isn't relevant.
+**Topic-selection workflow** — moved to the
+`domino-news-tech-article` skill. The skill is mandatory reading
+before drafting a new technical deep-dive; it handles the
+coverage-driven selection logic, NotebookLM cross-check pattern,
+the bilingual writing flow, and the ship sequence. This file
+keeps just the *facts* the skill references.
 
 ### Known limitations (not bugs)
 
