@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_SETINPUT_METHOD_XMLPROCESSOR.html"
   - title: "NotesDXLExporter (LotusScript) — HCL Domino 14.0 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDXLEXPORTER_CLASS.html"
+cover: "/covers/notes-xml-processor.png"
+coverStyle: "low-poly-3d"
 ---
 
 ## NotesXMLProcessor 在 LotusScript 中扮演什麼角色
