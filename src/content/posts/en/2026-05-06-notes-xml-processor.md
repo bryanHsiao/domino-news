@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDXLEXPORTER_CLASS.html"
 cover: "/covers/notes-xml-processor.png"
 coverStyle: "low-poly-3d"
+relatedJava: ["XMLProcessor", "DxlExporter"]
+relatedSsjs: ["XMLProcessor", "DxlExporter"]
 ---
 
 ## What NotesXMLProcessor actually is

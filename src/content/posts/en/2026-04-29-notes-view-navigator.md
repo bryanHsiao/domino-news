@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEW_CLASS.html"
 cover: "/covers/notes-view-navigator.png"
 coverStyle: "risograph"
+relatedJava: ["ViewNavigator"]
+relatedSsjs: ["ViewNavigator"]
 ---
 
 ## Why not just use GetFirstDocument?

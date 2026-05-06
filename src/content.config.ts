@@ -27,6 +27,8 @@ const posts = defineCollection({
       .default([]),
     cover: z.string().optional(),
     coverStyle: z.string().optional(),
+    relatedJava: z.array(z.string()).default([]),
+    relatedSsjs: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
   }),
 });

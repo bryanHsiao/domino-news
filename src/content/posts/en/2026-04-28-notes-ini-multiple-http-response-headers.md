@@ -20,6 +20,8 @@ sources:
     url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0100440"
 cover: "/covers/notes-ini-multiple-http-response-headers.png"
 coverStyle: "collage"
+relatedJava: []
+relatedSsjs: []
 ---
 
 ## Why this matters

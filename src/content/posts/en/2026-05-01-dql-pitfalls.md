@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_formulalanguage.html"
 cover: "/covers/dql-pitfalls.png"
 coverStyle: "collage"
+relatedJava: ["DominoQuery"]
+relatedSsjs: ["DominoQuery"]
 ---
 
 > 📚 **The "DQL Trilogy" series**

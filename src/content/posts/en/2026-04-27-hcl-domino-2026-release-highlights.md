@@ -18,6 +18,8 @@ sources:
     url: "https://www.panagenda.com/blog/hcl-notes-2026-sneak-peek/"
 cover: "/covers/hcl-domino-2026-release-highlights.png"
 coverStyle: "low-poly-3d"
+relatedJava: []
+relatedSsjs: []
 ---
 ## HCL Domino 2026 (Version 14.5.1) Officially Released
 

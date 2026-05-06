@@ -15,6 +15,8 @@ sources:
     url: "https://github.com/OpenNTF/ls-classmap"
   - title: "OpenNTF — open community for Notes/Domino"
     url: "https://openntf.org/"
+relatedJava: []
+relatedSsjs: []
 ---
 
 ## All 97 LotusScript classes on one canvas

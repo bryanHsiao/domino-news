@@ -17,6 +17,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/tutorial/walkthrough/index.html"
 cover: "/covers/hcl-domino-rest-api-quickstart.png"
 coverStyle: "ukiyo-e"
+relatedJava: []
+relatedSsjs: []
 ---
 
 ## Introduction

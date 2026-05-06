@@ -88,22 +88,50 @@ Internal anchors (`/domino-news/posts/...`) don't count — only
 
 ---
 
-## Coverage tracker (planned, not yet built)
+## Coverage tracker
 
-- **Source data**: OpenNTF/ls-classmap's `ls_classes.json`. Located in
-  the repo at `src/main/resources/WebContent/data/ls_classes.json`,
-  develop branch. 97 classes, each with `docUrl` and full
-  property/method/event lists. Apache 2.0 license.
-- **Cache locally** to `data/ls_classes.json` in this repo, refresh
-  manually when OpenNTF publishes a new version.
-- **`scripts/coverage-report.ts`** (TODO): scans `posts/{en,zh-TW}/*.md`
-  for inline links and frontmatter `sources` matching each class's
-  `docUrl`; emits `docs/coverage.md` listing covered vs uncovered
-  classes.
-- **Cross-language matrix**: same script also reads `relatedJava` /
-  `relatedSsjs` from frontmatter, builds a parallel coverage map for
-  those languages so we can see at a glance which Java / SSJS class
-  has been "linked from an LS post but not yet written about."
+Built 2026-05-07.
+
+- **Source data**: `data/ls_classes.json` — cached from
+  [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap)'s
+  `develop` branch (97 classes, each with `docUrl` plus full
+  property/method/event lists, Apache 2.0). Refresh by re-running
+  the curl in `data/README.md`.
+- **`scripts/lib/coverage.ts`** — shared module that loads the class
+  catalogue, scans `posts/en/*.md` (frontmatter `sources` URLs +
+  body inline-link URLs), and matches against every class +
+  prop + method + event docUrl. URL matching is by **filename
+  basename only** (lowercased) so `dom_designer/14.0.0/...` posts
+  match the catalogue's `14.5.1/...` paths.
+- **`scripts/coverage-report.ts`** — CLI that wraps the module and
+  emits `docs/coverage.md` (committed). Run with `npm run coverage`.
+- **Cross-language matrix**: same module also reads `relatedJava` /
+  `relatedSsjs` from frontmatter, builds parallel mention maps so
+  the report shows which Java / SSJS class has been "linked from
+  an LS post but not yet written about" — that's the natural pool
+  of "topics worth a single-language deep-dive next."
+
+### Known limitations (not bugs)
+
+URL-based detection misses posts that don't link the *class* doc
+specifically:
+
+- `dql-getting-started` / `dql-pitfalls` cite `dql_syntax.html` /
+  `dql_view_column.html` (the DQL syntax docs, not
+  `H_NOTESDOMINOQUERY_CLASS.html`) — the report shows them as
+  "covers nothing" even though they're obviously DQL pieces.
+- `domino-iq` / `domino-iq-rag` cite admin docs under
+  `domino/14.5.1/admin/...`, not the designer class doc
+  `H_NotesLLMRequest_Class.html` — same blind spot.
+
+Two ways to fix when this becomes annoying:
+
+1. Add the relevant designer-class doc as one of the inline links
+   in those articles (works retroactively).
+2. Add a declarative `covers: ["NotesDominoQuery", ...]` frontmatter
+   field. Schema + script change. More accurate but more bookkeeping.
+
+Doing #2 if/when more posts hit this pattern.
 
 ---
 
@@ -196,10 +224,12 @@ prompt instructions, but we haven't done it yet.
 
 ## Open todos
 
-- [ ] `scripts/coverage-report.ts` implementation (read OpenNTF
-  `ls_classes.json` + scan posts → emit `docs/coverage.md`).
-- [ ] Retrofit `relatedJava` / `relatedSsjs` frontmatter into the
-  existing 17 LS-related published posts.
+- [x] `scripts/coverage-report.ts` implementation — built 2026-05-07.
+- [x] Retrofit `relatedJava` / `relatedSsjs` frontmatter into the
+  existing 18 LS-related published posts — done 2026-05-07.
+- [ ] Add a declarative `covers:` frontmatter field once the URL-
+  inferred coverage is missing too many obvious posts (currently
+  4 false negatives — see Coverage tracker / Known limitations).
 - [ ] Patch `generate-article.ts` prompt to reduce
   saturated-source / inline-link-diversity failures.
 - [ ] Reconsider `/posts/` `pageSize` — currently 6 (set low to

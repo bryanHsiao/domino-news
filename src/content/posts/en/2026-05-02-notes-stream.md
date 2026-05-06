@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_TRUNCATE_METHOD_STREAM.html"
 cover: "/covers/notes-stream.png"
 coverStyle: "paper-craft"
+relatedJava: ["Stream"]
+relatedSsjs: ["Stream"]
 ---
 
 ## What NotesStream actually is

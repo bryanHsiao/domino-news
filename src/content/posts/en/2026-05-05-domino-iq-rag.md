@@ -20,6 +20,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.1/admin/domino_iq_server.html"
 cover: "/covers/domino-iq-rag.png"
 coverStyle: "art-deco"
+relatedJava: []
+relatedSsjs: []
 ---
 
 > 📚 This is the deep-dive half of a two-part Domino IQ series. If you haven't seen the overview — the architecture, install flow, and how `NotesLLMRequest` / `NotesLLMResponse` work from application code — read [Domino IQ: What It Means to Run an LLM Inside the Domino Server](/domino-news/en/posts/domino-iq) first, then come back here for how RAG layers on top.

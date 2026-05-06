@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDXLEXPORTER_CLASS.html"
 cover: "/covers/notes-note-collection.png"
 coverStyle: "oil-chiaroscuro"
+relatedJava: ["NoteCollection"]
+relatedSsjs: ["NoteCollection"]
 ---
 
 ## What NotesNoteCollection is

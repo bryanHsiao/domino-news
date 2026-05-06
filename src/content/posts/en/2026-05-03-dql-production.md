@@ -19,6 +19,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_DOMINOQUERY_CLASS_JAVA.html"
 cover: "/covers/dql-production.png"
 coverStyle: "low-poly-3d"
+relatedJava: ["DominoQuery"]
+relatedSsjs: ["DominoQuery"]
 ---
 
 > 📚 **The "DQL Trilogy" series**

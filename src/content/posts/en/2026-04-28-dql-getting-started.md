@@ -20,6 +20,8 @@ sources:
     url: "https://www.openntf.org/main.nsf/project.xsp?r=project/DQL+Explorer"
 cover: "/covers/dql-getting-started.png"
 coverStyle: "art-deco"
+relatedJava: ["DominoQuery"]
+relatedSsjs: ["DominoQuery"]
 ---
 
 > 📚 **The "DQL Trilogy" series**
