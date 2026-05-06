@@ -372,6 +372,13 @@ ${recentBlock}
 
 ${saturatedBlock}
 
+    PIVOT, DON'T WORK AROUND: if your candidate topic naturally cites
+    any URL above, the script has been rejecting these articles every
+    day this week. Don't try to substitute the saturated URL with a
+    weaker one and keep the same topic — the reviewer also flags topic
+    overlap. Pick a completely different class, feature, or story.
+    The TIER C doc roots below have hundreds of unwritten options.
+
 (4) NOTORIOUSLY OVER-COVERED TOPIC: HCL Domino 2026 / 14.5.1 release.
     Search results will keep surfacing this for months. If a forbidden
     slug or recent topic already covers it, DO NOT write another angle
@@ -498,13 +505,35 @@ CRITICAL RULES:
 - Tags MUST be exact strings from the axes above.
 - Every URL in "sources" MUST be a real URL you opened during web_search.
 - Both zh.markdown and en.markdown MUST contain at least 2 inline links of the form [text](https://...).
-- Every \`[text](url)\` link MUST point to a UNIQUE destination — never reuse
-  the same URL for two different anchors. If five anchors all link to
-  https://opensource.hcltechsw.com/.../quickstart.html, four of them are
-  wrong. Look up the actual URL for each anchor (Postman → postman.com,
-  OpenNTF Discord → discord.gg/openntf, etc.) before emitting the link.
-  The script counts duplicates and rejects the article when one URL
-  dominates the link list.
+- INLINE-LINK DIVERSITY (this rule rejects more articles than any other —
+  read it carefully):
+
+    BEFORE writing the body, plan the citations:
+    1. Your "sources" array MUST contain 3+ different URLs (class
+       page, method page, sibling-class page, @Formula function
+       page, blog post — pick a mix). Don't ship a draft with only
+       1-2 sources expecting to reuse them as anchors.
+    2. Each language body has ≥ 3 inline links of the form [text](url).
+    3. Each inline link points to a DIFFERENT URL from the others
+       in that same language body.
+    4. The combined zh + en inline links (≥ 6 total) hit ≥ 3 distinct
+       URLs. No single URL appears in more than 2 of those 6 anchors.
+
+    CORRECT EXAMPLE (notes-stream-style):
+      sources: [class doc, Open method doc, Truncate method doc]
+      zh body: 3 inline links → class doc, Open doc, Truncate doc
+      en body: 3 inline links → class doc, Open doc, Truncate doc
+      → 6 total / 3 URLs × 2 each = 33%. Passes.
+
+    WRONG EXAMPLE (the rejection pattern we keep seeing):
+      sources: [main page, secondary page]
+      body anchors: every single anchor links to the main page
+      → 4-6 inline links, 1 unique URL = 80%-100%. REJECTED.
+
+  The "this is the canonical source" excuse for repeating a URL is
+  ALWAYS wrong here — pick a sub-page (a specific method, a related
+  class, an example page) for the second and third anchors. Look
+  these URLs up during web_search; don't invent them.
 - The zh and en versions cover the same story but read naturally — do not produce literal translation.
 - If unsure of any fact (date, version number, name), omit it entirely instead of guessing.
 
