@@ -94,6 +94,7 @@ const TRUSTED_HOST_HINTS = [
   'hcltech.com',
   'hcl.com',
   'planetlotus.org',
+  'collaborationtoday.info',
   'openntf.org',
   'github.com',
   'github.io',
@@ -404,6 +405,7 @@ through (skip any that obviously map to a forbidden slug above):
   - site:openntf.org
   - HCL Ambassador blog Domino
   - planetlotus.org
+  - collaborationtoday.info
 
 CONTENT TIERS (TIER C is the safe default; TIER A only when you find
 genuinely new news that does NOT overlap a recent topic above):
@@ -441,7 +443,7 @@ ACCEPTABLE SOURCE TYPES (rough priority):
   2. HCL official documentation / help center pages
   3. HCL Ambassador or HCL Master blogs
   4. OpenNTF project pages and openntf.org articles
-  5. planetlotus.org aggregated posts (cite the original blog when possible)
+  5. Community blog aggregators — planetlotus.org and collaborationtoday.info (cite the original blog when possible)
   6. GitHub release notes / READMEs from hcl-org or recognized community repos
   7. Reputable HCL business partners (panagenda, prominic, csi-international, belsoft, etc.)
   8. Conference recordings or slide decks (Engage, CollabSphere, OpenNTF webinars)
