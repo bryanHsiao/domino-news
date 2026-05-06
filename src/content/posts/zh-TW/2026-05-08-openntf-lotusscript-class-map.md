@@ -15,6 +15,8 @@ sources:
     url: "https://github.com/OpenNTF/ls-classmap"
   - title: "OpenNTF — open community for Notes/Domino"
     url: "https://openntf.org/"
+cover: "/covers/openntf-lotusscript-class-map.png"
+coverStyle: "paper-craft"
 ---
 
 ## 一張圖看完 LotusScript 全部 97 個 class

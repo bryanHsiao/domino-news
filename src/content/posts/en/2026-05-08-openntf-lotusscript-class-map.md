@@ -17,6 +17,8 @@ sources:
     url: "https://openntf.org/"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/openntf-lotusscript-class-map.png"
+coverStyle: "paper-craft"
 ---
 
 ## All 97 LotusScript classes on one canvas

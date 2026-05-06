@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_GETDOCUMENTBYKEY_METHOD.html"
 relatedJava: ["View"]
 relatedSsjs: ["View"]
+cover: "/covers/getalldocumentsbykey.png"
+coverStyle: "oil-chiaroscuro"
 ---
 
 ## Why almost every LotusScript developer has used this method
