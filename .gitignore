@@ -23,5 +23,7 @@ pnpm-debug.log*
 .vscode/
 .idea/
 
-# Claude Code local state
-.claude/
+# Claude Code local state — but project-level skills under .claude/skills/
+# are committed conventions, not local state, so unignore that subtree.
+.claude/*
+!.claude/skills/
