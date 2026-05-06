@@ -443,7 +443,7 @@ ACCEPTABLE SOURCE TYPES (rough priority):
   4. OpenNTF project pages and openntf.org articles
   5. planetlotus.org aggregated posts (cite the original blog when possible)
   6. GitHub release notes / READMEs from hcl-org or recognized community repos
-  7. Reputable HCL business partners (panagenda, prominic, csi-international, belsoft, factor101, etc.)
+  7. Reputable HCL business partners (panagenda, prominic, csi-international, belsoft, etc.)
   8. Conference recordings or slide decks (Engage, CollabSphere, OpenNTF webinars)
 
 UNACCEPTABLE:
