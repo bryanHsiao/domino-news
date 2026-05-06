@@ -1,7 +1,7 @@
 ---
 name: domino-news-tech-article
 description: |
-  Use this skill whenever drafting, planning, scheduling, or shipping a technical deep-dive article for the Domino News site (the repo at bryanhsiao/domino-news). It owns the end-to-end author workflow: coverage-driven topic selection (must run `npm run coverage` first to consult docs/coverage.md), NotebookLM cross-check via the curated HCL Domino LotusScript Reference notebook, bilingual zh-TW + en writing with the site's editorial conventions (footnotes for AI acronyms, jargon localisation, identifier preservation), the inline-link diversity rule, the frontmatter schema including relatedJava / relatedSsjs cross-language fields, and the commit + push + backfill-covers ship sequence. Trigger this skill when the user mentions writing, drafting, "I want to write about", scheduling, or planning a Domino IQ / LotusScript / DQL / Notes class article, when they ask "what should I write next" for the site, when they ask you to deep-dive a specific class or method, or any time the task is "produce a new tutorial post on this site." Do NOT use this skill for news articles (release notes, OpenNTF tool intros, ecosystem updates), for salvaging failed daily-article drafts in `_drafts/`, or for site infrastructure changes — those follow different flows documented in CLAUDE.md.
+  Use this skill for any technical-deep-dive article work on the Domino News site (the repo at bryanhsiao/domino-news) — both fresh authoring AND salvaging failed daily-article drafts. The skill owns the end-to-end workflow: coverage-driven topic selection (must run `npm run coverage` first to consult docs/coverage.md), NotebookLM cross-check via the curated HCL Domino LotusScript Reference notebook, bilingual zh-TW + en writing with the site's editorial conventions (footnotes for AI acronyms, jargon localisation, identifier preservation), the inline-link diversity rule, the frontmatter schema including relatedJava / relatedSsjs cross-language fields, the salvage flow for rejected drafts in `_drafts/`, and the commit + push + backfill-covers ship sequence. Trigger this skill when the user mentions writing, drafting, "I want to write about", scheduling, or planning a Domino IQ / LotusScript / DQL / Notes class article, when they ask "what should I write next", when they ask for a deep-dive on a specific class or method, AND ALSO trigger when the user pastes an "Article validation failed" error message, asks to salvage a draft from `_drafts/`, mentions a failed cron, or refers to attempt1 / attempt2 files — those are all entry points into this same workflow. Do NOT use this skill for news articles (release notes, OpenNTF tool intros, ecosystem updates) or site infrastructure changes — those follow different flows documented in CLAUDE.md.
 ---
 
 # Domino News — Technical Deep-Dive Author Workflow
@@ -16,40 +16,120 @@ fall back when one research source comes up short.
 
 ## When to use this skill
 
-**Use it for**: a deep-dive on a specific LotusScript / Java / SSJS
-class, a method or property within one, a feature like DQL or
-Domino IQ, or a multi-class architectural walk-through. The output
-is a bilingual `Tutorial`-tagged post.
+**Use it for**:
+
+- **New technical deep-dive** — a piece on a specific LotusScript /
+  Java / SSJS class, a method or property within one, a feature
+  like DQL or Domino IQ, or a multi-class architectural walk-through.
+- **Salvaging a failed daily-article draft** — when the user pastes
+  an "Article validation failed" message, mentions a failed cron, or
+  asks to recover something from `_drafts/`. The salvage path is
+  documented in step 0 below — it shares steps 2–6 with the new-
+  article path.
+
+The output in either case is a bilingual `Tutorial`-tagged post.
 
 **Skip it for**:
 
 - **News articles** (release notes, OpenNTF tool intros, ecosystem
   updates). They don't tie to a specific class in the catalogue, so
   the coverage tracker step doesn't apply. Write them with the
-  standard editorial conventions in CLAUDE.md but skip steps 1 and
-  parts of step 2 here.
-- **Salvaging failed daily-article drafts** from `_drafts/`. That's
-  a different flow — see CLAUDE.md's "Daily AI generation flow"
-  section.
+  standard editorial conventions in CLAUDE.md but skip the steps
+  here.
 - **Site infrastructure** (workflows, scripts, schemas, layout).
   Those don't go through this pipeline at all.
 
-## The workflow at a glance
+## The two entry points at a glance
 
 ```
-1. select   → npm run coverage; pick from Uncovered Classes
-2. research → NotebookLM cross-check + WebFetch fallback
-3. write    → bilingual zh + en, footnote acronyms, 3 inline links
-4. validate → npm run build
-5. ship     → commit, push, trigger backfill-covers
-6. refresh  → re-run npm run coverage; commit the diff
+NEW ARTICLE                            SALVAGE
+1. select   → npm run coverage         0. assess  → which attempt is worth saving
+2. research → NotebookLM + WebFetch    2. research → re-confirm facts via NotebookLM
+3. write    → bilingual zh + en        3. rewrite → fix the validation reason
+4. validate → npm run build            4. validate → npm run build
+5. ship     → commit, push, backfill   5. ship     → commit, push, backfill
+6. refresh  → npm run coverage         6. refresh  → npm run coverage + clean _drafts/
 ```
 
-Each step has its own gotchas — read on.
+Steps 2–6 are shared. Step 0 (salvage assessment) and step 1 (topic
+selection) are mutually exclusive — the salvage path already has a
+topic, and the new path doesn't yet have a draft. Each section
+below is read in order whichever path you're on.
 
 ---
 
-## Step 1 — Topic selection
+## Step 0 — Salvage assessment (only if the user came in with a failed cron)
+
+**Trigger signals** (this section applies):
+
+- User pastes an `Article validation failed:` message.
+- User says "the daily article failed", "救一下今天的", "the cron
+  hit `<error>`", "看看 _drafts 裡有什麼", or names attempt1 /
+  attempt2.
+- `_drafts/` contains files dated within the last day or two that
+  haven't been processed yet.
+
+The daily-article workflow (`scripts/generate-article.ts`) writes
+each rejected draft to `_drafts/<YYYY-MM-DD>-attempt{1,2}-<slug>.md`
+in both languages. Each file has a leading HTML comment noting the
+validation errors, e.g.:
+
+```
+<!--
+REJECTED DRAFT — Article validation failed:
+  - Inline-link diversity check failed: ...
+  - Saturated source URL: ...
+attempt: 2
+slug: notes-acl
+-->
+```
+
+### Assessment criteria — which attempt to save (if any)
+
+For each attempt, judge against these in order. **Stop at the first
+NO**.
+
+1. **Is the topic worth keeping?**
+   - If the rejection was *only* validation-mechanical
+     (inline-link diversity, frontmatter format) — YES, salvage.
+   - If the rejection was *saturated source URL* AND the article's
+     subject is the same one already covered (e.g. another piece
+     on the same Nomad release) — NO, drop it. The site doesn't
+     need duplicate coverage.
+   - If the rejection was *saturated source URL* but the article's
+     subject is genuinely different from the saturating post (just
+     happens to cite an overlapping URL), it can sometimes be
+     salvaged by switching the source URL — judgement call.
+2. **Is the topic relevant to the site?**
+   - LotusScript / Java / SSJS / Domino feature / OpenNTF project —
+     yes.
+   - Generic AI / web dev — drop it (the model wandered off).
+3. **Is the content factually trustworthy?**
+   - The model often invents method signatures / class behaviour.
+     Don't trust the draft as written — assume every fact needs
+     re-confirming.
+
+If both attempts fail any criterion, drop both and tell the user
+"both attempts aren't salvageable today" — that's a fine outcome.
+Then clean the drafts (`rm _drafts/<YYYY-MM-DD>-*`) and move on.
+
+### Once you've picked the salvage candidate
+
+- Skip step 1 (topic selection) — the topic is already chosen.
+- Go to step 2 (research) and **re-research from scratch** — do not
+  trust the draft's "facts" without NotebookLM + WebFetch
+  confirmation. The whole point of the salvage flow is to replace
+  the model's first-pass output with a verified rewrite.
+- The eventual rewrite reuses the draft's title and slug only as
+  starting points; expect to revise the title, restructure the
+  body, and fix every validation issue end-to-end.
+- In step 6 (refresh), also delete the salvaged attempt's `_drafts/`
+  files (and any stale attempts that won't be saved) so the dir
+  doesn't accumulate cruft.
+
+---
+
+## Step 1 — Topic selection (new article only)
 
 The site has a coverage tracker. `data/ls_classes.json` is OpenNTF's
 catalogue of all 97 LotusScript classes; `docs/coverage.md` is the
@@ -321,7 +401,7 @@ gh workflow run deploy.yml --ref main
 
 ---
 
-## Step 6 — Refresh the coverage tracker
+## Step 6 — Refresh the coverage tracker (and clean _drafts if salvaging)
 
 After ship, **re-run `npm run coverage`** to update
 `docs/coverage.md`, then commit the diff:
@@ -337,6 +417,22 @@ This keeps the next topic-selection round honest — `Uncovered`
 shrinks as posts ship, and you see the cross-language matrix
 update with whatever Java / SSJS classes you recorded in
 `relatedJava` / `relatedSsjs`.
+
+**If this was a salvage** — also remove the corresponding files from
+`_drafts/`. Both the salvaged attempt and any sibling attempts that
+didn't make it should be cleared in the same commit:
+
+```bash
+rm _drafts/<YYYY-MM-DD>-attempt1-*.md
+rm _drafts/<YYYY-MM-DD>-attempt2-*.md
+git add -A
+git commit -m "Clean salvaged + dropped attempts from _drafts/"
+git push origin main
+```
+
+Letting `_drafts/` accumulate makes future salvage assessments
+harder (which attempt is from today vs three days ago?), so always
+clean at the end.
 
 ---
 

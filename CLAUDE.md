@@ -189,26 +189,9 @@ Doing #2 if/when more posts hit this pattern.
 proposing topics with saturated source URLs and producing inline-link
 diversity violations.
 
-**Manual salvage workflow** (this is what we keep doing):
-
-1. After a failed run, inspect `_drafts/YYYY-MM-DD-attempt{1,2}-*.md`.
-2. Decide if any attempt is worth saving:
-   - Saturated source + topic overlap with a recent post → discard.
-   - Inline-link diversity only → usually salvageable.
-3. Salvage flow for saving:
-   - WebFetch the cited HCL doc URLs to confirm content matches.
-   - NotebookLM cross-check via the
-     "HCL Domino LotusScript Reference (V14.0)" notebook — `ask_question`
-     with a thorough prompt covering the class hierarchy, methods,
-     properties, and gotchas. The notebook usually returns "Missing
-     Information" for individual method syntax pages because the source
-     is mostly class-level overviews; supplement with WebFetch on the
-     specific method/property pages.
-   - Rewrite for inline-link diversity (3 URLs × 2 langs).
-   - Move to `src/content/posts/{lang}/`.
-   - Run `npm run build` to validate.
-   - `git push` then trigger `backfill-covers.yml` for the cover.
-   - Clean unused `_drafts/` in the same commit.
+**Salvage workflow** — moved to the `domino-news-tech-article` skill
+(step 0 entry point). The skill triggers when the user pastes an
+"Article validation failed" message or asks to look at `_drafts/`.
 
 **Patching the prompt** (open todo): both saturated-source and
 inline-link-diversity failures could likely be reduced with stronger
