@@ -180,7 +180,7 @@ For an existing Domino LS codebase, this pair fills in "the thing you used to ne
 ## Caveats
 
 1. **64K string ceiling** — the string return path truncates above 64K. Use `PreferJSONNavigator = True` always; for non-JSON large responses, route through a `NotesStream`.
-2. **TLS** — defaults to the Domino server's TLS stack; trusting external CAs uses `certstore.nsf` (a server-level setting, separate from NotesHTTPRequest itself).
+2. **TLS / trusted CAs** — defaults to the Domino server's TLS stack; trusting external CAs uses `certstore.nsf` (a server-level setting, separate from NotesHTTPRequest itself). **In Domino 14.5+, the server-side default trust source moves from `cacerts.pem` to the Domino Directory** — import your self-signed CAs into the Directory before upgrading. See [Domino 14.5 changes where NotesHTTPRequest loads trusted CAs from](/domino-news/en/posts/notes-httprequest-14-5-trust-store).
 3. **Synchronous** — `Get` / `Post` block until the response arrives. Set `Timeoutsec` for slow endpoints.
 4. **Proxy** — corporate networks: use `Setproxy` / `Setproxyuser`. Don't forget `Resetproxy` when leaving the proxied scope.
 

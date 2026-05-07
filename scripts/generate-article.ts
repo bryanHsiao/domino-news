@@ -95,6 +95,7 @@ const TRUSTED_HOST_HINTS = [
   'hcl.com',
   'planetlotus.org',
   'collaborationtoday.info',
+  'nashcom.de',
   'openntf.org',
   'github.com',
   'github.io',

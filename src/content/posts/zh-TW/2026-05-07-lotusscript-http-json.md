@@ -178,7 +178,7 @@ LotusScript 以前要打 HTTP、解 JSON 都得繞路（call Java agent、shell 
 ## 注意事項
 
 1. **64K 字串上限** — response body 超過 64K 字串模式會被截斷。永遠 `PreferJSONNavigator = True`，或處理非 JSON 大 response 時用 `NotesStream` 接。
-2. **TLS** — 預設透過 Domino server 的 TLS stack；外接受信任的 CA 走 `certstore.nsf` 配置（這個跟 NotesHTTPRequest 是分開的 server 級設定）。
+2. **TLS / 信任 CA** — 預設透過 Domino server 的 TLS stack；外接受信任的 CA 走 `certstore.nsf` 配置（這個跟 NotesHTTPRequest 是分開的 server 級設定）。**Domino 14.5 起 server 端的預設信任 CA 來源從 `cacerts.pem` 改成 Domino Directory** — 升級前環境裡有自簽 CA 一定要先匯進 Directory，詳見 [Domino 14.5 NotesHTTPRequest 換了預設信任 CA 來源](/domino-news/posts/notes-httprequest-14-5-trust-store)。
 3. **同步呼叫** — `Get` / `Post` 等是 blocking call，整個 agent 會等到 response 回來。長 timeout 場景請設好 `Timeoutsec`。
 4. **Proxy** — 公司網路走 proxy 用 `Setproxy` / `Setproxyuser`。離開 proxy 環境記得 `Resetproxy`。
 
