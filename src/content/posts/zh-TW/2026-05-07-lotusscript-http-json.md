@@ -2,6 +2,7 @@
 title: "LotusScript 的對外 HTTP / JSON 工具鏈：NotesHTTPRequest + NotesJSONNavigator"
 description: "Domino V12 起 LotusScript 內建 NotesHTTPRequest 跟 NotesJSONNavigator 兩個 class，可以直接從 LS 打外部 REST API 拿 JSON 回來解析 — 不再需要 ActiveX 或 shell 出去呼叫 curl。本文整理兩個 class 的 method、屬性、PreferJSONNavigator 把兩者串起來的官方途徑、完整範例，跟 Java / SSJS 的對位差異。"
 pubDate: 2026-05-07T07:30:00+08:00
+updatedDate: 2026-05-06
 lang: zh-TW
 slug: lotusscript-http-json
 tags:
@@ -164,7 +165,7 @@ End Sub
 
 ## 同類別在其他語言
 
-Domino 的 **Java API 跟 SSJS 都沒有對位的「內建 HTTP client + 內建 JSON parser」class** — 換個角度說，LotusScript 在這方面反而「比 Java/SSJS 更便利」：
+LotusScript 以前要打 HTTP、解 JSON 都得繞路（call Java agent、shell out、走 COM）；這對 class **把 LS 補齊到跟 Java/SSJS 早就有的水位**。Java 從 1.0 就有 [`java.net.HttpURLConnection`](https://docs.oracle.com/javase/8/docs/api/java/net/HttpURLConnection.html)、Java 11+ 又有 `java.net.http.HttpClient`，外加 Apache HttpClient / OkHttp 等成熟 library；JSON 解析有 Jackson / Gson / `org.json` 任挑。SSJS 在 XPages 環境透過 Java imports 拿到同一組 API。對照表：
 
 | 語言 | 對外 HTTP 怎麼打 | JSON 怎麼解析 |
 |---|---|---|

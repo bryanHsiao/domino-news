@@ -2,6 +2,7 @@
 title: "LotusScript's Outbound HTTP / JSON Toolchain: NotesHTTPRequest + NotesJSONNavigator"
 description: "Domino V12 added NotesHTTPRequest and NotesJSONNavigator to LotusScript, so calling an external REST API and parsing the JSON response is finally a self-contained LS workflow — no more ActiveX shims or shelling out to curl. This guide covers both classes' methods and properties, the PreferJSONNavigator property that wires them together as an official path, a complete example, and where Java / SSJS land in comparison."
 pubDate: 2026-05-07T07:30:00+08:00
+updatedDate: 2026-05-06
 lang: en
 slug: lotusscript-http-json
 tags:
@@ -166,7 +167,7 @@ Four things worth noticing:
 
 ## What about Java and SSJS?
 
-Domino's **Java API and SSJS don't ship a built-in HTTP client + JSON parser pair** — phrased differently, in this specific area LotusScript is actually more convenient than Java/SSJS:
+LotusScript used to need workarounds (calling a Java agent, shell-out, COM) for HTTP and JSON; this pair **lifts LS to the level Java and SSJS already had**. Java has had [`java.net.HttpURLConnection`](https://docs.oracle.com/javase/8/docs/api/java/net/HttpURLConnection.html) since 1.0, gained `java.net.http.HttpClient` in Java 11, and has long-mature libraries like Apache HttpClient and OkHttp; for JSON there's Jackson, Gson, `org.json` — take your pick. SSJS in XPages reaches the same APIs via Java imports. Side-by-side:
 
 | Language | Outbound HTTP | JSON parsing |
 |---|---|---|
