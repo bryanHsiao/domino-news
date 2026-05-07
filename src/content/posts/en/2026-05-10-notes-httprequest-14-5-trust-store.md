@@ -33,6 +33,27 @@ NotesHTTPRequest_Use_CACerts=1
 
 It reverts to the old behavior (read from `cacerts.pem`).
 
+## A bit of background: what is a trust store?
+
+LS developers rarely touch certificates directly, so a quick refresher — skip this section if you're already comfortable with PKI basics.
+
+When you make an HTTPS call, the client and server perform a **TLS handshake**:
+
+1. The server presents its certificate to the client
+2. The cert carries two pieces of info: "who I am" (domain) and "who signed me" (the issuer / CA)
+3. The client looks at **its own list of trusted CAs** — that list *is* the trust store — and checks whether this cert was issued by any CA on the list
+4. Chain verifies → connection proceeds; chain breaks → cert verify failed → connection refused
+
+**Which CAs live on that list is the entire point of the 14.5 change.**
+
+Why are public APIs (OpenAI, Slack, banks, government) never a problem? Their certs are issued by **DigiCert / Let's Encrypt / GlobalSign** and other publicly recognized CAs, and Domino's default trust store has carried those for years. Your LS code just connects.
+
+The pain is **self-signed CAs** — your IT team uses their own CA to sign certs for internal services (self-hosted Jenkins, Jira, staging APIs, ERP integration endpoints). These CAs aren't on any public list, so **LS NotesHTTPRequest doesn't trust them by default** — somebody has to **add the self-signed CA to the Domino server's trust store** before HTTPS calls work.
+
+> **What 14.5 actually changes**: the trust store moves from "a `cacerts.pem` file on each server" to "documents in the Domino Directory." It is **not a bug fix** — self-signed CAs that weren't trusted before still aren't trusted after — it's a **management-surface swap**: from "ssh into every server and append to a file" to "add a document in Domino Administrator, let directory replication propagate it."
+
+The concrete upgrade-day risk: any self-signed CA you previously appended to `cacerts.pem` **does not migrate to the Directory automatically** — you have to re-add it, or "previously working" turns into "fails immediately after upgrade."
+
 ## What changed
 
 [Daniel Nashed's August 2025 blog post](https://blog.nashcom.de/nashcomblog.nsf/dx/a-lotusscript-noteshttprequest-change-in-domino-14.5-you-should-know.htm) is the clearest writeup of this 14.5 change. The shape:
@@ -55,6 +76,32 @@ According to the [HCL 14.5 security features release note](https://help.hcl-soft
 - No more ssh'ing into each server to swap files and verify hashes
 
 It's the right direction (the original blog's words) — consistent with HCL's broader pattern of consolidating ID files, TLS, credentials, and trusted CAs into directory-managed surfaces.
+
+## What a cert-verify failure looks like on upgrade day
+
+Most LS developers don't see cert errors often, so here's what to watch for.
+
+**Agent side**, the LS code typically looks like this:
+
+```lotusscript
+Dim req As New NotesHTTPRequest
+Set ret = req.Get("https://internal-api.company.local/...")
+Print req.Responsecode
+```
+
+When cert verification passes, `Responsecode` prints 200. When it fails:
+
+- `Get()` raises an LS runtime error, and the agent stops on that line
+- With `On Error Goto handle`, `Err` / `Error$` produce a message that mentions SSL / TLS / certificate
+- With `On Error Resume Next` (swallowing the error), `Responsecode` often comes back as `0` or some non-HTTP value — there's no connection, so there's no real status code
+
+**Server console / log.nsf side**, the SSL failure lines after a 14.5 upgrade usually contain phrases like:
+
+- `Unable to verify the certificate chain`
+- `SSL handshake failed`
+- references to `certstore.nsf` or trusted-CA document names
+
+If the day after a 14.5 upgrade you see a single agent suddenly failing with SSL-related log lines, this change is the cause 99% of the time. SSH onto the server, look at the old `cacerts.pem`, identify any self-signed CAs in it, and decide whether to migrate them to Directory properly or set the `.ini` fallback as a temporary patch.
 
 ## Pre-upgrade checklist
 
