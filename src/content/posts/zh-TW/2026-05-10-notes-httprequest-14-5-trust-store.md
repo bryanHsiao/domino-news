@@ -21,7 +21,7 @@ cover: "/covers/notes-httprequest-14-5-trust-store.png"
 coverStyle: "low-poly-3d"
 ---
 
-## TL;DR
+## 重點摘要
 
 Domino 14.5 起，**server 端 LotusScript 跑 [`NotesHTTPRequest`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTES_HTTPREQUEST_CLASS.html) 時，預設從 Domino Directory 拿信任的 root CA**，不再讀 data 目錄裡的 `cacerts.pem`。Notes client 沒變。如果你環境裡有自簽 CA 沒匯進 Domino Directory，14.5 升級當天 LS 的 HTTPS 呼叫就會 cert verify 失敗。
 

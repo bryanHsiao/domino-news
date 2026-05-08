@@ -30,6 +30,10 @@ reference; the skill is the workflow.
   guard model are explained via markdown footnote `[^x]: ...`. Astro
   renders these with a 「註」 heading in zh, "Footnotes" in en, via
   the custom `rehypeLocaliseFootnotes` plugin in `astro.config.mjs`.
+- **Section heading: TL;DR / 重點摘要.** When opening with a quick-
+  summary section, zh uses `## 重點摘要`, en uses `## TL;DR`. Don't
+  leave English internet shorthand untranslated in zh posts — same
+  rule that applies to other domain jargon.
 
 ---
 
