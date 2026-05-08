@@ -14,6 +14,10 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.0/admin/wn_145_security_features.html"
   - title: "Mandating level of port encryption — HCL Domino 14.5 Admin Help"
     url: "https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption.html"
+  - title: "Encrypting NRPC communication on a server port — HCL Domino 14.5 Admin Help"
+    url: "https://help.hcl-software.com/domino/14.5.0/admin/conf_encryptingnrpccommunicationonaserverport_t.html"
+  - title: "Configuring the level of port encryption and authentication — HCL Domino 14.5 Admin Help"
+    url: "https://help.hcl-software.com/domino/14.5.0/admin/conf_port_encryption_t.html"
 relatedJava: []
 relatedSsjs: []
 cover: "/covers/mandated-port-encryption.png"
@@ -26,18 +30,31 @@ The first time admins open the [Server] - [Server] view in the Domino Directory 
 
 [The Japanese-language HCL KB0127764](https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0127764) gives the answer directly: that `?` is not a bug or an error. It's the compliance status indicator for the new 14.5 feature **Mandated NRPC Port Encryption**, where `?` means "feature disabled, no evaluation has run, status unknown."
 
-## A bit of background: NRPC port encryption has always existed
+## Layer 1 vs Layer 2: two things that are easy to confuse
 
-NRPC (Notes Remote Procedure Call) is the protocol Domino servers use to talk to each other and that Notes clients use to talk to servers. **NRPC port encryption itself isn't new** — for many releases now you've been able to flip `Encrypt network data` on a port in the server document under Ports → Notes Network Ports.
+The 14.5 docs use "port encryption," "mandated port encryption," and "Encrypt network data" in places that overlap — but they refer to two distinct layers:
 
-What was different pre-14.5: encryption was **negotiated between two parties**:
+| Layer | What it is | 14.5 default |
+|---|---|---|
+| **Layer 1: per-port encryption capability** | Server document → Ports → Notes Network Ports → "[Encrypt network data](https://help.hcl-software.com/domino/14.5.0/admin/conf_encryptingnrpccommunicationonaserverport_t.html)" checkbox per port | **On** (fresh install — per HCL: "[NRPC port encryption is enabled for increased security level](https://help.hcl-software.com/domino/14.5.0/admin/conf_port_encryption_t.html)") |
+| **Layer 2: mandate enforcement** | Directory Profile's Mandated Port Encryption settings (the subject of this article) | **Off** (the `?` icon's origin) |
 
-- Both sides want encryption → encrypted
-- Only one side wants it, the other doesn't → **plaintext** (compatibility wins)
+### What Layer 1 does
 
-That's awkward in compliance- or security-sensitive environments. You configure server A to want encryption, but as long as one client or server B doesn't, the connection silently downgrades to clear text. There was no "I insist on encryption — disconnect if you won't" lever for admins.
+NRPC (Notes Remote Procedure Call) is the protocol Domino servers use to talk to each other and that Notes clients use to talk to servers. The Layer 1 "Encrypt network data" checkbox has been around for many releases. [HCL's documentation](https://help.hcl-software.com/domino/14.5.0/admin/conf_encryptingnrpccommunicationonaserverport_t.html) frames its threat model as "prevent the network eavesdropping that's possible with a network protocol analyzer" — stop somebody running wireshark or tcpdump on your network from reading NRPC traffic.
 
-14.5 fills that gap.
+There's a critical nuance, though. The [same doc](https://help.hcl-software.com/domino/14.5.0/admin/conf_encryptingnrpccommunicationonaserverport_t.html) states "Network data encryption occurs if you enable network data encryption on either side of a network connection" — either side enabling encryption is enough, typically "server enables, client follows along." Sounds great, but the inverse: **if the other side won't accept encryption — older version, deliberate refusal, configuration drift — that link may run in plaintext**. Layer 1 doesn't give the admin a way to insist "every link in the domain must be encrypted."
+
+### What Layer 2 fills in
+
+Layer 2 is precisely that "insist" lever. The [official Mandated Port Encryption page](https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption.html) puts it directly: "Enables and enforces NRPC port encryption on both the client and server. If configured by an administrator, encryption needs to be enforced even if the other side does not want to use encryption" — enforce even when the other side declines.
+
+So:
+
+- **Layer 1** = "I *can* do encryption"
+- **Layer 2** = "I *insist* on encryption — won't accept anything else"
+
+Two concepts, two configuration surfaces. The "default enabled" you see is **Layer 1**; the `?` icon corresponds to **Layer 2** (default disabled).
 
 ## What 14.5 actually adds: mandate + monitor
 
@@ -71,6 +88,24 @@ The [official Mandated Port Encryption page](https://help.hcl-software.com/domin
 | **Enforced** | logging + mandate both on | Active icon | NRPC encryption is mandated — clients that refuse encryption can't connect |
 
 The official recommendation: **enable logging first, watch for several days to confirm no breakage, then enforce**. Skipping straight to enforcement is the textbook way to lock out a legacy node nobody remembered to upgrade.
+
+## Risk assessment if Layer 2 is left off
+
+Layer 1 alone isn't enough (per the earlier section). Whether to also enable Layer 2 depends on the environment:
+
+| Environment | Risk of leaving Mandated off |
+|---|---|
+| Single-DC, pure intranet office | Low — the internal network is trusted. The "lateral-movement-then-sniff-NRPC" risk persists, though |
+| Cross-DC / VPN over Internet | Medium-high — any segment outside your control means plaintext NRPC is readable end-to-end |
+| Regulated industries (finance, healthcare, government) | High — compliance audits expect provable "all traffic encrypted" guarantees, which Layer 1's "either side" model can't demonstrate cleanly |
+| Multi-partner B2B server-to-server | High — the other side's environment is outside your control; downgrade risk isn't manageable |
+
+The [HCL Layer 1 documentation](https://help.hcl-software.com/domino/14.5.0/admin/conf_encryptingnrpccommunicationonaserverport_t.html) frames the threat model as "network eavesdropping ... with a network protocol analyzer" — assuming an attacker is already running packet capture on your network. **Pure intranet office** treats that risk as low; **cross-network or public-Internet links** treat it as high. "Lateral movement" and "compliance auditability" are industry considerations not enumerated by HCL but practically influence whether to enable Mandated.
+
+Practical guidance:
+
+- **Pure internal, no regulatory requirements**: Layer 1's default is sufficient; Mandated is nice-to-have
+- **Any cross-segment traffic, compliance-bound, or B2B partner links**: schedule Mandated, at minimum starting in logging mode to gather evidence
 
 ## Relationship to the 5/10 trust-store article
 
