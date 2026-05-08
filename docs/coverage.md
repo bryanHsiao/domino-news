@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-05-07 · Posts scanned: 20 · Classes catalogued: 97*
+*Generated: 2026-05-08 · Posts scanned: 22 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -175,6 +175,8 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [mandated-port-encryption-enabling](https://bryanhsiao.github.io/domino-news/posts/mandated-port-encryption-enabling/) | — | — | — |
+| [mandated-port-encryption](https://bryanhsiao.github.io/domino-news/posts/mandated-port-encryption/) | — | — | — |
 | [notes-httprequest-14-5-trust-store](https://bryanhsiao.github.io/domino-news/posts/notes-httprequest-14-5-trust-store/) | `NotesHTTPRequest` | — | — |
 | [getalldocumentsbykey](https://bryanhsiao.github.io/domino-news/posts/getalldocumentsbykey/) | `NotesView` | `View` | `View` |
 | [openntf-lotusscript-class-map](https://bryanhsiao.github.io/domino-news/posts/openntf-lotusscript-class-map/) | — | — | — |
