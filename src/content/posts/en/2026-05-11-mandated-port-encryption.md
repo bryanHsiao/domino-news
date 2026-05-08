@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/mandated-port-encryption.png"
+coverStyle: "photoreal-3d"
 ---
 
 ## The `?` icon you see after upgrading to 14.5

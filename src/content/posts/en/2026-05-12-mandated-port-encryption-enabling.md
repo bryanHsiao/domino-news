@@ -16,6 +16,8 @@ sources:
     url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0127764"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/mandated-port-encryption-enabling.png"
+coverStyle: "pencil-sketch"
 ---
 
 ## Recap
