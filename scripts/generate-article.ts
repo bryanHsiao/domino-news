@@ -90,6 +90,7 @@ const BANNED_HOSTS = new Set([
 
 const TRUSTED_HOST_HINTS = [
   'hcl-software.com',
+  'support.hcl-software.com',
   'hcltechsw.com',
   'hcltech.com',
   'hcl.com',

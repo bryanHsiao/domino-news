@@ -135,3 +135,5 @@ Java agent 跟 XPages SSJS 走的是 **JVM 自己的 trust store**（`cacerts` k
 ## 結論
 
 14.5 把 NotesHTTPRequest server-side trust store 從 file-based 改成 directory-based 是好事 — multi-server 環境終於不用每台 sync `cacerts.pem`。但**升級前一定要把自簽 CA 匯到 Domino Directory**，否則跑 [`NotesHTTPRequest`](/domino-news/posts/lotusscript-http-json) 的 agent 會在你最不想壞的時機壞掉。`NotesHTTPRequest_Use_CACerts=1` 可以暫時退回舊行為當救援用，但長期該照新方式遷。
+
+> **延伸閱讀**：14.5 還有另一個值得一起評估的安全強化 — [Mandated NRPC Port Encryption 概念與啟用模式](/domino-news/posts/mandated-port-encryption)（Domino server view 那個 `?` icon 的真相）以及 [實務啟用步驟](/domino-news/posts/mandated-port-encryption-enabling)。本文談「對外 HTTPS 的信任 store 搬家」，那兩篇談「內部 NRPC 的加密強制」上線。

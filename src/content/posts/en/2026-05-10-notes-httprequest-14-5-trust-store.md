@@ -135,3 +135,5 @@ So on the same Domino server, LS HTTPRequest and Java see different trusted-CA s
 ## Closing
 
 Moving NotesHTTPRequest's server-side trust store from file-based to directory-based is a good change — multi-server environments no longer have to sync `cacerts.pem` per node. But **import your self-signed CAs into the Domino Directory before upgrading to 14.5**, or the agents that lean on [`NotesHTTPRequest`](/domino-news/en/posts/lotusscript-http-json) will break at the worst possible moment. `NotesHTTPRequest_Use_CACerts=1` is a serviceable rescue lever, but plan the proper migration regardless.
+
+> **Further reading**: 14.5 ships another security hardening worth evaluating in tandem — [Mandated NRPC Port Encryption concepts and modes](/domino-news/en/posts/mandated-port-encryption) (the truth behind the new `?` icon in the server view) and the [hands-on enablement guide](/domino-news/en/posts/mandated-port-encryption-enabling). This post covers the trust store moving for outbound HTTPS; those two cover internal NRPC encryption being enforced.
