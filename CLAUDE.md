@@ -13,6 +13,46 @@ reference; the skill is the workflow.
 
 ---
 
+## Research workflow (mandatory for any technical article)
+
+Any technical article — LotusScript, Java, SSJS, Domino feature,
+admin guide, release-note breakdown, news piece with technical
+content — MUST go through this research chain. No exceptions for
+"small" articles or "I already know this."
+
+1. **NotebookLM first.** Invoke the `notebooklm` skill against the
+   curated reference notebook for the domain (see "NotebookLM
+   usage" below for the current notebook URLs). Ask one thorough
+   question covering: what it is, how to instantiate / call /
+   configure, key methods or steps, common pitfalls, sibling
+   references. Capture verbatim quotes to back claims in the
+   article.
+2. **WebFetch where NotebookLM is thin.** When NotebookLM marks
+   sections "Missing Information" (common for method-level
+   syntax — the reference notebooks are class-level overviews),
+   fall back to WebFetch on the specific HCL doc URL.
+3. **Treat contradictions as red flags.** If NotebookLM and
+   WebFetch disagree on a fact, investigate before writing — do
+   not pick whichever sounds better.
+4. **Don't fill gaps with guesses.** If both sources dry-hole on
+   a key fact, flag it to the user rather than inventing. "Per
+   general LotusScript knowledge" or "in my experience" without
+   a citation is not acceptable in this site's articles.
+
+Applies regardless of: language (LS / Java / SSJS), article type
+(class deep-dive / feature walk-through / news piece with
+technical content), or how the request arrived (manual / salvage
+/ cron). Exception: site infrastructure work (workflows, scripts,
+schemas, build config) doesn't need this — code-level changes
+verify themselves via build + tests.
+
+If the domain has no NotebookLM notebook yet (e.g. a topic from a
+Domino subsystem we haven't curated sources for), flag this to the
+user up front. Do not proceed by going straight to WebFetch — that
+loses the source-grounded citation chain.
+
+---
+
 ## Editorial voice
 
 - **No "AI-generated" framing.** About / welcome / site description
