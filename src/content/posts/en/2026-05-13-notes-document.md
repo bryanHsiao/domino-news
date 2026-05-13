@@ -208,7 +208,9 @@ A safe habit for newer code: **default to `ReplaceItemValue`** — it has essent
 
 ### 5. Forgetting `.Save` — the most common silent bug
 
-Imagine an agent that modifies thirty fields, but **the whole agent never calls `doc.Save`**. The agent finishes, Domino releases the in-memory document, and **none of the changes get written**. No error, no warning.
+The [HCL NotesDocument doc](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDOCUMENT_CLASS.html) puts the warning right in the class description: "After you create, modify, or delete a document, you must save the changes by calling the Save method... If you don't call Save before the script finishes, all of your changes to a NotesDocument are lost."
+
+In practice: an agent modifies thirty fields, but **the whole agent never calls `doc.Save`**. The agent finishes, Domino releases the in-memory document, and **none of the changes get written**. No error, no warning.
 
 ```lotusscript
 Set doc = db.GetDocumentByUNID(unid)

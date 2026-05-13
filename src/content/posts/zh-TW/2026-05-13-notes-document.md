@@ -208,7 +208,9 @@ Call doc.ReplaceItemValue("Subject", "X")  ' explicit method
 
 ### 5. 漏 `.Save` — 最常見、debug 最痛的 silent bug
 
-寫了一支 agent 改了三十個欄位，但**整支 agent 都沒呼叫 `doc.Save`** —— agent 結束、Domino 把記憶體釋放、變更**沒寫入**。沒任何錯誤訊息。
+[HCL NotesDocument 文件](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDOCUMENT_CLASS.html)直接給了警告：「After you create, modify, or delete a document, you must save the changes by calling the Save method... If you don't call Save before the script finishes, all of your changes to a NotesDocument are lost.」 —— Script 結束前沒呼叫 Save，所有 NotesDocument 上的變更都會丟失。
+
+實務翻譯：寫了一支 agent 改了三十個欄位，但**整支 agent 都沒呼叫 `doc.Save`** —— agent 結束、Domino 把記憶體釋放、變更**沒寫入**。沒任何錯誤訊息。
 
 ```lotusscript
 Set doc = db.GetDocumentByUNID(unid)
