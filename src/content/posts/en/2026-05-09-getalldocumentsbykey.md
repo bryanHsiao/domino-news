@@ -9,11 +9,11 @@ tags:
   - "LotusScript"
   - "Domino Designer"
 sources:
-  - title: "NotesView class (LotusScript) — HCL Domino 14.0 Designer Help"
+  - title: "NotesView class (LotusScript) — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html"
-  - title: "NotesView.GetAllDocumentsByKey method — HCL Domino 14.0 Designer Help"
+  - title: "NotesView.GetAllDocumentsByKey method — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETALLDOCUMENTSBYKEY_METHOD.html"
-  - title: "NotesView.GetDocumentByKey method — HCL Domino 14.0 Designer Help"
+  - title: "NotesView.GetDocumentByKey method — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETDOCUMENTBYKEY_METHOD.html"
 relatedJava: ["View"]
 relatedSsjs: ["View"]

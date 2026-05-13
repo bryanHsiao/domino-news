@@ -13,7 +13,7 @@ sources:
     url: "https://blog.nashcom.de/nashcomblog.nsf/dx/a-lotusscript-noteshttprequest-change-in-domino-14.5-you-should-know.htm"
   - title: "What's new in Domino 14.5 — Security features (HCL admin docs)"
     url: "https://help.hcl-software.com/domino/14.5.1/admin/wn_145_security_features.html"
-  - title: "NotesHTTPRequest class (LotusScript) — HCL Domino 14.0 Designer Help"
+  - title: "NotesHTTPRequest class (LotusScript) — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTES_HTTPREQUEST_CLASS.html"
 relatedJava: []
 relatedSsjs: []

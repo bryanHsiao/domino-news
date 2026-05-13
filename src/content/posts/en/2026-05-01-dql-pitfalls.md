@@ -13,7 +13,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/12.0.0/basic/dql_view_column.html"
   - title: "DQL syntax reference — HCL official docs"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/dql_syntax.html"
-  - title: "Formula Language in DQL — HCL Domino 14.0 Designer Help"
+  - title: "Formula Language in DQL — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/dql_formulalanguage.html"
 cover: "/covers/dql-pitfalls.png"
 coverStyle: "collage"

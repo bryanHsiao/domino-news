@@ -9,13 +9,13 @@ tags:
   - "LotusScript"
   - "Domino Designer"
 sources:
-  - title: "NotesDocument class (LotusScript) — HCL Domino 14.0 Designer Help"
+  - title: "NotesDocument class (LotusScript) — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html"
-  - title: "NotesDocument.Save method — HCL Domino 14.0 Designer Help"
+  - title: "NotesDocument.Save method — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_DOC.html"
-  - title: "NotesDocument.GetItemValue method — HCL Domino 14.0 Designer Help"
+  - title: "NotesDocument.GetItemValue method — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETITEMVALUE_METHOD.html"
-  - title: "NotesDocument.Remove method — HCL Domino 14.0 Designer Help"
+  - title: "NotesDocument.Remove method — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_REMOVE_METHOD_DOC.html"
 relatedJava: ["Document"]
 relatedSsjs: ["document"]
