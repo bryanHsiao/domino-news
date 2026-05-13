@@ -16,76 +16,83 @@ writing on this site.
   attempted but 404'd are documented under each domain so the failure
   is captured for future research.
 
+**Version**: all URLs target **14.5.1** — the latest GA documentation
+build on help.hcl-software.com as of 2026-05-10. The initial pass
+mixed 14.5.0 + 14.0.0 paths; corrected to 14.5.1 after entry-point
+and sample leaf-URL re-verifications at the 14.5.1 paths all returned
+content. Domino REST API is the exception — it's hosted on
+`opensource.hcltechsw.com` and not versioned by URL.
+
 ---
 
 ## 1. Java back-end API (`lotus.domino.*`)
 
 ### Entry point
 
-**`https://help.hcl-software.com/dom_designer/14.5.0/basic/H_10_NOTES_CLASSES_ATOZ_JAVA.html`** — Java Classes A-Z Index. WebFetched, returns content. Lists all `lotus.domino.*` classes with their individual doc page URLs.
+**`https://help.hcl-software.com/dom_designer/14.5.1/basic/H_10_NOTES_CLASSES_ATOZ_JAVA.html`** — Java Classes A-Z Index. WebFetched, returns content. Lists all `lotus.domino.*` classes with their individual doc page URLs.
 
 ### All 63 class URLs (from index page)
 
 | Class | URL |
 |---|---|
-| ACL | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESACL_CLASS_JAVA.html |
-| ACLEntry | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESACLENTRY_CLASS_JAVA.html |
-| AdministrationProcess | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESADMINISTRATIONPROCESS_CLASS_JAVA.html |
-| Agent | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESAGENT_CLASS_JAVA.html |
-| AgentContext | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESAGENTCONTEXT_CLASS_JAVA.html |
-| ColorObject | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESCOLOROBJECT_CLASS_JAVA.html |
-| Database | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESDATABASE_CLASS_JAVA.html |
-| DateRange | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESDATERANGE_CLASS_JAVA.html |
-| DateTime | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESDATETIME_CLASS_JAVA.html |
-| DbDirectory | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESDBDIRECTORY_CLASS_JAVA.html |
-| Directory | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESDIRECTORY_CLASS_JAVA.html |
-| DirectoryNavigator | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESDIRECTORYNAVIGATOR_CLASS_JAVA.html |
-| Document | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESDOCUMENT_CLASS_JAVA.html |
-| DocumentCollection | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESDOCUMENTCOLLECTION_CLASS_JAVA.html |
-| DominoQuery | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_DOMINOQUERY_CLASS_JAVA.html |
-| DxlExporter | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESDXLEXPORTER_CLASS_JAVA.html |
-| DxlImporter | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESDXLIMPORTER_CLASS_JAVA.html |
-| EmbeddedObject | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESEMBEDDEDOBJECT_CLASS_JAVA.html |
-| Form | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESFORM_CLASS_JAVA.html |
-| IDVault | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESIDVAULT_CLASS_JAVA.html |
-| International | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESINTERNATIONAL_CLASS_JAVA.html |
-| Item | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESITEM_CLASS_JAVA.html |
-| Log | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESLOG_CLASS_JAVA.html |
-| LLMReq | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESLLMREQUEST_CLASS_JAVA.html |
-| LLMRes | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESLLMRESPONSE_CLASS_JAVA.html |
-| MIMEEntity | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_MIMEENTITY_CLASS_JAVA.html |
-| MIMEHeader | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_MIMEHEADER_CLASS_JAVA.html |
-| Name | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESNAME_CLASS_JAVA.html |
-| Newsletter | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESNEWSLETTER_CLASS_JAVA.html |
-| NoteCollection | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESNOTECOLLECTION_CLASS_JAVA.html |
-| NotesCalendar | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESCALENDAR_CLASS_JAVA.html |
-| NotesCalendarEntry | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESCALENDARENTRY_CLASS_JAVA.html |
-| NotesCalendarNotice | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESCALENDARNOTICE_CLASS_JAVA.html |
-| NotesProperty | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESPROPERTY_CLASS_JAVA.html |
-| Outline | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESOUTLINE_CLASS_JAVA.html |
-| OutlineEntry | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESOUTLINEENTRY_CLASS_JAVA.html |
-| PropertyBroker | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESPROPERTYBROKER_CLASS_JAVA.html |
-| QueryResultsProcessor | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_QUERYRESULTSPROCESSOR_CLASS_JAVA.html |
-| Registration | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESREGISTRATION_CLASS_JAVA.html |
-| Replication | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESREPLICATION_CLASS_JAVA.html |
-| ReplicationEntry | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESREPLICATIONENTRY_CLASS_JAVA.html |
-| RichTextDoclink | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESRICHTEXTDOCLINK_CLASS_JAVA.html |
-| RichTextItem | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESRICHTEXTITEM_CLASS_JAVA.html |
-| RichTextNavigator | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESRICHTEXTNAVIGATOR_CLASS_JAVA.html |
-| RichTextParagraphStyle | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESRICHTEXTPARAGRAPHSTYLE_CLASS_JAVA.html |
-| RichTextRange | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESRICHTEXTRANGE_CLASS_JAVA.html |
-| RichTextSection | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESRICHTEXTSECTION_CLASS_JAVA.html |
-| RichTextStyle | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESRICHTEXTSTYLE_CLASS_JAVA.html |
-| RichTextTab | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESRICHTEXTTAB_CLASS_JAVA.html |
-| RichTextTable | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESRICHTEXTTABLE_CLASS_JAVA.html |
-| Session | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESSESSION_CLASS_JAVA.html |
-| Stream | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESSTREAM_CLASS_JAVA.html |
-| UserID | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESUSERID_CLASS_JAVA.html |
-| View | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESVIEW_CLASS_JAVA.html |
-| ViewColumn | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESVIEWCOLUMN_CLASS_JAVA.html |
-| ViewEntry | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESVIEWENTRY_CLASS_JAVA.html |
-| ViewEntryCollection | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESVIEWENTRYCOLLECTION_CLASS_JAVA.html |
-| ViewNavigator | https://help.hcl-software.com/dom_designer/14.5.0/basic/H_NOTESVIEWNAVIGATOR_CLASS_JAVA.html |
+| ACL | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESACL_CLASS_JAVA.html |
+| ACLEntry | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESACLENTRY_CLASS_JAVA.html |
+| AdministrationProcess | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESADMINISTRATIONPROCESS_CLASS_JAVA.html |
+| Agent | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESAGENT_CLASS_JAVA.html |
+| AgentContext | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESAGENTCONTEXT_CLASS_JAVA.html |
+| ColorObject | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCOLOROBJECT_CLASS_JAVA.html |
+| Database | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATABASE_CLASS_JAVA.html |
+| DateRange | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATERANGE_CLASS_JAVA.html |
+| DateTime | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATETIME_CLASS_JAVA.html |
+| DbDirectory | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDBDIRECTORY_CLASS_JAVA.html |
+| Directory | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDIRECTORY_CLASS_JAVA.html |
+| DirectoryNavigator | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDIRECTORYNAVIGATOR_CLASS_JAVA.html |
+| Document | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS_JAVA.html |
+| DocumentCollection | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENTCOLLECTION_CLASS_JAVA.html |
+| DominoQuery | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_DOMINOQUERY_CLASS_JAVA.html |
+| DxlExporter | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLEXPORTER_CLASS_JAVA.html |
+| DxlImporter | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLIMPORTER_CLASS_JAVA.html |
+| EmbeddedObject | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESEMBEDDEDOBJECT_CLASS_JAVA.html |
+| Form | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESFORM_CLASS_JAVA.html |
+| IDVault | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESIDVAULT_CLASS_JAVA.html |
+| International | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESINTERNATIONAL_CLASS_JAVA.html |
+| Item | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESITEM_CLASS_JAVA.html |
+| Log | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESLOG_CLASS_JAVA.html |
+| LLMReq | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESLLMREQUEST_CLASS_JAVA.html |
+| LLMRes | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESLLMRESPONSE_CLASS_JAVA.html |
+| MIMEEntity | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_MIMEENTITY_CLASS_JAVA.html |
+| MIMEHeader | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_MIMEHEADER_CLASS_JAVA.html |
+| Name | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESNAME_CLASS_JAVA.html |
+| Newsletter | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESNEWSLETTER_CLASS_JAVA.html |
+| NoteCollection | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESNOTECOLLECTION_CLASS_JAVA.html |
+| NotesCalendar | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDAR_CLASS_JAVA.html |
+| NotesCalendarEntry | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDARENTRY_CLASS_JAVA.html |
+| NotesCalendarNotice | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDARNOTICE_CLASS_JAVA.html |
+| NotesProperty | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESPROPERTY_CLASS_JAVA.html |
+| Outline | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESOUTLINE_CLASS_JAVA.html |
+| OutlineEntry | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESOUTLINEENTRY_CLASS_JAVA.html |
+| PropertyBroker | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESPROPERTYBROKER_CLASS_JAVA.html |
+| QueryResultsProcessor | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_QUERYRESULTSPROCESSOR_CLASS_JAVA.html |
+| Registration | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESREGISTRATION_CLASS_JAVA.html |
+| Replication | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESREPLICATION_CLASS_JAVA.html |
+| ReplicationEntry | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESREPLICATIONENTRY_CLASS_JAVA.html |
+| RichTextDoclink | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTDOCLINK_CLASS_JAVA.html |
+| RichTextItem | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTITEM_CLASS_JAVA.html |
+| RichTextNavigator | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTNAVIGATOR_CLASS_JAVA.html |
+| RichTextParagraphStyle | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTPARAGRAPHSTYLE_CLASS_JAVA.html |
+| RichTextRange | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTRANGE_CLASS_JAVA.html |
+| RichTextSection | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTSECTION_CLASS_JAVA.html |
+| RichTextStyle | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTSTYLE_CLASS_JAVA.html |
+| RichTextTab | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTTAB_CLASS_JAVA.html |
+| RichTextTable | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTTABLE_CLASS_JAVA.html |
+| Session | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSESSION_CLASS_JAVA.html |
+| Stream | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSTREAM_CLASS_JAVA.html |
+| UserID | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUSERID_CLASS_JAVA.html |
+| View | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS_JAVA.html |
+| ViewColumn | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEWCOLUMN_CLASS_JAVA.html |
+| ViewEntry | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEWENTRY_CLASS_JAVA.html |
+| ViewEntryCollection | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEWENTRYCOLLECTION_CLASS_JAVA.html |
+| ViewNavigator | https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEWNAVIGATOR_CLASS_JAVA.html |
 
 (Total 63 — the 7 missing rows in the table above are catalog formatting quirks; full index at the entry-point URL.)
 
@@ -109,20 +116,20 @@ Per-class granularity means NotebookLM answers can scope to one class. Method/pr
 
 ### Entry point
 
-**`https://help.hcl-software.com/dom_designer/14.0.0/reference/r_wpdr_intro_c.html`** — JavaScript and XPages reference. WebFetched, returns content.
+**`https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_intro_c.html`** — JavaScript and XPages reference. WebFetched, returns content.
 
 ### 8 top-level section roots (all verified non-404 via the index page)
 
 | Section | URL |
 |---|---|
-| JavaScript language elements | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_wpdr_elements_intro_r.html |
-| Simple actions | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_wpdr_simpleactions_r.html |
-| Global objects and functions | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_wpdr_globals_r.html |
-| DOM library | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_wpdr_dom6_r.html |
-| Domino library | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino.html |
-| Runtime library | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_wpdr_runtime_r.html |
-| Standard library | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_wpdr_standard_r.html |
-| XSP library | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_wpdr_xsp_r.html |
+| JavaScript language elements | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_elements_intro_r.html |
+| Simple actions | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_simpleactions_r.html |
+| Global objects and functions | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_globals_r.html |
+| DOM library | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_dom6_r.html |
+| Domino library | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino.html |
+| Runtime library | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_runtime_r.html |
+| Standard library | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_standard_r.html |
+| XSP library | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_xsp_r.html |
 
 ### Domino library leaf URLs — 55 Notes* classes
 
@@ -130,62 +137,62 @@ These are the most important leaf URLs (back-end class access from SSJS):
 
 | Class | URL |
 |---|---|
-| NotesACL | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_ACL.html |
-| NotesACLEntry | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_ACLEntry.html |
-| NotesAdministrationProcess | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_AdministrationProcess.html |
-| NotesAgent | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Agent.html |
-| NotesAgentContext | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_AgentContext.html |
-| NotesBase | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Base.html |
-| NotesCalendar | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Calendar.html |
-| NotesCalendarEntry | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_CalendarEntry.html |
-| NotesCalendarNotice | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_CalendarNotice.html |
-| NotesColorObject | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_ColorObject.html |
-| NotesDatabase | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Database.html |
-| NotesDateRange | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_DateRange.html |
-| NotesDateTime | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_DateTime.html |
-| NotesDbDirectory | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_DbDirectory.html |
-| NotesDirectory | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Directory.html |
-| NotesDirectoryNavigator | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_DirectoryNavigator.html |
-| NotesDocument | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Document.html |
-| NotesDocumentCollection | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_DocumentCollection.html |
-| NotesDxlExporter | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_DxlExporter.html |
-| NotesDxlImporter | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_DxlImporter.html |
-| NotesEmbeddedObject | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_EmbeddedObject.html |
-| NotesForm | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Form.html |
-| NotesIDVault | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_NotesIDVault.html |
-| NotesInternational | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_International.html |
-| NotesItem | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Item.html |
-| NotesLog | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Log.html |
-| NotesMIMEEntity | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_MIMEEntity.html |
-| NotesMIMEHeader | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_MIMEHeader.html |
-| NotesName | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Name.html |
-| NotesNewsletter | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Newsletter.html |
-| NotesNoteCollection | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_NoteCollection.html |
-| NotesOutline | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Outline.html |
-| NotesOutlineEntry | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_OutlineEntry.html |
-| NotesProperty | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_NotesProperty.html |
-| NotesPropertyBroker | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_PropertyBroker.html |
-| NotesRegistration | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Registration.html |
-| NotesReplication | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Replication.html |
-| NotesReplicationEntry | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_ReplicationEntry.html |
-| NotesRichTextDoclink | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_RichTextDoclink.html |
-| NotesRichTextItem | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_RichTextItem.html |
-| NotesRichTextNavigator | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_RichTextNavigator.html |
-| NotesRichTextParagraphStyle | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_RichTextParagraphStyle.html |
-| NotesRichTextRange | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_RichTextRange.html |
-| NotesRichTextSection | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_RichTextSection.html |
-| NotesRichTextStyle | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_RichTextStyle.html |
-| NotesRichTextTab | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_RichTextTab.html |
-| NotesRichTextTable | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_RichTextTable.html |
-| NotesSession | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Session.html |
-| NotesStream | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_Stream.html |
-| NotesUserID | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_USERID.html |
-| NotesView | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_View.html |
-| NotesViewColumn | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_ViewColumn.html |
-| NotesViewEntry | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_ViewEntry.html |
-| NotesViewEntryCollection | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_ViewEntryCollection.html |
-| NotesViewNavigator | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_ViewNavigator.html |
-| NotesXSLTResultTarget | https://help.hcl-software.com/dom_designer/14.0.0/reference/r_domino_XSLTResultTarget.html |
+| NotesACL | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_ACL.html |
+| NotesACLEntry | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_ACLEntry.html |
+| NotesAdministrationProcess | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_AdministrationProcess.html |
+| NotesAgent | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Agent.html |
+| NotesAgentContext | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_AgentContext.html |
+| NotesBase | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Base.html |
+| NotesCalendar | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Calendar.html |
+| NotesCalendarEntry | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_CalendarEntry.html |
+| NotesCalendarNotice | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_CalendarNotice.html |
+| NotesColorObject | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_ColorObject.html |
+| NotesDatabase | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Database.html |
+| NotesDateRange | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_DateRange.html |
+| NotesDateTime | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_DateTime.html |
+| NotesDbDirectory | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_DbDirectory.html |
+| NotesDirectory | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Directory.html |
+| NotesDirectoryNavigator | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_DirectoryNavigator.html |
+| NotesDocument | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Document.html |
+| NotesDocumentCollection | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_DocumentCollection.html |
+| NotesDxlExporter | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_DxlExporter.html |
+| NotesDxlImporter | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_DxlImporter.html |
+| NotesEmbeddedObject | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_EmbeddedObject.html |
+| NotesForm | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Form.html |
+| NotesIDVault | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_NotesIDVault.html |
+| NotesInternational | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_International.html |
+| NotesItem | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Item.html |
+| NotesLog | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Log.html |
+| NotesMIMEEntity | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_MIMEEntity.html |
+| NotesMIMEHeader | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_MIMEHeader.html |
+| NotesName | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Name.html |
+| NotesNewsletter | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Newsletter.html |
+| NotesNoteCollection | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_NoteCollection.html |
+| NotesOutline | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Outline.html |
+| NotesOutlineEntry | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_OutlineEntry.html |
+| NotesProperty | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_NotesProperty.html |
+| NotesPropertyBroker | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_PropertyBroker.html |
+| NotesRegistration | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Registration.html |
+| NotesReplication | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Replication.html |
+| NotesReplicationEntry | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_ReplicationEntry.html |
+| NotesRichTextDoclink | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_RichTextDoclink.html |
+| NotesRichTextItem | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_RichTextItem.html |
+| NotesRichTextNavigator | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_RichTextNavigator.html |
+| NotesRichTextParagraphStyle | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_RichTextParagraphStyle.html |
+| NotesRichTextRange | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_RichTextRange.html |
+| NotesRichTextSection | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_RichTextSection.html |
+| NotesRichTextStyle | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_RichTextStyle.html |
+| NotesRichTextTab | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_RichTextTab.html |
+| NotesRichTextTable | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_RichTextTable.html |
+| NotesSession | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Session.html |
+| NotesStream | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Stream.html |
+| NotesUserID | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_USERID.html |
+| NotesView | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_View.html |
+| NotesViewColumn | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_ViewColumn.html |
+| NotesViewEntry | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_ViewEntry.html |
+| NotesViewEntryCollection | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_ViewEntryCollection.html |
+| NotesViewNavigator | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_ViewNavigator.html |
+| NotesXSLTResultTarget | https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_XSLTResultTarget.html |
 
 ### Sample verifications (5)
 
@@ -290,65 +297,75 @@ Before this notebook is usable for article citations:
 
 ### Entry point
 
-**`https://help.hcl-software.com/domino/14.5.0/admin/index.html`** — HCL Domino 14.5 admin documentation root. WebFetched, returns content.
+**`https://help.hcl-software.com/domino/14.5.1/admin/index.html`** — HCL Domino 14.5 admin documentation root. WebFetched, returns content.
 
 ### Top-level sections (10)
 
 | Section | URL |
 |---|---|
-| What's New | https://help.hcl-software.com/domino/14.5.0/admin/whats_new_in_domino.html |
-| Overview | https://help.hcl-software.com/domino/14.5.0/admin/over_overview_c.html |
-| Installing | https://help.hcl-software.com/domino/14.5.0/admin/inst_installing_t.html |
-| Upgrading | https://help.hcl-software.com/domino/14.5.0/admin/upgr_upgrading_t.html |
-| Planning | https://help.hcl-software.com/domino/14.5.0/admin/plan_planning_t.html |
-| Configuring | https://help.hcl-software.com/domino/14.5.0/admin/conf_configuring_t.html |
-| Security | https://help.hcl-software.com/domino/14.5.0/admin/conf_configuringsecurity_c.html |
-| Administering | https://help.hcl-software.com/domino/14.5.0/admin/administering.html |
-| Tuning | https://help.hcl-software.com/domino/14.5.0/admin/tune_tuning_t.html |
-| Troubleshooting | https://help.hcl-software.com/domino/14.5.0/admin/trub_troubleshooting_c.html |
+| What's New | https://help.hcl-software.com/domino/14.5.1/admin/whats_new_in_domino.html |
+| Overview | https://help.hcl-software.com/domino/14.5.1/admin/over_overview_c.html |
+| Installing | https://help.hcl-software.com/domino/14.5.1/admin/inst_installing_t.html |
+| Upgrading | https://help.hcl-software.com/domino/14.5.1/admin/upgr_upgrading_t.html |
+| Planning | https://help.hcl-software.com/domino/14.5.1/admin/plan_planning_t.html |
+| Configuring | https://help.hcl-software.com/domino/14.5.1/admin/conf_configuring_t.html |
+| Security | https://help.hcl-software.com/domino/14.5.1/admin/conf_configuringsecurity_c.html |
+| Administering | https://help.hcl-software.com/domino/14.5.1/admin/administering.html |
+| Tuning | https://help.hcl-software.com/domino/14.5.1/admin/tune_tuning_t.html |
+| Troubleshooting | https://help.hcl-software.com/domino/14.5.1/admin/trub_troubleshooting_c.html |
 
 ### Security subsections (13 — most relevant to our site's coverage)
 
 | Subsection | URL |
 |---|---|
-| Overview of Domino security | https://help.hcl-software.com/domino/14.5.0/admin/othr_overviewofdominosecurity_c.html |
-| Server access | https://help.hcl-software.com/domino/14.5.0/admin/conf_serveraccessfornotesusersinternetusersanddomino_c.html |
-| Database ACL | https://help.hcl-software.com/domino/14.5.0/admin/conf_thedatabaseaccesscontrollist_c.html |
-| Server and user IDs | https://help.hcl-software.com/domino/14.5.0/admin/conf_dominoserverandnotesuserids_c.html |
-| Execution control list | https://help.hcl-software.com/domino/14.5.0/admin/conf_theexecutioncontrollist_t.html |
-| Server-based certification authority | https://help.hcl-software.com/domino/14.5.0/admin/conf_dominoserverbasedcertificationauthority_c.html |
-| TLS security | https://help.hcl-software.com/domino/14.5.0/admin/conf_sslsecurity_c.html |
-| TLS and S/MIME for clients | https://help.hcl-software.com/domino/14.5.0/admin/conf_sslandsmimeforclients_c.html |
-| Encryption | https://help.hcl-software.com/domino/14.5.0/admin/conf_encryption_c.html |
-| Web-based authentication | https://help.hcl-software.com/domino/14.5.0/admin/web_based_auth.html |
-| OIDC provider | https://help.hcl-software.com/domino/14.5.0/admin/secu_use_domino_as_oidc_provider_c.html |
-| Credential store | https://help.hcl-software.com/domino/14.5.0/admin/secu_using_a_credential_store_to_share_credentials_t.html |
-| Key size history | https://help.hcl-software.com/domino/14.5.0/admin/secu_keyfilesize.html |
+| Overview of Domino security | https://help.hcl-software.com/domino/14.5.1/admin/othr_overviewofdominosecurity_c.html |
+| Server access | https://help.hcl-software.com/domino/14.5.1/admin/conf_serveraccessfornotesusersinternetusersanddomino_c.html |
+| Database ACL | https://help.hcl-software.com/domino/14.5.1/admin/conf_thedatabaseaccesscontrollist_c.html |
+| Server and user IDs | https://help.hcl-software.com/domino/14.5.1/admin/conf_dominoserverandnotesuserids_c.html |
+| Execution control list | https://help.hcl-software.com/domino/14.5.1/admin/conf_theexecutioncontrollist_t.html |
+| Server-based certification authority | https://help.hcl-software.com/domino/14.5.1/admin/conf_dominoserverbasedcertificationauthority_c.html |
+| TLS security | https://help.hcl-software.com/domino/14.5.1/admin/conf_sslsecurity_c.html |
+| TLS and S/MIME for clients | https://help.hcl-software.com/domino/14.5.1/admin/conf_sslandsmimeforclients_c.html |
+| Encryption | https://help.hcl-software.com/domino/14.5.1/admin/conf_encryption_c.html |
+| Web-based authentication | https://help.hcl-software.com/domino/14.5.1/admin/web_based_auth.html |
+| OIDC provider | https://help.hcl-software.com/domino/14.5.1/admin/secu_use_domino_as_oidc_provider_c.html |
+| Credential store | https://help.hcl-software.com/domino/14.5.1/admin/secu_using_a_credential_store_to_share_credentials_t.html |
+| Key size history | https://help.hcl-software.com/domino/14.5.1/admin/secu_keyfilesize.html |
 
 ### TLS security leaf topics (10 — relevant to NotesHTTPRequest trust store, NRPC encryption articles)
 
 | Topic | URL |
 |---|---|
-| Certificate Manager / certstore.nsf | https://help.hcl-software.com/domino/14.5.0/admin/secu_le_using_certificate_manager.html |
-| TLS port configuration | https://help.hcl-software.com/domino/14.5.0/admin/conf_sslportconfiguration_c.html |
-| Requiring TLS connection | https://help.hcl-software.com/domino/14.5.0/admin/conf_requiringansslconnectiontoaserver_t.html |
-| HSTS configuration | https://help.hcl-software.com/domino/14.5.0/admin/secu_configure_dom_for_hsts.html |
-| Internet cross-certificate | https://help.hcl-software.com/domino/14.5.0/admin/conf_creatinganinternetcrosscertificateforservertoserv_t.html |
-| Database access for TLS clients | https://help.hcl-software.com/domino/14.5.0/admin/conf_settingupdatabaseaccessforsslclients_c.html |
-| TLS cipher restrictions | https://help.hcl-software.com/domino/14.5.0/admin/conf_modifyingsslcipherrestrictions_t.html |
-| Web TLS client auth | https://help.hcl-software.com/domino/14.5.0/admin/conf_authenticatingwebsslclientsinsecondarydominoandld_c.html |
-| TLS session resumption | https://help.hcl-software.com/domino/14.5.0/admin/conf_sslsessionresumption_c.html |
-| Cert management without CertMgr | https://help.hcl-software.com/domino/14.5.0/admin/conf_managingservercertificatesandcertificaterequests_t.html |
+| Certificate Manager / certstore.nsf | https://help.hcl-software.com/domino/14.5.1/admin/secu_le_using_certificate_manager.html |
+| TLS port configuration | https://help.hcl-software.com/domino/14.5.1/admin/conf_sslportconfiguration_c.html |
+| Requiring TLS connection | https://help.hcl-software.com/domino/14.5.1/admin/conf_requiringansslconnectiontoaserver_t.html |
+| HSTS configuration | https://help.hcl-software.com/domino/14.5.1/admin/secu_configure_dom_for_hsts.html |
+| Internet cross-certificate | https://help.hcl-software.com/domino/14.5.1/admin/conf_creatinganinternetcrosscertificateforservertoserv_t.html |
+| Database access for TLS clients | https://help.hcl-software.com/domino/14.5.1/admin/conf_settingupdatabaseaccessforsslclients_c.html |
+| TLS cipher restrictions | https://help.hcl-software.com/domino/14.5.1/admin/conf_modifyingsslcipherrestrictions_t.html |
+| Web TLS client auth | https://help.hcl-software.com/domino/14.5.1/admin/conf_authenticatingwebsslclientsinsecondarydominoandld_c.html |
+| TLS session resumption | https://help.hcl-software.com/domino/14.5.1/admin/conf_sslsessionresumption_c.html |
+| Cert management without CertMgr | https://help.hcl-software.com/domino/14.5.1/admin/conf_managingservercertificatesandcertificaterequests_t.html |
 
-### Pre-existing cited URLs (used in published articles)
+### URLs currently cited by published articles (note version mismatch)
 
-These are already cited in the site's published 14.5-security articles:
+The site's published 14.5-security articles target 14.5.0 paths.
+The notebook URLs above use 14.5.1 (latest). For consistency you may
+want to retro-fit existing articles' `sources` frontmatter to 14.5.1
+— it's a one-line sed across the 6 affected files. See "Action
+required" at the bottom of this document.
 
-- `https://help.hcl-software.com/domino/14.5.0/admin/wn_145_security_features.html` (14.5 security features release note)
-- `https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption.html` (Mandated NRPC Port Encryption overview)
-- `https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption_enabling.html` (Enabling guide)
-- `https://help.hcl-software.com/domino/14.5.0/admin/conf_encryptingnrpccommunicationonaserverport_t.html` (Encrypting NRPC port)
-- `https://help.hcl-software.com/domino/14.5.0/admin/conf_port_encryption_t.html` (Port encryption configuration)
+Currently cited (14.5.0):
+
+- `https://help.hcl-software.com/domino/14.5.0/admin/wn_145_security_features.html` (5/10 / 5/11 / 5/12 articles)
+- `https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption.html` (5/11 / 5/12)
+- `https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption_enabling.html` (5/12)
+- `https://help.hcl-software.com/domino/14.5.0/admin/conf_encryptingnrpccommunicationonaserverport_t.html` (5/11)
+- `https://help.hcl-software.com/domino/14.5.0/admin/conf_port_encryption_t.html` (5/11)
+
+Also worth noting: LotusScript class deep-dive articles (5/7, 5/9, 5/13)
+cite `dom_designer/14.0.0/basic/...` URLs — even older. These pages still
+work, but if upgrading consistency is desired, batch-rewrite to 14.5.1.
 
 ### Sample verifications (4)
 
@@ -376,10 +393,10 @@ If the notebook needs to grow later, drill into other top-level sections (Config
 
 | Domain | Entry point | Leaf URLs identified | NotebookLM upload strategy |
 |---|---|---|---|
-| Java back-end API | `dom_designer/14.5.0/basic/H_10_NOTES_CLASSES_ATOZ_JAVA.html` | 63 class pages | Single notebook, 63 URL sources |
-| SSJS / XPages API | `dom_designer/14.0.0/reference/r_wpdr_intro_c.html` | 8 sections + 55 Notes* classes = 63 | Single notebook, 8 section roots + 55 class URLs |
+| Java back-end API | `dom_designer/14.5.1/basic/H_10_NOTES_CLASSES_ATOZ_JAVA.html` | 63 class pages | Single notebook, 63 URL sources |
+| SSJS / XPages API | `dom_designer/14.5.1/reference/r_wpdr_intro_c.html` | 8 sections + 55 Notes* classes = 63 | Single notebook, 8 section roots + 55 class URLs |
 | Domino REST API | `opensource.hcltechsw.com/Domino-rest-api/` | 7 nav + 12 reference categories + OpenAPI spec = 19 URLs + 1 spec | Single notebook, 19 URLs + OpenAPI YAML upload |
-| Domino Admin | `domino/14.5.0/admin/index.html` | 10 top sections + 13 Security + 10 TLS leaves = 33 | Single notebook, 33 URL sources |
+| Domino Admin | `domino/14.5.1/admin/index.html` | 10 top sections + 13 Security + 10 TLS leaves = 33 | Single notebook, 33 URL sources |
 
 ---
 
@@ -402,6 +419,25 @@ If the notebook needs to grow later, drill into other top-level sections (Config
    ```
 
 5. **Update `scripts/generate-article.ts:TRUSTED_HOST_HINTS`** — add `opensource.hcltechsw.com` explicitly (already covered by `hcltechsw.com` via endsWith, but explicit listing avoids ambiguity).
+
+6. **(Optional)** Retro-fit published articles to 14.5.1 URLs. Existing
+   articles cite 14.5.0 or 14.0.0 paths in their `sources` frontmatter
+   + body inline links. The legacy URLs still resolve, but consistency
+   with the new notebooks would call for a sed-style batch rewrite:
+
+   ```bash
+   # 14.5.0 admin → 14.5.1 admin (affects 5/10, 5/11, 5/12)
+   sed -i 's|domino/14.5.0/admin/|domino/14.5.1/admin/|g' \
+     src/content/posts/**/2026-05-{10,11,12}-*.md
+
+   # 14.0.0 designer → 14.5.1 designer (affects 5/7, 5/9, 5/13, others)
+   sed -i 's|dom_designer/14.0.0/basic/|dom_designer/14.5.1/basic/|g' \
+     src/content/posts/**/*.md
+   ```
+
+   The coverage tracker is filename-basename-only so it doesn't care
+   about version. But for reader UX and search consistency, 14.5.1
+   across the board is cleaner.
 
 ---
 
