@@ -11,11 +11,11 @@ tags:
   - "Domino Designer"
 sources:
   - title: "NotesHTTPRequest class (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTES_HTTPREQUEST_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTES_HTTPREQUEST_CLASS.html"
   - title: "NotesJSONNavigator class (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESJSONNAVIGATOR_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONNAVIGATOR_CLASS.html"
   - title: "NotesHTTPRequest.PreferJSONNavigator property — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_preferjsonnavigator_property_HTTPRequest.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_preferjsonnavigator_property_HTTPRequest.html"
 cover: "/covers/lotusscript-http-json.png"
 coverStyle: "risograph"
 relatedJava: []
@@ -30,7 +30,7 @@ Before V12, calling an external REST API from LotusScript meant one of:
 - using `Shell` to call curl and reading the output file,
 - writing a Java agent and using Java's HTTP stack.
 
-Domino V12 baked in two LS classes — [`NotesHTTPRequest`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTES_HTTPREQUEST_CLASS.html) and `NotesJSONNavigator` — that keep the whole "fire HTTP → get JSON → walk fields" workflow inside LotusScript itself. No shims, no out-of-process tools.
+Domino V12 baked in two LS classes — [`NotesHTTPRequest`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTES_HTTPREQUEST_CLASS.html) and `NotesJSONNavigator` — that keep the whole "fire HTTP → get JSON → walk fields" workflow inside LotusScript itself. No shims, no out-of-process tools.
 
 ## NotesHTTPRequest: making the call
 
@@ -108,7 +108,7 @@ The `Get*Element` methods return these, and you read values off them.
 
 The naive flow is "`req.Get(url)` returns a string → feed that string to `CreateJSONNavigator` and parse." There's a trap: **the string return path has a 64K cap.** Any JSON response over 64K silently truncates.
 
-[The `PreferJSONNavigator` property](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_preferjsonnavigator_property_HTTPRequest.html) fixes that — set it to `True` and `Get` / `Post` etc. **return a `NotesJSONNavigator` directly**, with no string intermediary:
+[The `PreferJSONNavigator` property](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_preferjsonnavigator_property_HTTPRequest.html) fixes that — set it to `True` and `Get` / `Post` etc. **return a `NotesJSONNavigator` directly**, with no string intermediary:
 
 ```lotusscript
 req.PreferJSONNavigator = True

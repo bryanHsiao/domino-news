@@ -10,13 +10,13 @@ tags:
   - "Domino Designer"
 sources:
   - title: "NotesDocument class (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDOCUMENT_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html"
   - title: "NotesDocument.Save method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_SAVE_METHOD_DOC.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_DOC.html"
   - title: "NotesDocument.GetItemValue method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_GETITEMVALUE_METHOD.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETITEMVALUE_METHOD.html"
   - title: "NotesDocument.Remove method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_REMOVE_METHOD_DOC.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_REMOVE_METHOD_DOC.html"
 relatedJava: ["Document"]
 relatedSsjs: ["document"]
 cover: "/covers/notes-document.png"
@@ -25,7 +25,7 @@ coverStyle: "paper-craft"
 
 ## TL;DR
 
-[`NotesDocument`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDOCUMENT_CLASS.html) is the class LotusScript reaches for whenever you do anything with a Domino document — create, read, modify, delete, set readers/authors, manage attachments, post responses, run ComputeWithForm. It's everywhere. But `NotesDocument` has details that bite even experienced developers:
+[`NotesDocument`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html) is the class LotusScript reaches for whenever you do anything with a Domino document — create, read, modify, delete, set readers/authors, manage attachments, post responses, run ComputeWithForm. It's everywhere. But `NotesDocument` has details that bite even experienced developers:
 
 1. **`GetItemValue` always returns an array** — even for single-value items, you need `(0)`
 2. **`Save(force, createResponse, markRead)`'s `createResponse` doesn't "create a response document"** — it controls conflict handling (creating a conflict doc as a response to the original). Widely misread
@@ -58,7 +58,7 @@ The most common LS-newbie confusion: "Item" and "Field" **are not the same thing
 When you put a `Subject` field on a form and the user types "test" and saves, what gets stored on the document is the **item** named `Subject`. The item and the field share a name by form-designer convention — that **isn't a physical binding**. Which means:
 
 - From LS you can add an item to a document that has no corresponding field on the form (via `ReplaceItemValue`), and it'll be stored on the document but invisible in the UI
-- From LS you can modify an item value without the form's computed fields, input translations, or validations running (the [Save doc](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_SAVE_METHOD_DOC.html) puts it directly: "Direct item access bypasses form validations, input translations, and computed fields"). To trigger the form logic, call `doc.ComputeWithForm()`
+- From LS you can modify an item value without the form's computed fields, input translations, or validations running (the [Save doc](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_DOC.html) puts it directly: "Direct item access bypasses form validations, input translations, and computed fields"). To trigger the form logic, call `doc.ComputeWithForm()`
 
 This distinction matters for understanding the five pitfalls below.
 
@@ -137,7 +137,7 @@ Call doc.RemovePermanently(True)
 
 ### 1. `GetItemValue` always returns an array — missing `(0)` triggers type mismatch
 
-The [GetItemValue doc](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_GETITEMVALUE_METHOD.html) puts it directly: "For text, number, and time-date items, GetItemValue always returns an array, even when there is only a single value in the item."
+The [GetItemValue doc](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETITEMVALUE_METHOD.html) puts it directly: "For text, number, and time-date items, GetItemValue always returns an array, even when there is only a single value in the item."
 
 In practice:
 
@@ -163,7 +163,7 @@ When a new dev's agent throws a type-mismatch error, the missing `(0)` is the ca
 
 ### 2. `Save(force, createResponse, markRead)`'s `createResponse` isn't "create a response document"
 
-The three parameters of the [Save method](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_SAVE_METHOD_DOC.html) often get misread, especially `createResponse`:
+The three parameters of the [Save method](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_DOC.html) often get misread, especially `createResponse`:
 
 | Parameter | What it actually means |
 |---|---|
@@ -177,12 +177,12 @@ The 90% real-world call: `Save(True, False)` — overwrite on conflict, no confl
 
 ### 3. `Remove(force)`'s `force` isn't a "permanent delete" switch
 
-Per the [Remove doc](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_REMOVE_METHOD_DOC.html):
+Per the [Remove doc](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_REMOVE_METHOD_DOC.html):
 
 - **`force` parameter**: `True` means "delete even if someone else's script has the doc open," `False` means "skip the delete if there's a conflict"
 - **Soft vs hard delete**: determined by the **database-level setting** "Allow soft deletions." With it off, `Remove(True)` is a permanent delete. With it on, `Remove(True)` puts the doc in the soft-delete area (where it can be restored)
 
-To bypass the DB's soft-delete setting and force permanent deletion unconditionally, use [`RemovePermanently`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDOCUMENT_CLASS.html):
+To bypass the DB's soft-delete setting and force permanent deletion unconditionally, use [`RemovePermanently`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html):
 
 ```lotusscript
 Call doc.RemovePermanently(True)
@@ -208,7 +208,7 @@ A safe habit for newer code: **default to `ReplaceItemValue`** — it has essent
 
 ### 5. Forgetting `.Save` — the most common silent bug
 
-The [HCL NotesDocument doc](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDOCUMENT_CLASS.html) puts the warning right in the class description: "After you create, modify, or delete a document, you must save the changes by calling the Save method... If you don't call Save before the script finishes, all of your changes to a NotesDocument are lost."
+The [HCL NotesDocument doc](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html) puts the warning right in the class description: "After you create, modify, or delete a document, you must save the changes by calling the Save method... If you don't call Save before the script finishes, all of your changes to a NotesDocument are lost."
 
 In practice: an agent modifies thirty fields, but **the whole agent never calls `doc.Save`**. The agent finishes, Domino releases the in-memory document, and **none of the changes get written**. No error, no warning.
 

@@ -9,9 +9,9 @@ tags:
   - "Release Notes"
 sources:
   - title: "Enabling mandated NRPC port encryption — HCL Domino 14.5 Admin Help"
-    url: "https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption_enabling.html"
+    url: "https://help.hcl-software.com/domino/14.5.1/admin/mandated_port_encryption_enabling.html"
   - title: "Mandating level of port encryption — HCL Domino 14.5 Admin Help"
-    url: "https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption.html"
+    url: "https://help.hcl-software.com/domino/14.5.1/admin/mandated_port_encryption.html"
   - title: "Domino 14.5: Domino ディレクトリのサーバービューに「?」アイコンが表示される (KB0127764) — HCL Software Support"
     url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0127764"
 relatedJava: []
@@ -22,7 +22,7 @@ coverStyle: "pencil-sketch"
 
 ## 前情提要
 
-[昨天的概念篇](/domino-news/posts/mandated-port-encryption) 解釋了 Domino 14.5 升級後 server view 的 `?` icon 是什麼、Mandated NRPC Port Encryption 為什麼存在、三種啟用模式（停用 / logging 觀察 / mandate 強制）的差別。本篇把 HCL 官方的 [Enabling mandated NRPC port encryption](https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption_enabling.html) 10 步驟拆開講，附 ini 名稱、指令、踩雷點。
+[昨天的概念篇](/domino-news/posts/mandated-port-encryption) 解釋了 Domino 14.5 升級後 server view 的 `?` icon 是什麼、Mandated NRPC Port Encryption 為什麼存在、三種啟用模式（停用 / logging 觀察 / mandate 強制）的差別。本篇把 HCL 官方的 [Enabling mandated NRPC port encryption](https://help.hcl-software.com/domino/14.5.1/admin/mandated_port_encryption_enabling.html) 10 步驟拆開講，附 ini 名稱、指令、踩雷點。
 
 ## 前置條件
 

@@ -10,18 +10,18 @@ tags:
   - "Domino Designer"
 sources:
   - title: "NotesXMLProcessor (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESXMLPROCESSOR_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html"
   - title: "NotesXMLProcessor.SetInput method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_SETINPUT_METHOD_XMLPROCESSOR.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SETINPUT_METHOD_XMLPROCESSOR.html"
   - title: "NotesDXLExporter (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDXLEXPORTER_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLEXPORTER_CLASS.html"
 cover: "/covers/notes-xml-processor.png"
 coverStyle: "low-poly-3d"
 ---
 
 ## NotesXMLProcessor 在 LotusScript 中扮演什麼角色
 
-[`NotesXMLProcessor`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESXMLPROCESSOR_CLASS.html) 是「所有 XML 處理類別共用的 base class，含共通屬性與方法」。重點是 — 它**是個 abstract class**，文件原文：「The NotesXMLProcessor class is abstract and you do not create NotesXMLProcessor objects.」要用就一定要透過 `NotesSession` 上對應的 `Create*` 方法拿一個衍生類別實例。
+[`NotesXMLProcessor`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html) 是「所有 XML 處理類別共用的 base class，含共通屬性與方法」。重點是 — 它**是個 abstract class**，文件原文：「The NotesXMLProcessor class is abstract and you do not create NotesXMLProcessor objects.」要用就一定要透過 `NotesSession` 上對應的 `Create*` 方法拿一個衍生類別實例。
 
 > **版本與限制**：Release 6 起加入；**不支援 COM**（從 LotusScript 用沒問題，但走 COM 自動化就 access 不到）。
 
@@ -50,13 +50,13 @@ coverStyle: "low-poly-3d"
 
 ## 共通方法
 
-- [`SetInput`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_SETINPUT_METHOD_XMLPROCESSOR.html) — 指定 XML 處理的輸入。**接受的型別依衍生類別而異**：DXLExporter 接 `NotesDatabase` / `NotesDocumentCollection` / `NotesDocument`；DOMParser / SAXParser 接 `NotesStream` / 檔案路徑字串；DXLImporter 接 DXL 字串 / `NotesStream` 等
+- [`SetInput`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SETINPUT_METHOD_XMLPROCESSOR.html) — 指定 XML 處理的輸入。**接受的型別依衍生類別而異**：DXLExporter 接 `NotesDatabase` / `NotesDocumentCollection` / `NotesDocument`；DOMParser / SAXParser 接 `NotesStream` / 檔案路徑字串；DXLImporter 接 DXL 字串 / `NotesStream` 等
 - `SetOutput` — 指定輸出位置（同樣依衍生類別而異 — 通常是 `NotesStream` 或檔案路徑字串）
 - `Process` — 啟動轉換或解析（同步呼叫，跑完才返回）
 
 ## 範例：把整個 DB 匯出為 DXL
 
-最常見的用法是用 [`NotesDXLExporter`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDXLEXPORTER_CLASS.html) 把當前資料庫整個轉成 DXL 檔：
+最常見的用法是用 [`NotesDXLExporter`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLEXPORTER_CLASS.html) 把當前資料庫整個轉成 DXL 檔：
 
 ```lotusscript
 Sub Initialize

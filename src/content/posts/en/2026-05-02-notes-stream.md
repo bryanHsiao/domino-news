@@ -10,11 +10,11 @@ tags:
   - "Domino Designer"
 sources:
   - title: "NotesStream class (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESSTREAM_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSTREAM_CLASS.html"
   - title: "NotesStream.Open method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_OPEN_METHOD_STREAM.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_OPEN_METHOD_STREAM.html"
   - title: "NotesStream.Truncate method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_TRUNCATE_METHOD_STREAM.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_TRUNCATE_METHOD_STREAM.html"
 cover: "/covers/notes-stream.png"
 coverStyle: "paper-craft"
 relatedJava: ["Stream"]
@@ -45,7 +45,7 @@ If Not s.Open("C:\reports\sales.txt", "UTF-8") Then
 End If
 ```
 
-The signature is `flag = notesStream.Open(pathname$ [, charset$])`. `charset$` is optional and defaults to `"System"`. Valid values include `ASCII`, `UTF-8`, `UTF-16`, `Big5`, `Shift_JIS`, and the special `"Binary"` for byte-only streams. If the file does not exist, `Open` creates it. The full charset list is on the [NotesStream.Open method reference](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_OPEN_METHOD_STREAM.html).
+The signature is `flag = notesStream.Open(pathname$ [, charset$])`. `charset$` is optional and defaults to `"System"`. Valid values include `ASCII`, `UTF-8`, `UTF-16`, `Big5`, `Shift_JIS`, and the special `"Binary"` for byte-only streams. If the file does not exist, `Open` creates it. The full charset list is on the [NotesStream.Open method reference](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_OPEN_METHOD_STREAM.html).
 
 `Open` returns `False` when the path is invalid, the stream is already open, the stream already has buffered content, or the charset is unrecognised.
 
@@ -72,7 +72,7 @@ Call s.Close
 
 Two things worth noticing:
 
-1. **`Truncate` is how you get "write-from-scratch" semantics.** Per the [NotesStream.Truncate reference](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_TRUNCATE_METHOD_STREAM.html), it deletes the stream contents and resets `Bytes` to 0, `Position` to 0, and `IsEOS` to True. Call it after `Open` when you want to overwrite an existing file.
+1. **`Truncate` is how you get "write-from-scratch" semantics.** Per the [NotesStream.Truncate reference](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_TRUNCATE_METHOD_STREAM.html), it deletes the stream contents and resets `Bytes` to 0, `Position` to 0, and `IsEOS` to True. Call it after `Open` when you want to overwrite an existing file.
 2. **`WriteText` quietly writes a BOM** when the charset is `Unicode` / `UTF-16` / `UTF-16BE` / `UTF-16LE` and the stream is empty at the moment of the write. The `Bytes` property reported afterwards explicitly excludes that BOM.
 
 `WriteText(text$, [eol&])` accepts up to 2 GB per call. `eol&` controls the line terminator: `EOL_CRLF` (default), `EOL_CR`, `EOL_LF`, `EOL_LFCR`, or `EOL_NONE`.
@@ -110,7 +110,7 @@ The `"Binary"` charset tells the stream to treat the file as raw bytes with no e
 
 ### 1. Closing a zero-byte stream deletes the file
 
-Per the [NotesStream class reference](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESSTREAM_CLASS.html), *"Closing a stream with zero bytes deletes the associated file."* If you `Open` + `Truncate` + `Close` without writing anything, the file is gone.
+Per the [NotesStream class reference](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSTREAM_CLASS.html), *"Closing a stream with zero bytes deletes the associated file."* If you `Open` + `Truncate` + `Close` without writing anything, the file is gone.
 
 ### 2. `Read` / `Write` are capped at 65 535 bytes per call
 

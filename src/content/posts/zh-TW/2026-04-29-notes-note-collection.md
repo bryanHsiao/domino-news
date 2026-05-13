@@ -11,11 +11,11 @@ tags:
   - "DevOps"
 sources:
   - title: "NotesNoteCollection (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESNOTECOLLECTION_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESNOTECOLLECTION_CLASS.html"
   - title: "NotesDatabase CreateNoteCollection method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_CREATENOTECOLLECTION_METHOD_DATABASE.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATENOTECOLLECTION_METHOD_DATABASE.html"
   - title: "NotesDXLExporter (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDXLEXPORTER_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLEXPORTER_CLASS.html"
 cover: "/covers/notes-note-collection.png"
 coverStyle: "oil-chiaroscuro"
 ---
@@ -256,7 +256,7 @@ Loop
 
 ## 最常用的場景：DXL 匯出
 
-`NotesNoteCollection` 在實務上最常見的用途是搭配 [`NotesDXLExporter`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDXLEXPORTER_CLASS.html)：
+`NotesNoteCollection` 在實務上最常見的用途是搭配 [`NotesDXLExporter`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLEXPORTER_CLASS.html)：
 
 ```lotusscript
 Sub ExportAllDesignToDXL(db As NotesDatabase, outputPath As String)

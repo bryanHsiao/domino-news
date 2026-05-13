@@ -11,11 +11,11 @@ tags:
   - "Domino Designer"
 sources:
   - title: "NotesHTTPRequest class (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTES_HTTPREQUEST_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTES_HTTPREQUEST_CLASS.html"
   - title: "NotesJSONNavigator class (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESJSONNAVIGATOR_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONNAVIGATOR_CLASS.html"
   - title: "NotesHTTPRequest.PreferJSONNavigator property — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_preferjsonnavigator_property_HTTPRequest.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_preferjsonnavigator_property_HTTPRequest.html"
 cover: "/covers/lotusscript-http-json.png"
 coverStyle: "risograph"
 ---
@@ -28,7 +28,7 @@ V12 之前，LotusScript 要打外部 REST API 通常要：
 - 用 `Shell` 呼叫 curl 再讀檔案
 - 寫 Java agent 套 Java 標準 HTTP API
 
-Domino V12 起 LS 內建兩個 class — [`NotesHTTPRequest`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTES_HTTPREQUEST_CLASS.html) 跟 `NotesJSONNavigator` — 把「打 HTTP → 拿 JSON → 解析欄位」這件事完全留在 LS 裡，沒有外掛、不用呼叫外部行程。
+Domino V12 起 LS 內建兩個 class — [`NotesHTTPRequest`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTES_HTTPREQUEST_CLASS.html) 跟 `NotesJSONNavigator` — 把「打 HTTP → 拿 JSON → 解析欄位」這件事完全留在 LS 裡，沒有外掛、不用呼叫外部行程。
 
 ## NotesHTTPRequest：對外打 HTTP
 
@@ -106,7 +106,7 @@ NotesJSONNavigator 處理整棵樹，但個別節點對應到三種 class：
 
 正常想法是「`req.Get(url)` 回字串 → 把字串塞給 `CreateJSONNavigator` parse」 — 但這條路有個雷：**HTTPRequest 的字串輸出有 64K 上限**。一個 JSON response 超過 64K 就會被截斷。
 
-[`PreferJSONNavigator` 屬性](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_preferjsonnavigator_property_HTTPRequest.html)解決這件事 — 設成 `True`，`Get` / `Post` 等方法**直接回傳 `NotesJSONNavigator` 物件**（沒有字串中間步驟）：
+[`PreferJSONNavigator` 屬性](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_preferjsonnavigator_property_HTTPRequest.html)解決這件事 — 設成 `True`，`Get` / `Post` 等方法**直接回傳 `NotesJSONNavigator` 物件**（沒有字串中間步驟）：
 
 ```lotusscript
 req.PreferJSONNavigator = True

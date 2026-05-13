@@ -10,11 +10,11 @@ tags:
   - "Domino Designer"
 sources:
   - title: "NotesView class (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEW_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html"
   - title: "NotesView.GetAllDocumentsByKey method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_GETALLDOCUMENTSBYKEY_METHOD.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETALLDOCUMENTSBYKEY_METHOD.html"
   - title: "NotesView.GetDocumentByKey method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_GETDOCUMENTBYKEY_METHOD.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETDOCUMENTBYKEY_METHOD.html"
 relatedJava: ["View"]
 relatedSsjs: ["View"]
 cover: "/covers/getalldocumentsbykey.png"
@@ -23,7 +23,7 @@ coverStyle: "oil-chiaroscuro"
 
 ## Why almost every LotusScript developer has used this method
 
-`GetAllDocumentsByKey` on the [`NotesView`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEW_CLASS.html) class is the everyday lookup primitive in Notes development — pass a key, get back every document that matches. "All orders for this customer this year." "All tasks tagged to this project." "All contracts under this account." It's almost always GetAllDocumentsByKey under the hood.
+`GetAllDocumentsByKey` on the [`NotesView`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html) class is the everyday lookup primitive in Notes development — pass a key, get back every document that matches. "All orders for this customer this year." "All tasks tagged to this project." "All contracts under this account." It's almost always GetAllDocumentsByKey under the hood.
 
 But the method has design quirks the docs spell out and most people don't read all the way through. There are five common pitfalls, and this guide walks each one.
 
@@ -93,7 +93,7 @@ GetAllDocumentsByKey isn't alone — it has siblings:
 | Method | Returns | Use when |
 |---|---|---|
 | `GetDocumentByKey(key, [exact])` | A single `NotesDocument`, or **Nothing** on no-match | You expect a unique key and only want the first hit (fastest) |
-| [`GetAllDocumentsByKey(key, [exact])`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_GETALLDOCUMENTSBYKEY_METHOD.html) | `NotesDocumentCollection`, empty if no match | You want every matching doc as full document objects |
+| [`GetAllDocumentsByKey(key, [exact])`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETALLDOCUMENTSBYKEY_METHOD.html) | `NotesDocumentCollection`, empty if no match | You want every matching doc as full document objects |
 | `GetAllEntriesByKey(key, [exact])` | `NotesViewEntryCollection` | You want view entries (not docs) — to access `ColumnValues`, unread state, position, or other view-only metadata |
 | `GetAllReadEntries()` | `NotesViewEntryCollection` | All entries in the view that the current user has read |
 | `GetAllUnreadEntries()` | `NotesViewEntryCollection` | Same, but unread |
@@ -164,7 +164,7 @@ If the view's first column doesn't have "Sort: Ascending / Descending / Click on
 
 To debug: open the view in Designer, click the first column, properties panel → Sorting tab → confirm Sort is Ascending or Descending.
 
-### 2. Backslash-categorised columns (`Cat\\Subcat`) silently break [`GetDocumentByKey`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_GETDOCUMENTBYKEY_METHOD.html)
+### 2. Backslash-categorised columns (`Cat\\Subcat`) silently break [`GetDocumentByKey`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETDOCUMENTBYKEY_METHOD.html)
 
 Per the docs: "columns formatted with both categories and subcategories using the '\\\\' character will prevent the method from locating documents."
 

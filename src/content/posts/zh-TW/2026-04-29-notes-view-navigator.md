@@ -11,11 +11,11 @@ tags:
   - "Performance"
 sources:
   - title: "NotesViewNavigator (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEWNAVIGATOR_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEWNAVIGATOR_CLASS.html"
   - title: "NotesView CreateViewNav method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_CREATEVIEWNAV_METHOD_1631.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATEVIEWNAV_METHOD_1631.html"
   - title: "NotesView (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEW_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html"
 cover: "/covers/notes-view-navigator.png"
 coverStyle: "risograph"
 ---
@@ -32,14 +32,14 @@ Do Until doc Is Nothing
 Loop
 ```
 
-短小、易讀、絕大多數場景夠用。但碰到下列情境時，[`NotesViewNavigator`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEWNAVIGATOR_CLASS.html)（視圖導航器，從 Release 5 起就有）會比較順手：
+短小、易讀、絕大多數場景夠用。但碰到下列情境時，[`NotesViewNavigator`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEWNAVIGATOR_CLASS.html)（視圖導航器，從 Release 5 起就有）會比較順手：
 
 - 你需要的不是文件物件（`Document`），而是 **`ViewEntry`（視圖條目）**，它帶有視圖才有的中介資料：位置、`SiblingCount`、`IsCategory` / `IsTotal`、`ColumnValues` 等
 - 你只想走視圖的**某個子集**（單一類別下、所有未讀、某層以下、某個條目的後代）
 - 你需要走**類別總計列**或**類別本身**，不只是文件
 - 你想用**樹狀**方式爬 —— 子 → 父 → 兄弟姊妹，而不是平面的下一個 / 上一個
 
-導航器由 [`NotesView`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEW_CLASS.html) 的 `CreateViewNav*` 系列方法建立。
+導航器由 [`NotesView`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html) 的 `CreateViewNav*` 系列方法建立。
 
 ## 屬性（只有 4 個）
 

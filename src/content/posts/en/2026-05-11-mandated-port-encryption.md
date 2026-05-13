@@ -11,13 +11,13 @@ sources:
   - title: "Domino 14.5: A `?` icon appears in the Domino Directory server view (KB0127764, in Japanese) — HCL Software Support"
     url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0127764"
   - title: "What's new in Domino 14.5 — Security features (HCL admin docs)"
-    url: "https://help.hcl-software.com/domino/14.5.0/admin/wn_145_security_features.html"
+    url: "https://help.hcl-software.com/domino/14.5.1/admin/wn_145_security_features.html"
   - title: "Mandating level of port encryption — HCL Domino 14.5 Admin Help"
-    url: "https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption.html"
+    url: "https://help.hcl-software.com/domino/14.5.1/admin/mandated_port_encryption.html"
   - title: "Encrypting NRPC communication on a server port — HCL Domino 14.5 Admin Help"
-    url: "https://help.hcl-software.com/domino/14.5.0/admin/conf_encryptingnrpccommunicationonaserverport_t.html"
+    url: "https://help.hcl-software.com/domino/14.5.1/admin/conf_encryptingnrpccommunicationonaserverport_t.html"
   - title: "Configuring the level of port encryption and authentication — HCL Domino 14.5 Admin Help"
-    url: "https://help.hcl-software.com/domino/14.5.0/admin/conf_port_encryption_t.html"
+    url: "https://help.hcl-software.com/domino/14.5.1/admin/conf_port_encryption_t.html"
 relatedJava: []
 relatedSsjs: []
 cover: "/covers/mandated-port-encryption.png"
@@ -36,18 +36,18 @@ The 14.5 docs use "port encryption," "mandated port encryption," and "Encrypt ne
 
 | Layer | What it is | 14.5 default |
 |---|---|---|
-| **Layer 1: per-port encryption capability** | Server document → Ports → Notes Network Ports → "[Encrypt network data](https://help.hcl-software.com/domino/14.5.0/admin/conf_encryptingnrpccommunicationonaserverport_t.html)" checkbox per port | **On** (fresh install — per HCL: "[NRPC port encryption is enabled for increased security level](https://help.hcl-software.com/domino/14.5.0/admin/conf_port_encryption_t.html)") |
+| **Layer 1: per-port encryption capability** | Server document → Ports → Notes Network Ports → "[Encrypt network data](https://help.hcl-software.com/domino/14.5.1/admin/conf_encryptingnrpccommunicationonaserverport_t.html)" checkbox per port | **On** (fresh install — per HCL: "[NRPC port encryption is enabled for increased security level](https://help.hcl-software.com/domino/14.5.1/admin/conf_port_encryption_t.html)") |
 | **Layer 2: mandate enforcement** | Directory Profile's Mandated Port Encryption settings (the subject of this article) | **Off** (the `?` icon's origin) |
 
 ### What Layer 1 does
 
-NRPC (Notes Remote Procedure Call) is the protocol Domino servers use to talk to each other and that Notes clients use to talk to servers. The Layer 1 "Encrypt network data" checkbox has been around for many releases. [HCL's documentation](https://help.hcl-software.com/domino/14.5.0/admin/conf_encryptingnrpccommunicationonaserverport_t.html) frames its threat model as "prevent the network eavesdropping that's possible with a network protocol analyzer" — stop somebody running wireshark or tcpdump on your network from reading NRPC traffic.
+NRPC (Notes Remote Procedure Call) is the protocol Domino servers use to talk to each other and that Notes clients use to talk to servers. The Layer 1 "Encrypt network data" checkbox has been around for many releases. [HCL's documentation](https://help.hcl-software.com/domino/14.5.1/admin/conf_encryptingnrpccommunicationonaserverport_t.html) frames its threat model as "prevent the network eavesdropping that's possible with a network protocol analyzer" — stop somebody running wireshark or tcpdump on your network from reading NRPC traffic.
 
-There's a critical nuance, though. The [same doc](https://help.hcl-software.com/domino/14.5.0/admin/conf_encryptingnrpccommunicationonaserverport_t.html) states "Network data encryption occurs if you enable network data encryption on either side of a network connection" — either side enabling encryption is enough, typically "server enables, client follows along." Sounds great, but the inverse: **if the other side won't accept encryption — older version, deliberate refusal, configuration drift — that link may run in plaintext**. Layer 1 doesn't give the admin a way to insist "every link in the domain must be encrypted."
+There's a critical nuance, though. The [same doc](https://help.hcl-software.com/domino/14.5.1/admin/conf_encryptingnrpccommunicationonaserverport_t.html) states "Network data encryption occurs if you enable network data encryption on either side of a network connection" — either side enabling encryption is enough, typically "server enables, client follows along." Sounds great, but the inverse: **if the other side won't accept encryption — older version, deliberate refusal, configuration drift — that link may run in plaintext**. Layer 1 doesn't give the admin a way to insist "every link in the domain must be encrypted."
 
 ### What Layer 2 fills in
 
-Layer 2 is precisely that "insist" lever. The [official Mandated Port Encryption page](https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption.html) puts it directly: "Enables and enforces NRPC port encryption on both the client and server. If configured by an administrator, encryption needs to be enforced even if the other side does not want to use encryption" — enforce even when the other side declines.
+Layer 2 is precisely that "insist" lever. The [official Mandated Port Encryption page](https://help.hcl-software.com/domino/14.5.1/admin/mandated_port_encryption.html) puts it directly: "Enables and enforces NRPC port encryption on both the client and server. If configured by an administrator, encryption needs to be enforced even if the other side does not want to use encryption" — enforce even when the other side declines.
 
 So:
 
@@ -58,7 +58,7 @@ Two concepts, two configuration surfaces. The "default enabled" you see is **Lay
 
 ## What 14.5 actually adds: mandate + monitor
 
-Per the [14.5 security features release note](https://help.hcl-software.com/domino/14.5.0/admin/wn_145_security_features.html), the feature delivers two things:
+Per the [14.5 security features release note](https://help.hcl-software.com/domino/14.5.1/admin/wn_145_security_features.html), the feature delivers two things:
 
 | Aspect | What it does |
 |---|---|
@@ -69,7 +69,7 @@ So admins can adopt this through "**watch first, then enforce**" rather than "en
 
 ## `?` is one of several status icons
 
-The [official Mandated Port Encryption page](https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption.html) describes this column as a compliance indicator that switches icons based on configuration. In practice admins will see:
+The [official Mandated Port Encryption page](https://help.hcl-software.com/domino/14.5.1/admin/mandated_port_encryption.html) describes this column as a compliance indicator that switches icons based on configuration. In practice admins will see:
 
 | Status | Icon | Meaning |
 |---|---|---|
@@ -100,7 +100,7 @@ Layer 1 alone isn't enough (per the earlier section). Whether to also enable Lay
 | Regulated industries (finance, healthcare, government) | High — compliance audits expect provable "all traffic encrypted" guarantees, which Layer 1's "either side" model can't demonstrate cleanly |
 | Multi-partner B2B server-to-server | High — the other side's environment is outside your control; downgrade risk isn't manageable |
 
-The [HCL Layer 1 documentation](https://help.hcl-software.com/domino/14.5.0/admin/conf_encryptingnrpccommunicationonaserverport_t.html) frames the threat model as "network eavesdropping ... with a network protocol analyzer" — assuming an attacker is already running packet capture on your network. **Pure intranet office** treats that risk as low; **cross-network or public-Internet links** treat it as high. "Lateral movement" and "compliance auditability" are industry considerations not enumerated by HCL but practically influence whether to enable Mandated.
+The [HCL Layer 1 documentation](https://help.hcl-software.com/domino/14.5.1/admin/conf_encryptingnrpccommunicationonaserverport_t.html) frames the threat model as "network eavesdropping ... with a network protocol analyzer" — assuming an attacker is already running packet capture on your network. **Pure intranet office** treats that risk as low; **cross-network or public-Internet links** treat it as high. "Lateral movement" and "compliance auditability" are industry considerations not enumerated by HCL but practically influence whether to enable Mandated.
 
 Practical guidance:
 

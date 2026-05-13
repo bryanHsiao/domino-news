@@ -12,9 +12,9 @@ sources:
   - title: "View column requirements — HCL Domino 12.0.0 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/12.0.0/basic/dql_view_column.html"
   - title: "DQL syntax reference — HCL official docs"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_syntax.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/dql_syntax.html"
   - title: "Formula Language in DQL — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_formulalanguage.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/dql_formulalanguage.html"
 cover: "/covers/dql-pitfalls.png"
 coverStyle: "collage"
 relatedJava: ["DominoQuery"]
@@ -200,7 +200,7 @@ Real-world report: an engineer hit this in Node.js / JSON and wrote a single `\`
 
 ## DQL is case-insensitive (and accent-insensitive) — this one is good news
 
-The HCL [DQL syntax](https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_syntax.html) doc states explicitly:
+The HCL [DQL syntax](https://help.hcl-software.com/dom_designer/14.5.1/basic/dql_syntax.html) doc states explicitly:
 
 > "Text string evaluation is **case insensitive** and **accent insensitive**."
 
@@ -358,7 +358,7 @@ Form = 'Order' and @formula('@Year(orderDate) = 2026')
 
 The DQL planner uses `Form = 'Order'` first (with view-index optimization if available) to narrow the candidate set, then applies the `@formula` predicate on what's left. Much faster than throwing a single `@formula` at the whole NSF.
 
-### Restrictions (HCL [Formula Language in DQL](https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_formulalanguage.html))
+### Restrictions (HCL [Formula Language in DQL](https://help.hcl-software.com/dom_designer/14.5.1/basic/dql_formulalanguage.html))
 
 - Each `@formula` text term is capped at **256 bytes**
 - Not every `@Function` is supported — HCL lists a 130+ supported subset (`@Left`, `@Year`, `@Contains`, `@Matches`, `@Length`, `@Modulo`, `@Lowercase`, etc. — most common ones are in)

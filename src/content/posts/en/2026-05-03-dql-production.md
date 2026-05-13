@@ -12,11 +12,11 @@ tags:
   - "Security"
 sources:
   - title: "Domino Query Language overview — HCL official docs"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/dql_overview.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/dql_overview.html"
   - title: "NotesDominoQuery class (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDOMINOQUERY_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMINOQUERY_CLASS.html"
   - title: "DominoQuery class (Java) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_DOMINOQUERY_CLASS_JAVA.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_DOMINOQUERY_CLASS_JAVA.html"
 cover: "/covers/dql-production.png"
 coverStyle: "low-poly-3d"
 relatedJava: ["DominoQuery"]

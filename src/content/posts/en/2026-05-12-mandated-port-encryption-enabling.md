@@ -9,9 +9,9 @@ tags:
   - "Release Notes"
 sources:
   - title: "Enabling mandated NRPC port encryption — HCL Domino 14.5 Admin Help"
-    url: "https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption_enabling.html"
+    url: "https://help.hcl-software.com/domino/14.5.1/admin/mandated_port_encryption_enabling.html"
   - title: "Mandating level of port encryption — HCL Domino 14.5 Admin Help"
-    url: "https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption.html"
+    url: "https://help.hcl-software.com/domino/14.5.1/admin/mandated_port_encryption.html"
   - title: "Domino 14.5: A `?` icon appears in the Domino Directory server view (KB0127764, in Japanese) — HCL Software Support"
     url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0127764"
 relatedJava: []
@@ -22,7 +22,7 @@ coverStyle: "pencil-sketch"
 
 ## Recap
 
-[Yesterday's concept piece](/domino-news/en/posts/mandated-port-encryption) covered what the `?` icon means after a 14.5 upgrade, why Mandated NRPC Port Encryption exists, and the three enablement modes (off / logging-monitor / mandate-enforce). This post walks the [HCL "Enabling mandated NRPC port encryption" guide](https://help.hcl-software.com/domino/14.5.0/admin/mandated_port_encryption_enabling.html) step by step with ini names, commands, and the gotchas to watch for.
+[Yesterday's concept piece](/domino-news/en/posts/mandated-port-encryption) covered what the `?` icon means after a 14.5 upgrade, why Mandated NRPC Port Encryption exists, and the three enablement modes (off / logging-monitor / mandate-enforce). This post walks the [HCL "Enabling mandated NRPC port encryption" guide](https://help.hcl-software.com/domino/14.5.1/admin/mandated_port_encryption_enabling.html) step by step with ini names, commands, and the gotchas to watch for.
 
 ## Prerequisites
 

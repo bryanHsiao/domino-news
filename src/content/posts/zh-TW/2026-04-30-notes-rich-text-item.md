@@ -10,13 +10,13 @@ tags:
   - "Domino Designer"
 sources:
   - title: "NotesRichTextItem (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESRICHTEXTITEM_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTITEM_CLASS.html"
   - title: "NotesItem (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESITEM_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESITEM_CLASS.html"
   - title: "NotesDocument CreateRichTextItem method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_CREATERICHTEXTITEM_METHOD.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATERICHTEXTITEM_METHOD.html"
   - title: "NotesEmbeddedObject (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESEMBEDDEDOBJECT_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESEMBEDDEDOBJECT_CLASS.html"
 cover: "/covers/notes-rich-text-item.png"
 coverStyle: "photoreal-3d"
 ---
@@ -188,6 +188,6 @@ End Sub
 | 建表格 | `NotesRichTextTable`（由 `AppendTable` 產生） |
 | 走訪富文本內部結構 | `NotesRichTextNavigator`（由 `CreateNavigator` 產生） |
 | 選取/複製/刪除某段 | `NotesRichTextRange`（由 `CreateRange` 產生） |
-| 讀寫嵌入檔案 | [`NotesEmbeddedObject`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESEMBEDDEDOBJECT_CLASS.html)（由 `EmbeddedObjects` 屬性或 `GetEmbeddedObject` 取得） |
+| 讀寫嵌入檔案 | [`NotesEmbeddedObject`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESEMBEDDEDOBJECT_CLASS.html)（由 `EmbeddedObjects` 屬性或 `GetEmbeddedObject` 取得） |
 
 NotesRichTextItem 是 Notes 「**寫東西進文件**」這條 API 鏈的入口，後面的格式化、表格、嵌入都圍繞它展開。

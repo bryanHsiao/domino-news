@@ -10,11 +10,11 @@ tags:
   - "Domino Designer"
 sources:
   - title: "NotesXMLProcessor (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESXMLPROCESSOR_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html"
   - title: "NotesXMLProcessor.SetInput method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_SETINPUT_METHOD_XMLPROCESSOR.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SETINPUT_METHOD_XMLPROCESSOR.html"
   - title: "NotesDXLExporter (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDXLEXPORTER_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLEXPORTER_CLASS.html"
 cover: "/covers/notes-xml-processor.png"
 coverStyle: "low-poly-3d"
 relatedJava: ["XMLProcessor", "DxlExporter"]
@@ -23,7 +23,7 @@ relatedSsjs: ["XMLProcessor", "DxlExporter"]
 
 ## What NotesXMLProcessor actually is
 
-[`NotesXMLProcessor`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESXMLPROCESSOR_CLASS.html) is "a base class containing properties and methods common to all XML processing classes." The key thing — and the thing the docs put bluntly up front — is that **it is abstract**: "The NotesXMLProcessor class is abstract and you do not create NotesXMLProcessor objects." To use it at all, you go through one of the `NotesSession.Create*` methods to instantiate a derived class.
+[`NotesXMLProcessor`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html) is "a base class containing properties and methods common to all XML processing classes." The key thing — and the thing the docs put bluntly up front — is that **it is abstract**: "The NotesXMLProcessor class is abstract and you do not create NotesXMLProcessor objects." To use it at all, you go through one of the `NotesSession.Create*` methods to instantiate a derived class.
 
 > **Version and platform**: introduced in Release 6; **not supported in COM** (LotusScript works, COM automation does not).
 
@@ -53,13 +53,13 @@ Quick decision rule:
 
 ## Inherited methods
 
-- [`SetInput`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_SETINPUT_METHOD_XMLPROCESSOR.html) — specifies the input. **Accepted types depend on the derived class**: DXLExporter takes `NotesDatabase` / `NotesDocumentCollection` / `NotesDocument`; DOMParser / SAXParser take `NotesStream` or a file-path string; DXLImporter takes DXL strings or a `NotesStream`.
+- [`SetInput`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SETINPUT_METHOD_XMLPROCESSOR.html) — specifies the input. **Accepted types depend on the derived class**: DXLExporter takes `NotesDatabase` / `NotesDocumentCollection` / `NotesDocument`; DOMParser / SAXParser take `NotesStream` or a file-path string; DXLImporter takes DXL strings or a `NotesStream`.
 - `SetOutput` — specifies the destination (again, varies — typically a `NotesStream` or a file-path string).
 - `Process` — runs the conversion or parse. Synchronous: the call returns when processing finishes.
 
 ## Example: export the whole database to DXL
 
-The most common starting case is using [`NotesDXLExporter`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDXLEXPORTER_CLASS.html) to dump the current database to a DXL file:
+The most common starting case is using [`NotesDXLExporter`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLEXPORTER_CLASS.html) to dump the current database to a DXL file:
 
 ```lotusscript
 Sub Initialize

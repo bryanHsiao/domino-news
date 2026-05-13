@@ -11,11 +11,11 @@ tags:
   - "Performance"
 sources:
   - title: "NotesViewNavigator (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEWNAVIGATOR_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEWNAVIGATOR_CLASS.html"
   - title: "NotesView CreateViewNav method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_CREATEVIEWNAV_METHOD_1631.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATEVIEWNAV_METHOD_1631.html"
   - title: "NotesView (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEW_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html"
 cover: "/covers/notes-view-navigator.png"
 coverStyle: "risograph"
 relatedJava: ["ViewNavigator"]
@@ -34,14 +34,14 @@ Do Until doc Is Nothing
 Loop
 ```
 
-Short, readable, fine for most cases. But [`NotesViewNavigator`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEWNAVIGATOR_CLASS.html) (around since Release 5) is the right tool when you hit any of these:
+Short, readable, fine for most cases. But [`NotesViewNavigator`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEWNAVIGATOR_CLASS.html) (around since Release 5) is the right tool when you hit any of these:
 
 - You want a `ViewEntry` (with view-level metadata: position, SiblingCount, IsCategory/IsTotal, ColumnValues), not just the underlying `Document`
 - You want to walk **a subset of the view** — a single category, all unread, the descendants of one entry, only down to a max level
 - You want to walk **category headers or totals**, not just documents
 - You want a **tree-shaped** traversal — child / parent / siblings — instead of flat next/prev
 
-Navigators are produced by [`NotesView`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEW_CLASS.html)'s `CreateViewNav*` family.
+Navigators are produced by [`NotesView`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html)'s `CreateViewNav*` family.
 
 ## Properties (just four)
 

@@ -10,13 +10,13 @@ tags:
   - "Domino Designer"
 sources:
   - title: "NotesDocument class (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDOCUMENT_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html"
   - title: "NotesDocument.Save method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_SAVE_METHOD_DOC.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_DOC.html"
   - title: "NotesDocument.GetItemValue method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_GETITEMVALUE_METHOD.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETITEMVALUE_METHOD.html"
   - title: "NotesDocument.Remove method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_REMOVE_METHOD_DOC.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_REMOVE_METHOD_DOC.html"
 relatedJava: ["Document"]
 relatedSsjs: ["document"]
 cover: "/covers/notes-document.png"
@@ -25,7 +25,7 @@ coverStyle: "paper-craft"
 
 ## 重點摘要
 
-[`NotesDocument`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDOCUMENT_CLASS.html) 是 LotusScript 對 Domino 文件做任何事都會用到的類別 — 建立、讀取、修改、刪除、設 reader/author、handle attachment、發 response、跑 ComputeWithForm，全部都從這裡開始。但 `NotesDocument` 有很多容易被搞錯的細節：
+[`NotesDocument`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html) 是 LotusScript 對 Domino 文件做任何事都會用到的類別 — 建立、讀取、修改、刪除、設 reader/author、handle attachment、發 response、跑 ComputeWithForm，全部都從這裡開始。但 `NotesDocument` 有很多容易被搞錯的細節：
 
 1. **`GetItemValue` 永遠回 array** — 連單值欄位都是，少打 `(0)` 就會吃到 Variant array 物件
 2. **`Save(force, createResponse, markRead)` 的 `createResponse` 不是「建 response 文件」** — 是「衝突時把當前版本變成衝突文件」，常被誤解
@@ -58,7 +58,7 @@ LS 新手最常搞混的觀念：「Item」跟「Field」**指的不是同一個
 當你在 form 上設一個 `Subject` field、user 在文件填入「test」儲存後，**底層存的是 `Subject` 這個 item**。Item 跟 field 同名是 form designer 安排，**並不是物理綁定**。所以你可以：
 
 - 從 LS 在 doc 上加一個 form 上完全沒有的 item（用 `ReplaceItemValue`），它會被存進文件、但 UI 看不到
-- 從 LS 改 item 值、但 form 上的 computed field / input translation / validation **不會跑**（這是 [Save 文件](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_SAVE_METHOD_DOC.html)的原話：「Direct item access bypasses form validations, input translations, and computed fields」）— 要讓 form 邏輯跑一次得呼叫 `doc.ComputeWithForm()`
+- 從 LS 改 item 值、但 form 上的 computed field / input translation / validation **不會跑**（這是 [Save 文件](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_DOC.html)的原話：「Direct item access bypasses form validations, input translations, and computed fields」）— 要讓 form 邏輯跑一次得呼叫 `doc.ComputeWithForm()`
 
 知道這個觀念，後面五個踩雷點才能講清楚。
 
@@ -137,7 +137,7 @@ Call doc.RemovePermanently(True)
 
 ### 1. `GetItemValue` 永遠回 array — 漏 `(0)` 就 type mismatch
 
-[GetItemValue 文件](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_GETITEMVALUE_METHOD.html)原話：「For text, number, and time-date items, GetItemValue always returns an array, even when there is only a single value in the item.」
+[GetItemValue 文件](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETITEMVALUE_METHOD.html)原話：「For text, number, and time-date items, GetItemValue always returns an array, even when there is only a single value in the item.」
 
 實務上會看到：
 
@@ -163,7 +163,7 @@ s = doc.GetItemValueString("Subject")
 
 ### 2. `Save(force, createResponse, markRead)` 的 `createResponse` 不是「建 response 文件」
 
-[Save 文件](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_SAVE_METHOD_DOC.html)的三個參數常被誤解，特別是 `createResponse`：
+[Save 文件](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_DOC.html)的三個參數常被誤解，特別是 `createResponse`：
 
 | 參數 | 真正意義 |
 |---|---|
@@ -177,12 +177,12 @@ s = doc.GetItemValueString("Subject")
 
 ### 3. `Remove(force)` 的 `force` 不是「永久刪除」開關
 
-[Remove 文件](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_REMOVE_METHOD_DOC.html)：
+[Remove 文件](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_REMOVE_METHOD_DOC.html)：
 
 - **`force` 參數**：`True` 表示「即使他人 script 開啟此 doc 後我也照刪」、`False` 表示「衝突就不刪」
 - **軟刪除 vs 硬刪除**：取決於 **DB 級設定**「Allow soft deletions」 — 沒開、`Remove(True)` 就是永久刪除；有開、`Remove(True)` 會進 soft-delete 區（之後可以還原）
 
-要**繞過 DB 軟刪除設定**、無條件永久刪除，用 [`RemovePermanently`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDOCUMENT_CLASS.html)：
+要**繞過 DB 軟刪除設定**、無條件永久刪除，用 [`RemovePermanently`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html)：
 
 ```lotusscript
 Call doc.RemovePermanently(True)
@@ -208,7 +208,7 @@ Call doc.ReplaceItemValue("Subject", "X")  ' explicit method
 
 ### 5. 漏 `.Save` — 最常見、debug 最痛的 silent bug
 
-[HCL NotesDocument 文件](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESDOCUMENT_CLASS.html)直接給了警告：「After you create, modify, or delete a document, you must save the changes by calling the Save method... If you don't call Save before the script finishes, all of your changes to a NotesDocument are lost.」 —— Script 結束前沒呼叫 Save，所有 NotesDocument 上的變更都會丟失。
+[HCL NotesDocument 文件](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html)直接給了警告：「After you create, modify, or delete a document, you must save the changes by calling the Save method... If you don't call Save before the script finishes, all of your changes to a NotesDocument are lost.」 —— Script 結束前沒呼叫 Save，所有 NotesDocument 上的變更都會丟失。
 
 實務翻譯：寫了一支 agent 改了三十個欄位，但**整支 agent 都沒呼叫 `doc.Save`** —— agent 結束、Domino 把記憶體釋放、變更**沒寫入**。沒任何錯誤訊息。
 

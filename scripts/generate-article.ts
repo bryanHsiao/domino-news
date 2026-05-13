@@ -422,12 +422,12 @@ genuinely new news that does NOT overlap a recent topic above):
            the official docs and write a focused, hands-on explainer.
 
            Doc roots to mine (search inside these for under-covered topics):
-             - help.hcl-software.com/dom_designer/14.0.0/basic/   (LotusScript classes & methods)
-             - help.hcl-software.com/dom_designer/14.0.0/Java/    (Java back-end classes)
-             - help.hcl-software.com/dom_designer/14.0.0/Formula/ (@Formula functions)
-             - help.hcl-software.com/dom_designer/14.0.0/XPages/  (XPages controls & SSJS)
-             - help.hcl-software.com/domino_rest_api/             (Domino REST API endpoints)
-             - help.hcl-software.com/domino/14.0.0/admin/         (server admin tasks)
+             - help.hcl-software.com/dom_designer/14.5.1/basic/     (LotusScript classes & methods)
+             - help.hcl-software.com/dom_designer/14.5.1/Java/      (Java back-end classes)
+             - help.hcl-software.com/dom_designer/14.5.1/Formula/   (@Formula functions)
+             - help.hcl-software.com/dom_designer/14.5.1/reference/ (XPages SSJS reference, including r_domino_*)
+             - opensource.hcltechsw.com/Domino-rest-api/            (Domino REST API endpoints)
+             - help.hcl-software.com/domino/14.5.1/admin/           (server admin tasks)
 
            The class / method / function name in kebab-case is the slug.
            Examples that look NOT covered yet (verify against forbidden slugs!):

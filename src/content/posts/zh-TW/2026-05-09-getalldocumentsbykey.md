@@ -10,11 +10,11 @@ tags:
   - "Domino Designer"
 sources:
   - title: "NotesView class (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEW_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html"
   - title: "NotesView.GetAllDocumentsByKey method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_GETALLDOCUMENTSBYKEY_METHOD.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETALLDOCUMENTSBYKEY_METHOD.html"
   - title: "NotesView.GetDocumentByKey method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_GETDOCUMENTBYKEY_METHOD.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETDOCUMENTBYKEY_METHOD.html"
 relatedJava: ["View"]
 relatedSsjs: ["View"]
 cover: "/covers/getalldocumentsbykey.png"
@@ -23,7 +23,7 @@ coverStyle: "oil-chiaroscuro"
 
 ## 為什麼幾乎每個 LotusScript 開發者都用過它
 
-[`NotesView`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESVIEW_CLASS.html) class 上的 `GetAllDocumentsByKey` 是 Notes 開發最日常的查詢動作 —— 給一個 key、拿回符合的所有 document。「找出某個業務員今年所有訂單」、「列出某個專案的全部任務」、「掃出某個客戶名下的所有合約」 —— 全部都是 GetAllDocumentsByKey。
+[`NotesView`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html) class 上的 `GetAllDocumentsByKey` 是 Notes 開發最日常的查詢動作 —— 給一個 key、拿回符合的所有 document。「找出某個業務員今年所有訂單」、「列出某個專案的全部任務」、「掃出某個客戶名下的所有合約」 —— 全部都是 GetAllDocumentsByKey。
 
 但這個 method 有些設計細節是 HCL 官方明寫但很多人沒讀完，常見的踩雷類型有五種，本文逐一講清楚。
 
@@ -95,7 +95,7 @@ GetAllDocumentsByKey 不是孤單的，它有兄弟：
 | 方法 | 回傳 | 何時用 |
 |---|---|---|
 | `GetDocumentByKey(key, [exact])` | 單一 `NotesDocument`，沒命中回 **Nothing** | 預期 key 唯一、只要第一筆（最快） |
-| [`GetAllDocumentsByKey(key, [exact])`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_GETALLDOCUMENTSBYKEY_METHOD.html) | `NotesDocumentCollection`，空 collection 表示沒命中 | 要全部符合的 doc |
+| [`GetAllDocumentsByKey(key, [exact])`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETALLDOCUMENTSBYKEY_METHOD.html) | `NotesDocumentCollection`，空 collection 表示沒命中 | 要全部符合的 doc |
 | `GetAllEntriesByKey(key, [exact])` | `NotesViewEntryCollection` | 要 view entries（不是 doc 物件），可以拿 ColumnValues、未讀狀態等 view 才有的中介資料 |
 | `GetAllReadEntries()` | `NotesViewEntryCollection` | view 上目前 user 已讀的 entry 們 |
 | `GetAllUnreadEntries()` | `NotesViewEntryCollection` | 同上但是未讀 |
@@ -166,7 +166,7 @@ End Sub
 
 排查方式：用 Designer 開那個 view → 點第一欄 → 屬性 → Sorting tab → 確認 Sort = Ascending 或 Descending。
 
-### 2. 反斜線分類欄位（`Cat\\Subcat`）讓 [`GetDocumentByKey`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_GETDOCUMENTBYKEY_METHOD.html) 失效
+### 2. 反斜線分類欄位（`Cat\\Subcat`）讓 [`GetDocumentByKey`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETDOCUMENTBYKEY_METHOD.html) 失效
 
 官方原文：「columns formatted with both categories and subcategories using the '\\\\' character will prevent the method from locating documents.」
 

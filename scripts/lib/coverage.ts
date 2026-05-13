@@ -8,7 +8,8 @@
  * property/method/event docUrls.
  *
  * URLs are normalised by filename (last path segment) so a post that links
- * to the 14.0.0 version of a doc still matches OpenNTF's 14.5.1 catalogue.
+ * to any version of a doc (14.0.0, 14.5.0, 14.5.1, future minor releases)
+ * still matches OpenNTF's catalogue regardless of the version path drift.
  *
  * Cross-language data (relatedJava / relatedSsjs frontmatter arrays) is
  * also extracted so the report can show which Java / SSJS class names have

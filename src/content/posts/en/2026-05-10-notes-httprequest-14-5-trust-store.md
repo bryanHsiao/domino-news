@@ -12,9 +12,9 @@ sources:
   - title: "A LotusScript NotesHTTPRequest Change in Domino 14.5 You Should Know — Daniel Nashed (blog.nashcom.de, 2025-08-26)"
     url: "https://blog.nashcom.de/nashcomblog.nsf/dx/a-lotusscript-noteshttprequest-change-in-domino-14.5-you-should-know.htm"
   - title: "What's new in Domino 14.5 — Security features (HCL admin docs)"
-    url: "https://help.hcl-software.com/domino/14.5.0/admin/wn_145_security_features.html"
+    url: "https://help.hcl-software.com/domino/14.5.1/admin/wn_145_security_features.html"
   - title: "NotesHTTPRequest class (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTES_HTTPREQUEST_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTES_HTTPREQUEST_CLASS.html"
 relatedJava: []
 relatedSsjs: []
 cover: "/covers/notes-httprequest-14-5-trust-store.png"
@@ -23,7 +23,7 @@ coverStyle: "low-poly-3d"
 
 ## TL;DR
 
-In Domino 14.5, **server-side LotusScript [`NotesHTTPRequest`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTES_HTTPREQUEST_CLASS.html) calls load trusted root CAs from the Domino Directory by default**, no longer from `cacerts.pem` in the data directory. The Notes client is not affected. If your environment relies on self-signed CAs that haven't been imported into the Domino Directory yet, your LS HTTPS calls will start failing certificate verification on upgrade day.
+In Domino 14.5, **server-side LotusScript [`NotesHTTPRequest`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTES_HTTPREQUEST_CLASS.html) calls load trusted root CAs from the Domino Directory by default**, no longer from `cacerts.pem` in the data directory. The Notes client is not affected. If your environment relies on self-signed CAs that haven't been imported into the Domino Directory yet, your LS HTTPS calls will start failing certificate verification on upgrade day.
 
 Quick fallback — drop this line into `notes.ini`:
 
@@ -65,7 +65,7 @@ The concrete upgrade-day risk: any self-signed CA you previously appended to `ca
 | Revert option | n/a | `notes.ini`: `NotesHTTPRequest_Use_CACerts=1` |
 | Scope | LotusScript NotesHTTPRequest | LotusScript NotesHTTPRequest |
 
-According to the [HCL 14.5 security features release note](https://help.hcl-software.com/domino/14.5.0/admin/wn_145_security_features.html), 14.5 consolidates trusted CAs into the directory — aligning with `certstore.nsf` / TLS internet site documents that already live there.
+According to the [HCL 14.5 security features release note](https://help.hcl-software.com/domino/14.5.1/admin/wn_145_security_features.html), 14.5 consolidates trusted CAs into the directory — aligning with `certstore.nsf` / TLS internet site documents that already live there.
 
 ## Why the change
 

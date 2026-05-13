@@ -12,9 +12,9 @@ sources:
   - title: "A LotusScript NotesHTTPRequest Change in Domino 14.5 You Should Know — Daniel Nashed (blog.nashcom.de, 2025-08-26)"
     url: "https://blog.nashcom.de/nashcomblog.nsf/dx/a-lotusscript-noteshttprequest-change-in-domino-14.5-you-should-know.htm"
   - title: "What's new in Domino 14.5 — Security features (HCL admin docs)"
-    url: "https://help.hcl-software.com/domino/14.5.0/admin/wn_145_security_features.html"
+    url: "https://help.hcl-software.com/domino/14.5.1/admin/wn_145_security_features.html"
   - title: "NotesHTTPRequest class (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTES_HTTPREQUEST_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTES_HTTPREQUEST_CLASS.html"
 relatedJava: []
 relatedSsjs: []
 cover: "/covers/notes-httprequest-14-5-trust-store.png"
@@ -23,7 +23,7 @@ coverStyle: "low-poly-3d"
 
 ## 重點摘要
 
-Domino 14.5 起，**server 端 LotusScript 跑 [`NotesHTTPRequest`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTES_HTTPREQUEST_CLASS.html) 時，預設從 Domino Directory 拿信任的 root CA**，不再讀 data 目錄裡的 `cacerts.pem`。Notes client 沒變。如果你環境裡有自簽 CA 沒匯進 Domino Directory，14.5 升級當天 LS 的 HTTPS 呼叫就會 cert verify 失敗。
+Domino 14.5 起，**server 端 LotusScript 跑 [`NotesHTTPRequest`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTES_HTTPREQUEST_CLASS.html) 時，預設從 Domino Directory 拿信任的 root CA**，不再讀 data 目錄裡的 `cacerts.pem`。Notes client 沒變。如果你環境裡有自簽 CA 沒匯進 Domino Directory，14.5 升級當天 LS 的 HTTPS 呼叫就會 cert verify 失敗。
 
 懶得遷的人 `notes.ini` 加：
 
@@ -65,7 +65,7 @@ LS 開發者平常很少碰憑證，這節快速補一下脈絡 —— 已經熟
 | 退回舊行為 | n/a | `notes.ini` 加 `NotesHTTPRequest_Use_CACerts=1` |
 | 範圍 | LotusScript NotesHTTPRequest | LotusScript NotesHTTPRequest |
 
-依 [HCL 14.5 安全功能 release note](https://help.hcl-software.com/domino/14.5.0/admin/wn_145_security_features.html)，14.5 把 trusted CA 集中到 directory — 跟 `certstore.nsf`、TLS internet site 同一個管理面板的方向一致。
+依 [HCL 14.5 安全功能 release note](https://help.hcl-software.com/domino/14.5.1/admin/wn_145_security_features.html)，14.5 把 trusted CA 集中到 directory — 跟 `certstore.nsf`、TLS internet site 同一個管理面板的方向一致。
 
 ## 為什麼要改
 

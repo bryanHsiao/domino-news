@@ -10,13 +10,13 @@ tags:
   - "Domino Designer"
 sources:
   - title: "NotesRichTextItem (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESRICHTEXTITEM_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTITEM_CLASS.html"
   - title: "NotesItem (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESITEM_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESITEM_CLASS.html"
   - title: "NotesDocument CreateRichTextItem method — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_CREATERICHTEXTITEM_METHOD.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATERICHTEXTITEM_METHOD.html"
   - title: "NotesEmbeddedObject (LotusScript) — HCL Domino 14.0 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESEMBEDDEDOBJECT_CLASS.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESEMBEDDEDOBJECT_CLASS.html"
 cover: "/covers/notes-rich-text-item.png"
 coverStyle: "photoreal-3d"
 relatedJava: ["RichTextItem"]
@@ -190,6 +190,6 @@ Use `@Abstract([TextOnly];0;"";"Body")` from formula, or `GetUnformattedText()` 
 | Build a table | `NotesRichTextTable` (returned by `AppendTable`) |
 | Walk the structure of an existing rich-text item | `NotesRichTextNavigator` (returned by `CreateNavigator`) |
 | Select / copy / delete a region | `NotesRichTextRange` (returned by `CreateRange`) |
-| Read or write embedded files | [`NotesEmbeddedObject`](https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESEMBEDDEDOBJECT_CLASS.html) (via the `EmbeddedObjects` property or `GetEmbeddedObject`) |
+| Read or write embedded files | [`NotesEmbeddedObject`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESEMBEDDEDOBJECT_CLASS.html) (via the `EmbeddedObjects` property or `GetEmbeddedObject`) |
 
 `NotesRichTextItem` is the entry point for the entire Notes "write content into a document" API chain — formatting, tables, attachments all hang off it.
