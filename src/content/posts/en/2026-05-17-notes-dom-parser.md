@@ -19,6 +19,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html"
 relatedJava: ["DOMParser"]
 relatedSsjs: ["DOMParser"]
+cover: "/covers/notes-dom-parser.png"
+coverStyle: "art-deco"
 ---
 
 ## TL;DR

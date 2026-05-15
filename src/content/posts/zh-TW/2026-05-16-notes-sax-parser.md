@@ -19,6 +19,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXATTRIBUTELIST_CLASS.html"
 relatedJava: ["SAXParser"]
 relatedSsjs: ["SAXParser"]
+cover: "/covers/notes-sax-parser.png"
+coverStyle: "risograph"
 ---
 
 ## 重點摘要
