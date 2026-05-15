@@ -1,13 +1,13 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-05-13 · Posts scanned: 23 · Classes catalogued: 97*
+*Generated: 2026-05-15 · Posts scanned: 25 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
-**Overall: 16 / 97 classes covered (16.5%)**
+**Overall: 19 / 97 classes covered (19.6%)**
 
 ```
-███████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 16.5%
+████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 19.6%
 ```
 
 ## Coverage by category
@@ -17,25 +17,27 @@
 | DQL | 2 | 2 | 100% | 🟩 `████████████` |
 | HTTP | 1 | 1 | 100% | 🟩 `████████████` |
 | Session File Operations | 1 | 1 | 100% | 🟩 `████████████` |
+| Database | 4 | 7 | 57% | 🟨 `███████░░░░░` |
 | View | 2 | 5 | 40% | 🟨 `█████░░░░░░░` |
 | Document | 2 | 6 | 33% | 🟨 `████░░░░░░░░` |
-| Database | 2 | 7 | 29% | 🟧 `███░░░░░░░░░` |
 | JSON | 1 | 4 | 25% | 🟧 `███░░░░░░░░░` |
 | Item | 1 | 5 | 20% | 🟧 `██░░░░░░░░░░` |
 | DOM/XML | 3 | 25 | 12% | 🟧 `█░░░░░░░░░░░` |
 | Rich Text | 1 | 9 | 11% | 🟧 `█░░░░░░░░░░░` |
+| Session | 1 | 10 | 10% | 🟧 `█░░░░░░░░░░░` |
 | UI | 0 | 8 | 0% | 🟥 `░░░░░░░░░░░░` |
 | Admin | 0 | 4 | 0% | 🟥 `░░░░░░░░░░░░` |
-| Session | 0 | 10 | 0% | 🟥 `░░░░░░░░░░░░` |
 | Calendar | 0 | 3 | 0% | 🟥 `░░░░░░░░░░░░` |
 | GPS | 0 | 3 | 0% | 🟥 `░░░░░░░░░░░░` |
 | DominoIQ | 0 | 2 | 0% | 🟥 `░░░░░░░░░░░░` |
 | Composite Apps | 0 | 2 | 0% | 🟥 `░░░░░░░░░░░░` |
 
-## ✓ Covered classes (16)
+## ✓ Covered classes (19)
 
 | Class | Category | Posts | First mention |
 |---|---|---|---|
+| [NotesACL](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESACL_CLASS.html) | Database | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) | 2026-05-15 |
+| [NotesACLEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESACLENTRY_CLASS.html) | Database | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) | 2026-05-15 |
 | [NotesDatabase](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATABASE_CLASS.html) | Database | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/) | 2026-04-29 |
 | [NotesDocument](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html) | Document | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/), [notes-document](https://bryanhsiao.github.io/domino-news/posts/notes-document/) | 2026-04-30 |
 | [NotesDominoQuery](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMINOQUERY_CLASS.html) | DQL | [dql-production](https://bryanhsiao.github.io/domino-news/posts/dql-production/) | 2026-05-03 |
@@ -47,13 +49,14 @@
 | [NotesNoteCollection](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESNOTECOLLECTION_CLASS.html) | Database | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/) | 2026-04-29 |
 | [NotesQueryResultsProcessor](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESQUERYRESULTSPROCESSOR_CLASS.html) | DQL | [notes-query-results-processor](https://bryanhsiao.github.io/domino-news/posts/notes-query-results-processor/) | 2026-04-28 |
 | [NotesRichTextItem](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTITEM_CLASS.html) | Rich Text | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/) | 2026-04-30 |
+| [NotesSession](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSESSION_CLASS.html) | Session | [notes-session](https://bryanhsiao.github.io/domino-news/posts/notes-session/) | 2026-05-14 |
 | [NotesStream](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSTREAM_CLASS.html) | Session File Operations | [notes-stream](https://bryanhsiao.github.io/domino-news/posts/notes-stream/) | 2026-05-02 |
 | [NotesView](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html) | View | [notes-view-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-view-navigator/), [getalldocumentsbykey](https://bryanhsiao.github.io/domino-news/posts/getalldocumentsbykey/) | 2026-04-29 |
 | [NotesViewNavigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEWNAVIGATOR_CLASS.html) | View | [notes-view-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-view-navigator/) | 2026-04-29 |
 | [NotesXMLProcessor](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | 2026-05-06 |
 | [NotesXSLTransformer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | 2026-05-06 |
 
-## ⨯ Uncovered classes (81)
+## ⨯ Uncovered classes (78)
 
 | Class | Category | Description |
 |---|---|---|
@@ -66,8 +69,6 @@
 | [NotesCalendarNotice](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDARNOTICE_CLASS.html) | Calendar | Represents a Domino® calendar notice. |
 | [NotesProperty](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESPROPERTY_CLASS.html) | Composite Apps | Represents a single property in the Composite Applications properties of a Domino® applica |
 | [NotesPropertyBroker](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESPROPERTYBROKER_CLASS.html) | Composite Apps | Mediates communication between components of a composite application, allowing communicati |
-| [NotesACL](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESACL_CLASS.html) | Database | Represents the access control list (ACL) of a database. |
-| [NotesACLEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESACLENTRY_CLASS.html) | Database | Represents a single entry in an access control list. An entry may be for a person, a group |
 | [NotesForm](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESFORM_CLASS.html) | Database | Represents a form in a database. |
 | [NotesReplication](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESREPLICATION_CLASS_1289.html) | Database | Represents the replication settings of a database. |
 | [NotesReplicationEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESREPLICATIONENTRY_CLASS.html) | Database | Represents the replication settings for a pair of servers in a database. |
@@ -125,7 +126,6 @@
 | [NotesInternational](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESINTERNATIONAL_CLASS.html) | Session | Represents the international settings in the operating environment, for example, the Windo |
 | [NotesLog](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESLOG_CLASS.html) | Session | Enables you to record actions and errors that take place during a script's execution. You  |
 | [NotesName](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESNAME_CLASS.html) | Session | Represents a name. |
-| [NotesSession](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSESSION_CLASS.html) | Session | Represents the environment of the current script, providing access to environment variable |
 | [NotesTimer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESTIMER_CLASS.html) | Session | Represents a mechanism for triggering an event every fixed number of seconds. |
 | [Button](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_BUTTON_CLASS.html) | UI | Represents an action, action hotspot, or button on a form or document. |
 | [Field](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FIELD_CLASS.html) | UI | Represents a field on a form. |
@@ -147,12 +147,15 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Java class | LS posts that point to it |
 |---|---|
+| `ACL` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
+| `ACLEntry` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
 | `Document` | [notes-document](https://bryanhsiao.github.io/domino-news/posts/notes-document/) |
 | `DominoQuery` | [dql-production](https://bryanhsiao.github.io/domino-news/posts/dql-production/), [dql-pitfalls](https://bryanhsiao.github.io/domino-news/posts/dql-pitfalls/), [dql-getting-started](https://bryanhsiao.github.io/domino-news/posts/dql-getting-started/) |
 | `DxlExporter` | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) |
 | `NoteCollection` | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/) |
 | `QueryResultsProcessor` | [notes-query-results-processor](https://bryanhsiao.github.io/domino-news/posts/notes-query-results-processor/) |
 | `RichTextItem` | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/) |
+| `Session` | [notes-session](https://bryanhsiao.github.io/domino-news/posts/notes-session/) |
 | `Stream` | [notes-stream](https://bryanhsiao.github.io/domino-news/posts/notes-stream/) |
 | `View` | [getalldocumentsbykey](https://bryanhsiao.github.io/domino-news/posts/getalldocumentsbykey/) |
 | `ViewNavigator` | [notes-view-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-view-navigator/) |
@@ -162,6 +165,8 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | SSJS class | LS posts that point to it |
 |---|---|
+| `ACL` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
+| `ACLEntry` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
 | `DominoQuery` | [dql-production](https://bryanhsiao.github.io/domino-news/posts/dql-production/), [dql-pitfalls](https://bryanhsiao.github.io/domino-news/posts/dql-pitfalls/), [dql-getting-started](https://bryanhsiao.github.io/domino-news/posts/dql-getting-started/) |
 | `DxlExporter` | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) |
 | `NoteCollection` | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/) |
@@ -172,11 +177,14 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `ViewNavigator` | [notes-view-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-view-navigator/) |
 | `XMLProcessor` | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) |
 | `document` | [notes-document](https://bryanhsiao.github.io/domino-news/posts/notes-document/) |
+| `session` | [notes-session](https://bryanhsiao.github.io/domino-news/posts/notes-session/) |
 
 ## Per-post coverage summary
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) | `NotesACLEntry`, `NotesACL` | `ACL`, `ACLEntry` | `ACL`, `ACLEntry` |
+| [notes-session](https://bryanhsiao.github.io/domino-news/posts/notes-session/) | `NotesSession` | `Session` | `session` |
 | [notes-document](https://bryanhsiao.github.io/domino-news/posts/notes-document/) | `NotesDocument` | `Document` | `document` |
 | [mandated-port-encryption-enabling](https://bryanhsiao.github.io/domino-news/posts/mandated-port-encryption-enabling/) | — | — | — |
 | [mandated-port-encryption](https://bryanhsiao.github.io/domino-news/posts/mandated-port-encryption/) | — | — | — |
