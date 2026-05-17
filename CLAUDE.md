@@ -74,6 +74,14 @@ loses the source-grounded citation chain.
   summary section, zh uses `## 重點摘要`, en uses `## TL;DR`. Don't
   leave English internet shorthand untranslated in zh posts — same
   rule that applies to other domain jargon.
+- **Evergreen cross-references — no time-relative phrasing in series
+  articles.** When a multi-part series cross-links, use neutral
+  phrasing that still reads right a year later: 「續篇 [X](url)」/
+  「對比文 [X](url)」/ "the follow-up [X](url)" / "the comparison
+  piece [X](url)" — never 「昨天 / 明天 / 今天」/ "yesterday's /
+  tomorrow's / today's" / "earlier this week" / "day after." A reader
+  arriving via search has no "yesterday" context; the article needs
+  to stand on its own.
 
 ---
 
