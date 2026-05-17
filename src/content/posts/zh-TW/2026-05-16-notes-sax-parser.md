@@ -311,4 +311,4 @@ SAX 是 LS 處理大量 / 流式 XML 的正解 — 記憶體常數、適合**只
 2. **用 module-level 全域變數**保存 handler 間狀態 — 沒法傳 local
 3. **永遠綁 `SAX_FatalError`** — silent failure 是 debug 噩夢
 
-明天的續篇講 **NotesDOMParser** — 整棵樹載入、任意走訪、可修改、可序列化。再後天的對比文整理「**何時 SAX、何時 DOM**」的決策樹。
+續篇 [NotesDOMParser](/domino-news/posts/notes-dom-parser) 講整棵樹載入、任意走訪、可修改、可序列化；對比文 [DOM vs SAX 決策](/domino-news/posts/notes-xml-parser-dom-vs-sax) 整理「**何時 SAX、何時 DOM**」的決策樹。

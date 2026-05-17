@@ -246,7 +246,7 @@ state machine 思維：用全域變數追蹤「我現在在哪個 element 裡」
 
 LS XML 工具鏈這幾年沒有大改 — `NotesDOMParser` / `NotesSAXParser` / `NotesXMLProcessor` 從 R6 引入後 API 穩定下來。**14.5 系列沒有新增 XML class 或大幅改動 API**（[14.5.1 What's New](https://help.hcl-software.com/dom_designer/14.5.1/basic/whats_new_14.5.1.html) 主要是 JSON Copy method 跟 OIDC token）。
 
-但這也意味著：學一次、用十年。今天看的這套 API 在 R6 / R8 / R9 / 12.x / 14.x 都能跑。
+但這也意味著：學一次、用十年。這套 API 在 R6 / R8 / R9 / 12.x / 14.x 都能跑。
 
 ## What about Java and SSJS?
 
@@ -276,4 +276,4 @@ XML 解析是 LS 整合場景的硬需求、三條路各有適用：
 - [5/17 NotesDOMParser 全攻略](/domino-news/posts/notes-dom-parser)
 - [5/6 NotesXMLProcessor + XSLT（同樣 XML 工具鏈、走 transform 路線）](/domino-news/posts/notes-xml-processor)
 
-LS XML 三件套今天為止全部覆蓋完。
+LS XML 三件套到此完整覆蓋。

@@ -29,12 +29,12 @@ coverStyle: "art-deco"
 
 Four key points:
 
-1. **Whole file in memory** — the opposite of SAX from yesterday. The right choice for **small-to-medium XML when you need random access or modification**
+1. **Whole file in memory** — the opposite of [SAX](/domino-news/en/posts/notes-sax-parser). The right choice for **small-to-medium XML when you need random access or modification**
 2. **`Document` property is the entry point** — gives you the root `NotesDOMDocumentNode`; walk via `FirstChild` / `NextSibling` / `ParentNode`
 3. **14 Node subclasses** all inheriting from [`NotesDOMNode`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMNODE_CLASS.html) — Element / Text / Attribute / Comment / CDATA / ProcessingInstruction / and 8 others
 4. **`Serialize` writes the tree back out as XML** — after you modify the tree, serialize emits it to the output stream
 
-Compared to yesterday's [NotesSAXParser piece](/domino-news/en/posts/notes-sax-parser): SAX is forward-only streaming; DOM is random-access tree. Today is DOM.
+Compared to the [NotesSAXParser piece](/domino-news/en/posts/notes-sax-parser): SAX is forward-only streaming; DOM is random-access tree.
 
 ## What the DOM tree looks like
 
@@ -351,4 +351,4 @@ DOM is the standard tool in LotusScript for small-to-medium XML with random-acce
 2. **No `GetElementsByTagName`** — recurse yourself (then wrap as utility)
 3. **Always `Serialize()` after modification** — same shape of bug as forgetting `NotesDocument.Save`
 
-Tomorrow's comparison piece consolidates the decision tree: **when SAX, when DOM, when NotesXMLProcessor (XSLT)** — three XML routes, side by side.
+The [DOM vs SAX comparison piece](/domino-news/en/posts/notes-xml-parser-dom-vs-sax) consolidates the decision tree: **when SAX, when DOM, when NotesXMLProcessor (XSLT)** — three XML routes, side by side.

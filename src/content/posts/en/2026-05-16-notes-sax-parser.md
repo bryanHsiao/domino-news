@@ -311,4 +311,4 @@ SAX is the right tool for streaming / large-volume XML in LotusScript — consta
 2. **Use module-level variables for cross-handler state** — locals don't cross
 3. **Always bind `SAX_FatalError`** — silent failure on bad XML is a debugging nightmare
 
-Tomorrow's follow-up covers **NotesDOMParser** — whole-tree loading, random-access traversal, modification, and serialization. Day after, a comparison piece on the decision: when SAX, when DOM.
+The follow-up [NotesDOMParser](/domino-news/en/posts/notes-dom-parser) covers whole-tree loading, random-access traversal, modification, and serialization. The [DOM vs SAX comparison](/domino-news/en/posts/notes-xml-parser-dom-vs-sax) lays out when to reach for each.

@@ -270,7 +270,7 @@ XML processing is a hard requirement for LS integration work. Three routes, each
 
 The decision tree to remember: **modify? big file? random walk?** — pick one of three.
 
-Read alongside the two deep-dive pieces from earlier this week:
+Read alongside the two deep-dive pieces:
 
 - [5/16 NotesSAXParser deep dive](/domino-news/en/posts/notes-sax-parser)
 - [5/17 NotesDOMParser deep dive](/domino-news/en/posts/notes-dom-parser)
