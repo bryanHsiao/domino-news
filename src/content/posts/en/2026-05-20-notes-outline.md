@@ -19,6 +19,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_OUTLINE_CLASS_JAVA.html"
 relatedJava: ["Outline", "OutlineEntry"]
 relatedSsjs: ["Outline", "OutlineEntry"]
+cover: "/covers/notes-outline.png"
+coverStyle: "collage"
 ---
 
 ## TL;DR
