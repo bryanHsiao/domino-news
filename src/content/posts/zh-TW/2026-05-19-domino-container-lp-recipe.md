@@ -114,7 +114,9 @@ cd /local/github/domino-container
 ~/lp-recipe/verify.sh --lang TC
 ```
 
-跑完之後重進 `./build.sh menu` 按 `L`、LP submenu 會在原本 6 種之後多出第 7 個 `(TC) Traditional Chinese`、按 `t` 即可選用。
+跑完之後重進 `./build.sh menu` 按 `L`、LP submenu 會在原本 6 種之後多出第 7 個 `(TC) Traditional Chinese`、按 `t` 即可選用：
+
+![套用 recipe 後的 build.sh Language Pack submenu，(TC) Traditional Chinese 為新加的第 7 個選項](/domino-news/post-images/domino-container-lp-menu-with-tc.png)
 
 目前驗證過的組合（從 [`tested-against.md`](https://github.com/bryanHsiao/domino-container-lp-recipe/blob/main/tested-against.md)）：
 

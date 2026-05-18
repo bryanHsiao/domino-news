@@ -114,7 +114,9 @@ cd /local/github/domino-container
 ~/lp-recipe/verify.sh --lang TC
 ```
 
-After this, re-launching `./build.sh menu` and pressing `L` shows `(TC) Traditional Chinese` as a 7th option alongside the original six — press `t` to select.
+After this, re-launching `./build.sh menu` and pressing `L` shows `(TC) Traditional Chinese` as a 7th option alongside the original six — press `t` to select:
+
+![build.sh Language Pack submenu after applying the recipe — (TC) Traditional Chinese added as a 7th option](/domino-news/post-images/domino-container-lp-menu-with-tc.png)
 
 Currently verified combinations (from [`tested-against.md`](https://github.com/bryanHsiao/domino-container-lp-recipe/blob/main/tested-against.md)):
 
