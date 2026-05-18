@@ -1,6 +1,6 @@
 ---
 title: "HCL Domino Container 加上繁中／簡中／韓文 LP — 我寫的一個社群工具"
-description: "HCL 官方的 domino-container repo 內建只支援 6 種 Language Pack（DE/ES/FR/IT/NL/JA）。Issue #55 從 2022 年就問怎麼加其他語言、但官方一直沒實作。我寫了一個小工具 domino-container-lp-recipe 補上這個洞 — 用「動態修補」而不是「fork」的方式，跑一個腳本就能加進繁中（已驗證）、簡中（推論）、韓文（範本待測），結構小（~50 行 patch 跨 4 個檔）、跟著上游漂移成本低。本文整理問題背景、三層整合、recipe-vs-fork 設計選擇、快速開始、加新語言流程、跟一個一定要先讀的 sync-trap 警告。"
+description: "HCL 官方 domino-container repo 內建支援 6 種 Language Pack（DE/ES/FR/IT/NL/JA）。Issue #55 討論過怎麼裝其他 LP，但官方基於「真要加就要承擔所有語言的維護責任」的考量沒把更多 LP 收進 build.sh — 是合理的工程取捨。我寫了一個小工具 domino-container-lp-recipe 讓有需要的人自己擴充：用「動態修補」而不是「fork」的方式，跑一個腳本就能加進繁中（已驗證）、簡中（推論）、韓文（範本待補），結構小（~50 行 patch 跨 4 個檔）、跟著上游漂移成本低。本文整理上游考量、三層整合、recipe-vs-fork 設計選擇、快速開始、加新語言流程、跟一個一定要先讀的 sync-trap 警告。"
 pubDate: 2026-05-19T07:30:00+08:00
 lang: zh-TW
 slug: domino-container-lp-recipe
@@ -23,23 +23,21 @@ coverStyle: "ukiyo-e"
 
 ## 重點摘要
 
-- HCL 官方 [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container) 內建只支援 6 種 LP（DE / ES / FR / IT / NL / JA）—— 沒有繁中、沒有簡中、沒有韓文
-- 上游 [Issue #55](https://github.com/HCL-TECH-SOFTWARE/domino-container/issues/55) 2022 年就問「Docker 上的 Domino 怎麼裝 LP」、四年了仍然 closed-without-implementation
-- 我寫了 [`bryanHsiao/domino-container-lp-recipe`](https://github.com/bryanHsiao/domino-container-lp-recipe) 補這個洞。一個小腳本、套用 ~50 行修補到上游 clone（不是維護 fork），就能跑 `./build.sh ... -domlp=TC` 蓋出含繁中 LP 的 image
+- HCL 官方 [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container) 內建支援 6 種 LP（DE / ES / FR / IT / NL / JA）
+- 上游 [Issue #55](https://github.com/HCL-TECH-SOFTWARE/domino-container/issues/55) 討論過怎麼裝其他 LP；官方基於「要加就要承擔所有語言維護責任」的考量沒把更多 LP 收進 `build.sh`、這個取捨是合理的
+- 我寫了 [`bryanHsiao/domino-container-lp-recipe`](https://github.com/bryanHsiao/domino-container-lp-recipe) 讓**有需要的人自己擴充**：一個小腳本、套用 ~50 行修補到上游 clone（不是維護 fork），就能跑 `./build.sh ... -domlp=TC` 蓋出含繁中 LP 的 image
 - 目前 **TC verified**（我本人 build 過、`names.nsf` view 顯示「網域監督」）、**SC inferred**（從 TC 對稱推論、需 `--allow-inferred`）、**KO template**（範本待人補 installer code）
 - ⚠️ **重要警告**：對已運行的 server 重 build image 後、既有 `.nsf` **不會自動變繁中**（Domino entrypoint 偵測「Data already installed」會 skip template 部署）—— 重 build 之前一定要讀後面那節
 
-## 問題：Issue #55 的故事
+## 背景：Issue #55 上游的考量
 
-2022 年 11 月有人在上游 repo 開 [Issue #55](https://github.com/HCL-TECH-SOFTWARE/domino-container/issues/55) 問：
+2022 年 11 月有人在上游 repo 開 [Issue #55](https://github.com/HCL-TECH-SOFTWARE/domino-container/issues/55) 問怎麼裝 LP。上游 maintainer Daniel Nashed 回了一些 workaround 思路（stop container、起 temp container 跑 LNXDomLPxx silent install），並在後續討論中點出維護擴大的考量：
 
-> "What is the recommended approach to install language packs with Domino on Docker?"
+> "The right way would be to add it to the software file, but then we would need to support all the languages..."
 
-上游 maintainer Daniel Nashed 回了一些 workaround 思路（stop container、起 temp container 跑 LNXDomLPxx silent install）。但**官方一直沒實作**「在 `build.sh` 加新 LP」這條路。
+—— 意思是：真要在 `build.sh` 加新 LP、官方就要承擔「所有語言、所有版本」的維護責任。對一個個人維護的開源 repo 來說、那是合理的工程取捨。
 
-實際上 6 LP 之外（DE/ES/FR/IT/NL/JA）的需求很常見 —— 在台灣、中國、韓國 deploy Domino 的人**幾乎一定要繁中／簡中／韓文 LP**、結果都得自己手刻。
-
-四年之後 issue 仍 closed-without-implementation。我自己 deploy 卡住、把這個洞補一補、順便整理成工具讓其他人不用重複踩。
+但實務上 6 LP 之外的需求依然存在 —— 在台灣、中國、韓國 deploy Domino 通常會要繁中／簡中／韓文 LP，每個 deploy 工程師各自 hack `build.sh` 重複勞動。我自己 deploy 用到、把那段 hack 整理成共用工具、讓有相同需求的人不用每次重來，也希望有其他語言需求的社群伙伴**有起點可以擴充、跑通後貢獻回來**。
 
 ## 三層整合 — 為什麼每個 LP 要動 ~7 處跨 3 個檔
 
@@ -181,24 +179,15 @@ Data already installed for 14050100
 
 兩種都要 plan、不是換個 image 重啟那麼簡單。
 
-## 未來：回送上游 PR
-
-兩份 PR 草稿已在 repo 內備好（[`PR-DRAFT-tc.md`](https://github.com/bryanHsiao/domino-container-lp-recipe/blob/main/PR-DRAFT-tc.md) + [`PR-DRAFT-framework.md`](https://github.com/bryanHsiao/domino-container-lp-recipe/blob/main/PR-DRAFT-framework.md)），等上游 maintainer 有 bandwidth 接、就能直接轉 `git format-patch` + GitHub PR：
-
-- **PR-DRAFT-tc** — 把 TC 整合進上游、closes Issue #55、走 Daniel Nashed 當年加 6 LP 同樣 pattern、最小變動
-- **PR-DRAFT-framework** — 比較大的 refactor proposal：把 LP menu 改成 registry-driven、之後加新 LP 變成「在 `language-packs.txt` 加一行」、不用每個語言改 5 處跨 3 檔
-
-PR 通過、recipe 就退休。在那之前、recipe 是當下能用的 workaround。
-
 ## 邀請貢獻 + 結論
 
-如果你：
+這個工具是寫給「有 LP 需求、想自己擴充」的社群伙伴用的。如果你：
 
-- **用得到繁中 / 簡中 / 韓文 / 其他語言 LP** — 直接 clone repo 用
-- **跑通 SC / KO 想升 verified status** — 發 PR 回來、其他人受惠
-- **要加新語言（TH / VI / 等）** — 照 [`adding-new-language.md`](https://github.com/bryanHsiao/domino-container-lp-recipe/blob/main/docs/adding-new-language.md) 做、PR 進 registry
+- **用得到繁中 / 簡中 / 韓文** — 直接 clone repo 用
+- **跑通 SC / KO 想升 verified status** — 發 PR 回來、把 status 從 `template` / `inferred` 升到 `verified`、讓其他人少踩一次坑
+- **要加新語言（TH / VI / 越南文等）** — 照 [`adding-new-language.md`](https://github.com/bryanHsiao/domino-container-lp-recipe/blob/main/docs/adding-new-language.md) 做、PR 進 registry
 - **看到上游 commit 改到我們 patch 位置、recipe 跑壞** — 報 issue 我修
 
 Repo 用 Apache-2.0、跟上游一致。本工具**不含任何 HCL 軟體**、LP tar 你自己從 HCL FlexNet 下載。
 
-Issue #55 在 HCL 沒實作的這四年期間、繁中／簡中／韓文使用者每次 build 都要自己 hack 一遍 build.sh。把那個 hack 標準化、共用、有測試、有警告 —— 就是 [`domino-container-lp-recipe`](https://github.com/bryanHsiao/domino-container-lp-recipe) 在做的事。
+繁中／簡中／韓文（以及其他語言）的 Domino 部署社群一直存在 —— 把各自 hack `build.sh` 的經驗標準化、共用、有測試、有警告，是 [`domino-container-lp-recipe`](https://github.com/bryanHsiao/domino-container-lp-recipe) 想做的事。
