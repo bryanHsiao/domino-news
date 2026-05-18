@@ -254,18 +254,35 @@ prompt instructions, but we haven't done it yet.
 ## NotebookLM usage
 
 - Skill location: `~/.claude/skills/notebooklm/`.
-- The notebook used for fact-checking LS articles is **"HCL Domino
-  LotusScript Reference (V14.0)"** — its URL:
-  `https://notebooklm.google.com/notebook/bb543ae4-7f16-4048-aee2-93d31543543e`
-- Other notebooks used:
-  - Domino IQ general (`71d1e172-...`) for Domino IQ overview
-  - Domino IQ RAG (`79906842-...`) for the RAG-specific deep dive
-- Pattern: ask a single thorough question that covers (1) what it is,
-  (2) how to instantiate, (3) full method/property list, (4) version
-  notes, (5) caveats, (6) a code example. The bilingual reference notebook
-  often returns "Missing Information" for specific methods because the
-  source files are class-level overviews — fall back to WebFetch on
-  the specific HCL doc page when this happens.
+
+### Notebooks by domain — pick the right one for the research topic
+
+| Domain | Notebook URL | Source URL list |
+|---|---|---|
+| **LotusScript** (class / method / property reference) | `https://notebooklm.google.com/notebook/bb543ae4-7f16-4048-aee2-93d31543543e` | (built-in, V14.0 reference) |
+| **Java back-end API** (`lotus.domino.*`) | `https://notebooklm.google.com/notebook/99039350-51ae-4d0c-b79b-8d922e29697b` | [`data/notebook-urls-java.txt`](data/notebook-urls-java.txt) |
+| **SSJS / XPages** (JavaScript and XPages reference) | `https://notebooklm.google.com/notebook/0c88f101-7fb7-4ce2-b35e-37a87d3547ec` | [`data/notebook-urls-ssjs.txt`](data/notebook-urls-ssjs.txt) |
+| **Domino REST API** (DRAPI on opensource.hcltechsw.com) | `https://notebooklm.google.com/notebook/ba6f849d-c040-4f59-ad51-7fb145065180` | [`data/notebook-urls-rest-api.txt`](data/notebook-urls-rest-api.txt) |
+| **Domino Admin** (server config / NRPC / certstore / Security) | `https://notebooklm.google.com/notebook/2e2b3510-0581-443a-9b82-10796613108d` | [`data/notebook-urls-admin.txt`](data/notebook-urls-admin.txt) |
+| **Domino IQ general** (overview) | `https://notebooklm.google.com/notebook/71d1e172-...` | (existing) |
+| **Domino IQ RAG** (RAG-specific deep dive) | `https://notebooklm.google.com/notebook/79906842-...` | (existing) |
+
+Source provenance for the 4 new notebooks: built 2026-05-19 from the
+verified URL lists I researched 2026-05-10 (see commit history of
+`data/notebook-sources.md` for the audit trail of how each URL was
+discovered and sample-verified).
+
+### Query pattern
+
+- Ask a single thorough question that covers (1) what it is, (2) how
+  to instantiate, (3) full method/property list, (4) version notes,
+  (5) caveats, (6) a code example. Spend the per-question budget on
+  one well-formed question rather than five small ones.
+- The bilingual reference notebook (LS) often returns "Missing
+  Information" for specific methods because the source files are
+  class-level overviews — fall back to WebFetch on the specific HCL
+  doc page when this happens. The 4 new notebooks have method-level
+  pages, so Missing Information should be rarer.
 - Run with `PYTHONIOENCODING=utf-8` on Windows to avoid CP950
   unicode errors.
 
