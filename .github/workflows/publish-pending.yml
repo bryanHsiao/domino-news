@@ -38,7 +38,11 @@ jobs:
       - name: Configure git
         run: |
           git config user.name "bryan hsiao"
-          git config user.email "siao.bryan@gmail.com"
+          # Use GitHub noreply email — the real address is set to private on
+          # github.com/settings/emails, so a push using it gets rejected by
+          # GH007 ("Your push would publish a private email address"). The
+          # noreply form still attributes commits to the right account.
+          git config user.email "24813223+bryanHsiao@users.noreply.github.com"
 
       - name: Promote pending articles dated <= today (Taipei)
         id: promote
