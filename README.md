@@ -15,7 +15,7 @@
 
 | 項目 | 到期日 | 到期前症狀 | 怎麼續 |
 |---|---|---|---|
-| **`PAT_FOR_PUBLISH`** secret（GitHub fine-grained PAT） | **2027-05-19** | `publish-pending.yml` cron 開始 fail、文章卡在 `_pending/` 不會自動發布、貢獻圖斷綠點 | 1) [github.com/settings/tokens?type=beta](https://github.com/settings/tokens?type=beta) 建新 token，scope 同舊版：`Contents: read/write` + `Actions: read/write` on `domino-news` only<br/>2) Repo Settings → Secrets → 更新 `PAT_FOR_PUBLISH` 為新 token<br/>3) `gh workflow run publish-pending.yml --ref main` 測一次確認 OK |
+| **`PAT_FOR_PUBLISH`** secret（GitHub fine-grained PAT） | **2027-05-19** | `publish-pending.yml` cron 開始 fail、文章卡在 `_pending/` 不會自動發布 | 1) [github.com/settings/tokens?type=beta](https://github.com/settings/tokens?type=beta) 建新 token，scope 同舊版：`Contents: read/write` + `Actions: read/write` on `domino-news` only<br/>2) Repo Settings → Secrets → 更新 `PAT_FOR_PUBLISH` 為新 token<br/>3) `gh workflow run publish-pending.yml --ref main` 測一次確認 OK |
 | `OPENAI_API_KEY` | 沒到期、依你帳號設定 | 封面圖生成 fail、daily-article cron fail | OpenAI dashboard 重發 key → Repo Settings → Secrets 更新 |
 | `ANTHROPIC_API_KEY` | 沒到期、依你帳號設定 | daily-article 跨廠審稿步驟跳過（不致命，但少一層 fact check） | Anthropic console 重發 → Repo Settings → Secrets 更新 |
 
@@ -101,7 +101,7 @@ Repo Settings → Secrets and variables → Actions：
 
 | 名稱 | 類型 | 必填 | 說明 |
 |---|---|---|---|
-| **`PAT_FOR_PUBLISH`** | Secret | ✅ | fine-grained PAT、給 `publish-pending.yml` cron commit 使用、attribution 才會算進你的貢獻圖。2027-05-19 到期、見上面維護表 |
+| **`PAT_FOR_PUBLISH`** | Secret | ✅ | fine-grained PAT、給 `publish-pending.yml` cron commit 使用、attribution 才會掛到你帳號下。2027-05-19 到期、見上面維護表 |
 | `OPENAI_API_KEY` | Secret | ✅ | 產文 + 封面圖 |
 | `ANTHROPIC_API_KEY` | Secret | 建議 | 跨廠審稿（少了 fact-check 不致命） |
 | `OPENAI_MODEL` | Variable | 可選 | 預設 `gpt-4o` |

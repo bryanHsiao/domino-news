@@ -3,15 +3,15 @@ name: Publish pending articles
 # Runs daily at 23:30 UTC (= 07:30 Asia/Taipei the next day).
 # Looks for any file in _pending/{zh-TW,en}/ whose YYYY-MM-DD
 # filename prefix is <= today (Taipei), and git-mv's it into
-# src/content/posts/{zh-TW,en}/. That commit becomes the
-# "release-day green dot" — keeping the contribution graph
-# continuous even when articles are drafted in batches.
+# src/content/posts/{zh-TW,en}/ — i.e. promotes staged articles
+# on their actual release day rather than the day they were
+# drafted.
 #
 # After promotion, also refresh docs/coverage.md (since the new
-# article changes coverage counts) — that's a second commit on
-# the same day, extra dot.
+# article changes coverage counts) and trigger backfill-covers.yml
+# to generate the cover image.
 #
-# Both steps are no-ops if nothing is queued for today, so this
+# All steps are no-ops if nothing is queued for today, so this
 # workflow safely runs every day regardless of whether there's
 # an article to ship.
 
@@ -31,8 +31,7 @@ jobs:
         with:
           # PAT_FOR_PUBLISH must have repo:contents write permission
           # so the resulting commits are attributed to your user
-          # (not github-actions[bot]) — required for the green dot
-          # to count on your contribution graph.
+          # (not github-actions[bot]).
           token: ${{ secrets.PAT_FOR_PUBLISH }}
           fetch-depth: 0
 

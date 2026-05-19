@@ -60,8 +60,7 @@ below is read in order whichever path you're on.
 - **Future date (default)** → write to `_pending/{zh-TW,en}/`,
   push, then the daily `publish-pending.yml` cron promotes on
   release day, refreshes coverage, and triggers cover generation
-  automatically. Three commits on release day = continuous green
-  dots on the contribution graph.
+  automatically.
 - **Today- or past-dated** (salvage / urgent publish) → write to
   `src/content/posts/` directly, push, trigger backfill-covers +
   deploy manually, refresh coverage manually.
@@ -369,8 +368,7 @@ Domino-API counterpart in that language.
 
 There are two paths depending on whether the post's publish date is
 in the future or today/past. **Default to the pending-queue path** —
-it keeps the contribution graph continuous (see CLAUDE.md
-"Scheduling pattern" for the why).
+see CLAUDE.md "Scheduling pattern" for the design rationale.
 
 ### Path A: future-dated post → `_pending/` queue (default)
 

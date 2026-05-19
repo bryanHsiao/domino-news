@@ -203,18 +203,18 @@ Doing #2 if/when more posts hit this pattern.
 
 ## Scheduling pattern
 
-### Pending queue + daily promotion (the green-dot-friendly flow)
+### Pending queue + daily promotion
 
 Future-dated articles go into `_pending/{zh-TW,en}/` instead of
 straight into `src/content/posts/`. A daily cron promotes them on
 their release day. Two reasons:
 
-1. **GitHub contribution graph stays continuous.** Drafting bursts
-   no longer collapse onto a single day with zero commits on the
-   actual publish days. Each article generates a "stage" commit on
-   the day it was written + a "promote" commit on the day it goes
-   live, and the cron's coverage refresh is a third commit on the
-   promote day. Three green dots per article spread across two days.
+1. **Activity stays distributed across the actual publish days.**
+   Drafting bursts no longer collapse onto a single day with no
+   commits landing on the days articles actually go live. Each
+   article generates a "stage" commit on the day it was written
+   plus a "promote" commit (plus a coverage-refresh commit) on
+   the day it goes live.
 2. **One canonical "is this published?" check** — Astro only sees
    files in `src/content/posts/`, so promotion = publishing. No need
    for the future-pubDate filter to do double duty as a hide-from-
@@ -225,12 +225,12 @@ their release day. Two reasons:
 ```
 1. Write file to _pending/{zh-TW,en}/YYYY-MM-DD-slug.md
    (filename's YYYY-MM-DD is the intended release date)
-2. git commit + git push       ← "draft day" green dot
+2. git commit + git push       ← "stage" commit, draft day
 3. Wait — `publish-pending.yml` cron fires at 23:30 UTC daily
    = 07:30 Taipei, picks up files whose filename date <= today,
    git-mv's them into src/content/posts/{zh-TW,en}/, commits,
    pushes, then refreshes docs/coverage.md as a second commit.
-   ← "release day" green dot(s)
+   ← "promote" + "coverage" commits, release day
 4. The promote push triggers deploy.yml automatically.
 ```
 
@@ -262,8 +262,8 @@ publishing) can still go straight to `src/content/posts/` + manual
 ### One-time setup for cron attribution
 
 `publish-pending.yml` checks out with a `PAT_FOR_PUBLISH` secret so
-the commits are attributed to your account (not `github-actions[bot]`)
-and count toward your contribution graph. To rotate or set up:
+the commits are attributed to your account (not `github-actions[bot]`).
+To rotate or set up:
 
 1. Settings → Developer settings → Personal access tokens →
    fine-grained, scope = `Contents: read/write` on this repo only
