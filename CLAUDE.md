@@ -13,6 +13,34 @@ reference; the skill is the workflow.
 
 ---
 
+## Git commit conventions (overrides global)
+
+This repo openly credits its AI tooling, so the user's global
+"no `Co-Authored-By`" preference is overridden here. **Every
+commit made by Claude on this repo MUST end with the trailer:**
+
+```
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+Format requirements (per git trailer convention):
+- Blank line between the commit message body and the trailer
+- Exact casing `Co-Authored-By` (one of the few git-recognised
+  trailers; `Co-authored-by` also works but stay consistent)
+- Email `noreply@anthropic.com` is the Anthropic-published
+  no-reply address — don't substitute a fake one
+
+The trailer is symbolic — it won't show Claude in the GitHub
+Insights → Contributors graph (Claude has no GitHub user account),
+but it puts the credit in the commit log where anyone reading
+`git log` can see it. The README's `## Built with` section is the
+broader place for tooling credit.
+
+This rule applies ONLY to this repo. Other repos still follow the
+user's global "no `Co-Authored-By`" preference.
+
+---
+
 ## Research workflow (mandatory for any technical article)
 
 Any technical article — LotusScript, Java, SSJS, Domino feature,
