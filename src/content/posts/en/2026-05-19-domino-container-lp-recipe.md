@@ -1,6 +1,6 @@
 ---
-title: "domino-container-lp-recipe — A Community Tool for Adding TC / SC / KO Language Packs to HCL Domino Container"
-description: "The official HCL domino-container repo ships with 6 Language Packs (DE/ES/FR/IT/NL/JA). Issue #55 discussed how to install other LPs; the maintainer's position was that adding more LPs to build.sh would mean owning maintenance for every language — a reasonable engineering call for a personally-maintained open source repo. The community tool domino-container-lp-recipe fills that extension path: a 'dynamic patch' approach (not a fork), one script call gets you Traditional Chinese (verified), Simplified Chinese (inferred), or Korean (template). The patch surface is small (~50 lines across 4 files), and the recipe drifts cheaply with upstream. This article walks through the tool's background, the three-layer LP integration, the recipe-vs-fork design decision, quickstart, adding new languages, and a sync-trap caveat you must read before rebuilding an already-running server."
+title: "domino-container-lp-recipe — A Community Tool for Adding the Traditional Chinese Language Pack to HCL Domino Container (with templates for additional languages)"
+description: "The official HCL domino-container repo ships with 6 Language Packs (DE/ES/FR/IT/NL/JA). Issue #55 discussed how to install other LPs; the maintainer's position was that adding more LPs to build.sh would mean owning maintenance for every language — a reasonable engineering call for a personally-maintained open source repo. The community tool domino-container-lp-recipe fills that extension path: a 'dynamic patch' approach (not a fork) that ships an end-to-end verified Traditional Chinese (TC) patch, plus Simplified Chinese (SC) and Korean (KO) entries in language_registry.py as templates for the community to verify and extend. The patch surface is small (~50 lines across 4 files), and the recipe drifts cheaply with upstream. This article walks through the tool's background, the three-layer LP integration, the recipe-vs-fork design decision, quickstart, adding new languages, and a sync-trap caveat you must read before rebuilding an already-running server."
 pubDate: 2026-05-19T07:30:00+08:00
 lang: en
 slug: domino-container-lp-recipe
@@ -25,8 +25,8 @@ coverStyle: "ukiyo-e"
 
 - The official [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container) ships with 6 Language Packs (DE / ES / FR / IT / NL / JA)
 - Upstream [Issue #55](https://github.com/HCL-TECH-SOFTWARE/domino-container/issues/55) discussed how to install other LPs; the maintainer's position is that adding more LPs to `build.sh` would mean owning maintenance for every language — a reasonable engineering call
-- The community tool [`bryanHsiao/domino-container-lp-recipe`](https://github.com/bryanHsiao/domino-container-lp-recipe) fills that extension path, **letting people who need other LPs add them themselves**: a small script that applies ~50 lines of patches to a clean upstream clone (not maintaining a fork), and then `./build.sh ... -domlp=TC` produces an image with the TC LP baked in
-- Current status: **TC verified** (end-to-end build confirmed; `names.nsf` view shows 「網域監督」), **SC inferred** (symmetric reasoning from TC, needs `--allow-inferred`), **KO template** (skeleton waiting on someone to fill in the installer code)
+- The community tool [`bryanHsiao/domino-container-lp-recipe`](https://github.com/bryanHsiao/domino-container-lp-recipe) **only ships Traditional Chinese (TC) as a verified, end-to-end build**: a small script that applies ~50 lines of patches to a clean upstream clone (not maintaining a fork), then `./build.sh ... -domlp=TC` produces an image with the TC LP baked in
+- **SC and KO are not supported — they are templates in `language_registry.py`** for the community to extend. SC is inferred symmetrically from TC and requires the `--allow-inferred` flag (not tested in practice); KO is an empty skeleton waiting for someone to fill in the installer code. They exist as reference entries to give people with those language needs a starting point; if you get them working, please PR back to promote the status
 - ⚠️ **Important caveat**: rebuilding the image on an already-running server **does not retroactively translate existing `.nsf` files** — Domino's entrypoint detects "Data already installed" and skips template deployment. There's a section below specifically on this — read it before rebuilding production
 
 ## Background: upstream's position on Issue #55
@@ -37,7 +37,7 @@ In November 2022, someone opened [Issue #55](https://github.com/HCL-TECH-SOFTWAR
 
 In other words: actually wiring new LPs into `build.sh` would mean owning "all languages, all versions" as ongoing maintenance. For a personally-maintained open-source repo, that's a reasonable engineering call.
 
-But the need for LPs outside the original 6 doesn't disappear — anyone deploying Domino in Taiwan, mainland China, or Korea typically wants TC / SC / KO, and ends up hand-rolling the integration themselves. `domino-container-lp-recipe` standardizes that hack into a shared tool so others with the same need don't redo the work, and so people with different language needs **have a starting point to extend and contribute back**.
+But the need for LPs outside the original 6 doesn't disappear — anyone deploying Domino in Taiwan, mainland China, or Korea typically wants TC / SC / KO, and ends up hand-rolling the integration themselves. `domino-container-lp-recipe` standardizes the **Traditional Chinese** hack into a shared, repeatable, tested tool, and leaves the extension pattern in `language_registry.py` (with SC / KO entries as reference templates) so people with other language needs **have a starting point to extend and contribute back**.
 
 ## The three-layer LP integration — why each language touches ~7 spots across 3 files
 
@@ -183,13 +183,14 @@ Both need planning. This isn't "swap image, restart, done."
 
 ## Contributions welcome + closing
 
-This tool is for community folks who **need an LP and want to extend it themselves**. If you:
+This tool is for community folks who **need an LP and want to extend it themselves**. Routing by what's actually delivered today:
 
-- **Need TC / SC / KO** — clone the repo and use it
-- **Got SC or KO working and want to bump it to verified** — PR back, promote the status from `template` / `inferred` to `verified`, others don't redo the work
-- **Need to add a new language (TH / VI / etc.)** — follow [`adding-new-language.md`](https://github.com/bryanHsiao/domino-container-lp-recipe/blob/main/docs/adding-new-language.md), PR the registry entry
-- **Spot upstream changing a file we patch and the recipe stops working** — file an issue
+- **Need Traditional Chinese** — clone the repo, run `apply-lp.sh --lang TC`. This is the end-to-end verified path
+- **Want to try Simplified Chinese** — the SC entry exists in the registry (inferred symmetrically from TC as `zh-CN`), use the `--allow-inferred` flag. **Treat your own end-to-end build as the source of truth.** If it works, PR back to promote the status from `inferred` to `verified`
+- **Want to try Korean** — KO is an empty skeleton. Extract the LP tar, run `strings LNXDomLP | grep LangCodeList` to find the installer code, fill it into the registry. Walkthrough in [`adding-new-language.md`](https://github.com/bryanHsiao/domino-container-lp-recipe/blob/main/docs/adding-new-language.md)
+- **Need to add a brand new language (TH / VI / etc.)** — same `adding-new-language.md` flow, PR the registry entry
+- **Spot upstream changing a file we patch and the recipe breaks** — file an issue
 
 Repo is Apache-2.0, same as upstream. This tool **contains no HCL software** — bring your own LP tars from HCL FlexNet under your own license.
 
-The TC / SC / KO (and beyond) Domino deployment community has always existed — standardizing each person's `build.sh` hack into something tested, shared, and with the caveats spelled out is what [`domino-container-lp-recipe`](https://github.com/bryanHsiao/domino-container-lp-recipe) is for.
+The community that needs Traditional Chinese (and other LPs) for Domino deployment has always existed — standardizing the TC hack into something tested, shared, and with the caveats spelled out, plus leaving extension templates for other languages, is what [`domino-container-lp-recipe`](https://github.com/bryanHsiao/domino-container-lp-recipe) is for. Verified status for SC / KO and others accumulates only when community contributors plug actual LP tars in and PR back.

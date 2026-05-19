@@ -1,6 +1,6 @@
 ---
-title: "domino-container-lp-recipe — 為 HCL Domino Container 加上繁中／簡中／韓文 Language Pack 的社群工具"
-description: "HCL 官方 domino-container repo 內建支援 6 種 Language Pack（DE/ES/FR/IT/NL/JA）。Issue #55 討論過怎麼裝其他 LP，但官方基於「真要加就要承擔所有語言的維護責任」的考量沒把更多 LP 收進 build.sh — 是合理的工程取捨。社群工具 domino-container-lp-recipe 補上這條擴充路線：用「動態修補」而不是「fork」的方式，跑一個腳本就能加進繁中（已驗證）、簡中（推論）、韓文（範本待補），結構小（~50 行 patch 跨 4 個檔）、跟著上游漂移成本低。本文介紹工具背景、三層整合、recipe-vs-fork 設計選擇、快速開始、加新語言流程、跟一個一定要先讀的 sync-trap 警告。"
+title: "domino-container-lp-recipe — 為 HCL Domino Container 加上繁中 Language Pack 的社群工具（含他語言擴充範本）"
+description: "HCL 官方 domino-container repo 內建支援 6 種 Language Pack（DE/ES/FR/IT/NL/JA）。Issue #55 討論過怎麼裝其他 LP，但官方基於「真要加就要承擔所有語言維護責任」的考量沒把更多 LP 收進 build.sh — 是合理的工程取捨。社群工具 domino-container-lp-recipe 補上這條擴充路線：用「動態修補」而不是「fork」的方式跑一個腳本就能加進繁中（end-to-end 已驗證），同時提供簡中 (SC) 跟韓文 (KO) 的擴充範本給社群當起點。結構小（~50 行 patch 跨 4 個檔）、跟著上游漂移成本低。本文介紹工具背景、三層整合、recipe-vs-fork 設計選擇、快速開始、加新語言流程、跟一個一定要先讀的 sync-trap 警告。"
 pubDate: 2026-05-19T07:30:00+08:00
 lang: zh-TW
 slug: domino-container-lp-recipe
@@ -25,8 +25,8 @@ coverStyle: "ukiyo-e"
 
 - HCL 官方 [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container) 內建支援 6 種 LP（DE / ES / FR / IT / NL / JA）
 - 上游 [Issue #55](https://github.com/HCL-TECH-SOFTWARE/domino-container/issues/55) 討論過怎麼裝其他 LP；官方基於「要加就要承擔所有語言維護責任」的考量沒把更多 LP 收進 `build.sh`、這個取捨是合理的
-- 社群工具 [`bryanHsiao/domino-container-lp-recipe`](https://github.com/bryanHsiao/domino-container-lp-recipe) 補上這條擴充路線、**讓有需要的人自己加入語言 LP**：一個小腳本、套用 ~50 行修補到上游 clone（不是維護 fork），就能跑 `./build.sh ... -domlp=TC` 蓋出含繁中 LP 的 image
-- 目前 **TC verified**（作者實測通過、`names.nsf` view 顯示「網域監督」）、**SC inferred**（從 TC 對稱推論、需 `--allow-inferred`）、**KO template**（範本待人補 installer code）
+- 社群工具 [`bryanHsiao/domino-container-lp-recipe`](https://github.com/bryanHsiao/domino-container-lp-recipe) **目前只 ship 繁中 LP（end-to-end 驗證過）**：一個小腳本、套用 ~50 行修補到上游 clone（不是維護 fork），就能跑 `./build.sh ... -domlp=TC` 蓋出含繁中 LP 的 image
+- **簡中 (SC) 跟韓文 (KO) 不是已支援、只是 `language_registry.py` 的擴充範本** — SC 從 TC 對稱推論、跑需加 `--allow-inferred` 旗標、未實測；KO 是空 skeleton、需有人補 installer code 才能跑。給有對應語言需求的社群成員當起點、跑通請發 PR 升 status
 - ⚠️ **重要警告**：對已運行的 server 重 build image 後、既有 `.nsf` **不會自動變繁中**（Domino entrypoint 偵測「Data already installed」會 skip template 部署）—— 重 build 之前一定要讀後面那節
 
 ## 背景：Issue #55 上游的考量
@@ -37,7 +37,7 @@ coverStyle: "ukiyo-e"
 
 —— 意思是：真要在 `build.sh` 加新 LP、官方就要承擔「所有語言、所有版本」的維護責任。對一個個人維護的開源 repo 來說、那是合理的工程取捨。
 
-但實務上 6 LP 之外的需求依然存在 —— 在台灣、中國、韓國 deploy Domino 通常會要繁中／簡中／韓文 LP，每個 deploy 工程師各自 hack `build.sh` 重複勞動。`domino-container-lp-recipe` 把那段 hack 整理成共用工具、讓有相同需求的人不用每次重來，也讓有其他語言需求的社群伙伴**有起點可以擴充、跑通後貢獻回來**。
+但實務上 6 LP 之外的需求依然存在 —— 在台灣、中國、韓國 deploy Domino 通常會要繁中／簡中／韓文 LP，每個 deploy 工程師各自 hack `build.sh` 重複勞動。`domino-container-lp-recipe` 把**繁中那條 hack** 整理成共用、可重跑、有測試的工具，並且把擴充其他語言的 pattern 在 `language_registry.py` 留下範本（SC / KO 兩個 entry），讓有其他語言需求的社群伙伴**有起點可以擴充、跑通後貢獻回來**。
 
 ## 三層整合 — 為什麼每個 LP 要動 ~7 處跨 3 個檔
 
@@ -183,13 +183,14 @@ Data already installed for 14050100
 
 ## 邀請貢獻 + 結論
 
-這個工具是寫給「有 LP 需求、想自己擴充」的社群伙伴用的。如果你：
+這個工具是寫給「有 LP 需求、想自己擴充」的社群伙伴用的。依當下實際狀態分流：
 
-- **用得到繁中 / 簡中 / 韓文** — 直接 clone repo 用
-- **跑通 SC / KO 想升 verified status** — 發 PR 回來、把 status 從 `template` / `inferred` 升到 `verified`、讓其他人少踩一次坑
-- **要加新語言（TH / VI / 越南文等）** — 照 [`adding-new-language.md`](https://github.com/bryanHsiao/domino-container-lp-recipe/blob/main/docs/adding-new-language.md) 做、PR 進 registry
-- **看到上游 commit 改到我們 patch 位置、recipe 跑壞** — 報 issue 我修
+- **用繁中** — 直接 clone repo、跑 `apply-lp.sh --lang TC`，是 end-to-end 驗證過的路線
+- **要試簡中** — registry 已有 SC entry（從 TC 對稱推論的 `zh-CN`），跑時加 `--allow-inferred` 旗標。**請以實測為準**；跑通請發 PR 把 status 從 `inferred` 升到 `verified`
+- **要試韓文** — KO 是空 skeleton、要先解 LP tar 跑 `strings LNXDomLP | grep LangCodeList` 拿 installer code 補進 registry。流程在 [`adding-new-language.md`](https://github.com/bryanHsiao/domino-container-lp-recipe/blob/main/docs/adding-new-language.md)
+- **要加全新語言（TH / VI 等）** — 同樣照 `adding-new-language.md` 做、PR 進 registry
+- **上游 commit 改到 patch 位置、recipe 跑壞** — 報 issue 我修
 
 Repo 用 Apache-2.0、跟上游一致。本工具**不含任何 HCL 軟體**、LP tar 你自己從 HCL FlexNet 下載。
 
-繁中／簡中／韓文（以及其他語言）的 Domino 部署社群一直存在 —— 把各自 hack `build.sh` 的經驗標準化、共用、有測試、有警告，是 [`domino-container-lp-recipe`](https://github.com/bryanHsiao/domino-container-lp-recipe) 想做的事。
+繁中以及其他需要 LP 的 Domino 部署社群一直存在 —— 把繁中那條 hack 標準化、共用、有測試、有警告，並且為其他語言留下擴充範本，是 [`domino-container-lp-recipe`](https://github.com/bryanHsiao/domino-container-lp-recipe) 想做的事。SC / KO 等語言的 verified 狀態、要靠社群手把 LP tar 接上去後 PR 回來才會逐步累積。
