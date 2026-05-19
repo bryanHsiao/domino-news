@@ -1,0 +1,133 @@
+name: Publish pending articles
+
+# Runs daily at 23:30 UTC (= 07:30 Asia/Taipei the next day).
+# Looks for any file in _pending/{zh-TW,en}/ whose YYYY-MM-DD
+# filename prefix is <= today (Taipei), and git-mv's it into
+# src/content/posts/{zh-TW,en}/. That commit becomes the
+# "release-day green dot" — keeping the contribution graph
+# continuous even when articles are drafted in batches.
+#
+# After promotion, also refresh docs/coverage.md (since the new
+# article changes coverage counts) — that's a second commit on
+# the same day, extra dot.
+#
+# Both steps are no-ops if nothing is queued for today, so this
+# workflow safely runs every day regardless of whether there's
+# an article to ship.
+
+on:
+  schedule:
+    - cron: '30 23 * * *'   # 23:30 UTC = 07:30 Asia/Taipei (next day)
+  workflow_dispatch:         # manual trigger for testing
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # PAT_FOR_PUBLISH must have repo:contents write permission
+          # so the resulting commits are attributed to your user
+          # (not github-actions[bot]) — required for the green dot
+          # to count on your contribution graph.
+          token: ${{ secrets.PAT_FOR_PUBLISH }}
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "bryan hsiao"
+          git config user.email "siao.bryan@gmail.com"
+
+      - name: Promote pending articles dated <= today (Taipei)
+        id: promote
+        run: |
+          set -e
+          TODAY=$(TZ=Asia/Taipei date +%Y-%m-%d)
+          echo "Today (Asia/Taipei) = $TODAY"
+
+          MOVED=0
+          MOVED_SLUGS=""
+
+          for LANG in zh-TW en; do
+            SRC_DIR="_pending/$LANG"
+            DST_DIR="src/content/posts/$LANG"
+            [ ! -d "$SRC_DIR" ] && continue
+
+            # Glob *.md, filter out .gitkeep, sort for deterministic order
+            for f in $(find "$SRC_DIR" -maxdepth 1 -type f -name '*.md' | sort); do
+              BASENAME=$(basename "$f")
+              DATE_PREFIX="${BASENAME:0:10}"
+
+              # Skip if filename doesn't start with YYYY-MM-DD
+              if [[ ! "$DATE_PREFIX" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+                echo "  skip (not date-prefixed): $f"
+                continue
+              fi
+
+              # Promote when filename date <= today (Taipei)
+              if [[ "$DATE_PREFIX" > "$TODAY" ]]; then
+                echo "  defer (future): $f"
+                continue
+              fi
+
+              mkdir -p "$DST_DIR"
+              echo "  promote: $f -> $DST_DIR/$BASENAME"
+              git mv "$f" "$DST_DIR/$BASENAME"
+              MOVED=$((MOVED + 1))
+
+              # Track slug (basename without date prefix + extension) for the commit msg
+              SLUG="${BASENAME:11}"
+              SLUG="${SLUG%.md}"
+              if [[ "$MOVED_SLUGS" != *"$SLUG"* ]]; then
+                if [ -z "$MOVED_SLUGS" ]; then
+                  MOVED_SLUGS="$SLUG"
+                else
+                  MOVED_SLUGS="$MOVED_SLUGS, $SLUG"
+                fi
+              fi
+            done
+          done
+
+          echo "moved=$MOVED" >> "$GITHUB_OUTPUT"
+          echo "slugs=$MOVED_SLUGS" >> "$GITHUB_OUTPUT"
+          echo "today=$TODAY" >> "$GITHUB_OUTPUT"
+
+          if [ "$MOVED" -eq 0 ]; then
+            echo "Nothing to promote today."
+            exit 0
+          fi
+
+          git commit -m "Publish pending articles for $TODAY: $MOVED_SLUGS"
+          git push origin main
+          echo "Promoted $MOVED file(s) for slug(s): $MOVED_SLUGS"
+
+      - name: Set up Node (for coverage refresh)
+        if: steps.promote.outputs.moved != '0'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install deps
+        if: steps.promote.outputs.moved != '0'
+        run: npm ci --no-audit --no-fund
+
+      - name: Refresh coverage
+        if: steps.promote.outputs.moved != '0'
+        run: |
+          npm run coverage
+          if git diff --quiet docs/coverage.md; then
+            echo "Coverage unchanged — no commit needed."
+          else
+            git add docs/coverage.md
+            git commit -m "coverage: refresh after publishing ${{ steps.promote.outputs.today }} pending articles"
+            git push origin main
+          fi
+
+      - name: Trigger cover generation for newly-promoted articles
+        if: steps.promote.outputs.moved != '0'
+        run: gh workflow run backfill-covers.yml --ref main
+        env:
+          GH_TOKEN: ${{ secrets.PAT_FOR_PUBLISH }}

@@ -47,14 +47,24 @@ NEW ARTICLE                            SALVAGE
 2. research → NotebookLM + WebFetch    2. research → re-confirm facts via NotebookLM
 3. write    → bilingual zh + en        3. rewrite → fix the validation reason
 4. validate → npm run build            4. validate → npm run build
-5. ship     → commit, push, backfill   5. ship     → commit, push, backfill
-6. refresh  → npm run coverage         6. refresh  → npm run coverage + clean _drafts/
+5. ship     → see Step 5 — two paths   5. ship     → see Step 5 — two paths
+6. refresh  → auto (Path A) or manual  6. refresh  → manual + clean _drafts/
 ```
 
 Steps 2–6 are shared. Step 0 (salvage assessment) and step 1 (topic
 selection) are mutually exclusive — the salvage path already has a
 topic, and the new path doesn't yet have a draft. Each section
 below is read in order whichever path you're on.
+
+**Step 5 ship has two paths** depending on the post's pubDate:
+- **Future date (default)** → write to `_pending/{zh-TW,en}/`,
+  push, then the daily `publish-pending.yml` cron promotes on
+  release day, refreshes coverage, and triggers cover generation
+  automatically. Three commits on release day = continuous green
+  dots on the contribution graph.
+- **Today- or past-dated** (salvage / urgent publish) → write to
+  `src/content/posts/` directly, push, trigger backfill-covers +
+  deploy manually, refresh coverage manually.
 
 ---
 
@@ -357,21 +367,65 @@ Domino-API counterpart in that language.
 
 ## Step 5 — Build & ship
 
+There are two paths depending on whether the post's publish date is
+in the future or today/past. **Default to the pending-queue path** —
+it keeps the contribution graph continuous (see CLAUDE.md
+"Scheduling pattern" for the why).
+
+### Path A: future-dated post → `_pending/` queue (default)
+
 ```bash
 # 1. Local build catches frontmatter / schema / footnote errors
 npm run build
 
-# 2. Commit & push
-git add src/content/posts/en/<YYYY-MM-DD>-<slug>.md \
-        src/content/posts/zh-TW/<YYYY-MM-DD>-<slug>.md
-git commit -m "Schedule <YYYY-MM-DD> post: <topic title>
+# 2. Write the file paths under _pending/ rather than posts/
+#    (the YYYY-MM-DD prefix on the filename is the release date)
+git add _pending/en/<YYYY-MM-DD>-<slug>.md \
+        _pending/zh-TW/<YYYY-MM-DD>-<slug>.md
+git commit -m "Stage <YYYY-MM-DD> post: <topic title>
 
 <2-3 line description of what the article covers, the key insight,
 and any cross-references to companion posts. CLAUDE.md commit-style
 is descriptive multi-line, not just a one-liner.>"
 git push origin main
+```
 
-# 3. Trigger cover generation
+That's it for ship-time. On the release date, `publish-pending.yml`
+fires at 23:30 UTC (= 07:30 Taipei), promotes the file from
+`_pending/` to `src/content/posts/`, refreshes coverage, and triggers
+`backfill-covers.yml` to generate the cover image. Three commits land
+on the release day — all attributed to the user via `PAT_FOR_PUBLISH`
+(see CLAUDE.md "One-time setup for cron attribution").
+
+The promote push triggers `deploy.yml` automatically. The reader sees
+the post on the homepage when the deploy completes (~3 min after the
+cron fires).
+
+**Cover generation timing**: because backfill-covers reads from
+`src/content/posts/`, the cover doesn't exist until promotion day.
+If you need to preview the post with a real cover before its release
+date, run backfill-covers manually after temporarily moving the file
+to `posts/`, then move it back to `_pending/` — but usually not
+worth the trouble.
+
+### Path B: today- or past-dated post → straight to `posts/`
+
+Use for salvage flows (rewriting failed cron drafts dated in the
+past) or one-off "publish now" pieces. The pending queue is
+unnecessary because the cron would just promote immediately anyway.
+
+```bash
+# 1. Local build
+npm run build
+
+# 2. Commit & push directly under posts/
+git add src/content/posts/en/<YYYY-MM-DD>-<slug>.md \
+        src/content/posts/zh-TW/<YYYY-MM-DD>-<slug>.md
+git commit -m "..."
+git push origin main
+
+# 3. Trigger cover generation (article is already in posts/,
+#    so backfill-covers will see it)
 gh workflow run backfill-covers.yml --ref main
 
 # 4. Optional — watch the run
@@ -380,6 +434,9 @@ gh run watch <run-id> --exit-status
 
 # 5. Pull the cover commit back locally
 git pull --ff-only
+
+# 6. Since pubDate is <= now, trigger deploy to reveal immediately
+gh workflow run deploy.yml --ref main
 ```
 
 The `backfill-covers.yml` workflow detects the new post (no `cover:`
@@ -389,22 +446,16 @@ new style won't clash with neighbours), generates the image,
 writes `cover:` and `coverStyle:` back to both language files, and
 commits a follow-up.
 
-**For future-scheduled posts** (pubDate >= now): nothing further
-needed. `nightly-rebuild.yml` reveals it on schedule.
-
-**For "publish now" posts** (pubDate <= now): manually trigger
-deploy:
-
-```bash
-gh workflow run deploy.yml --ref main
-```
-
 ---
 
 ## Step 6 — Refresh the coverage tracker (and clean _drafts if salvaging)
 
-After ship, **re-run `npm run coverage`** to update
-`docs/coverage.md`, then commit the diff:
+**Path A (pending queue)**: coverage refresh runs automatically
+inside `publish-pending.yml` after the article is promoted to
+`src/content/posts/`. No manual action needed.
+
+**Path B (direct to posts/)**: after ship, **re-run `npm run
+coverage`** to update `docs/coverage.md` and commit the diff:
 
 ```bash
 npm run coverage
