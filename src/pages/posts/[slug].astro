@@ -67,12 +67,14 @@ const jsonLd = {
   jsonLd={jsonLd}
 >
   <article class="post">
-    {cover ? (
-      <div class="post-cover" style={`background-image: url('${cover}')`} />
-    ) : (
-      <div class="post-cover fallback" style={`--g-from:${grad.from};--g-to:${grad.to}`}>
-        {post.data.tags[0] && <span class="cover-icon">{post.data.tags[0]}</span>}
-      </div>
+    {post.data.slug !== 'welcome' && (
+      cover ? (
+        <div class="post-cover" style={`background-image: url('${cover}')`} />
+      ) : (
+        <div class="post-cover fallback" style={`--g-from:${grad.from};--g-to:${grad.to}`}>
+          {post.data.tags[0] && <span class="cover-icon">{post.data.tags[0]}</span>}
+        </div>
+      )
     )}
 
     <div class="post-body">
