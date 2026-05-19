@@ -13,11 +13,10 @@ reference; the skill is the workflow.
 
 ---
 
-## Git commit conventions (overrides global)
+## Git commit conventions
 
-This repo openly credits its AI tooling, so the user's global
-"no `Co-Authored-By`" preference is overridden here. **Every
-commit made by Claude on this repo MUST end with the trailer:**
+This repo openly credits its AI tooling. **Every commit made by
+Claude MUST end with the trailer:**
 
 ```
 Co-Authored-By: Claude <noreply@anthropic.com>
@@ -35,9 +34,6 @@ Insights → Contributors graph (Claude has no GitHub user account),
 but it puts the credit in the commit log where anyone reading
 `git log` can see it. The README's `## Built with` section is the
 broader place for tooling credit.
-
-This rule applies ONLY to this repo. Other repos still follow the
-user's global "no `Co-Authored-By`" preference.
 
 ---
 
