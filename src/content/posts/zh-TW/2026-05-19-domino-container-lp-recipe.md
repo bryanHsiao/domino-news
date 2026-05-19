@@ -18,7 +18,7 @@ sources:
 relatedJava: []
 relatedSsjs: []
 cover: "/covers/domino-container-lp-recipe.png"
-coverStyle: "ukiyo-e"
+coverStyle: "low-poly-3d"
 ---
 
 ## 重點摘要

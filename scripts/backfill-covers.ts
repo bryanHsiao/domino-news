@@ -208,13 +208,20 @@ async function main() {
       if (s) recentStyles.push(s);
     }
 
+    // If the post has a coverStyle pinned in frontmatter and we're
+    // NOT in FORCE_REGEN mode, honour it — useful for swapping a
+    // single cover to a chosen style (set coverStyle, delete the PNG,
+    // run backfill). FORCE_REGEN clears p.coverStyle earlier so this
+    // becomes undefined and normal sampling resumes.
+    const preferredStyle = p.coverStyle || undefined;
     const generated = await generateCoverImage(
       client,
       p.title,
       p.primaryTag,
       p.slug,
       COVERS_DIR,
-      recentStyles
+      recentStyles,
+      preferredStyle
     );
     if (!generated) continue;
 

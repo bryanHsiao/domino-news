@@ -101,7 +101,16 @@ const STYLE_BY_ID: Record<string, StyleVariant> = Object.fromEntries(
  * Falls back to the full pool only if every style has been used recently
  * (with N < 12 that should never actually happen).
  */
-export function pickStyle(recentStyleIds: string[] = []): StyleVariant {
+export function pickStyle(
+  recentStyleIds: string[] = [],
+  preferredStyleId?: string
+): StyleVariant {
+  // If the caller pins a specific style (e.g. via frontmatter
+  // coverStyle that's been left explicit), honour it — no sampling.
+  if (preferredStyleId) {
+    const preferred = STYLE_VARIANTS.find((s) => s.id === preferredStyleId);
+    if (preferred) return preferred;
+  }
   const excluded = new Set(recentStyleIds);
   const available = STYLE_VARIANTS.filter((s) => !excluded.has(s.id));
   const pool = available.length > 0 ? available : STYLE_VARIANTS;
@@ -111,9 +120,10 @@ export function pickStyle(recentStyleIds: string[] = []): StyleVariant {
 export function buildCoverPrompt(
   title: string,
   primaryTag: string,
-  recentStyleIds: string[] = []
+  recentStyleIds: string[] = [],
+  preferredStyleId?: string
 ): { prompt: string; styleId: string } {
-  const style = pickStyle(recentStyleIds);
+  const style = pickStyle(recentStyleIds, preferredStyleId);
   const prompt = `Create a cover image for an editorial tech blog post.
 
 Article subject: "${title}"
@@ -173,9 +183,10 @@ export async function generateCoverImage(
   primaryTag: string,
   slug: string,
   coversDir: string,
-  recentStyleIds: string[] = []
+  recentStyleIds: string[] = [],
+  preferredStyleId?: string
 ): Promise<GeneratedCover | null> {
-  const { prompt, styleId } = buildCoverPrompt(title, primaryTag, recentStyleIds);
+  const { prompt, styleId } = buildCoverPrompt(title, primaryTag, recentStyleIds, preferredStyleId);
   console.log(
     `[cover] Calling ${IMAGE_MODEL} (quality=${IMAGE_QUALITY}, style=${styleId}) for "${slug}"`
   );
