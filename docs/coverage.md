@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-05-20 · Posts scanned: 30 · Classes catalogued: 97*
+*Generated: 2026-05-20 · Posts scanned: 31 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -193,6 +193,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [build-your-own-domino-container](https://bryanhsiao.github.io/domino-news/posts/build-your-own-domino-container/) | — | — | — |
 | [notes-outline](https://bryanhsiao.github.io/domino-news/posts/notes-outline/) | `NotesOutline`, `NotesOutlineEntry` | `Outline`, `OutlineEntry` | `Outline`, `OutlineEntry` |
 | [domino-container-lp-recipe](https://bryanhsiao.github.io/domino-news/posts/domino-container-lp-recipe/) | — | — | — |
 | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | `NotesDOMParser`, `NotesSAXParser`, `NotesXMLProcessor` | `DOMParser`, `SAXParser`, `XSLTransformer` | `DOMParser`, `SAXParser`, `XSLTransformer` |
