@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-05-18 · Posts scanned: 30 · Classes catalogued: 97*
+*Generated: 2026-05-20 · Posts scanned: 30 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
