@@ -1,6 +1,6 @@
 ---
 title: "Two Paths to HCL Domino on Container — Pull a Pre-built Image or Build Your Own"
-description: "HCL Domino has officially supported containerized deployment since V12, and HCL covers both ends: pull a pre-built image from the HCL Harbor Container Registry (hclcr.io) or My HCLSoftware Portal for fast onboarding, or clone HCL's open-source domino-container project on GitHub and run the interactive build.sh menu to build your own custom image — picking exactly which modules (Domino / Traveler / Verse / Nomad / REST-API / Leap / Domino IQ / OnTime / C-API SDK / LP) plus add-ons you want baked in. This article explains how to choose between the two paths, how customizable build.sh really is, typical deployment scenarios, and how to get started."
+description: "Packaging Domino into a container is older than people often realize — the community was already doing it in the IBM V9 days, and HCL has officially shipped pre-built Domino container images for download since V10. Today HCL covers both ends: pull a pre-built image from the HCL Harbor Container Registry (hclcr.io) or My HCLSoftware Portal for fast onboarding, or clone HCL's open-source domino-container project on GitHub and run the interactive build.sh menu to build your own custom image — picking exactly which modules (Domino / Traveler / Verse / Nomad / REST-API / Leap / Domino IQ / OnTime / C-API SDK / LP) plus add-ons you want baked in. This article explains how to choose between the two paths, how customizable build.sh really is, typical deployment scenarios, and how to get started."
 pubDate: 2026-05-21T07:30:00+08:00
 lang: en
 slug: build-your-own-domino-container
@@ -28,7 +28,7 @@ coverStyle: "low-poly-3d"
 
 ## TL;DR
 
-- **HCL Domino has officially supported container deployment since V12** — the current flagship is Domino 14.5
+- **Containerizing Domino isn't new** — the community was doing it back in the IBM V9 days, and **HCL has shipped official pre-built container images for download since V10**; the current flagship is Domino 14.5
 - HCL gives you **two paths**:
   - **(Path A)** Pull a pre-built image from the [HCL Harbor Container Registry](https://hclcr.io) or [My HCLSoftware Portal](https://my.hcltechsw.com/) — fast, fits standard deployments
   - **(Path B)** Use the GitHub [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container) project to build your own — flexible, fits custom module combinations
@@ -42,7 +42,7 @@ coverStyle: "low-poly-3d"
 
 The "Domino only runs on bare-metal servers" image is out of date.
 
-Since **Domino V12** (under HCL's stewardship), Domino server has been officially supported as a container deployment. By today's **Domino 14.5** that path is well-trodden — community members run containers for dev environments, CI, even production (with Kubernetes or OpenShift).
+This goes back further than many people realize. When IBM was still selling Notes/Domino, community members were already writing Dockerfiles to package Domino into containers as far back as **V9 (2013)**. **HCL took over the official container story with V10 in 2018, shipping pre-built Domino container images to customers on maintenance**; by today's **Domino 14.5** that path is well-trodden — community members run containers for dev environments, CI, even production (with Kubernetes or OpenShift).
 
 There are two ways to get a Domino container image:
 

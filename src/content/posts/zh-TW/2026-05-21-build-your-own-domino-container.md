@@ -1,6 +1,6 @@
 ---
 title: "HCL Domino 容器化部署的兩條路 — 拉 pre-built image，或自己 build 客製版"
-description: "HCL Domino 從 V12 起官方支援容器化部署、而且雙管齊下：要快上線可以從 HCL Harbor Container Registry (hclcr.io) 或 My HCLSoftware Portal 拉 pre-built image；要彈性可以用 HCL 在 GitHub 上開源的 domino-container 專案、跑互動式 build.sh menu 自己 build 客製 image，挑你要的模組（Domino / Traveler / Verse / Nomad / REST-API / Leap / Domino IQ / OnTime / C-API SDK / LP）+ add-on。這篇介紹兩條路怎麼選、build.sh 能客製到什麼程度、典型部署場景，跟想試試看的人怎麼起步。"
+description: "把 Domino 包進 container 在 IBM 時代（V9）就有社群在做、HCL 從 V10 起正式提供官方 pre-built container image 下載。現在 HCL 雙管齊下：要快上線可以從 HCL Harbor Container Registry (hclcr.io) 或 My HCLSoftware Portal 拉 pre-built image；要彈性可以用 HCL 在 GitHub 上開源的 domino-container 專案、跑互動式 build.sh menu 自己 build 客製 image，挑你要的模組（Domino / Traveler / Verse / Nomad / REST-API / Leap / Domino IQ / OnTime / C-API SDK / LP）+ add-on。這篇介紹兩條路怎麼選、build.sh 能客製到什麼程度、典型部署場景，跟想試試看的人怎麼起步。"
 pubDate: 2026-05-21T07:30:00+08:00
 lang: zh-TW
 slug: build-your-own-domino-container
@@ -28,7 +28,7 @@ coverStyle: "low-poly-3d"
 
 ## 重點摘要
 
-- **Domino 從 V12 起官方支援容器化部署**，現在的旗艦版本是 Domino 14.5
+- **容器化在 Domino 圈不是新事** — IBM 時代（V9）社群就在自己 build、**HCL 從 V10 起正式提供 pre-built container 下載**，現在的旗艦版本是 Domino 14.5
 - HCL 提供**兩條路**：
   - **(Path A)** 從 [HCL Harbor Container Registry](https://hclcr.io) 或 [My HCLSoftware Portal](https://my.hcltechsw.com/) 拉 pre-built image — 快、適合標準部署
   - **(Path B)** 用 GitHub 上的 [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container) 自己 build — 彈性、適合要客製模組組合的場景
@@ -42,7 +42,7 @@ coverStyle: "low-poly-3d"
 
 「Domino 還只能裝在實體 server 上」這種印象其實已經過時。
 
-從 HCL 接手後的 **Domino V12** 開始、官方就正式支援以 container 方式部署 Domino server。到今天的 **Domino 14.5** 這條路已經很成熟 —— 不少社群成員用容器跑開發環境、CI 測試、甚至 production（搭配 Kubernetes 或 OpenShift）。
+這件事比很多人以為的更早。IBM 還在賣 Notes/Domino 的 **V9（2013）** 時代、社群就已經有人自己寫 Dockerfile 把 Domino 包進 container 跑。**HCL 從 2018 年的 V10 起正式接手 container 路線、提供官方 pre-built container image 給有 maintenance 的客戶下載**；到今天的 **Domino 14.5**、這條路已經很成熟 —— 不少社群成員用容器跑開發環境、CI 測試、甚至 production（搭配 Kubernetes 或 OpenShift）。
 
 要拿到 Domino container image 有兩條路：
 
