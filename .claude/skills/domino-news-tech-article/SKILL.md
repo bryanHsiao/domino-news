@@ -436,11 +436,38 @@ date, run backfill-covers manually after temporarily moving the file
 to `posts/`, then move it back to `_pending/` — but usually not
 worth the trouble.
 
-### Path B: today- or past-dated post → straight to `posts/`
+### Path B: pubDate already past → straight to `posts/`
 
 Use for salvage flows (rewriting failed cron drafts dated in the
 past) or one-off "publish now" pieces. The pending queue is
 unnecessary because the cron would just promote immediately anyway.
+
+⚠️ **The trigger criterion is `pubDate <= now`, NOT "today's calendar
+date matches the YYYY-MM-DD filename prefix"**. They look the same
+most of the time but diverge in a real failure mode worth naming:
+
+If you're writing at 01:00 AM Taipei with a planned `pubDate:
+2026-05-22T07:30:00+08:00` (the canonical 07:30 publish slot),
+*today's calendar date matches the filename* — but `pubDate` is
+still ~6 hours in the future. **Astro's content collection filters
+out posts whose `pubDate` is still in the future at build time**,
+so:
+
+- The push lands and `deploy.yml` runs successfully
+- But `astro build` excludes the post from `dist/`
+- GitHub Pages 404s the URL until the next deploy after 07:30
+- The reader has no idea why "it was supposed to be live now"
+
+If `pubDate` is in the future at commit time — even by minutes —
+**use Path A instead**. The publish-pending cron at 23:30 UTC
+(= 07:30 Taipei) is purpose-built to handle this: it promotes from
+`_pending/` exactly at `pubDate`, then triggers the deploy that
+will include the now-past-dated post.
+
+Rule of thumb: if it's after 07:30 Taipei right now and the
+article should go out today → Path B is fine. If it's before
+07:30 Taipei (most "I want to ship this today" scenarios on the
+Taipei morning) → Path A is the safer call.
 
 ```bash
 # 1. Local build
