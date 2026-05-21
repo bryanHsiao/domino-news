@@ -32,7 +32,7 @@ coverStyle: "low-poly-3d"
 
 ## TL;DR
 
-- **Containerizing Domino isn't new** — the community was doing it back in the IBM V9 days, and **HCL has shipped official pre-built container images for download since V10**; the current flagship is Domino 14.5
+- **Containerizing Domino isn't new** — the community was doing it back in the IBM V9 days, and **HCL has shipped official pre-built container images for download since V10**; the current flagship is [**Domino 14.5.1 (Domino 2026)**](/en/posts/hcl-domino-2026-release-highlights/)
 - HCL gives you **two paths**:
   - **(Path A)** Pull a pre-built image from the [HCL Harbor Container Registry](https://hclcr.io) or [My HCLSoftware Portal](https://my.hcltechsw.com/) — fast, fits standard deployments
   - **(Path B)** Use the GitHub [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container) project to build your own — flexible, fits custom module combinations
@@ -46,7 +46,7 @@ coverStyle: "low-poly-3d"
 
 The "Domino only runs on bare-metal servers" image is out of date.
 
-This goes back further than many people realize. When IBM was still selling Notes/Domino, community members were already [writing Dockerfiles to package Domino into containers](https://www.eknori.de/2017-08-20/domino-on-docker/) as far back as **V9 (2013)** — Ulrich Krause's August 2017 blog post is one of the publicly documented early examples. **HCL took over the official container story with V10 in 2018**: Thomas Hampel created the [`IBM/domino-docker`](https://blog.nashcom.de/nashcomblog.nsf/dx/hcl-domino-docker-container-moved-to-a-new-home.htm) repo under IBM that November as the "official" container project starting point. Daniel Nashed later picked up most of the maintenance, and the repo eventually moved from IBM to HCL — today it lives at [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container), and maintenance customers have had official pre-built container images to download ever since. By today's **Domino 14.5** that path is well-trodden — community members run containers for dev environments, CI, even production (with Kubernetes or OpenShift).
+This goes back further than many people realize. When IBM was still selling Notes/Domino, community members were already [writing Dockerfiles to package Domino into containers](https://www.eknori.de/2017-08-20/domino-on-docker/) as far back as **V9 (2013)** — Ulrich Krause's August 2017 blog post is one of the publicly documented early examples. **HCL took over the official container story with V10 in 2018**: Thomas Hampel created the [`IBM/domino-docker`](https://blog.nashcom.de/nashcomblog.nsf/dx/hcl-domino-docker-container-moved-to-a-new-home.htm) repo under IBM that November as the "official" container project starting point. Daniel Nashed later picked up most of the maintenance, and the repo eventually moved from IBM to HCL — today it lives at [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container), and maintenance customers have had official pre-built container images to download ever since. By today's [**Domino 14.5.1 (Domino 2026)**](/en/posts/hcl-domino-2026-release-highlights/) that path is well-trodden — community members run containers for dev environments, CI, even production (with Kubernetes or OpenShift).
 
 There are two ways to get a Domino container image:
 
@@ -141,8 +141,8 @@ Worth noting: [Daniel Nashed](https://blog.nashcom.de/) — one of the main comm
 # Log in to HCL Harbor with your My HCLSoftware Portal credentials
 docker login hclcr.io
 # Pull the image (check the Harbor UI for the exact image name and tag)
-docker pull hclcr.io/domino/domino-server:14.5.0
-docker run -d --name domino -p 80:80 -p 1352:1352 hclcr.io/domino/domino-server:14.5.0
+docker pull hclcr.io/domino/domino-server:14.5.1
+docker run -d --name domino -p 80:80 -p 1352:1352 hclcr.io/domino/domino-server:14.5.1
 ```
 
 **Path B (flexible) — Build your own**:
