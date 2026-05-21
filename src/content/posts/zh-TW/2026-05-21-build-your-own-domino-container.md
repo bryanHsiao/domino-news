@@ -32,7 +32,7 @@ coverStyle: "low-poly-3d"
 
 ## 重點摘要
 
-- **容器化在 Domino 圈不是新事** — IBM 時代（V9）社群就在自己 build、**HCL 從 V10 起正式提供 pre-built container 下載**，現在的旗艦版本是 [**Domino 14.5.1（Domino 2026）**](/posts/hcl-domino-2026-release-highlights/)
+- **容器化在 Domino 圈不是新事** — IBM 時代（V9）社群就在自己 build、**HCL 從 V10 起正式提供 pre-built container 下載**，截至 2026-05 寫稿時、最新版本是 [**Domino 14.5.1（Domino 2026）**](/posts/hcl-domino-2026-release-highlights/)
 - HCL 提供**兩條路**：
   - **(Path A)** 從 [HCL Harbor Container Registry](https://hclcr.io) 或 [My HCLSoftware Portal](https://my.hcltechsw.com/) 拉 pre-built image — 快、適合標準部署
   - **(Path B)** 用 GitHub 上的 [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container) 自己 build — 彈性、適合要客製模組組合的場景
@@ -46,7 +46,7 @@ coverStyle: "low-poly-3d"
 
 「Domino 還只能裝在實體 server 上」這種印象其實已經過時。
 
-這件事比很多人以為的更早。IBM 還在賣 Notes/Domino 的 **V9（2013）** 時代、社群就已經[有人自己寫 Dockerfile 把 Domino 包進 container 跑](https://www.eknori.de/2017-08-20/domino-on-docker/)（Ulrich Krause 2017-08 的 blog post 是公開可查的早期實證之一）。**HCL 從 2018 年的 V10 起正式接手 container 路線**：Thomas Hampel 那年 11 月在 IBM 名下開了 [`IBM/domino-docker`](https://blog.nashcom.de/nashcomblog.nsf/dx/hcl-domino-docker-container-moved-to-a-new-home.htm) repo 當「官方」container project 起點、後來主力由 Daniel Nashed 接棒 maintain、repo 也跟著 IBM → HCL 轉手到現在的 [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container)、有 maintenance 的客戶從這個時間點起就有官方 pre-built container image 可下載。到今天的 [**Domino 14.5.1（Domino 2026）**](/posts/hcl-domino-2026-release-highlights/)、這條路已經很成熟 —— 不少社群成員用容器跑開發環境、CI 測試、甚至 production（搭配 Kubernetes 或 OpenShift）。
+這件事比很多人以為的更早。IBM 還在賣 Notes/Domino 的 **V9（2013）** 時代、社群就已經[有人自己寫 Dockerfile 把 Domino 包進 container 跑](https://www.eknori.de/2017-08-20/domino-on-docker/)（Ulrich Krause 2017-08 的 blog post 是公開可查的早期實證之一）。**HCL 從 2018 年的 V10 起正式接手 container 路線**：Thomas Hampel 那年 11 月在 IBM 名下開了 [`IBM/domino-docker`](https://blog.nashcom.de/nashcomblog.nsf/dx/hcl-domino-docker-container-moved-to-a-new-home.htm) repo 當「官方」container project 起點、後來主力由 Daniel Nashed 接棒 maintain、repo 也跟著 IBM → HCL 轉手到現在的 [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container)、有 maintenance 的客戶從這個時間點起就有官方 pre-built container image 可下載。到 [**Domino 14.5.1（Domino 2026）**](/posts/hcl-domino-2026-release-highlights/)（2026-05 寫稿時的最新版本）為止、這條路已經很成熟 —— 不少社群成員用容器跑開發環境、CI 測試、甚至 production（搭配 Kubernetes 或 OpenShift）。
 
 要拿到 Domino container image 有兩條路：
 
