@@ -20,6 +20,10 @@ sources:
     url: "https://opensource.hcltechsw.com/domino-container/"
   - title: "My HCLSoftware Portal"
     url: "https://my.hcltechsw.com/"
+  - title: "Domino on Docker — eknori.de (2017-08, V9 era community evidence)"
+    url: "https://www.eknori.de/2017-08-20/domino-on-docker/"
+  - title: "HCL Domino Docker Container — Moved to a new home! (Daniel Nashed, project history)"
+    url: "https://blog.nashcom.de/nashcomblog.nsf/dx/hcl-domino-docker-container-moved-to-a-new-home.htm"
 relatedJava: []
 relatedSsjs: []
 cover: "/covers/build-your-own-domino-container.png"
@@ -42,7 +46,7 @@ coverStyle: "low-poly-3d"
 
 「Domino 還只能裝在實體 server 上」這種印象其實已經過時。
 
-這件事比很多人以為的更早。IBM 還在賣 Notes/Domino 的 **V9（2013）** 時代、社群就已經有人自己寫 Dockerfile 把 Domino 包進 container 跑。**HCL 從 2018 年的 V10 起正式接手 container 路線、提供官方 pre-built container image 給有 maintenance 的客戶下載**；到今天的 **Domino 14.5**、這條路已經很成熟 —— 不少社群成員用容器跑開發環境、CI 測試、甚至 production（搭配 Kubernetes 或 OpenShift）。
+這件事比很多人以為的更早。IBM 還在賣 Notes/Domino 的 **V9（2013）** 時代、社群就已經[有人自己寫 Dockerfile 把 Domino 包進 container 跑](https://www.eknori.de/2017-08-20/domino-on-docker/)（Ulrich Krause 2017-08 的 blog post 是公開可查的早期實證之一）。**HCL 從 2018 年的 V10 起正式接手 container 路線**：Thomas Hampel 那年 11 月在 IBM 名下開了 [`IBM/domino-docker`](https://blog.nashcom.de/nashcomblog.nsf/dx/hcl-domino-docker-container-moved-to-a-new-home.htm) repo 當「官方」container project 起點、後來主力由 Daniel Nashed 接棒 maintain、repo 也跟著 IBM → HCL 轉手到現在的 [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container)、有 maintenance 的客戶從這個時間點起就有官方 pre-built container image 可下載。到今天的 **Domino 14.5**、這條路已經很成熟 —— 不少社群成員用容器跑開發環境、CI 測試、甚至 production（搭配 Kubernetes 或 OpenShift）。
 
 要拿到 Domino container image 有兩條路：
 

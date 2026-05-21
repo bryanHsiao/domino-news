@@ -20,6 +20,10 @@ sources:
     url: "https://opensource.hcltechsw.com/domino-container/"
   - title: "My HCLSoftware Portal"
     url: "https://my.hcltechsw.com/"
+  - title: "Domino on Docker — eknori.de (2017-08, V9 era community evidence)"
+    url: "https://www.eknori.de/2017-08-20/domino-on-docker/"
+  - title: "HCL Domino Docker Container — Moved to a new home! (Daniel Nashed, project history)"
+    url: "https://blog.nashcom.de/nashcomblog.nsf/dx/hcl-domino-docker-container-moved-to-a-new-home.htm"
 relatedJava: []
 relatedSsjs: []
 cover: "/covers/build-your-own-domino-container.png"
@@ -42,7 +46,7 @@ coverStyle: "low-poly-3d"
 
 The "Domino only runs on bare-metal servers" image is out of date.
 
-This goes back further than many people realize. When IBM was still selling Notes/Domino, community members were already writing Dockerfiles to package Domino into containers as far back as **V9 (2013)**. **HCL took over the official container story with V10 in 2018, shipping pre-built Domino container images to customers on maintenance**; by today's **Domino 14.5** that path is well-trodden — community members run containers for dev environments, CI, even production (with Kubernetes or OpenShift).
+This goes back further than many people realize. When IBM was still selling Notes/Domino, community members were already [writing Dockerfiles to package Domino into containers](https://www.eknori.de/2017-08-20/domino-on-docker/) as far back as **V9 (2013)** — Ulrich Krause's August 2017 blog post is one of the publicly documented early examples. **HCL took over the official container story with V10 in 2018**: Thomas Hampel created the [`IBM/domino-docker`](https://blog.nashcom.de/nashcomblog.nsf/dx/hcl-domino-docker-container-moved-to-a-new-home.htm) repo under IBM that November as the "official" container project starting point. Daniel Nashed later picked up most of the maintenance, and the repo eventually moved from IBM to HCL — today it lives at [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container), and maintenance customers have had official pre-built container images to download ever since. By today's **Domino 14.5** that path is well-trodden — community members run containers for dev environments, CI, even production (with Kubernetes or OpenShift).
 
 There are two ways to get a Domino container image:
 
