@@ -298,6 +298,36 @@ one method page, and a related sibling class page. Internal site
 anchors (`/domino-news/posts/...`) don't count toward the diversity
 math, so use them freely for cross-references between articles.
 
+### Time-anchor "latest" / "current" claims
+
+Anything that bakes "right now" into the prose — "現在的旗艦版本是 X",
+"目前最新的是 X", "to today's X", "now the flagship is X" — reads
+wrong six months later when a new version ships. News-style content
+(release-notes recaps, ecosystem state, product version references)
+tends to overuse this register.
+
+Pin the claim to an explicit date so future readers immediately know
+the timing context:
+
+- ❌ 現在的旗艦版本是 Domino 14.5.1
+- ❌ 目前 Domino 最新主流版本
+- ❌ to today's Domino 14.5.1
+- ❌ now the flagship is Domino 14.5.1
+- ✅ 截至 2026-05 寫稿時、最新版本是 Domino 14.5.1
+- ✅ Domino 14.5.1（2026-05 寫稿時的最新版本）
+- ✅ as of writing (2026-05), the latest release is Domino 14.5.1
+- ✅ Domino 14.5.1 — the latest release as of writing (2026-05)
+
+Applies wherever the truth depends on *when you're reading this*:
+current API version, "the modern stack", "as of now", etc.
+
+**Doesn't apply** to historical facts ("Domino 14.5 introduced X" —
+permanently true) or to version-floor statements ("Domino IQ requires
+Domino 14.5+" — a permanent minimum, not a current-version claim).
+
+Side note: also avoid "旗艦版本 / flagship" — that's marketing register.
+"最新版本 / latest release" is more neutral and travels better.
+
 ### Cross-language pointer section
 
 End every technical deep-dive with this section:
