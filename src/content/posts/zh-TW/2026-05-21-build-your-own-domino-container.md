@@ -1,6 +1,6 @@
 ---
-title: "HCL Domino 也能跑在 Container 裡 — 用官方開源工具 build 你自己的客製 image"
-description: "從 V12 開始 HCL Domino 官方支援容器部署，但 HCL 不直接發 image — 而是把 build script 開源在 GitHub 上，由你自己用 build.sh 互動式 menu 挑要哪些模組（Domino / Traveler / Verse / Nomad / REST-API / Leap / Domino IQ / OnTime / C-API SDK / LP）build 出屬於自己的 container image。這篇介紹官方 domino-container 專案的核心設計理念、build.sh 能客製到什麼程度、典型部署場景，跟想試試看的人怎麼起步。"
+title: "HCL Domino 容器化部署的兩條路 — 拉 pre-built image，或自己 build 客製版"
+description: "HCL Domino 從 V12 起官方支援容器化部署、而且雙管齊下：要快上線可以從 HCL Harbor Container Registry (hclcr.io) 或 My HCLSoftware Portal 拉 pre-built image；要彈性可以用 HCL 在 GitHub 上開源的 domino-container 專案、跑互動式 build.sh menu 自己 build 客製 image，挑你要的模組（Domino / Traveler / Verse / Nomad / REST-API / Leap / Domino IQ / OnTime / C-API SDK / LP）+ add-on。這篇介紹兩條路怎麼選、build.sh 能客製到什麼程度、典型部署場景，跟想試試看的人怎麼起步。"
 pubDate: 2026-05-21T07:30:00+08:00
 lang: zh-TW
 slug: build-your-own-domino-container
@@ -10,11 +10,15 @@ tags:
   - "Container"
   - "News"
 sources:
+  - title: "HCL Harbor Container Registry"
+    url: "https://hclcr.io"
+  - title: "HCL Domino on Docker — official admin docs"
+    url: "https://help.hcl-software.com/domino/14.5.0/admin/inst_dock_load_tar_archive.html"
   - title: "HCL-TECH-SOFTWARE/domino-container — GitHub"
     url: "https://github.com/HCL-TECH-SOFTWARE/domino-container"
   - title: "Domino Container project documentation"
     url: "https://opensource.hcltechsw.com/domino-container/"
-  - title: "My HCLSoftware Portal — installer download"
+  - title: "My HCLSoftware Portal"
     url: "https://my.hcltechsw.com/"
 relatedJava: []
 relatedSsjs: []
@@ -25,11 +29,12 @@ coverStyle: "low-poly-3d"
 ## 重點摘要
 
 - **Domino 從 V12 起官方支援容器化部署**，現在的旗艦版本是 Domino 14.5
-- 但 [HCL 不直接發 container image](https://github.com/HCL-TECH-SOFTWARE/domino-container) — 而是把 build script 開源、要你**自己 build**（理由跟 License 合規 + 客製需求有關）
-- 官方 `build.sh` 是**互動式 menu**：勾選你要的模組（Domino / Traveler / Verse / Nomad / REST-API / Leap / Domino IQ / OnTime / C-API SDK / Language Pack）+ add-on（Prometheus、Borg Backup、nshmailx）→ 約 5-8 分鐘 build 出客製 image
+- HCL 提供**兩條路**：
+  - **(Path A)** 從 [HCL Harbor Container Registry](https://hclcr.io) 或 [My HCLSoftware Portal](https://my.hcltechsw.com/) 拉 pre-built image — 快、適合標準部署
+  - **(Path B)** 用 GitHub 上的 [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container) 自己 build — 彈性、適合要客製模組組合的場景
+- Path B 的 `build.sh` 是**互動式 menu**：勾選要的模組（Domino / Traveler / Verse / Nomad / REST-API / Leap / Domino IQ / OnTime / C-API SDK / Language Pack）+ add-on（Prometheus、Borg Backup、nshmailx）→ 約 5-8 分鐘 build 出客製 image
 - Base OS 預設 Red Hat Enterprise Linux 10 UBI；支援 Docker / Podman / Rancher Desktop / Kubernetes / OpenShift
 - 典型場景：dev / lab、CI 自動化測試、production（搭 K8s）
-- 想試試看：到 [My HCLSoftware Portal](https://my.hcltechsw.com/) 拿安裝包（有 maintenance 都有帳號）+ Docker/Podman + ~10GB 空間
 
 ---
 
@@ -37,21 +42,23 @@ coverStyle: "low-poly-3d"
 
 「Domino 還只能裝在實體 server 上」這種印象其實已經過時。
 
-從 HCL 接手後的 **Domino V12** 開始，官方就正式支援以 container 方式部署 Domino server。到今天的 **Domino 14.5**，這條路已經很成熟 —— 不少社群成員用容器跑開發環境、CI 測試、甚至 production（搭配 Kubernetes 或 OpenShift）。
+從 HCL 接手後的 **Domino V12** 開始、官方就正式支援以 container 方式部署 Domino server。到今天的 **Domino 14.5** 這條路已經很成熟 —— 不少社群成員用容器跑開發環境、CI 測試、甚至 production（搭配 Kubernetes 或 OpenShift）。
 
-但這裡有一個有趣的設計選擇：**HCL 不直接到 Docker Hub 上發 `docker pull hclcom/domino` 給你拉**。
+要拿到 Domino container image 有兩條路：
 
-[Domino Container 專案文件](https://opensource.hcltechsw.com/domino-container/)講得很直白：這個專案用的是 HCL 官方 web-kit installer，從 My HCLSoftware Portal 下載。換句話說，HCL 提供的是**「怎麼 build」**而不是**「build 好的成品」**。為什麼？
+**(A) Pull pre-built image** — HCL 在 [Harbor Container Registry (`hclcr.io`)](https://hclcr.io) 跟 [My HCLSoftware Portal](https://my.hcltechsw.com/) 都有提供 ready-to-go 的 image。用 My HCLSoftware Portal 帳號 `docker login hclcr.io`、然後 `docker pull` 就能拿到。這是最快上線的方式。
+
+**(B) Build your own** — HCL 也把 build 用的 tooling 開源在 GitHub：[`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container)。clone 下來、跑互動式 `build.sh` menu、挑你要的模組組合、5-8 分鐘 build 出屬於自己的 custom image。
+
+這篇之後的內容主要聚焦在 Path B —— 因為這條路是 Domino 容器世界真正的彈性所在。Path A 簡單到沒什麼好寫的（`docker pull` + `docker run`）；Path B 才有東西聊。
 
 ---
 
-## 為什麼是 build script，不是 pre-built image？
+## 為什麼會想自己 build？
 
-幾個面向的考量：
+幾個面向：
 
-**1. License 合規 + 安裝包來源** — Domino 的 web-kit installer 要從 [My HCLSoftware Portal](https://my.hcltechsw.com/) 下載、跟 maintenance 綁定。直接散布 image 在合規上會很麻煩。你 build 你自己的、就是用你自己 license 的安裝包，這條法律線清楚。
-
-**2. 客製化需求差異很大** — 不同客戶要的組合天差地遠：
+**1. 客製化模組組合** — 不同情境要的模組天差地遠：
 
 - 只跑 mail / app server → 純 Domino
 - 要做 web client → Domino + Verse
@@ -59,15 +66,21 @@ coverStyle: "low-poly-3d"
 - 要 modern app dev → Domino + REST-API + Leap
 - 要 AI → Domino + Domino IQ
 
-如果 HCL 發一個「全包」image、size 會很肥（每個模組都是幾百 MB）、攻擊面也大。讓你自己 build、你只裝你要的。
+Pre-built image 通常是「典型組合」、模組顆粒度不見得完全對你的需求。自己 build 可以**精準到只裝你要的模組**、image 也小、攻擊面也小。
 
-**3. 安全更新 / Fixpack 流動性** — 你今天 build、今天的 fixpack 就在裡面。pre-built image 永遠落後最新 hotfix；自己 build 等於 supply chain 在你手上。
+**2. Fixpack / Hotfix 流動性** — 你今天 build、今天的 hotfix 就在裡面。Pre-built image 的版本節奏跟 HCL 的 release cadence 綁、新 hotfix 出來到 registry 有對應 image 之間會有 lag；自己 build 等於 supply chain 在你手上。
+
+**3. Base OS 跟 add-on 選擇** — 預設 base 是 Red Hat Enterprise Linux 10 UBI、想換 Ubuntu / Rocky 編 `build.cfg` 就行。想加 Prometheus exporter、Borg backup agent、自家公司 ISV 的 add-on，都接得進去。
+
+**4. Language Pack 客製** — 內建支援 6 種 LP（DE / ES / FR / IT / NL / JA）、要加繁中 / 簡中 / 韓文得自己擴充 build flow。
+
+→ 簡單講：**Path A 求快、Path B 求彈性**。需要精準客製模組、合規 + supply chain 透明、跟 hotfix 流動性對齊的場景 → Path B。
 
 ---
 
 ## build.sh 能客製到什麼程度
 
-`build.sh` 跑起來是這樣的互動式 menu：
+[`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container) clone 下來、跑 `./build.sh menu` 是這樣的互動式 menu：
 
 ![HCL Domino Container build.sh main menu](/domino-news/post-images/domino-container-buildsh-menu.png)
 
@@ -118,6 +131,18 @@ coverStyle: "low-poly-3d"
 
 ## 想自己玩玩看？
 
+**Path A（最快）— Pull pre-built image**：
+
+```bash
+# 用 My HCLSoftware Portal 帳號 login HCL Harbor
+docker login hclcr.io
+# 拉 image（具體 image 名跟 tag 看 Harbor UI 上的 repo 清單）
+docker pull hclcr.io/domino/domino-server:14.5.0
+docker run -d --name domino -p 80:80 -p 1352:1352 hclcr.io/domino/domino-server:14.5.0
+```
+
+**Path B（彈性）— Build your own**：
+
 需要的東西：
 
 1. **My HCLSoftware Portal 帳號** — 有 Domino maintenance contract 就有；沒有的話可以申請 90-day trial。下載 Domino 14.5.x 的 Linux installer（`Domino_14.5.x_Linux_English.tar`）。
@@ -136,11 +161,11 @@ cd domino-container
 docker images   # 看到 hclcom/domino:14.5.x 就成功
 ```
 
-完整 quickstart 在[官方 repo README](https://github.com/HCL-TECH-SOFTWARE/domino-container)。
+兩條路的完整文件：[HCL 官方 Domino on Docker docs](https://help.hcl-software.com/domino/14.5.0/admin/inst_dock_load_tar_archive.html) 跟 [domino-container repo README](https://github.com/HCL-TECH-SOFTWARE/domino-container)。
 
 ---
 
-## ⚠️ 上路前要知道的幾件事（簡短版）
+## ⚠️ Self-build 上路前要知道的幾件事（簡短版）
 
 - **安裝包路徑** `build.sh` 只認特定資料夾、不是想丟哪裡都行
 - **Bind mount** 跑起來後、host 跟 container 的 UID 要對齊、不然 Domino 起不來（會看到一堆 `permission denied`）
@@ -155,18 +180,19 @@ docker images   # 看到 hclcom/domino:14.5.x 就成功
 
 `build.sh` menu 的 (L) Language Pack 內建支援 6 種：DE / ES / FR / IT / NL / JA — 不包含繁中、簡中、韓文。
 
-要加繁中，可以看上一篇介紹的社群工具 [`domino-container-lp-recipe`](/posts/domino-container-lp-recipe/) — 用「動態修補上游 clone」的方式（不是維護 fork），跑一個腳本就能讓 `build.sh` 多認得 `-domlp=TC`。同時提供 SC / KO 的擴充範本給有對應需求的社群成員當起點。
+要加繁中，可以看上一篇介紹的社群工具 [`domino-container-lp-recipe`](/posts/domino-container-lp-recipe/) — 用「動態修補上游 clone」的方式（不是維護 fork）、跑一個腳本就能讓 `build.sh` 多認得 `-domlp=TC`。同時提供 SC / KO 的擴充範本給有對應需求的社群成員當起點。
+
+這條路目前只走 Path B（self-build）— Pre-built image 不含這些 LP、要繁中就一定得自己 build。
 
 ---
 
 ## 小結
 
-Container 化是 Domino 現代化部署的一條主要路線。HCL 選擇開源 build script 而不是發 pre-built image、是兼顧 license 合規、模組化客製、跟安全更新流動性的合理設計。
+Container 化是 Domino 現代化部署的一條主要路線、HCL 雙管齊下：要快上線的拉 [`hclcr.io`](https://hclcr.io) pre-built image、要客製的用 [open-source build script](https://github.com/HCL-TECH-SOFTWARE/domino-container) 自己 build。
 
-對 Domino admin / dev 來說、這意味著：
+對 Domino admin / dev 來說：
 
-- 你的 image 可以**精準到只裝你要的模組**
-- supply chain 透明 — 哪個 fixpack、哪個 hotfix 一目了然
-- 從 dev / lab 到 production 同一套工具鏈、不用切換思維
+- 一般 dev / lab 跟標準 production → 直接 pull pre-built、最快上線
+- 要精準客製模組、合規 + supply chain 嚴格、加新 LP、跟 hotfix 流動性對齊 → self-build
 
-10GB 空間、HCL 帳號、一小時時間 — 就可以親手 build 一個屬於自己的 Domino container。
+10GB 空間、HCL 帳號、Docker — 兩條路各摸過一次就會知道哪條適合你的場景。
