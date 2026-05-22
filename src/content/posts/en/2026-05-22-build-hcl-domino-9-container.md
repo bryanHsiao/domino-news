@@ -262,7 +262,7 @@ This PoC is **not** a production replacement and is **not** inside HCL's officia
 | Your scenario | Which path |
 |---|---|
 | Running Domino V10+ | [HCL's official V10+ container](/en/posts/build-your-own-domino-container/) (Path A pull / Path B build with HCL build script) |
-| Still on 9.0.x, need dev/test or migration rehearsal | **This PoC** — `bryanHsiao/build-hcl-domino9-container` |
+| Still on 9.0.x, need dev/test or migration rehearsal | **This PoC** — [`bryanHsiao/build-hcl-domino9-container`](https://github.com/bryanHsiao/build-hcl-domino9-container) |
 | 9.x and thinking about production containers | **Not recommended** — upgrade to V14 first, then follow the official path |
 
 The 5 pitfalls (Perl namespace / FP installer flag / J9 heap / setup marker / `server.id` stdin) are all "docs don't mention it, you only know after you hit it" territory. This PoC bundles the trip hazards into a reproducible Dockerfile so the next person still stuck on V9 doesn't have to walk into them blind.

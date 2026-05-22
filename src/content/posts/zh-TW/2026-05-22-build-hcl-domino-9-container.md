@@ -262,7 +262,7 @@ docker run -d --name domino9 --hostname domino9 \
 | 你的場景 | 走哪條路 |
 |---|---|
 | 跑 Domino V10+ | [HCL 官方 V10+ container](/posts/build-your-own-domino-container/)（Path A pull / Path B 用 HCL build script） |
-| 還在 9.0.x、要 dev/test 或 migration 預演 | **這份 PoC** — `bryanHsiao/build-hcl-domino9-container` |
+| 還在 9.0.x、要 dev/test 或 migration 預演 | **這份 PoC** — [`bryanHsiao/build-hcl-domino9-container`](https://github.com/bryanHsiao/build-hcl-domino9-container) |
 | 9.x 想上 production container | **不建議** — 升 V14 後走 HCL 官方路 |
 
 5 個坑（Perl namespace / FP installer flag / J9 heap / setup marker / `server.id` stdin）每個都是 docs 沒提、要踩過才知道的東西。這份 PoC 把這些踩坑經驗封裝成 reproducible Dockerfile、希望讓還卡在 V9 的人少走幾段冤枉路。
