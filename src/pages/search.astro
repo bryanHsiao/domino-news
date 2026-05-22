@@ -17,34 +17,54 @@ const pagefindBundle = `${base}/pagefind/`;
     <link rel="stylesheet" href={pagefindCss} />
     <div id="search"></div>
     <script is:inline define:vars={{ pagefindJs, pagefindBundle }}>
-      // Load Pagefind UI dynamically — degrades gracefully in `npm run dev`
-      // (where Pagefind hasn't built the index yet) and works in production
-      // builds where `npm run build` runs `pagefind --site dist` after Astro.
-      window.addEventListener('DOMContentLoaded', function () {
+      // Init runs at script-execution time (not DOMContentLoaded) so it
+      // works under view transitions too — the inline script re-runs on
+      // each navigation to /search, and at that moment the #search div
+      // above is already in the DOM.
+      //
+      // Dataset-based idempotency guard prevents double-init if the
+      // event fires twice (initial load + astro:page-load).
+      //
+      // If user revisits /search after first load, window.PagefindUI is
+      // already in scope (the script we appended to <head> persists across
+      // view transitions) — just re-instantiate the UI on the fresh
+      // #search element instead of re-downloading.
+      (function () {
+        var el = document.getElementById('search');
+        if (!el || el.dataset.pfInited) return;
+        el.dataset.pfInited = 'true';
+
+        var uiOpts = {
+          element: '#search',
+          bundlePath: pagefindBundle,
+          showSubResults: true,
+          showImages: true,
+          translations: {
+            placeholder: '搜尋文章…',
+            zero_results: '沒有找到符合「[SEARCH_TERM]」的結果',
+            load_more: '載入更多結果',
+            search_label: '在 Domino News 中搜尋',
+            filters_label: '篩選',
+            clear_search: '清除',
+          },
+        };
+
+        if (typeof window.PagefindUI !== 'undefined') {
+          new window.PagefindUI(uiOpts);
+          return;
+        }
+
         var script = document.createElement('script');
         script.src = pagefindJs;
         script.onerror = function () {
-          document.getElementById('search').innerHTML =
+          el.innerHTML =
             '<p style="color:#999;font-size:0.95rem;padding:1rem 0">⚠️ 搜尋索引尚未生成 — 本地預覽請跑 <code>npm run build</code> + <code>npm run preview</code>。Production 站正常。</p>';
         };
         script.onload = function () {
-          new PagefindUI({
-            element: '#search',
-            bundlePath: pagefindBundle,
-            showSubResults: true,
-            showImages: true,
-            translations: {
-              placeholder: '搜尋文章…',
-              zero_results: '沒有找到符合「[SEARCH_TERM]」的結果',
-              load_more: '載入更多結果',
-              search_label: '在 Domino News 中搜尋',
-              filters_label: '篩選',
-              clear_search: '清除',
-            },
-          });
+          new window.PagefindUI(uiOpts);
         };
         document.head.appendChild(script);
-      });
+      })();
     </script>
   </section>
 </BaseLayout>

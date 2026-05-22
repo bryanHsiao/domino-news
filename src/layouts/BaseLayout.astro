@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import { useTranslations, localizedPath, languages, defaultLang, type Lang } from '../i18n/ui';
 
 interface Props {
@@ -47,6 +48,10 @@ const otherLangUrl = new URL(localizedPath(otherLang, otherLangPath), Astro.site
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {/* Enable SPA-like navigation: smoother transitions, no full-page flash on
+        same-origin link clicks. Also lets us hook scroll restoration into
+        astro:after-swap for the language switch. */}
+    <ClientRouter />
     <meta name="description" content={pageDesc} />
     <meta name="generator" content={Astro.generator} />
     <meta name="google-site-verification" content="uWwnWx3Ivqlo48BmGzuxL64y25IDjRrFLfEzimHY_Xg" />
@@ -95,7 +100,7 @@ const otherLangUrl = new URL(localizedPath(otherLang, otherLangPath), Astro.site
           <a href={localizedPath(lang, '/tags')}>{t('nav.tags')}</a>
           <a href={localizedPath(lang, '/search')}>{t('nav.search')}</a>
           <a href={localizedPath(lang, '/posts/welcome')}>{t('nav.about')}</a>
-          <a href={switchHref} class="lang-switch" aria-label="switch language">
+          <a href={switchHref} class="lang-switch" aria-label="switch language" data-lang-switch>
             {t('lang.switch')}
           </a>
         </nav>
@@ -109,5 +114,51 @@ const otherLangUrl = new URL(localizedPath(otherLang, otherLangPath), Astro.site
     <footer class="site-footer">
       <div>{t('footer.poweredBy')}</div>
     </footer>
+
+    <script is:inline>
+      // Cross-language scroll restoration.
+      //
+      // When user clicks the language switcher, save the index of the nearest
+      // H2/H3 above their viewport into sessionStorage. After the new (other-
+      // language) page is loaded, scroll to the same-index heading — the zh-TW
+      // and EN articles mirror each other's heading structure exactly, so the
+      // user lands at the equivalent place in the translation.
+      //
+      // Listening to both `astro:after-swap` (view transitions path) and
+      // `pageshow` (fallback for browsers without view-transition support or
+      // when the polyfill bails out). The first one to fire pulls + clears
+      // the saved index; the second sees an empty store and no-ops.
+      (function () {
+        function saveHeadingIdx(e) {
+          var link =
+            e.target && e.target.closest && e.target.closest('[data-lang-switch]');
+          if (!link) return;
+          var headings = document.querySelectorAll('article h2, article h3');
+          var cutoff = window.scrollY + 100; // small offset for sticky header / cushion
+          var idx = -1;
+          for (var i = 0; i < headings.length; i++) {
+            var top = headings[i].getBoundingClientRect().top + window.scrollY;
+            if (top > cutoff) break;
+            idx = i;
+          }
+          sessionStorage.setItem('langSwitchHeadingIdx', String(idx));
+        }
+        function restore() {
+          var s = sessionStorage.getItem('langSwitchHeadingIdx');
+          if (s === null) return;
+          sessionStorage.removeItem('langSwitchHeadingIdx');
+          var idx = parseInt(s, 10);
+          if (idx < 0) return; // user was above any heading — leave at top
+          requestAnimationFrame(function () {
+            var headings = document.querySelectorAll('article h2, article h3');
+            var target = headings[idx];
+            if (target) target.scrollIntoView({ behavior: 'instant', block: 'start' });
+          });
+        }
+        document.addEventListener('click', saveHeadingIdx);
+        document.addEventListener('astro:after-swap', restore);
+        window.addEventListener('pageshow', restore);
+      })();
+    </script>
   </body>
 </html>

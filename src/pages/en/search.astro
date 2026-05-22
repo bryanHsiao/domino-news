@@ -17,26 +17,37 @@ const pagefindBundle = `${base}/pagefind/`;
     <link rel="stylesheet" href={pagefindCss} />
     <div id="search"></div>
     <script is:inline define:vars={{ pagefindJs, pagefindBundle }}>
-      // Load Pagefind UI dynamically — degrades gracefully in `npm run dev`
-      // (where Pagefind hasn't built the index yet) and works in production
-      // builds where `npm run build` runs `pagefind --site dist` after Astro.
-      window.addEventListener('DOMContentLoaded', function () {
+      // See the comment in /search.astro for the rationale — same pattern
+      // applies here, just with English UI defaults instead of zh-TW
+      // translations.
+      (function () {
+        var el = document.getElementById('search');
+        if (!el || el.dataset.pfInited) return;
+        el.dataset.pfInited = 'true';
+
+        var uiOpts = {
+          element: '#search',
+          bundlePath: pagefindBundle,
+          showSubResults: true,
+          showImages: true,
+        };
+
+        if (typeof window.PagefindUI !== 'undefined') {
+          new window.PagefindUI(uiOpts);
+          return;
+        }
+
         var script = document.createElement('script');
         script.src = pagefindJs;
         script.onerror = function () {
-          document.getElementById('search').innerHTML =
+          el.innerHTML =
             '<p style="color:#999;font-size:0.95rem;padding:1rem 0">⚠️ Search index not generated — for local preview run <code>npm run build</code> + <code>npm run preview</code>. Live site is fine.</p>';
         };
         script.onload = function () {
-          new PagefindUI({
-            element: '#search',
-            bundlePath: pagefindBundle,
-            showSubResults: true,
-            showImages: true,
-          });
+          new window.PagefindUI(uiOpts);
         };
         document.head.appendChild(script);
-      });
+      })();
     </script>
   </section>
 </BaseLayout>
