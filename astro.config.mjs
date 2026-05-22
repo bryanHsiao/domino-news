@@ -5,6 +5,44 @@ import sitemap from '@astrojs/sitemap';
 import rehypeExternalLinks from 'rehype-external-links';
 
 /**
+ * Prefix site-root markdown links with the configured `base`. Astro
+ * auto-prefixes URLs that go through Astro components (Pagination's
+ * pageUrl, asset imports, etc.) but does NOT touch plain markdown
+ * anchor links — so `[xxx](/posts/foo/)` in a .md file renders as
+ * `href="/posts/foo/"`, which on a project-pages deploy resolves to
+ * `<site>/posts/foo/` instead of `<site>/<base>/posts/foo/` and 404s.
+ *
+ * This plugin walks all <a href="..."> nodes and, if href starts with
+ * a single `/` (so internal absolute path) and isn't already prefixed
+ * with base, prepends base. External URLs (`https://`), protocol-
+ * relative (`//cdn.example`), in-page anchors (`#section`), and
+ * already-prefixed links are left alone.
+ */
+function rehypePrependBase({ base = '/' } = {}) {
+  const normalized = base.replace(/\/$/, '');
+  if (!normalized) return () => {};
+  return (tree) => {
+    const walk = (node) => {
+      if (!node || typeof node !== 'object') return;
+      if (node.type === 'element' && node.tagName === 'a' && node.properties) {
+        const href = node.properties.href;
+        if (
+          typeof href === 'string' &&
+          href.startsWith('/') &&
+          !href.startsWith('//') &&
+          !href.startsWith(normalized + '/') &&
+          href !== normalized
+        ) {
+          node.properties.href = normalized + href;
+        }
+      }
+      if (Array.isArray(node.children)) node.children.forEach(walk);
+    };
+    walk(tree);
+  };
+}
+
+/**
  * Localise the footnote section heading and back-reference aria labels.
  * remark-gfm renders "Footnotes" / "Back to reference N" by default; for
  * zh-TW posts we rewrite those to 註 / 回到參照 N. Detection is by source
@@ -60,6 +98,7 @@ export default defineConfig({
           rel: ['noopener', 'noreferrer'],
         },
       ],
+      [rehypePrependBase, { base: '/domino-news' }],
       rehypeLocaliseFootnotes,
     ],
   },
