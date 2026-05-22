@@ -53,7 +53,7 @@ coverStyle: "risograph"
 
 [前篇](/posts/build-your-own-domino-container/)講過、HCL 官方 container 路線從 V10 起：
 
-- **Path A** — 從 [HCL Harbor Container Registry (`hclcr.io`)](https://hclcr.io) 拉 pre-built image
+- **Path A** — 從 [My HCLSoftware Portal](https://my.hcltechsw.com/downloads/domino/domino) 下載官方 pre-built container image TAR、`docker load`
 - **Path B** — 用 [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container) 開源 build tooling 自己 build
 
 兩條路都從 **Domino 10.0.1 FP3** 起 — **9.0.x 全系列**官方就是「unsupported but works」，沒 image、沒 build script、沒 docs。

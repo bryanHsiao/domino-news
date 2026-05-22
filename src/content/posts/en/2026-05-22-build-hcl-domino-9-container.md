@@ -53,7 +53,7 @@ The catch: HCL doesn't give you an official V9 container image.
 
 [The previous post](/en/posts/build-your-own-domino-container/) covered HCL's official container story from V10 onwards:
 
-- **Path A** — pull a pre-built image from the [HCL Harbor Container Registry (`hclcr.io`)](https://hclcr.io)
+- **Path A** — download an official pre-built container image TAR from [My HCLSoftware Portal](https://my.hcltechsw.com/downloads/domino/domino) and `docker load` it
 - **Path B** — use the open-source [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container) build tooling to build your own
 
 Both paths start at **Domino 10.0.1 FP3**. The entire **9.0.x line** is officially "unsupported but works" — no images, no build scripts, no docs.

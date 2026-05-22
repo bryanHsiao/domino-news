@@ -1,6 +1,6 @@
 ---
 title: "Two Paths to HCL Domino on Container — Pull a Pre-built Image or Build Your Own"
-description: "Packaging Domino into a container is older than people often realize — the community was already doing it in the IBM V9 days, and HCL has officially shipped pre-built Domino container images for download since V10. Today HCL covers both ends: pull a pre-built image from the HCL Harbor Container Registry (hclcr.io) or My HCLSoftware Portal for fast onboarding, or clone HCL's open-source domino-container project on GitHub and run the interactive build.sh menu to build your own custom image — picking exactly which modules (Domino / Traveler / Verse / Nomad / REST-API / Leap / Domino IQ / OnTime / C-API SDK / LP) plus add-ons you want baked in. This article explains how to choose between the two paths, how customizable build.sh really is, typical deployment scenarios, and how to get started."
+description: "Packaging Domino into a container is older than people often realize — the community was already doing it in the IBM V9 days, and HCL has officially shipped pre-built Domino container images for download since V10. Today HCL covers both ends: download a pre-built container image TAR from My HCLSoftware Portal and docker-load it for fast onboarding, or clone HCL's open-source domino-container project on GitHub and run the interactive build.sh menu to build your own custom image — picking exactly which modules (Domino / Traveler / Verse / Nomad / REST-API / Leap / Domino IQ / OnTime / C-API SDK / LP) plus add-ons you want baked in. This article explains how to choose between the two paths, how customizable build.sh really is, typical deployment scenarios, and how to get started."
 pubDate: 2026-05-21T07:30:00+08:00
 lang: en
 slug: build-your-own-domino-container
@@ -10,8 +10,8 @@ tags:
   - "Container"
   - "News"
 sources:
-  - title: "HCL Harbor Container Registry"
-    url: "https://hclcr.io"
+  - title: "My HCLSoftware Portal — Domino downloads"
+    url: "https://my.hcltechsw.com/downloads/domino/domino"
   - title: "HCL Domino on Docker — official admin docs"
     url: "https://help.hcl-software.com/domino/14.5.0/admin/inst_dock_load_tar_archive.html"
   - title: "HCL-TECH-SOFTWARE/domino-container — GitHub"
@@ -34,7 +34,7 @@ coverStyle: "low-poly-3d"
 
 - **Containerizing Domino isn't new** — the community was doing it back in the IBM V9 days, and **HCL has shipped official pre-built container images for download since V10**; as of writing (2026-05), the latest release is [**Domino 14.5.1 (Domino 2026)**](/en/posts/hcl-domino-2026-release-highlights/)
 - HCL gives you **two paths**:
-  - **(Path A)** Pull a pre-built image from the [HCL Harbor Container Registry](https://hclcr.io) or [My HCLSoftware Portal](https://my.hcltechsw.com/) — fast, fits standard deployments
+  - **(Path A)** Download an official pre-built container image TAR from [My HCLSoftware Portal](https://my.hcltechsw.com/downloads/domino/domino) and `docker load` it — fast, fits standard deployments
   - **(Path B)** Use the GitHub [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container) project to build your own — flexible, fits custom module combinations
 - Path B's `build.sh` is an **interactive menu**: tick the modules you want (Domino / Traveler / Verse / Nomad / REST-API / Leap / Domino IQ / OnTime / C-API SDK / Language Pack) plus add-ons (Prometheus, Borg Backup, nshmailx) → 5-8 minutes to a custom image
 - Base OS defaults to Red Hat Enterprise Linux 10 UBI; supports Docker / Podman / Rancher Desktop / Kubernetes / OpenShift
@@ -50,7 +50,7 @@ This goes back further than many people realize. When IBM was still selling Note
 
 There are two ways to get a Domino container image:
 
-**(A) Pull a pre-built image** — HCL publishes ready-to-go images on the [Harbor Container Registry (`hclcr.io`)](https://hclcr.io) and via [My HCLSoftware Portal](https://my.hcltechsw.com/). Use your My HCLSoftware Portal credentials to `docker login hclcr.io`, then `docker pull` — that's the fastest way to a running container.
+**(A) Download a pre-built image** — HCL ships ready-to-go container images via the [My HCLSoftware Portal Domino downloads page](https://my.hcltechsw.com/downloads/domino/domino) for customers on an entitlement. Grab the TAR archive, `docker load` it locally, and you have a running container. That's the fastest path.
 
 **(B) Build your own** — HCL also open-sources the build tooling on GitHub: [`HCL-TECH-SOFTWARE/domino-container`](https://github.com/HCL-TECH-SOFTWARE/domino-container). Clone the repo, run the interactive `build.sh` menu, pick whichever module combination you want, and 5-8 minutes later you have your own custom image.
 
@@ -138,11 +138,11 @@ Worth noting: [Daniel Nashed](https://blog.nashcom.de/) — one of the main comm
 **Path A (fastest) — Pull pre-built image**:
 
 ```bash
-# Log in to HCL Harbor with your My HCLSoftware Portal credentials
-docker login hclcr.io
-# Pull the image (check the Harbor UI for the exact image name and tag)
-docker pull hclcr.io/domino/domino-server:14.5.1
-docker run -d --name domino -p 80:80 -p 1352:1352 hclcr.io/domino/domino-server:14.5.1
+# Sign in to My HCLSoftware Portal (https://my.hcltechsw.com/downloads/domino/domino)
+# with your entitlement account and download the Domino container image TAR
+docker load -i Domino_14.5.1_container.tar
+# Check `docker images` for the loaded image name + tag, then run it
+docker run -d --name domino -p 80:80 -p 1352:1352 hclcom/domino:14.5.1
 ```
 
 **Path B (flexible) — Build your own**:
@@ -192,7 +192,7 @@ Note this route only goes through Path B (self-build) — pre-built images don't
 
 ## Wrap-up
 
-Containerization is one of the main paths for modern Domino deployment, and HCL covers both ends: pull a pre-built image from [`hclcr.io`](https://hclcr.io) for fast onboarding, or use the [open-source build script](https://github.com/HCL-TECH-SOFTWARE/domino-container) when you need custom modules.
+Containerization is one of the main paths for modern Domino deployment, and HCL covers both ends: download a pre-built image TAR from [My HCLSoftware Portal](https://my.hcltechsw.com/downloads/domino/domino) and `docker load` it for fast onboarding, or use the [open-source build script](https://github.com/HCL-TECH-SOFTWARE/domino-container) when you need custom modules.
 
 For Domino admins / devs:
 
