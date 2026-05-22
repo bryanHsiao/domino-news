@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "astro build && npm run build:search",
+    "build:search": "pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro",
     "generate:article": "tsx scripts/generate-article.ts",
@@ -27,6 +28,7 @@
     "@anthropic-ai/sdk": "^0.91.1",
     "@types/node": "^22.10.0",
     "openai": "^4.77.0",
+    "pagefind": "^1.5.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.0"
   }

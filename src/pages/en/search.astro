@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { useTranslations } from '../../i18n/ui';
+
+const lang = 'en' as const;
+const t = useTranslations(lang);
+const base = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '');
+const pagefindCss = `${base}/pagefind/pagefind-ui.css`;
+const pagefindJs = `${base}/pagefind/pagefind-ui.js`;
+const pagefindBundle = `${base}/pagefind/`;
+---
+
+<BaseLayout lang={lang} title={t('search.title')} description={t('search.hint')}>
+  <section class="search-page">
+    <h1>{t('search.heading')}</h1>
+    <p class="search-hint">{t('search.hint')}</p>
+    <link rel="stylesheet" href={pagefindCss} />
+    <div id="search"></div>
+    <script is:inline define:vars={{ pagefindJs, pagefindBundle }}>
+      // Load Pagefind UI dynamically — degrades gracefully in `npm run dev`
+      // (where Pagefind hasn't built the index yet) and works in production
+      // builds where `npm run build` runs `pagefind --site dist` after Astro.
+      window.addEventListener('DOMContentLoaded', function () {
+        var script = document.createElement('script');
+        script.src = pagefindJs;
+        script.onerror = function () {
+          document.getElementById('search').innerHTML =
+            '<p style="color:#999;font-size:0.95rem;padding:1rem 0">⚠️ Search index not generated — for local preview run <code>npm run build</code> + <code>npm run preview</code>. Live site is fine.</p>';
+        };
+        script.onload = function () {
+          new PagefindUI({
+            element: '#search',
+            bundlePath: pagefindBundle,
+            showSubResults: true,
+            showImages: true,
+          });
+        };
+        document.head.appendChild(script);
+      });
+    </script>
+  </section>
+</BaseLayout>
+
+<style>
+  .search-page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+  .search-page h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .search-hint {
+    color: var(--text-muted, #666);
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  /* Theme Pagefind UI to match site brand (black + gold) */
+  :global(.pagefind-ui) {
+    --pagefind-ui-primary: var(--color-brand-dark, #0a0a0a);
+    --pagefind-ui-text: var(--text, #333);
+    --pagefind-ui-background: white;
+    --pagefind-ui-border: var(--border-color, #e5e5e5);
+    --pagefind-ui-border-radius: 0.6rem;
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-font: inherit;
+  }
+</style>
