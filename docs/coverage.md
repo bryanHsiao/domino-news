@@ -1,13 +1,13 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-05-22 · Posts scanned: 33 · Classes catalogued: 97*
+*Generated: 2026-05-23 · Posts scanned: 34 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
-**Overall: 27 / 97 classes covered (27.8%)**
+**Overall: 30 / 97 classes covered (30.9%)**
 
 ```
-███████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 27.8%
+████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 30.9%
 ```
 
 ## Coverage by category
@@ -16,13 +16,13 @@
 |---|---:|---:|---:|---|
 | DQL | 2 | 2 | 100% | 🟩 `████████████` |
 | HTTP | 1 | 1 | 100% | 🟩 `████████████` |
+| JSON | 4 | 4 | 100% | 🟩 `████████████` |
 | DominoIQ | 2 | 2 | 100% | 🟩 `████████████` |
 | Session File Operations | 1 | 1 | 100% | 🟩 `████████████` |
 | Document | 4 | 6 | 67% | 🟨 `████████░░░░` |
 | Database | 4 | 7 | 57% | 🟨 `███████░░░░░` |
 | View | 2 | 5 | 40% | 🟨 `█████░░░░░░░` |
 | DOM/XML | 7 | 25 | 28% | 🟧 `███░░░░░░░░░` |
-| JSON | 1 | 4 | 25% | 🟧 `███░░░░░░░░░` |
 | Item | 1 | 5 | 20% | 🟧 `██░░░░░░░░░░` |
 | Rich Text | 1 | 9 | 11% | 🟧 `█░░░░░░░░░░░` |
 | Session | 1 | 10 | 10% | 🟧 `█░░░░░░░░░░░` |
@@ -32,7 +32,7 @@
 | GPS | 0 | 3 | 0% | 🟥 `░░░░░░░░░░░░` |
 | Composite Apps | 0 | 2 | 0% | 🟥 `░░░░░░░░░░░░` |
 
-## ✓ Covered classes (27)
+## ✓ Covered classes (30)
 
 | Class | Category | Posts | First mention |
 |---|---|---|---|
@@ -47,7 +47,10 @@
 | [NotesEmbeddedObject](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESEMBEDDEDOBJECT_CLASS.html) | Document | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/) | 2026-04-30 |
 | [NotesHTTPRequest](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTES_HTTPREQUEST_CLASS.html) | HTTP | [lotusscript-http-json](https://bryanhsiao.github.io/domino-news/posts/lotusscript-http-json/), [notes-httprequest-14-5-trust-store](https://bryanhsiao.github.io/domino-news/posts/notes-httprequest-14-5-trust-store/) | 2026-05-07 |
 | [NotesItem](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESITEM_CLASS.html) | Item | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/) | 2026-04-30 |
-| [NotesJSONNavigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONNAVIGATOR_CLASS.html) | JSON | [notes-query-results-processor](https://bryanhsiao.github.io/domino-news/posts/notes-query-results-processor/), [lotusscript-http-json](https://bryanhsiao.github.io/domino-news/posts/lotusscript-http-json/) | 2026-04-28 |
+| [NotesJSONArray](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONARRAY_CLASS.html) | JSON | [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | 2026-05-24 |
+| [NotesJSONElement](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONELEMENT_CLASS.html) | JSON | [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | 2026-05-24 |
+| [NotesJSONNavigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONNAVIGATOR_CLASS.html) | JSON | [notes-query-results-processor](https://bryanhsiao.github.io/domino-news/posts/notes-query-results-processor/), [lotusscript-http-json](https://bryanhsiao.github.io/domino-news/posts/lotusscript-http-json/), [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | 2026-04-28 |
+| [NotesJSONObject](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONOBJECT_CLASS.html) | JSON | [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | 2026-05-24 |
 | [NotesLLMRequest](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NotesLLMRequest_Class.html) | DominoIQ | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) | 2026-05-23 |
 | [NotesLLMResponse](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NotesLLMResponse_class.html) | DominoIQ | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) | 2026-05-23 |
 | [NotesNoteCollection](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESNOTECOLLECTION_CLASS.html) | Database | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/) | 2026-04-29 |
@@ -64,7 +67,7 @@
 | [NotesXMLProcessor](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-06 |
 | [NotesXSLTransformer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | 2026-05-06 |
 
-## ⨯ Uncovered classes (70)
+## ⨯ Uncovered classes (67)
 
 | Class | Category | Description |
 |---|---|---|
@@ -107,9 +110,6 @@
 | [NotesDateTime](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATETIME_CLASS.html) | Item | Represents a date and time. Provides a means of translating between the LotusScript® date- |
 | [NotesMIMEEntity](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESMIMEENTITY_CLASS_OVERVIEW.html) | Item | Represents the MIME (Multipurpose Internet Mail Extensions) content of a document. |
 | [NotesMIMEHeader](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESMIMEHEADER_CLASS.html) | Item | Represents a header in a MIME (Multipurpose Internet Mail Extensions) document. |
-| [NotesJSONArray](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONARRAY_CLASS.html) | JSON | Represents a JSON array. |
-| [NotesJSONElement](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONELEMENT_CLASS.html) | JSON | Represents a name, value pair in a JSON string. |
-| [NotesJSONObject](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONOBJECT_CLASS.html) | JSON | Represents a JSON object. |
 | [NotesRichTextDocLink](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTDOCLINK_CLASS.html) | Rich Text | Represents a doclink in a rich text item. |
 | [NotesRichTextNavigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTNAVIGATOR_CLASS.html) | Rich Text | Represents a means of navigation in a rich text item. |
 | [NotesRichTextParagraphStyle](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTPARAGRAPHSTYLE_CLASS_3756.html) | Rich Text | Represents rich text paragraph attributes. |
@@ -195,6 +195,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | `NotesJSONElement`, `NotesJSONObject`, `NotesJSONArray`, `NotesJSONNavigator` | — | — |
 | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) | `NotesLLMRequest`, `NotesLLMResponse` | `LLMReq`, `LLMRes` | — |
 | [build-hcl-domino-9-container](https://bryanhsiao.github.io/domino-news/posts/build-hcl-domino-9-container/) | — | — | — |
 | [build-your-own-domino-container](https://bryanhsiao.github.io/domino-news/posts/build-your-own-domino-container/) | — | — | — |
@@ -211,7 +212,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | [notes-httprequest-14-5-trust-store](https://bryanhsiao.github.io/domino-news/posts/notes-httprequest-14-5-trust-store/) | `NotesHTTPRequest` | — | — |
 | [getalldocumentsbykey](https://bryanhsiao.github.io/domino-news/posts/getalldocumentsbykey/) | `NotesView` | `View` | `View` |
 | [openntf-lotusscript-class-map](https://bryanhsiao.github.io/domino-news/posts/openntf-lotusscript-class-map/) | — | — | — |
-| [lotusscript-http-json](https://bryanhsiao.github.io/domino-news/posts/lotusscript-http-json/) | `NotesHTTPRequest`, `NotesJSONNavigator` | — | — |
+| [lotusscript-http-json](https://bryanhsiao.github.io/domino-news/posts/lotusscript-http-json/) | `NotesJSONNavigator`, `NotesHTTPRequest` | — | — |
 | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | `NotesXMLProcessor`, `NotesXSLTransformer`, `NotesDXLExporter` | `XMLProcessor`, `DxlExporter` | `XMLProcessor`, `DxlExporter` |
 | [domino-iq-rag](https://bryanhsiao.github.io/domino-news/posts/domino-iq-rag/) | — | — | — |
 | [domino-iq](https://bryanhsiao.github.io/domino-news/posts/domino-iq/) | — | — | — |
