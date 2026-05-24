@@ -37,6 +37,8 @@ coverStyle: "art-deco"
 
 ## 建立 NotesDateTime — 兩種寫法
 
+兩個建構入口：[`New NotesDateTime("...")`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATETIME_CLASS.html) 跟 [`session.CreateDateTime("...")`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATEDATETIME_METHOD.html)。差別在 COM 支援度：
+
 ```lotusscript
 ' 方法 1：New 建構式（最簡潔、但不支援 COM agent）
 Dim dt1 As New NotesDateTime("2026-05-25 14:30:00")
@@ -184,7 +186,7 @@ LS 沒有 deep clone 的 first-class API、所以走 `LocalTime` 字串 round-tr
 
 ## NotesDateRange — 區間表達、扁平、無 method
 
-物件結構非常扁、4 個 property、**完全沒有 method**：
+[`NotesDateRange`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATERANGE_CLASS.html) 物件結構非常扁、4 個 property、**完全沒有 method**（透過 [`session.CreateDateRange()`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATEDATERANGE_METHOD.html) 建立）：
 
 | Property | 型別 | 用途 |
 |---|---|---|

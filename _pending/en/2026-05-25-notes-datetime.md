@@ -37,6 +37,8 @@ coverStyle: "art-deco"
 
 ## Building a NotesDateTime — two ways
 
+Two entry points: [`New NotesDateTime("...")`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATETIME_CLASS.html) and [`session.CreateDateTime("...")`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATEDATETIME_METHOD.html). They differ in COM support:
+
 ```lotusscript
 ' Way 1: New constructor (concise, but not COM-supported)
 Dim dt1 As New NotesDateTime("2026-05-25 14:30:00")
@@ -184,7 +186,7 @@ LS has no first-class deep-clone API, so round-tripping through `LocalTime` is t
 
 ## NotesDateRange — flat, no methods
 
-The object is very flat: 4 properties, **no methods at all**:
+The [`NotesDateRange`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATERANGE_CLASS.html) object is very flat: 4 properties, **no methods at all** (built via [`session.CreateDateRange()`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATEDATERANGE_METHOD.html)):
 
 | Property | Type | Purpose |
 |---|---|---|
