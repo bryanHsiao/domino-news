@@ -278,7 +278,7 @@ Print MeetingTimeForZone("2026-05-25 09:00:00", -8)  ' Taipei → 09:00 (no chan
 
 ### Interacting with `NotesItem.DateTimeValue`
 
-A DateTime value read from a document carries the server's timezone metadata; writing back demands care:
+A DateTime value read from a document (the [`NotesDocument` article](/en/posts/notes-document/) has the item model in detail) carries the server's timezone metadata; writing back demands care:
 
 ```lotusscript
 Dim doc As NotesDocument
