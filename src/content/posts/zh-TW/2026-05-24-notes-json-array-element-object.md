@@ -1,6 +1,6 @@
 ---
 title: "NotesJSONArray / Element / Object：LotusScript parse + build JSON 的三個組成元件"
-description: "前一篇 lotusscript-http-json 介紹了 NotesHTTPRequest + NotesJSONNavigator 把『打 REST API 拿 JSON』完整收進 LS。本篇接續寫 navigator 下面的 3 個組成元件 — NotesJSONElement（name/value pair）、NotesJSONObject（物件節點）、NotesJSONArray（陣列節點）— 詳細 method、屬性、parse 時怎麼走整棵樹、反向 build JSON 怎麼用 Append* 系列 + Stringify、64K 限制版本敏感的三層解法（含 10.0.1 FP2 SPR# DCONB8VMAV / ASHEB95LFR 修補、跟 14.5 還活著的 element value > 64K 隱形地雷），跟一個完整 round-trip 範例（POST 出去 + parse 回應）。"
+description: "之前發佈過的 lotusscript-http-json 介紹了 NotesHTTPRequest + NotesJSONNavigator 把『打 REST API 拿 JSON』完整收進 LS。本篇接續寫 navigator 下面的 3 個組成元件 — NotesJSONElement（name/value pair）、NotesJSONObject（物件節點）、NotesJSONArray（陣列節點）— 詳細 method、屬性、parse 時怎麼走整棵樹、反向 build JSON 怎麼用 Append* 系列 + Stringify、64K 限制版本敏感的三層解法（含 10.0.1 FP2 SPR# DCONB8VMAV / ASHEB95LFR 修補、跟 14.5 還活著的 element value > 64K 隱形地雷），跟一個完整 round-trip 範例（POST 出去 + parse 回應）。"
 pubDate: 2026-05-24T07:30:00+08:00
 lang: zh-TW
 slug: notes-json-array-element-object
@@ -26,7 +26,7 @@ coverStyle: "paper-craft"
 
 ## 重點摘要
 
-- 接續[前一篇 lotusscript-http-json](/posts/lotusscript-http-json/) — 把 `NotesJSONNavigator` 底下的 3 個組成元件講透
+- 接續[之前發佈過的 lotusscript-http-json](/posts/lotusscript-http-json/) — 把 `NotesJSONNavigator` 底下的 3 個組成元件講透
 - **3 個 class 對應 JSON 的 3 種 node**：
   - `NotesJSONElement` — 葉節點（name/value pair）
   - `NotesJSONObject` — 物件 `{}` 節點
@@ -118,7 +118,7 @@ JSON 標準允許陣列裡混型別（`[1, "two", {"three": 3}]`）— 三個 Ap
 
 ## Parse 場景：從 navigator 走進去
 
-[前一篇](/posts/lotusscript-http-json/)示範了「HTTP `Get` + `PreferJSONNavigator = True` 直接拿 navigator」。拿到 navigator 後實務上的 3 種走法：
+[之前那篇 lotusscript-http-json](/posts/lotusscript-http-json/)示範了「HTTP `Get` + `PreferJSONNavigator = True` 直接拿 navigator」。拿到 navigator 後實務上的 3 種走法：
 
 ### 1. 直接抓特定欄位（Object 路徑）
 
@@ -160,7 +160,7 @@ Next i
 
 ## Build 場景：反向組 JSON
 
-前一篇沒提的、**這 3 個 class 也能反過來組 JSON**。起手：
+之前那篇沒提的、**這 3 個 class 也能反過來組 JSON**。起手：
 
 ```lotusscript
 Dim session As New NotesSession
@@ -294,7 +294,7 @@ eknori 那篇文章留言區就有人踩過這個坑：原本 `stream.Position =
 
 ---
 
-## 跟前一篇的關係
+## 跟先前 HTTP / JSON 那篇的關係
 
 | 主題 | 哪篇 |
 |---|---|
