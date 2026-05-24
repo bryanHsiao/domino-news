@@ -1,6 +1,6 @@
 ---
-title: "NotesJSONArray / Element / Object：LotusScript parse + build JSON 的三個 building block"
-description: "前一篇 lotusscript-http-json 介紹了 NotesHTTPRequest + NotesJSONNavigator 把『打 REST API 拿 JSON』完整收進 LS。本篇接續寫 navigator 下面的 3 個 building block — NotesJSONElement（name/value pair）、NotesJSONObject（物件節點）、NotesJSONArray（陣列節點）— 詳細 method、屬性、parse 時怎麼走 tree、反向 build JSON 怎麼用 Append* 系列 + Stringify、64K 限制版本敏感的三層解法（含 10.0.1 FP2 SPR# DCONB8VMAV / ASHEB95LFR 修補、跟 14.5 還活著的 element value > 64K 隱形地雷），跟一個完整 round-trip 範例（POST body + parse response）。"
+title: "NotesJSONArray / Element / Object：LotusScript parse + build JSON 的三個組成元件"
+description: "前一篇 lotusscript-http-json 介紹了 NotesHTTPRequest + NotesJSONNavigator 把『打 REST API 拿 JSON』完整收進 LS。本篇接續寫 navigator 下面的 3 個組成元件 — NotesJSONElement（name/value pair）、NotesJSONObject（物件節點）、NotesJSONArray（陣列節點）— 詳細 method、屬性、parse 時怎麼走整棵樹、反向 build JSON 怎麼用 Append* 系列 + Stringify、64K 限制版本敏感的三層解法（含 10.0.1 FP2 SPR# DCONB8VMAV / ASHEB95LFR 修補、跟 14.5 還活著的 element value > 64K 隱形地雷），跟一個完整 round-trip 範例（POST 出去 + parse 回應）。"
 pubDate: 2026-05-24T07:30:00+08:00
 lang: zh-TW
 slug: notes-json-array-element-object
@@ -26,7 +26,7 @@ coverStyle: "paper-craft"
 
 ## 重點摘要
 
-- 接續[前一篇 lotusscript-http-json](/posts/lotusscript-http-json/) — 把 `NotesJSONNavigator` 底下的 3 個 building block 講透
+- 接續[前一篇 lotusscript-http-json](/posts/lotusscript-http-json/) — 把 `NotesJSONNavigator` 底下的 3 個組成元件講透
 - **3 個 class 對應 JSON 的 3 種 node**：
   - `NotesJSONElement` — 葉節點（name/value pair）
   - `NotesJSONObject` — 物件 `{}` 節點
@@ -69,7 +69,7 @@ coverStyle: "paper-craft"
 | `.Value` | 值本身 |
 | `.Copy(otherEl)` | 把另一個 element 的值複製進來 |
 
-`.Type` 的常數實際值看 [Designer help 的 NotesJSONElement class 條目](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONELEMENT_CLASS.html)。Production 邏輯通常用 `.Type` 先判型再取 `.Value`：
+`.Type` 的常數實際值看 [Designer 說明文件的 NotesJSONElement class 條目](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONELEMENT_CLASS.html)。正式環境通常用 `.Type` 先判型再取 `.Value`：
 
 ```lotusscript
 Dim el As NotesJSONElement
@@ -195,11 +195,11 @@ Dim jsonStr As String
 jsonStr = nav.Stringify()
 ```
 
-實際 API 細節（`AppendElement` 取的是值還是已建好的 element 物件？index 從 0 還 1？）建議參考 [eknori 2019 的完整範例](https://www.eknori.de/2019-01-01/notesjsonnavigator-notesjsonelement-notesjsonarray-notesjsonobject-example/) — 是社群裡最完整的 build-side 示範。
+實際 API 細節（`AppendElement` 取的是值還是已建好的 element 物件？index 從 0 還 1？）建議參考 [eknori 2019 的完整範例](https://www.eknori.de/2019-01-01/notesjsonnavigator-notesjsonelement-notesjsonarray-notesjsonobject-example/) — 是社群裡最完整的 build 端示範。
 
 ---
 
-## 完整 round-trip：POST + parse response
+## 完整 round-trip：POST 出去 + parse 回應
 
 把 user input 組成 JSON、POST 到外部 API、parse 回應：
 
@@ -255,10 +255,10 @@ End Sub
 
 [eknori 2019/05/30 follow-up 實測](https://www.eknori.de/2019-01-01/notesjsonnavigator-notesjsonelement-notesjsonarray-notesjsonobject-example/)：升 10.0.1 FP2 之後整包 > 64K 沒事、但**某個 element 的 value 超過 64K**（譬如 JSON 裡塞一坨 base64 編碼的 PDF）、`NotesJSONElement` 取出來會「strange results」。
 
-根因：LotusScript String 本身的底層限制（跟 NotesItem 的 32K text、64K summary 是同源問題）、**不是 JSON class 能繞的**。實務上 payload 結構是「meta + 一坨 base64 attachment」的話：
+根因：LotusScript String 本身的底層限制（跟 NotesItem 的 32K text、64K summary 是同源問題）、**不是 JSON class 能繞的**。實務上資料結構是「meta + 一坨 base64 附件」的話：
 
-- attachment 拆走另一個 HTTP call（multipart 或 binary stream）
-- 或拆成 array of chunks（每塊 < 60K）在應用層重組
+- 附件拆走另一個 HTTP call（multipart 或 binary stream）
+- 或拆成分塊陣列（每塊 < 60K）在應用層重組
 
 ### NotesStream 用法 — 重點是傳 stream **物件**、不要 `ReadText`
 
@@ -286,11 +286,11 @@ eknori 那篇文章留言區就有人踩過這個坑：原本 `stream.Position =
 
 順帶：`stream.Open` 第二個參數帶 `"UTF-8"`、原本對「UTF-8 only」的擔心也順手解（從 stream 進的字串強制就是 UTF-8）。Help 文件另外提一句「The NotesStream must be opened when creating the navigator and can be closed as soon as the navigator is created」、navigator 建好後 stream 隨時 close。
 
-### Build / POST side 大 payload — 也是 FP2 解的
+### Build / POST 端大 payload — 也是 FP2 解的
 
-`navigator.Stringify()` 回的 String 本身沒上限（LS String 可達 2GB）、問題會出在下一步 — `NotesHTTPRequest.Post(url, body)` 在 10.0.1 之前也撞 64K（[**SPR# JCORBB2KWU**](https://ds-infolib.hcltechsw.com/ldd/fixlist.nsf/(Progress)/10.0.1%20FP2?OpenDocument)、跟 parse side 同版本一起修）。14.5 環境同樣不用擔心。
+`navigator.Stringify()` 回的 String 本身沒上限（LS String 可達 2GB）、問題會出在下一步 — `NotesHTTPRequest.Post(url, body)` 在 10.0.1 之前也撞 64K（[**SPR# JCORBB2KWU**](https://ds-infolib.hcltechsw.com/ldd/fixlist.nsf/(Progress)/10.0.1%20FP2?OpenDocument)、跟 parse 端同版本一起修）。14.5 環境同樣不用擔心。
 
-撞到舊版又要 POST 大 payload — 傳統解法是退回去用 Java agent 或 LS2J 包 Apache HttpClient（V12 之前 NotesHTTPRequest 的 HTTP stack 還相對陽春）。
+撞到舊版又要 POST 大 payload — 傳統解法是退回去用 Java agent 或 LS2J 包 Apache HttpClient（V12 之前 NotesHTTPRequest 的 HTTP 實作還相對陽春）。
 
 ---
 
@@ -299,7 +299,7 @@ eknori 那篇文章留言區就有人踩過這個坑：原本 `stream.Position =
 | 主題 | 哪篇 |
 |---|---|
 | 怎麼打 HTTP、`PreferJSONNavigator` 怎麼設、navigator 是什麼 | [lotusscript-http-json](/posts/lotusscript-http-json/) |
-| **本篇：navigator 下面 3 個 building block 怎麼用 + 反向 build** | 你在看的這篇 |
+| **本篇：navigator 下面 3 個組成元件怎麼用 + 反向 build** | 你在看的這篇 |
 | HTTPS trust store 細節（V14.5+） | [notes-httprequest-14-5-trust-store](/posts/notes-httprequest-14-5-trust-store/) |
 
 ---
