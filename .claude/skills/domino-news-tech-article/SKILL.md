@@ -501,6 +501,39 @@ new style won't clash with neighbours), generates the image,
 writes `cover:` and `coverStyle:` back to both language files, and
 commits a follow-up.
 
+### Editing an article after it's been published — follow the file
+
+Path A staged content in `_pending/` lives there *only until promotion*.
+At 23:30 UTC (= 07:30 Taipei) on the pubDate, the cron runs
+`git mv _pending/{lang}/<file>.md src/content/posts/{lang}/<file>.md`
+and the file's canonical location changes. Any post-promotion edit
+should target the new path — `src/content/posts/`, not `_pending/`.
+
+The complement to the Path B "pubDate vs calendar date" warning:
+
+| Article state | Edits go to |
+|---|---|
+| `pubDate` in the future (cron hasn't run yet) | `_pending/{lang}/<date>-<slug>.md` |
+| Already promoted (cron ran on or after pubDate) | `src/content/posts/{lang}/<date>-<slug>.md` |
+| Historical posts | always `src/content/posts/` |
+
+Before opening any edit on a Path-A article today, check:
+
+```bash
+ls _pending/{zh-TW,en}/<YYYY-MM-DD>-<slug>.md 2>/dev/null \
+   src/content/posts/{zh-TW,en}/<YYYY-MM-DD>-<slug>.md 2>/dev/null
+```
+
+Whichever pair exists is the right edit target. Git's rename detection
+during `pull --rebase` sometimes saves a misdirected edit (it can
+re-apply patches across renames), but don't rely on that — it's a
+silent failure mode if the diff context drifts and the patch lands in
+the wrong tree state.
+
+After editing a live article, `git push` triggers `deploy.yml`
+automatically; the change is visible in 1–2 minutes (modulo browser
+cache — readers may need a hard reload to see the updated content).
+
 ---
 
 ## Step 6 — Refresh the coverage tracker (and clean _drafts if salvaging)
