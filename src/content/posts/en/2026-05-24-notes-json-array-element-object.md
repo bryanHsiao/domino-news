@@ -1,6 +1,6 @@
 ---
 title: "NotesJSONArray / Element / Object: Parsing and Building JSON in LotusScript"
-description: "The 5/07 lotusscript-http-json article walked through NotesHTTPRequest + NotesJSONNavigator — the pairing that brings the entire 'call REST API, get JSON' loop inside LS. This article picks up where that left off, going deep on the three building blocks under the navigator: NotesJSONElement (name/value pair), NotesJSONObject (object node), NotesJSONArray (array node). Full method/property tables, tree-walking patterns for parsing, the reverse path for building JSON via Append* + Stringify, the three common caveats (UTF-8 only / no CRLF / 64K string limit), and a complete POST-and-parse round-trip example."
+description: "The earlier lotusscript-http-json article walked through NotesHTTPRequest + NotesJSONNavigator — the pairing that brings the entire 'call REST API, get JSON' loop inside LS. This article picks up where that left off, going deep on the three building blocks under the navigator: NotesJSONElement (name/value pair), NotesJSONObject (object node), NotesJSONArray (array node). Full method/property tables, tree-walking patterns for parsing, the reverse path for building JSON via Append* + Stringify, the version-sensitive 64K story (including the 10.0.1 FP2 fixes via SPR# DCONB8VMAV / ASHEB95LFR and the element-value > 64K trap still live on 14.5), and a complete POST-and-parse round-trip example."
 pubDate: 2026-05-24T07:30:00+08:00
 lang: en
 slug: notes-json-array-element-object
@@ -26,14 +26,14 @@ coverStyle: "paper-craft"
 
 ## TL;DR
 
-- Continues from [the 5/07 lotusscript-http-json article](/en/posts/lotusscript-http-json/) — going deep on the three building blocks under `NotesJSONNavigator`.
+- Continues from the earlier [lotusscript-http-json](/en/posts/lotusscript-http-json/) article — going deep on the three building blocks under `NotesJSONNavigator`.
 - **Three classes map to the three JSON node types**:
   - `NotesJSONElement` — leaf (name/value pair)
   - `NotesJSONObject` — object `{}` node
   - `NotesJSONArray` — array `[]` node
 - **Each one supports both parsing and building** — `GetFirstElement` / `GetNextElement` / `GetNthElement` to walk; `AppendElement` / `AppendArray` / `AppendObject` to construct.
 - **Starting point for building JSON**: `session.Createjsonnavigator("")` gives you an empty navigator; after appending, call `.Stringify()` to render JSON text.
-- **Three caveats**: UTF-8 only / chokes on CRLF / `Createjsonnavigator(string)` has a **64K string limit** (use the NotesStream overload for larger payloads).
+- **The 64K limit story is version-sensitive** — both the parse-side 64K cap and the "no CRLF" problem **were fixed in 10.0.1 FP2** (SPR# DCONB8VMAV / ASHEB95LFR). On 14.5 the only live trap is "**a single element's value exceeding 64K still produces garbled results**" (a LotusScript String engine limit the JSON classes can't route around).
 
 ---
 
@@ -118,7 +118,7 @@ JSON permits mixed-type arrays (`[1, "two", {"three": 3}]`) — the three separa
 
 ## Parsing: walking from the navigator
 
-The 5/07 article showed the "HTTP `Get` + `PreferJSONNavigator = True` returns a navigator directly" pattern. Once you have the navigator, three common walks:
+The earlier [lotusscript-http-json](/en/posts/lotusscript-http-json/) piece showed the "HTTP `Get` + `PreferJSONNavigator = True` returns a navigator directly" pattern. Once you have the navigator, three common walks:
 
 ### 1. Jump straight to a known field (Object path)
 
@@ -160,7 +160,7 @@ Next i
 
 ## Building: reverse-direction JSON construction
 
-What the 5/07 article didn't cover: **these three classes also work in reverse to build JSON**. Starting point:
+What the earlier article didn't cover: **these three classes also work in reverse to build JSON**. Starting point:
 
 ```lotusscript
 Dim session As New NotesSession
@@ -235,23 +235,66 @@ Sub PostAndParse
 End Sub
 ```
 
-Full HTTP examples (with error handling, headers, TLS trust store) are in [the 5/07 article](/en/posts/lotusscript-http-json/) and [`notes-httprequest-14-5-trust-store`](/en/posts/notes-httprequest-14-5-trust-store/).
+Full HTTP examples (with error handling, headers, TLS trust store) are in [`lotusscript-http-json`](/en/posts/lotusscript-http-json/) and [`notes-httprequest-14-5-trust-store`](/en/posts/notes-httprequest-14-5-trust-store/).
 
 ---
 
-## The three caveats
+## The 64K limit story — version-sensitive, three layers
 
-| Caveat | Impact | Workaround |
-|---|---|---|
-| **UTF-8 only** | Feeding non-UTF-8 strings (Big5, Latin1, etc) gets you garbled output | Make sure the source is already UTF-8; Notes strings pulled from NSF usually are |
-| **No CRLF** | Strings containing `\r\n` (e.g. Windows-style line endings) make `Createjsonnavigator` fail | Pre-process: `Replace(s, Chr(13) & Chr(10), Chr(10))` |
-| **64K string limit** | The string parameter of `session.Createjsonnavigator("...")` caps out around 64K | For larger payloads use `Createjsonnavigator(NotesStream)` — the stream overload has no limit |
+This one has more version evolution than most people realize. Worth laying out:
 
-The third is especially worth knowing — the 5/07 article noted that `PreferJSONNavigator = True` sidesteps the 64K limit on the response side. But on the **request side, when you're building large JSON yourself**, you need to route through NotesStream; you can't first build a big string and then pass it to `Createjsonnavigator(big_string)`.
+| Version | Parse-side 64K behavior |
+|---|---|
+| **Before 10.0.1 GA** | `Createjsonnavigator(string)` had a 64K string-parameter cap; anything larger required the NotesStream overload |
+| **10.0.1 FP2 onward** | Whole-document JSON > 64K is fine (**SPR# DCONB8VMAV** fixed it); **a single element's value > 64K still produces garbled results** |
+| **Any version** | The NotesStream overload — passing the **stream object directly** — is the safest path; **don't `.ReadText()` it into a string first** (you fall back into the string 64K trap) |
+
+For 14.5 environments (which is most readers): the old "parse-side 64K cap" was fixed seven years ago, and "doesn't handle CRLF" was patched in the same release (**SPR# ASHEB95LFR**). **The only live trap left** is ↓
+
+### ⚠️ Single element value > 64K — still alive on 14.5
+
+[eknori's 2019/05/30 follow-up test](https://www.eknori.de/2019-01-01/notesjsonnavigator-notesjsonelement-notesjsonarray-notesjsonobject-example/): after upgrading to 10.0.1 FP2, whole-document > 64K works fine, but **a single element with `.Value` > 64K** (e.g., JSON containing a base64-encoded PDF blob) makes `NotesJSONElement` return "strange results."
+
+Root cause: LotusScript's String engine has its own size limits (same family as the NotesItem 32K text / 64K summary constraints) — **the JSON classes can't route around it**. If your payload is shaped like "meta + a large base64 attachment":
+
+- Split the attachment out into its own HTTP call (multipart or binary stream)
+- Or chunk it into an array of slices (< 60K each) and reassemble at the application layer
+
+### NotesStream usage — pass the stream **object**, don't `ReadText` it
+
+[The Designer help page for NotesJSONNavigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONNAVIGATOR_CLASS.html) lists three overloads: no input / string / NotesStream. The correct NotesStream form:
+
+```lotusscript
+Dim session As New NotesSession
+Dim stream As NotesStream
+Dim nav As NotesJSONNavigator
+
+Set stream = session.CreateStream
+Call stream.Open("c:\temp\big.json", "UTF-8")  ' UTF-8 enforced here
+stream.Position = 0
+Set nav = session.Createjsonnavigator(stream)  ' ← pass the stream object directly
+Call stream.Close  ' fine to close once the navigator is built
+```
+
+**Common mistake** — `ReadText` the stream into a string first:
+
+```lotusscript
+Set nav = session.Createjsonnavigator(stream.ReadText)  ' ❌ falls right back into the string 64K cap
+```
+
+A commenter on eknori's article hit exactly this: their original code was `stream.Position = 0; Set jsnav = session.CreateJSONNavigator(stream.ReadText);` and it kept failing — only after switching to passing the stream object directly did it work.
+
+Note also: `stream.Open` with `"UTF-8"` as the second parameter takes care of the "UTF-8 only" concern that used to be a separate caveat (anything coming through the stream is forced to UTF-8). The help page adds: "The NotesStream must be opened when creating the navigator and can be closed as soon as the navigator is created."
+
+### Build / POST side big payloads — also fixed in FP2
+
+`navigator.Stringify()` returns a String which has no real cap (LS String can hold up to 2GB) — the problem used to surface at the next step. `NotesHTTPRequest.Post(url, body)` had its own 64K cap before 10.0.1 (**SPR# JCORBB2KWU**, fixed in the same FP2 wave as the parse side). On 14.5 this isn't a concern either.
+
+If you're stuck on an older release and need to POST a large payload, the classic workaround is to drop down to a Java agent or LS2J wrapping Apache HttpClient — pre-V12 `NotesHTTPRequest`'s HTTP stack was fairly bare-bones.
 
 ---
 
-## Relationship to the 5/07 article
+## Relationship to the earlier HTTP/JSON article
 
 | Topic | Article |
 |---|---|

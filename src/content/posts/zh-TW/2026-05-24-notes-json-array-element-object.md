@@ -1,6 +1,6 @@
 ---
 title: "NotesJSONArray / Element / Object：LotusScript parse + build JSON 的三個 building block"
-description: "5/07 那篇 lotusscript-http-json 介紹了 NotesHTTPRequest + NotesJSONNavigator 把『打 REST API 拿 JSON』完整收進 LS。本篇接續寫 navigator 下面的 3 個 building block — NotesJSONElement（name/value pair）、NotesJSONObject（物件節點）、NotesJSONArray（陣列節點）— 詳細 method、屬性、parse 時怎麼走 tree、反向 build JSON 怎麼用 Append* 系列 + Stringify、UTF-8 / CRLF / 64K 三個常見 caveat，跟一個完整 round-trip 範例（POST body + parse response）。"
+description: "前一篇 lotusscript-http-json 介紹了 NotesHTTPRequest + NotesJSONNavigator 把『打 REST API 拿 JSON』完整收進 LS。本篇接續寫 navigator 下面的 3 個 building block — NotesJSONElement（name/value pair）、NotesJSONObject（物件節點）、NotesJSONArray（陣列節點）— 詳細 method、屬性、parse 時怎麼走 tree、反向 build JSON 怎麼用 Append* 系列 + Stringify、64K 限制版本敏感的三層解法（含 10.0.1 FP2 SPR# DCONB8VMAV / ASHEB95LFR 修補、跟 14.5 還活著的 element value > 64K 隱形地雷），跟一個完整 round-trip 範例（POST body + parse response）。"
 pubDate: 2026-05-24T07:30:00+08:00
 lang: zh-TW
 slug: notes-json-array-element-object
@@ -26,14 +26,14 @@ coverStyle: "paper-craft"
 
 ## 重點摘要
 
-- 接續 [5/07 那篇 lotusscript-http-json](/posts/lotusscript-http-json/) — 把 `NotesJSONNavigator` 底下的 3 個 building block 講透
+- 接續[前一篇 lotusscript-http-json](/posts/lotusscript-http-json/) — 把 `NotesJSONNavigator` 底下的 3 個 building block 講透
 - **3 個 class 對應 JSON 的 3 種 node**：
   - `NotesJSONElement` — 葉節點（name/value pair）
   - `NotesJSONObject` — 物件 `{}` 節點
   - `NotesJSONArray` — 陣列 `[]` 節點
 - **每個都同時支援 parse + build**：parse 用 `GetFirstElement` / `GetNextElement` / `GetNthElement` 走、build 用 `AppendElement` / `AppendArray` / `AppendObject` 組
 - **反向 build JSON 的起手**：`session.Createjsonnavigator("")` 拿空 navigator、append 完用 `.Stringify()` 取 JSON 字串
-- **3 個 caveat**：UTF-8 only / 不吃 CRLF / `Createjsonnavigator(string)` 有 **64K 字串限制**（大 payload 用 NotesStream 版本）
+- **64K 限制版本敏感** — parse 端 64K 限制跟「不吃 CRLF」**都在 10.0.1 FP2 修了**（SPR# DCONB8VMAV / ASHEB95LFR）；14.5 環境唯一還活著的隱形地雷是「**單一 element value > 64K 仍會亂**」（LS String 底層限制、不是 class 能繞的）
 
 ---
 
@@ -118,7 +118,7 @@ JSON 標準允許陣列裡混型別（`[1, "two", {"three": 3}]`）— 三個 Ap
 
 ## Parse 場景：從 navigator 走進去
 
-5/07 那篇示範了「HTTP `Get` + `PreferJSONNavigator = True` 直接拿 navigator」。拿到 navigator 後實務上的 3 種走法：
+[前一篇](/posts/lotusscript-http-json/)示範了「HTTP `Get` + `PreferJSONNavigator = True` 直接拿 navigator」。拿到 navigator 後實務上的 3 種走法：
 
 ### 1. 直接抓特定欄位（Object 路徑）
 
@@ -160,7 +160,7 @@ Next i
 
 ## Build 場景：反向組 JSON
 
-5/07 那篇沒提的、**這 3 個 class 也能反過來組 JSON**。起手：
+前一篇沒提的、**這 3 個 class 也能反過來組 JSON**。起手：
 
 ```lotusscript
 Dim session As New NotesSession
@@ -235,23 +235,66 @@ Sub PostAndParse
 End Sub
 ```
 
-完整 HTTP 範例（含 error handling、headers、TLS trust store）在 [5/07 那篇](/posts/lotusscript-http-json/) 跟 [`notes-httprequest-14-5-trust-store`](/posts/notes-httprequest-14-5-trust-store/)。
+完整 HTTP 範例（含 error handling、headers、TLS trust store）在 [`lotusscript-http-json`](/posts/lotusscript-http-json/) 跟 [`notes-httprequest-14-5-trust-store`](/posts/notes-httprequest-14-5-trust-store/)。
 
 ---
 
-## 3 個 caveat
+## 64K 限制 — 版本敏感、分層看
 
-| Caveat | 影響 | 解法 |
-|---|---|---|
-| **UTF-8 only** | 非 UTF-8 字串（big5、latin1 等）餵進去會亂碼 | 確保 source 已是 UTF-8；從 NSF 拉的 Notes string 通常 OK |
-| **不吃 CRLF** | 含 `\r\n` 的字串（譬如 Windows 換行）`Createjsonnavigator` 會死 | 餵之前先 `Replace(s, Chr(13) & Chr(10), Chr(10))` |
-| **64K 字串限制** | `session.Createjsonnavigator("...")` 字串參數上限約 64K | 大 payload 改用 `Createjsonnavigator(NotesStream)` — stream 版本沒限制 |
+這個議題版本演進有點細、值得分層講：
 
-第 3 點特別重要 — 5/07 文章已經提過「`PreferJSONNavigator = True` 走 navigator 沒 64K 限制」、那是 response side。**Request side 自己 build JSON 時、如果結果字串超 64K**、要走 NotesStream pipe；不能先 build 成字串再 `Createjsonnavigator(big_string)`。
+| 版本 | parse 端 64K 行為 |
+|---|---|
+| **10.0.1 GA 以前** | `Createjsonnavigator(string)` 字串參數上限 64K、超過必須走 NotesStream overload |
+| **10.0.1 FP2 以後** | 整包 JSON > 64K 沒問題（**SPR# DCONB8VMAV** 修了）、但**單一 element value > 64K 仍會亂掉** |
+| **任何版本** | NotesStream overload 直接傳 stream **物件**最穩 — **不要先 `.ReadText()` 變字串再傳**（會撞回字串 64K 限制）|
+
+對 14.5 環境（多數讀者應該是這條）來說：原本的「parse 端 64K 限制」7 年前就修了、「不吃 CRLF」也同版本順手修了（**SPR# ASHEB95LFR**）。**剩下唯一還活著的隱形地雷**是 ↓
+
+### ⚠️ 單一 element value > 64K — 14.5 還在的隱形地雷
+
+[eknori 2019/05/30 follow-up 實測](https://www.eknori.de/2019-01-01/notesjsonnavigator-notesjsonelement-notesjsonarray-notesjsonobject-example/)：升 10.0.1 FP2 之後整包 > 64K 沒事、但**某個 element 的 value 超過 64K**（譬如 JSON 裡塞一坨 base64 編碼的 PDF）、`NotesJSONElement` 取出來會「strange results」。
+
+根因：LotusScript String 本身的底層限制（跟 NotesItem 的 32K text、64K summary 是同源問題）、**不是 JSON class 能繞的**。實務上 payload 結構是「meta + 一坨 base64 attachment」的話：
+
+- attachment 拆走另一個 HTTP call（multipart 或 binary stream）
+- 或拆成 array of chunks（每塊 < 60K）在應用層重組
+
+### NotesStream 用法 — 重點是傳 stream **物件**、不要 `ReadText`
+
+[Designer help 的 NotesJSONNavigator 條目](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONNAVIGATOR_CLASS.html)列了三種 overload：no input / string / NotesStream。NotesStream 版正確用法：
+
+```lotusscript
+Dim session As New NotesSession
+Dim stream As NotesStream
+Dim nav As NotesJSONNavigator
+
+Set stream = session.CreateStream
+Call stream.Open("c:\temp\big.json", "UTF-8")  ' UTF-8 強制
+stream.Position = 0
+Set nav = session.Createjsonnavigator(stream)  ' ← 直接餵 stream 物件
+Call stream.Close  ' navigator 建好後 stream 就可以關
+```
+
+**常見錯誤** — 先 `ReadText` 變字串再傳：
+
+```lotusscript
+Set nav = session.Createjsonnavigator(stream.ReadText)  ' ❌ 字串 64K 限制照樣撞
+```
+
+eknori 那篇文章留言區就有人踩過這個坑：原本 `stream.Position = 0; Set jsnav = session.CreateJSONNavigator(stream.ReadText);` 一直 error、後來才發現必須直接傳 stream 物件、不是 `ReadText` 出來的字串。
+
+順帶：`stream.Open` 第二個參數帶 `"UTF-8"`、原本對「UTF-8 only」的擔心也順手解（從 stream 進的字串強制就是 UTF-8）。Help 文件另外提一句「The NotesStream must be opened when creating the navigator and can be closed as soon as the navigator is created」、navigator 建好後 stream 隨時 close。
+
+### Build / POST side 大 payload — 也是 FP2 解的
+
+`navigator.Stringify()` 回的 String 本身沒上限（LS String 可達 2GB）、問題會出在下一步 — `NotesHTTPRequest.Post(url, body)` 在 10.0.1 之前也撞 64K（**SPR# JCORBB2KWU**、跟 parse side 同版本一起修）。14.5 環境同樣不用擔心。
+
+撞到舊版又要 POST 大 payload — 傳統解法是退回去用 Java agent 或 LS2J 包 Apache HttpClient（V12 之前 NotesHTTPRequest 的 HTTP stack 還相對陽春）。
 
 ---
 
-## 跟 5/07 那篇的關係
+## 跟前一篇的關係
 
 | 主題 | 哪篇 |
 |---|---|
