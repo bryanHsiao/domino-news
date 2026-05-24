@@ -272,12 +272,47 @@ keep in mind:
   labels (`NotesXxx`, `dominoiq.nsf`, `GGUF`, `NSF`, `ACL`,
   `Readers field`, `updall -w`, `Command document`, etc.). Readers
   searching the official docs need them in canonical form.
-- **Domain jargon localises in zh** — examples already established:
-  `inference engine` → 推論引擎,
-  `process boundary` → 行程邊界,
-  `application layer` → 應用層,
-  `context size` → 上下文大小,
-  `concurrent requests` → 並行請求.
+- **Localise everyday jargon, keep identifiers** — the previous
+  bullet handles identifiers. For the rest of the prose, judge with
+  three quick questions:
+
+  1. **Is it an identifier?** (class / method / property / file /
+     protocol / standard acronym / product or vendor name) →
+     **keep English** (reader will need the exact form to search docs)
+  2. **Does Chinese feel more natural?** (`Production` → 正式環境,
+     `side` → 端, `building block` → 組成元件) → **translate**
+  3. **Unsure?** → **default to translating**. Worst case is
+     slightly stronger zh flavour — not a failure mode. Leaving
+     English in by default is the more common mistake.
+
+  Established translations to reuse (illustrative, not exhaustive —
+  this list grows as new terms surface, but it will never be
+  comprehensive; the three questions are the actual judgment tool):
+
+  `inference engine` → 推論引擎, `process boundary` → 行程邊界,
+  `application layer` → 應用層, `context size` → 上下文大小,
+  `concurrent requests` → 並行請求, `Production` → 正式環境,
+  `side` (parse side / build side) → 端,
+  `stack` (HTTP stack) → 實作 / 處理層,
+  `building block` → 組成元件, `attachment` → 附件,
+  `chunks` → 分塊, `Designer help` → Designer 說明文件.
+  Keep `payload` (load-bearing API term — pair with zh framing like
+  「資料 payload」rather than translating to 「酬載」).
+
+  **Voice anchors**: re-read [`domino-iq` (5/05)](src/content/posts/zh-TW/2026-05-05-domino-iq.md)
+  and [`notes-llm-request` (5/23)](src/content/posts/zh-TW/2026-05-23-notes-llm-request.md)
+  before drafting — those are the current reference for how zh prose
+  should feel (natural Chinese flow, identifiers in English, jargon
+  Chinese-ified).
+
+  **Escalation if human review keeps missing things**: build a
+  `scripts/check-zh-prose.ts` linter (similar shape to
+  `scripts/check-post-urls.ts`) that strips frontmatter / code /
+  inline-code / URLs and flags remaining English words against a
+  short whitelist of identifier patterns. Wire it as
+  `npm run check:zh-prose`. Not built yet — current approach is the
+  three-question heuristic above, applied as a self-review pass
+  before publishing.
 - **AI-domain acronyms get markdown footnotes** (`[^x]: ...`). Astro
   renders the section heading as 「註」 in zh and "Footnotes" in en
   via the custom rehype plugin in `astro.config.mjs`. GGUF, LLM,
