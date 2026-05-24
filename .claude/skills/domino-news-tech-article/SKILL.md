@@ -333,6 +333,37 @@ one method page, and a related sibling class page. Internal site
 anchors (`/domino-news/posts/...`) don't count toward the diversity
 math, so use them freely for cross-references between articles.
 
+**Plan the link distribution before drafting, not after.** Twice in
+the same week I've shipped articles with the diversity check
+failing (one with a single URL at 100%, another with the most-cited
+URL right at the 40% boundary), then had to scramble post-commit
+to patch it before the cron promoted. The fix lands cleaner if the
+plan is up front. Pre-flight checklist:
+
+1. **Before writing prose**, grep existing posts for cross-link
+   candidates — same-class deep-dive (`grep -l "ClassName"
+   src/content/posts/zh-TW/*.md`), companion articles,
+   prerequisite-or-followup pieces.
+2. **Sketch a link budget**: target 5–7 unique URLs across the
+   article — class doc + 1–2 method/property docs + 1–2 internal
+   cross-links + 1 external (RFC / community blog / vendor page).
+   Distribute mentally across sections so no one section monopolises.
+3. **Watch the dominant URL**: any single URL used in 3+ places
+   in a single language pushes combined ratio past 37%. If a URL
+   keeps coming up, ask if the second / third mention can drop
+   the markdown link and stay as plain inline code (`ClassName`).
+   Section headings linking via prose is usually the better
+   carrier than table rows.
+4. **Re-verify after writing**:
+   ```bash
+   for f in _pending/{zh-TW,en}/<date>-<slug>.md; do
+     grep -oE '\[([^]]+)\]\(([^)]+)\)' "$f" | sed 's/.*(\(.*\))/\1/'
+   done | sort | uniq -c | sort -rn
+   ```
+   Max-frequency URL divided by total occurrences must come out
+   strictly under 40%. If it doesn't, fix the article — don't
+   commit and patch later.
+
 ### Time-anchor "latest" / "current" claims
 
 Anything that bakes "right now" into the prose — "現在的旗艦版本是 X",
