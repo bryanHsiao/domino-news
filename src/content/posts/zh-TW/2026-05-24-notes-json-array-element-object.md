@@ -33,7 +33,7 @@ coverStyle: "paper-craft"
   - `NotesJSONArray` — 陣列 `[]` 節點
 - **每個都同時支援 parse + build**：parse 用 `GetFirstElement` / `GetNextElement` / `GetNthElement` 走、build 用 `AppendElement` / `AppendArray` / `AppendObject` 組
 - **反向 build JSON 的起手**：`session.Createjsonnavigator("")` 拿空 navigator、append 完用 `.Stringify()` 取 JSON 字串
-- **64K 限制版本敏感** — parse 端 64K 限制跟「不吃 CRLF」**都在 10.0.1 FP2 修了**（SPR# DCONB8VMAV / ASHEB95LFR）；14.5 環境唯一還活著的隱形地雷是「**單一 element value > 64K 仍會亂**」（LS String 底層限制、不是 class 能繞的）
+- **64K 限制版本敏感** — parse 端 64K 限制跟「CR/LF 換行字元讀不進」這兩個 **都在 10.0.1 FP2 修了**（[SPR# DCONB8VMAV](https://ds-infolib.hcltechsw.com/ldd/fixlist.nsf/(Progress)/10.0.1%20FP2?OpenDocument) / [ASHEB95LFR](https://ds-infolib.hcltechsw.com/ldd/fixlist.nsf/(Progress)/10.0.1%20FP2?OpenDocument)）；14.5 環境唯一還活著的隱形地雷是「**單一 element value > 64K 仍會亂**」（LS String 底層限制、不是 class 能繞的）
 
 ---
 
@@ -246,10 +246,10 @@ End Sub
 | 版本 | parse 端 64K 行為 |
 |---|---|
 | **10.0.1 GA 以前** | `Createjsonnavigator(string)` 字串參數上限 64K、超過必須走 NotesStream overload |
-| **10.0.1 FP2 以後** | 整包 JSON > 64K 沒問題（**SPR# DCONB8VMAV** 修了）、但**單一 element value > 64K 仍會亂掉** |
+| **10.0.1 FP2 以後** | 整包 JSON > 64K 沒問題（[**SPR# DCONB8VMAV**](https://ds-infolib.hcltechsw.com/ldd/fixlist.nsf/(Progress)/10.0.1%20FP2?OpenDocument) 修了）、但**單一 element value > 64K 仍會亂掉** |
 | **任何版本** | NotesStream overload 直接傳 stream **物件**最穩 — **不要先 `.ReadText()` 變字串再傳**（會撞回字串 64K 限制）|
 
-對 14.5 環境（多數讀者應該是這條）來說：原本的「parse 端 64K 限制」7 年前就修了、「不吃 CRLF」也同版本順手修了（**SPR# ASHEB95LFR**）。**剩下唯一還活著的隱形地雷**是 ↓
+對 14.5 環境（多數讀者應該是這條）來說：原本的「parse 端 64K 限制」7 年前就修了、「CR/LF 換行字元讀不進」也同版本順手修了（[**SPR# ASHEB95LFR**](https://ds-infolib.hcltechsw.com/ldd/fixlist.nsf/(Progress)/10.0.1%20FP2?OpenDocument)）。**剩下唯一還活著的隱形地雷**是 ↓
 
 ### ⚠️ 單一 element value > 64K — 14.5 還在的隱形地雷
 
@@ -288,7 +288,7 @@ eknori 那篇文章留言區就有人踩過這個坑：原本 `stream.Position =
 
 ### Build / POST side 大 payload — 也是 FP2 解的
 
-`navigator.Stringify()` 回的 String 本身沒上限（LS String 可達 2GB）、問題會出在下一步 — `NotesHTTPRequest.Post(url, body)` 在 10.0.1 之前也撞 64K（**SPR# JCORBB2KWU**、跟 parse side 同版本一起修）。14.5 環境同樣不用擔心。
+`navigator.Stringify()` 回的 String 本身沒上限（LS String 可達 2GB）、問題會出在下一步 — `NotesHTTPRequest.Post(url, body)` 在 10.0.1 之前也撞 64K（[**SPR# JCORBB2KWU**](https://ds-infolib.hcltechsw.com/ldd/fixlist.nsf/(Progress)/10.0.1%20FP2?OpenDocument)、跟 parse side 同版本一起修）。14.5 環境同樣不用擔心。
 
 撞到舊版又要 POST 大 payload — 傳統解法是退回去用 Java agent 或 LS2J 包 Apache HttpClient（V12 之前 NotesHTTPRequest 的 HTTP stack 還相對陽春）。
 

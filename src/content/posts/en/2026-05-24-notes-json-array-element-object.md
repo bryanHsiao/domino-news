@@ -33,7 +33,7 @@ coverStyle: "paper-craft"
   - `NotesJSONArray` — array `[]` node
 - **Each one supports both parsing and building** — `GetFirstElement` / `GetNextElement` / `GetNthElement` to walk; `AppendElement` / `AppendArray` / `AppendObject` to construct.
 - **Starting point for building JSON**: `session.Createjsonnavigator("")` gives you an empty navigator; after appending, call `.Stringify()` to render JSON text.
-- **The 64K limit story is version-sensitive** — both the parse-side 64K cap and the "no CRLF" problem **were fixed in 10.0.1 FP2** (SPR# DCONB8VMAV / ASHEB95LFR). On 14.5 the only live trap is "**a single element's value exceeding 64K still produces garbled results**" (a LotusScript String engine limit the JSON classes can't route around).
+- **The 64K limit story is version-sensitive** — both the parse-side 64K cap and the "navigator chokes on CR/LF line endings" problem **were fixed in 10.0.1 FP2** ([SPR# DCONB8VMAV](https://ds-infolib.hcltechsw.com/ldd/fixlist.nsf/(Progress)/10.0.1%20FP2?OpenDocument) / [ASHEB95LFR](https://ds-infolib.hcltechsw.com/ldd/fixlist.nsf/(Progress)/10.0.1%20FP2?OpenDocument)). On 14.5 the only live trap is "**a single element's value exceeding 64K still produces garbled results**" (a LotusScript String engine limit the JSON classes can't route around).
 
 ---
 
@@ -246,10 +246,10 @@ This one has more version evolution than most people realize. Worth laying out:
 | Version | Parse-side 64K behavior |
 |---|---|
 | **Before 10.0.1 GA** | `Createjsonnavigator(string)` had a 64K string-parameter cap; anything larger required the NotesStream overload |
-| **10.0.1 FP2 onward** | Whole-document JSON > 64K is fine (**SPR# DCONB8VMAV** fixed it); **a single element's value > 64K still produces garbled results** |
+| **10.0.1 FP2 onward** | Whole-document JSON > 64K is fine ([**SPR# DCONB8VMAV**](https://ds-infolib.hcltechsw.com/ldd/fixlist.nsf/(Progress)/10.0.1%20FP2?OpenDocument) fixed it); **a single element's value > 64K still produces garbled results** |
 | **Any version** | The NotesStream overload — passing the **stream object directly** — is the safest path; **don't `.ReadText()` it into a string first** (you fall back into the string 64K trap) |
 
-For 14.5 environments (which is most readers): the old "parse-side 64K cap" was fixed seven years ago, and "doesn't handle CRLF" was patched in the same release (**SPR# ASHEB95LFR**). **The only live trap left** is ↓
+For 14.5 environments (which is most readers): the old "parse-side 64K cap" was fixed seven years ago, and "doesn't handle CRLF" was patched in the same release ([**SPR# ASHEB95LFR**](https://ds-infolib.hcltechsw.com/ldd/fixlist.nsf/(Progress)/10.0.1%20FP2?OpenDocument)). **The only live trap left** is ↓
 
 ### ⚠️ Single element value > 64K — still alive on 14.5
 
@@ -288,7 +288,7 @@ Note also: `stream.Open` with `"UTF-8"` as the second parameter takes care of th
 
 ### Build / POST side big payloads — also fixed in FP2
 
-`navigator.Stringify()` returns a String which has no real cap (LS String can hold up to 2GB) — the problem used to surface at the next step. `NotesHTTPRequest.Post(url, body)` had its own 64K cap before 10.0.1 (**SPR# JCORBB2KWU**, fixed in the same FP2 wave as the parse side). On 14.5 this isn't a concern either.
+`navigator.Stringify()` returns a String which has no real cap (LS String can hold up to 2GB) — the problem used to surface at the next step. `NotesHTTPRequest.Post(url, body)` had its own 64K cap before 10.0.1 ([**SPR# JCORBB2KWU**](https://ds-infolib.hcltechsw.com/ldd/fixlist.nsf/(Progress)/10.0.1%20FP2?OpenDocument), fixed in the same FP2 wave as the parse side). On 14.5 this isn't a concern either.
 
 If you're stuck on an older release and need to POST a large payload, the classic workaround is to drop down to a Java agent or LS2J wrapping Apache HttpClient — pre-V12 `NotesHTTPRequest`'s HTTP stack was fairly bare-bones.
 
