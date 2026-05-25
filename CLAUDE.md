@@ -294,6 +294,35 @@ To rotate or set up:
 2. Repo Settings → Secrets and variables → Actions → new secret
    `PAT_FOR_PUBLISH` = the token value
 
+### Local git config: use the ID-prefixed noreply email
+
+**Critical** — local commits in this repo MUST be authored as
+`24813223+bryanHsiao@users.noreply.github.com`, NOT
+`bryanHsiao@users.noreply.github.com`. The latter (without the
+`<user-id>+` prefix) is the legacy noreply format and **does NOT
+count toward the GitHub contribution graph** for accounts with
+ID-based privacy (post-2017 default). Half the point of the
+`_pending/` queue + cron flow is unbroken daily contribution
+credit; using the legacy format silently breaks that.
+
+To verify / set in this repo:
+
+```bash
+cd <repo>
+git config user.email
+# Expected: 24813223+bryanHsiao@users.noreply.github.com
+# If anything else (e.g. bryanHsiao@users.noreply.github.com or a
+# real email), fix with:
+git config user.email "24813223+bryanHsiao@users.noreply.github.com"
+```
+
+This caught me out on 2026-05-24 — twelve commits made through
+Claude Code that day used the legacy format from a stale local
+config, none of them counted toward the contribution graph for
+that date. The `publish-pending.yml` workflow already uses the
+correct format (set during the GH007 fix); only the local config
+was lagging.
+
 ---
 
 ## Cover-image generation
