@@ -24,6 +24,11 @@ concurrency:
 jobs:
   generate:
     runs-on: ubuntu-latest
+    env:
+      # See publish-pending.yml for the rationale — keeps commit
+      # timestamps on the right Taipei calendar date so contributions
+      # don't slip into yesterday's slot.
+      TZ: Asia/Taipei
     steps:
       - name: Checkout
         uses: actions/checkout@v5

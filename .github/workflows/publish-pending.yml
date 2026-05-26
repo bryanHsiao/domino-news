@@ -25,6 +25,14 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      # Force the runner's clock interpretation to Taipei. Without this,
+      # the cron fires at 23:30 UTC and git stamps the commit with
+      # "+0000" → GitHub records the contribution on UTC date X, which
+      # for a Taipei user is actually X+1. Setting TZ here makes the
+      # commit show as "+0800" so the contribution lands on the right
+      # Taipei calendar date.
+      TZ: Asia/Taipei
     steps:
       - name: Checkout
         uses: actions/checkout@v5
