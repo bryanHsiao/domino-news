@@ -227,6 +227,38 @@ Doing #2 if/when more posts hit this pattern.
 
 ## Scheduling pattern
 
+### Overall pipeline at a glance
+
+```mermaid
+flowchart TD
+    A["✍️ 寫雙語 draft<br/>(zh + en)"] --> B{pubDate<br/>在未來?}
+
+    B -->|✅ Path A 預設| C["📂 _pending/<br/>git commit + push<br/>(stage commit)"]
+    B -->|⚡ Path B salvage / urgent| D["📂 src/content/posts/<br/>git commit + push"]
+
+    C --> E["⏰ 等到 pubDate 當天<br/>cron: 23:30 UTC<br/>= 07:30 Taipei"]
+
+    E --> F["🤖 publish-pending.yml<br/>env: TZ=Asia/Taipei<br/>auth: PAT_FOR_PUBLISH"]
+
+    F --> G["1. git mv _pending → posts/<br/>2. npm run coverage<br/>3. trigger backfill-covers.yml"]
+
+    G --> H["🎨 backfill-covers.yml<br/>OpenAI gpt-image-1<br/>commit cover image"]
+
+    G --> I["🚀 deploy.yml<br/>(triggered by promote push)"]
+    H --> I
+    D --> I
+
+    I --> J["astro build + pagefind index<br/>→ deploy to GitHub Pages"]
+
+    J --> K(["🌐 https://bryanhsiao.github.io/<br/>domino-news/posts/&lt;slug&gt;/"])
+
+    style K fill:#0a0a0a,stroke:#fbbf24,stroke-width:3px,color:#fbbf24
+    style C fill:#dbeafe,stroke:#1e40af
+    style D fill:#fef3c7,stroke:#92400e
+    style F fill:#dcfce7,stroke:#166534
+    style H fill:#fef9c3,stroke:#854d0e
+```
+
 ### Pending queue + daily promotion
 
 Future-dated articles go into `_pending/{zh-TW,en}/` instead of
@@ -294,16 +326,20 @@ To rotate or set up:
 2. Repo Settings → Secrets and variables → Actions → new secret
    `PAT_FOR_PUBLISH` = the token value
 
-### Local git config: use the ID-prefixed noreply email
+### Local git config: prefer the ID-prefixed noreply email
 
-**Critical** — local commits in this repo MUST be authored as
-`24813223+bryanHsiao@users.noreply.github.com`, NOT
-`bryanHsiao@users.noreply.github.com`. The latter (without the
-`<user-id>+` prefix) is the legacy noreply format and **does NOT
-count toward the GitHub contribution graph** for accounts with
-ID-based privacy (post-2017 default). Half the point of the
-`_pending/` queue + cron flow is unbroken daily contribution
-credit; using the legacy format silently breaks that.
+Local commits in this repo should be authored as
+`24813223+bryanHsiao@users.noreply.github.com` (ID-prefixed
+noreply), not `bryanHsiao@users.noreply.github.com` (legacy form).
+
+The ID-prefixed form is the modern default and is guaranteed to
+attribute correctly to the GitHub account regardless of future
+privacy-setting changes. **The legacy form happens to also count
+on this account today** (verified via GraphQL on 2026-05-24 — all
+16 commits made that day with the legacy email did get
+contribution-graph credit), but that's not portable behaviour to
+rely on — different account configurations treat the legacy form
+differently.
 
 To verify / set in this repo:
 
@@ -311,17 +347,84 @@ To verify / set in this repo:
 cd <repo>
 git config user.email
 # Expected: 24813223+bryanHsiao@users.noreply.github.com
-# If anything else (e.g. bryanHsiao@users.noreply.github.com or a
-# real email), fix with:
 git config user.email "24813223+bryanHsiao@users.noreply.github.com"
 ```
 
-This caught me out on 2026-05-24 — twelve commits made through
-Claude Code that day used the legacy format from a stale local
-config, none of them counted toward the contribution graph for
-that date. The `publish-pending.yml` workflow already uses the
-correct format (set during the GH007 fix); only the local config
-was lagging.
+The `publish-pending.yml` workflow already uses the ID-prefixed
+form (set during the GH007 fix on 2026-05-20). This was the only
+divergence between the workflow and the local config.
+
+### Cron commit timezone — `TZ=Asia/Taipei` is mandatory
+
+The cron schedule fires at `30 23 * * *` UTC = 07:30 Taipei the
+next day. By default the runner clock is UTC and git stamps
+commits with `+0000`, so a commit timestamped
+`2026-05-25 23:52 +0000` shows on **2026-05-25** in the GitHub
+contribution graph — even though wall-clock Taipei was already
+2026-05-26 07:52 by then. The green dot for "today's release"
+silently lands on yesterday's slot.
+
+Every workflow that makes commits sets `TZ: Asia/Taipei` at the
+job level:
+
+```yaml
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Taipei
+    steps:
+      - ...
+```
+
+With this, the same commit gets stamped
+`2026-05-26 07:52 +0800` and the contribution graph records on
+2026-05-26 — matching the article's `pubDate` and the user's
+local sense of "today".
+
+Workflows that need this: `publish-pending.yml`,
+`backfill-covers.yml`, `daily-article.yml`, `generate-hero.yml`.
+Workflows that don't (because they don't commit): `deploy.yml`,
+`check-urls.yml`, `nightly-rebuild.yml`.
+
+### Diagnosing contribution graph issues — use GraphQL, not visual inspection
+
+When a green dot is "missing", **don't guess from the graph
+image** — the rendering can lag by tens of minutes and the
+colour scale doesn't distinguish "0 commits" from "1 commit".
+Query the actual contribution count via the GraphQL API:
+
+```bash
+gh api graphql -f query='
+{
+  user(login: "bryanHsiao") {
+    contributionsCollection(from: "2026-05-24T00:00:00Z", to: "2026-05-27T00:00:00Z") {
+      contributionCalendar {
+        weeks {
+          contributionDays {
+            date
+            contributionCount
+            color
+          }
+        }
+      }
+    }
+  }
+}'
+```
+
+Sample output:
+
+```json
+{"date":"2026-05-26","contributionCount":1,"color":"#216e39"}
+```
+
+This was decisive on 2026-05-26: the visual graph suggested
+several missing days, but GraphQL showed 5/24 actually had 16
+contributions (deep green) and 5/25 had 3 (light green) — only
+5/26 genuinely had 0. That refocused the investigation on the
+cron-commit timezone issue (above) instead of chasing the wrong
+"old email format doesn't count" hypothesis.
 
 ---
 
