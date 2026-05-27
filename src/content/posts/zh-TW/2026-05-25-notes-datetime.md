@@ -1,6 +1,6 @@
 ---
 title: "NotesDateTime + NotesDateRange：LotusScript 日期時間處理的雙人組"
-description: "Domino code 裡最常摸到的 utility class 之一 — NotesDateTime 代表單一時間點、NotesDateRange 代表一段時間區間。本文整理建立方式（New 跟 session.CreateDateTime 差別）、三組時區屬性（Local / GMT / Zone）的正確用法、6 個 Adjust 方法做日期算術、TimeDifference vs TimeDifferenceDouble 的精度差異、ConvertToZone 是 in-place mutate 不是 return 新物件、NotesDateRange 的 4 個 property（沒有任何 method）、SetAnyDate / SetAnyTime 是搜尋 wildcard 用、跟 NotesItem.DateTimeValue 互動的 timezone 陷阱、跟兩個實戰範例（期限檢查 agent + 跨時區會議排程）。"
+description: "Domino code 裡最常摸到的 utility class 之一 — NotesDateTime 代表單一時間點、NotesDateRange 代表一段時間區間。本文整理建立方式（New 跟 session.CreateDateTime 差別）、三組時區屬性（Local / GMT / Zone）的正確用法、6 個 Adjust 方法做日期算術、TimeDifference vs TimeDifferenceDouble 的精度差異、ConvertToZone 直接改物件本身、不是回傳新物件、NotesDateRange 的 4 個 property（沒有任何 method）、SetAnyDate / SetAnyTime 是搜尋 wildcard 用、跟 NotesItem.DateTimeValue 互動的 timezone 陷阱、跟兩個實戰範例（期限檢查 agent + 跨時區會議排程）。"
 pubDate: 2026-05-25T07:30:00+08:00
 lang: zh-TW
 slug: notes-datetime
@@ -27,8 +27,8 @@ coverStyle: "art-deco"
 - [**NotesDateTime**](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATETIME_CLASS.html) + **NotesDateRange** — 處理 LotusScript 日期時間的兩個 class、從 V3 就有、Domino code 裡最常摸到的 utility class 之一
 - **建立**：`Dim x As New NotesDateTime("...")` 或 `session.CreateDateTime("...")`（`New` 不支援 COM）
 - **三組時區屬性別混用**：`LocalTime`（在地時區）/ `GMTTime`（UTC）/ `ZoneTime`（依物件設定的 TZ + DST 調整顯示）
-- **時區轉換**：`ConvertToZone(zone, dst)` **改物件本身、不是 return 新物件** — in-place mutate、跟其他語言慣例不同、要先 clone 一份才能保留原值
-- **日期算術**：6 個 `Adjust*` 方法（`AdjustDay` / `AdjustHour` / `AdjustMinute` / `AdjustSecond` / `AdjustMonth` / `AdjustYear`）— 也是 in-place mutate、自動跨月跨年
+- **時區轉換**：`ConvertToZone(zone, dst)` **直接改物件本身、不是回傳新物件** — 跟其他語言慣例不同、要先 clone 一份才能保留原值
+- **日期算術**：6 個 `Adjust*` 方法（`AdjustDay` / `AdjustHour` / `AdjustMinute` / `AdjustSecond` / `AdjustMonth` / `AdjustYear`）— 同樣**直接改原物件**、自動跨月跨年
 - **差值計算**：`TimeDifference(other)` 回 Long（秒）、`TimeDifferenceDouble(other)` 回 Double（精度高、適合短間隔）
 - **NotesDateRange** — 「從 A 時間到 B 時間」的區間、4 個 property、**沒有任何 method**、calendar / schedule 場景常用
 - 常見坑：`IsValidDate` 檢查解析、`SetAnyDate` / `SetAnyTime` 是 wildcard 給搜尋用、跟 `NotesItem.DateTimeValue` 互動要注意時區
@@ -96,9 +96,9 @@ End If
 
 ---
 
-## Adjust 系列 — 6 個 in-place 算術
+## Adjust 系列 — 6 個直接改原物件的算術
 
-6 個對應 6 個時間單位、全部 **in-place mutate**（改物件本身、不是 return 新物件）：
+6 個對應 6 個時間單位、全部**直接改原物件**（不是回傳新物件）：
 
 ```lotusscript
 Dim dt As New NotesDateTime("2026-05-25 14:30:00")
@@ -156,7 +156,7 @@ Print "經過 " & elapsedSec & " 秒"
 
 ---
 
-## ConvertToZone — in-place 時區轉換
+## ConvertToZone — 直接改物件的時區轉換
 
 `ConvertToZone(zone, dst)` 改物件本身、不是回新物件：
 
@@ -318,7 +318,7 @@ Set tomorrow = New NotesDateTime(today.LocalTime)
 Call tomorrow.AdjustDay(1)
 ```
 
-JavaScript / Python / Java 8 的 immutable date 慣例不適用 — LS 是 mutate-in-place、要保留原值要先 clone。
+JavaScript / Python / Java 8 的 immutable date 慣例不適用 — LS 是「直接改原物件」風格、要保留原值要先 clone。
 
 ---
 
