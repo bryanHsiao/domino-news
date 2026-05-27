@@ -1,6 +1,6 @@
 ---
 title: "FTSearch：Domino 全文檢索的三層 API（NotesDatabase / NotesView / NotesDocumentCollection）"
-description: "FTSearch 是 Domino 三個 class 都有的方法 — 三個層級回傳不同型別、語意各異。本文拆解 NotesDatabase.FTSearch（回傳 collection）、NotesView.FTSearch（in-place 過濾 view、回傳 Long）、NotesDocumentCollection.FTSearch（in-place 縮減 collection、無回傳）三者差異、sortopt 與 options 常數、query syntax operators 速查、CreateFTIndex 的 5 個 options bitmask、跟 `load updall -x` 的對應、沒建 index 時 method 還會跑（只是降速）、5000 doc 預設上限、wildcard `*` 只能放 term 結尾、operators 必須大寫等實戰陷阱。三部曲第一篇、後續會接 db.Search 跟三選一決策篇。"
+description: "FTSearch 是 Domino 三個 class 都有的方法 — 三個層級回傳不同型別、語意各異。本文拆解 NotesDatabase.FTSearch（回傳新的 collection）、NotesView.FTSearch（直接過濾 view 本身、回傳 Long 計數）、NotesDocumentCollection.FTSearch（直接縮減 collection 本身、無回傳）三者差異、sortopt 與 options 常數、query syntax operators 速查、CreateFTIndex 的 5 個 options bitmask、跟 `load updall -x` 的對應、沒建 index 時 method 還會跑（只是降速）、5000 doc 預設上限、wildcard `*` 只能放 term 結尾、operators 必須大寫等實戰陷阱。三部曲第一篇、後續會接 db.Search 跟三選一決策篇。"
 pubDate: 2026-05-27T07:30:00+08:00
 lang: zh-TW
 slug: lotusscript-ftsearch
@@ -34,7 +34,7 @@ coverStyle: "oil-chiaroscuro"
 
 ## 重點摘要
 
-- **FTSearch 是三個 class 都有的方法、但語意不一樣**：[`NotesDatabase.FTSearch`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_DB.html) 回傳新的 `NotesDocumentCollection`、[`NotesView.FTSearch`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_VIEW.html) **in-place 過濾 view 本身**回 Long、[`NotesDocumentCollection.FTSearch`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_COLLECTION.html) **in-place 縮減 collection** 無回傳
+- **FTSearch 是三個 class 都有的方法、但語意不一樣**：[`NotesDatabase.FTSearch`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_DB.html) 回傳**新的** `NotesDocumentCollection`、[`NotesView.FTSearch`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_VIEW.html) **直接過濾 view 物件本身**（不回傳新物件、改的是手上這個 view）、回 Long 計數、[`NotesDocumentCollection.FTSearch`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_COLLECTION.html) 同樣是**直接縮減手上這個 collection**、無回傳
 - **沒建 FT index 不會錯** — method 還會跑、官方文件直書「works, but less efficiently」、實務上會慢很多
 - **max=0 不是「不限制」是「拿到 default 上限」** — 預設 5000 doc、要超過要改 notes.ini
 - **Query syntax operators 必須大寫**（AND / OR / NOT）— 小寫會被當成搜尋詞、結果靜默失準
@@ -120,7 +120,7 @@ Loop
 
 ---
 
-## NotesView.FTSearch — in-place 過濾 view
+## NotesView.FTSearch — 直接過濾 view 本身
 
 ```lotusscript
 numDocs& = view.FTSearch(query$, maxDocs%)
@@ -165,7 +165,7 @@ Call view.Clear()
 Call collection.FTSearch(query$, maxDocs%)
 ```
 
-回傳 void、collection 被**就地縮減**。官方文件：「reduces the collection to those documents that match」。
+回傳 void、collection 被**直接縮減** — 改的是手上這個物件、不是回傳新的。官方文件：「reduces the collection to those documents that match」。
 
 實用場景：先用 `db.Search()`（@Formula）收一批結構化條件符合的、再用 FTSearch 接力做文字過濾：
 

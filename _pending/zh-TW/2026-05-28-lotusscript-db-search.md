@@ -297,7 +297,7 @@ Call docs.FTSearch("urgent", 0)  ' 在這批 orders 裡再找含 urgent 的
 這個 chain 模式利用了：
 
 - `db.Search` 不需 FT index、可以對「沒索引的欄位」做精準條件過濾
-- `collection.FTSearch` in-place 縮減、第二層文字過濾不浪費 index lookup 跑全庫
+- `collection.FTSearch` 直接縮減原 collection、第二層文字過濾不浪費 index lookup 跑全庫
 
 **Domino 14 後**還多了 [DQL](/domino-news/zh-TW/posts/dql-getting-started) — 結構化查詢的第三條路、效能優於 Search、語法跟 SQL 接近。Domino 14 同時把 FTSearch 整合進 DQL — 用 [`@FTSearch()` term](https://help.hcl-software.com/dom_designer/14.5.0/basic/dql_fulltextsearch.html) 可以把文字檢索條件寫進 DQL query 裡。三選一何時用誰、續篇詳述。
 
