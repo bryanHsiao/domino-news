@@ -20,6 +20,14 @@ relatedJava: ["Database"]
 relatedSsjs: ["database"]
 ---
 
+You want to find every order in the database where `Type = "Order"` and `Total > 1000`. The predicate is structured — it has nothing to do with text content. Could you use [Part 1's FTSearch](/domino-news/en/posts/lotusscript-ftsearch)? Technically yes, but writing the condition as an FT query is awkward and still requires the admin to have built an FT index.
+
+LotusScript's second path is `NotesDatabase.Search` — write the predicate as an `@Formula`, Domino evaluates it once per document, returns the matches. No index dependency, no 5,000-document cap, and the syntax is the same one you already use in view selection formulas. The cost is an O(N) full scan — fine for small-to-medium databases, but worth re-evaluating once you're past hundreds of thousands of documents.
+
+This is Part 2 of the search trilogy — the actual semantics of the three parameters (especially the ones that look like FTSearch's but mean something entirely different), which @function categories don't work in this context, the snapshot-not-live-view gotcha that catches developers after `StampAll`, and a production-ready incremental scheduled agent pattern.
+
+---
+
 ## TL;DR
 
 - [**`db.Search(formula$, dateTime, maxDocs%)`**](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SEARCH_METHOD.html) is LotusScript's brute-force search — evaluates an @Formula predicate against every document. **No full-text index required.**

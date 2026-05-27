@@ -20,6 +20,14 @@ relatedJava: ["Database"]
 relatedSsjs: ["database"]
 ---
 
+你想找這個 DB 裡「所有 `Type = "Order"` 而且 `Total > 1000` 的訂單」。條件結構化、跟「文字搜尋」沒太大關係。能用 [Part 1 講的 FTSearch](/domino-news/zh-TW/posts/lotusscript-ftsearch) 嗎？技術上可以、但條件寫成 FT query 既不直觀、又得依賴 admin 端建好 FT index。
+
+LotusScript 給的第二條路是 `NotesDatabase.Search` — 直接寫 `@Formula` 條件、Domino 對每份文件 evaluate 一次、回傳符合的。沒索引依賴、沒 5000 上限、語法跟你寫 view selection formula 同一套。代價是 O(N) 全表掃描 — 對小 / 中型庫無妨、對百萬文件級的就要重新評估。
+
+這篇是搜尋三部曲第二篇、拆三個參數的真實語意（特別是跟 FTSearch 看起來像、其實完全不同的那幾個）、formula 裡哪些 @function 不能用、Stamp 改完文件 collection 不會 refresh 的陷阱、跟 production-ready 增量處理 agent 範例。
+
+---
+
 ## 重點摘要
 
 - [**`db.Search(formula$, dateTime, maxDocs%)`**](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SEARCH_METHOD.html) 是 LotusScript 用 @Formula 對每份文件跑判斷式的搜尋 — **不需要 full-text index**、走文件逐筆掃描

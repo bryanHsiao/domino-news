@@ -24,6 +24,14 @@ cover: "/covers/lotusscript-ftsearch.png"
 coverStyle: "oil-chiaroscuro"
 ---
 
+你手上的 NSF 裝了 50 萬份訂單、使用者在 portal 輸入「invoice」、希望把含這個字的文件列出來 — Domino 內建的解法是 **FTSearch**、文字全文索引的搜尋 method。
+
+翻文件會發現 `FTSearch` 同時掛在三個 class 上：`NotesDatabase`、`NotesView`、`NotesDocumentCollection`。同樣的 method 名、三個 class 回傳卻不一樣 — 一個給你 collection、一個給 Long 計數、一個甚麼都不回傳。為什麼會這樣設計？該選哪一個？
+
+這篇是 Domino 文件搜尋三部曲的第一篇、拆三層 API 的語意差異、query syntax operators、index 管理跟 `load updall -x` 的對應、跟一個會讓 code 在開發環境跑得好好的、production 上卻效能崩盤的陷阱。
+
+---
+
 ## 重點摘要
 
 - **FTSearch 是三個 class 都有的方法、但語意不一樣**：[`NotesDatabase.FTSearch`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_DB.html) 回傳新的 `NotesDocumentCollection`、[`NotesView.FTSearch`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_VIEW.html) **in-place 過濾 view 本身**回 Long、[`NotesDocumentCollection.FTSearch`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_COLLECTION.html) **in-place 縮減 collection** 無回傳

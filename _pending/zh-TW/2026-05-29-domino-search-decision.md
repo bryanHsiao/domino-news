@@ -21,6 +21,14 @@ relatedJava: []
 relatedSsjs: []
 ---
 
+Domino 14 之後、文件搜尋有三條技術路徑：[FTSearch](/domino-news/zh-TW/posts/lotusscript-ftsearch) 走文字索引、[db.Search](/domino-news/zh-TW/posts/lotusscript-db-search) 走 `@Formula` 暴力掃描、[DQL](/domino-news/zh-TW/posts/dql-getting-started) 走結構化 query 計畫。三條都能把符合條件的文件抓出來、但效能模型、index 成本、適合的資料規模差幾個數量級 — 選對的省下幾小時 batch / 幾百毫秒 request、選錯的就算把 formula 寫到最簡 也救不回來。
+
+哪一條適合手上的問題？「庫多大」「條件偏文字還是結構化」「查詢頻率」這三個問題的答案組合決定路徑。
+
+這篇是搜尋三部曲的 capstone — 多維度對比表、決策樹、Domino 14 把 FTSearch 整合進 DQL 的 `@FTSearch()` term、跟三個實戰場景（ad-hoc 查詢 / scheduled agent / 高頻 REST API）對應的建議路徑。
+
+---
+
 ## 重點摘要
 
 - **Domino 14 之後有三條搜尋路徑**：[FTSearch](/domino-news/zh-TW/posts/lotusscript-ftsearch)（FT index）、[db.Search](/domino-news/zh-TW/posts/lotusscript-db-search)（@Formula 全掃）、[DQL](/domino-news/zh-TW/posts/dql-getting-started)（catalog + NIF + bulk readers）

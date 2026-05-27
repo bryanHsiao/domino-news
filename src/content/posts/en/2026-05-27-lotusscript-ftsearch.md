@@ -24,6 +24,14 @@ cover: "/covers/lotusscript-ftsearch.png"
 coverStyle: "oil-chiaroscuro"
 ---
 
+You've got an NSF holding half a million orders, a user types "invoice" into your portal's search box, and you need to return the matching documents. Domino's built-in answer is **FTSearch**, the text-indexed search method.
+
+Read the docs and you'll find `FTSearch` lives on three classes: `NotesDatabase`, `NotesView`, and `NotesDocumentCollection`. Same method name, three different return types — one gives you a collection, one gives you a `Long` count, one returns nothing. Why design it that way? Which one do you actually call?
+
+This is Part 1 of a three-part Domino search series — the semantic differences between the tiers, the query syntax operators, index management and its `load updall -x` counterpart, and one trap that lets buggy-looking code pass dev tests then quietly degrade production performance.
+
+---
+
 ## TL;DR
 
 - **FTSearch lives on three classes and means three different things**: [`NotesDatabase.FTSearch`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_DB.html) returns a fresh `NotesDocumentCollection`; [`NotesView.FTSearch`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_VIEW.html) **filters the view object in place** and returns a `Long`; [`NotesDocumentCollection.FTSearch`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_COLLECTION.html) **reduces the collection in place** and returns nothing.

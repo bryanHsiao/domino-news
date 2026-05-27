@@ -21,6 +21,14 @@ relatedJava: []
 relatedSsjs: []
 ---
 
+Since Domino 14, there are three technical paths for document search: [FTSearch](/domino-news/en/posts/lotusscript-ftsearch) rides a text index, [db.Search](/domino-news/en/posts/lotusscript-db-search) brute-forces with `@Formula`, and [DQL](/domino-news/en/posts/dql-getting-started) builds a structured query plan. All three can return the documents that match your conditions — but their performance models, index costs, and dataset sweet spots differ by orders of magnitude. Picking the right one saves you hours on a batch or hundreds of milliseconds per request; picking wrong is unrecoverable, no amount of formula tuning fixes it.
+
+Which one fits your situation? The combination of three questions — how big is the database, is the condition text or structured, how frequently does the query run — determines the answer.
+
+This is the capstone of the search trilogy: a multi-dimensional comparison table, a decision tree, Domino 14's integration of `@FTSearch()` as a DQL term, and three practical scenarios (ad-hoc lookup, scheduled agent, high-frequency REST API) mapped to recommended paths.
+
+---
+
 ## TL;DR
 
 - **Since Domino 14, there are three search paths**: [FTSearch](/domino-news/en/posts/lotusscript-ftsearch) (FT index), [db.Search](/domino-news/en/posts/lotusscript-db-search) (@Formula full scan), and [DQL](/domino-news/en/posts/dql-getting-started) (design catalog + NIF + bulk readers query).
