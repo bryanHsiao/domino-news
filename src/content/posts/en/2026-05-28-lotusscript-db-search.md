@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_DB.html"
 relatedJava: ["Database"]
 relatedSsjs: ["database"]
+cover: "/covers/lotusscript-db-search.png"
+coverStyle: "watercolor"
 ---
 
 You want to find every order in the database where `Type = "Order"` and `Total > 1000`. The predicate is structured — it has nothing to do with text content. Could you use [Part 1's FTSearch](/domino-news/en/posts/lotusscript-ftsearch)? Technically yes, but writing the condition as an FT query is awkward and still requires the admin to have built an FT index.

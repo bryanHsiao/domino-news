@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_DB.html"
 relatedJava: ["Database"]
 relatedSsjs: ["database"]
+cover: "/covers/lotusscript-db-search.png"
+coverStyle: "watercolor"
 ---
 
 你想找這個 DB 裡「所有 `Type = "Order"` 而且 `Total > 1000` 的訂單」。條件結構化、跟「文字搜尋」沒太大關係。能用 [Part 1 講的 FTSearch](/domino-news/zh-TW/posts/lotusscript-ftsearch) 嗎？技術上可以、但條件寫成 FT query 既不直觀、又得依賴 admin 端建好 FT index。
