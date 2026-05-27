@@ -305,6 +305,12 @@ keep in mind:
   should feel (natural Chinese flow, identifiers in English, jargon
   Chinese-ified).
 
+  **Voice-anchor convention ≠ structural mandate.** The anchors open
+  with a `## 重點摘要` / `## TL;DR` bullet list. That's the right
+  opening *only* when the reader already knows what the class does and
+  wants fast-scan takeaways — not for every post. See "Opening section"
+  below before defaulting to TL;DR-first.
+
   **Escalation if human review keeps missing things**: build a
   `scripts/check-zh-prose.ts` linter (similar shape to
   `scripts/check-post-urls.ts`) that strips frontmatter / code /
@@ -317,6 +323,52 @@ keep in mind:
   renders the section heading as 「註」 in zh and "Footnotes" in en
   via the custom rehype plugin in `astro.config.mjs`. GGUF, LLM,
   embedding model, guard model are the canonical examples.
+
+### Opening section — TL;DR isn't a structural mandate
+
+Most LS-class deep-dives on the site open with `## 重點摘要` /
+`## TL;DR` because that's how the voice anchors are shaped. **It's a
+convention inherited from those anchors, not a structural requirement
+of the post template.** It's the right opening only when the reader
+already knows what the class is for and wants the new takeaways fast.
+For other reader profiles it lands wrong.
+
+Match the opening to the likely reader before defaulting:
+
+| Reader profile | Right opening |
+|---|---|
+| Already uses the class, wants fast-scan takeaways | **TL;DR first** (current default) |
+| Cold-arrival from search, doesn't know what the class does | **Scenario hook → framing question → roadmap**, then TL;DR |
+| Concept / mechanism comparison (not a single class) | **Narrative hook**, TL;DR optional |
+
+When the cold-arrival or concept-comparison profile fits, write a
+scenario hook of 2–3 paragraphs *before* the TL;DR section:
+
+1. **Concrete situation** the reader could be in (NSF with 500K
+   orders, a user types "invoice" into the portal, etc.) — make it
+   tangible, not abstract
+2. **The question** the article addresses (why does `FTSearch` live
+   on three classes? which one do you call?)
+3. **One-line roadmap** of what the article covers, ending with a
+   `---` separator that leads into TL;DR
+
+TL;DR stays as the second section, unchanged — fast-scan readers
+still get their 30-second takeaway, cold-arrival readers get framing
+first.
+
+**Quick rule of thumb**:
+
+- Title contains a class name (`NotesXxx`) the reader will recognise
+  → TL;DR-first is fine
+- Title is concept-level (`FTSearch / db.Search / DQL: ...`) or
+  assumes context many readers won't have → hook first
+
+**Real example**: the search trilogy (`lotusscript-ftsearch` /
+`lotusscript-db-search` / `domino-search-decision`, 5/27–5/29) shipped
+TL;DR-first by default, then added scenario hooks after the editorial
+review caught the cold-arrival mismatch. All three now lead with a
+3-paragraph hook; TL;DR follows as the second section. The hooks were
+authored at commit `598ec4d`.
 
 ### Inline-link diversity
 
