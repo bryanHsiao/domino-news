@@ -19,6 +19,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_COLLECTING_DOCUMENTS_BY_SEARCHING.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-search-decision.png"
+coverStyle: "pencil-sketch"
 ---
 
 Since Domino 14, there are three technical paths for document search: [FTSearch](/domino-news/en/posts/lotusscript-ftsearch) rides a text index, [db.Search](/domino-news/en/posts/lotusscript-db-search) brute-forces with `@Formula`, and [DQL](/domino-news/en/posts/dql-getting-started) builds a structured query plan. All three can return the documents that match your conditions — but their performance models, index costs, and dataset sweet spots differ by orders of magnitude. Picking the right one saves you hours on a batch or hundreds of milliseconds per request; picking wrong is unrecoverable, no amount of formula tuning fixes it.

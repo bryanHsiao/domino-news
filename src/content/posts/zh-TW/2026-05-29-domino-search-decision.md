@@ -19,6 +19,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_COLLECTING_DOCUMENTS_BY_SEARCHING.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-search-decision.png"
+coverStyle: "pencil-sketch"
 ---
 
 Domino 14 之後、文件搜尋有三條技術路徑：[FTSearch](/domino-news/zh-TW/posts/lotusscript-ftsearch) 走文字索引、[db.Search](/domino-news/zh-TW/posts/lotusscript-db-search) 走 `@Formula` 暴力掃描、[DQL](/domino-news/zh-TW/posts/dql-getting-started) 走結構化 query 計畫。三條都能把符合條件的文件抓出來、但效能模型、index 成本、適合的資料規模差幾個數量級 — 選對的省下幾小時 batch / 幾百毫秒 request、選錯的就算把 formula 寫到最簡 也救不回來。
