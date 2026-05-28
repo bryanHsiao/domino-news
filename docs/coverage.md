@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-05-27 · Posts scanned: 38 · Classes catalogued: 97*
+*Generated: 2026-05-28 · Posts scanned: 39 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -38,7 +38,7 @@
 |---|---|---|---|
 | [NotesACL](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESACL_CLASS.html) | Database | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) | 2026-05-15 |
 | [NotesACLEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESACLENTRY_CLASS.html) | Database | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) | 2026-05-15 |
-| [NotesDatabase](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATABASE_CLASS.html) | Database | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/), [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/) | 2026-04-29 |
+| [NotesDatabase](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATABASE_CLASS.html) | Database | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/), [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [domino-search-decision](https://bryanhsiao.github.io/domino-news/posts/domino-search-decision/) | 2026-04-29 |
 | [NotesDateRange](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATERANGE_CLASS.html) | Item | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) | 2026-05-25 |
 | [NotesDateTime](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATETIME_CLASS.html) | Item | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) | 2026-05-25 |
 | [NotesDocument](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html) | Document | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/), [notes-document](https://bryanhsiao.github.io/domino-news/posts/notes-document/) | 2026-04-30 |
@@ -202,6 +202,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [domino-search-decision](https://bryanhsiao.github.io/domino-news/posts/domino-search-decision/) | `NotesDatabase` | — | — |
 | [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/) | `NotesDatabase`, `NotesDocumentCollection` | `Database` | `database` |
 | [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) | `NotesDatabase`, `NotesDocumentCollection`, `NotesView` | `Database`, `View`, `DocumentCollection` | `database`, `view`, `documentCollection` |
 | [lotusscript-view-to-excel](https://bryanhsiao.github.io/domino-news/posts/lotusscript-view-to-excel/) | `NotesView`, `NotesStream`, `NotesViewNavigator` | — | — |
