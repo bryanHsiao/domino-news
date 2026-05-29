@@ -15,7 +15,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_OPEN_METHOD_STREAM.html"
   - title: "NotesStream.Truncate method — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_TRUNCATE_METHOD_STREAM.html"
-cover: "/covers/notes-stream.png"
+cover: "/covers/notes-stream.webp"
 coverStyle: "paper-craft"
 ---
 

@@ -17,7 +17,7 @@ sources:
     url: "https://github.com/HCL-TECH-SOFTWARE/domino-container/issues/55"
 relatedJava: []
 relatedSsjs: []
-cover: "/covers/domino-container-lp-recipe.png"
+cover: "/covers/domino-container-lp-recipe.webp"
 coverStyle: "low-poly-3d"
 ---
 

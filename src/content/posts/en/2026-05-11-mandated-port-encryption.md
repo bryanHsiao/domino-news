@@ -20,7 +20,7 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.1/admin/conf_port_encryption_t.html"
 relatedJava: []
 relatedSsjs: []
-cover: "/covers/mandated-port-encryption.png"
+cover: "/covers/mandated-port-encryption.webp"
 coverStyle: "photoreal-3d"
 ---
 

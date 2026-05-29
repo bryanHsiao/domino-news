@@ -17,7 +17,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETDOCUMENTBYKEY_METHOD.html"
 relatedJava: ["View"]
 relatedSsjs: ["View"]
-cover: "/covers/getalldocumentsbykey.png"
+cover: "/covers/getalldocumentsbykey.webp"
 coverStyle: "oil-chiaroscuro"
 ---
 

@@ -25,9 +25,10 @@
  * STYLE direction in the previous iteration.
  */
 
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import OpenAI from 'openai';
+import sharp from 'sharp';
 
 const IMAGE_MODEL = process.env.OPENAI_IMAGE_MODEL ?? 'gpt-image-1';
 const IMAGE_QUALITY = (process.env.OPENAI_IMAGE_QUALITY ?? 'medium') as
@@ -204,9 +205,13 @@ export async function generateCoverImage(
       return null;
     }
     await mkdir(coversDir, { recursive: true });
-    const filename = `${slug}.png`;
+    // gpt-image-1 returns PNG; convert to WebP (quality 85) before writing.
+    // PNG is poor for the smooth-gradient illustrative styles this prompt
+    // produces — WebP shrinks them ~90% (see scripts/convert-covers-to-webp.ts
+    // for the one-time migration of the original PNG batch).
+    const filename = `${slug}.webp`;
     const filepath = join(coversDir, filename);
-    await writeFile(filepath, Buffer.from(b64, 'base64'));
+    await sharp(Buffer.from(b64, 'base64')).webp({ quality: 85 }).toFile(filepath);
     console.log(`[cover]   saved -> ${filepath} (style=${styleId})`);
     return { coverPath: `/covers/${filename}`, styleId };
   } catch (err) {

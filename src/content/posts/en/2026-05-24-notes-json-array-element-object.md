@@ -20,7 +20,7 @@ sources:
     url: "https://www.eknori.de/2019-01-01/notesjsonnavigator-notesjsonelement-notesjsonarray-notesjsonobject-example/"
 relatedJava: []
 relatedSsjs: []
-cover: "/covers/notes-json-array-element-object.png"
+cover: "/covers/notes-json-array-element-object.webp"
 coverStyle: "paper-craft"
 ---
 

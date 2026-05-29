@@ -19,7 +19,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_REMOVE_METHOD_DOC.html"
 relatedJava: ["Document"]
 relatedSsjs: ["document"]
-cover: "/covers/notes-document.png"
+cover: "/covers/notes-document.webp"
 coverStyle: "paper-craft"
 ---
 

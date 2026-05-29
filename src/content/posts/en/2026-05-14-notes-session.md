@@ -19,7 +19,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_ONBEHALFOF_PROPERTY_AGENT.html"
 relatedJava: ["Session"]
 relatedSsjs: ["session"]
-cover: "/covers/notes-session.png"
+cover: "/covers/notes-session.webp"
 coverStyle: "low-poly-3d"
 ---
 

@@ -22,7 +22,7 @@ sources:
     url: "https://www.xpagedeveloper.com/2025/quick-llm-access-via-4-lines-of-code"
 relatedJava: ["LLMReq", "LLMRes"]
 relatedSsjs: []
-cover: "/covers/notes-llm-request.png"
+cover: "/covers/notes-llm-request.webp"
 coverStyle: "minimalist-mono"
 ---
 

@@ -15,7 +15,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/dql_syntax.html"
   - title: "Formula Language in DQL — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/dql_formulalanguage.html"
-cover: "/covers/dql-pitfalls.png"
+cover: "/covers/dql-pitfalls.webp"
 coverStyle: "collage"
 ---
 

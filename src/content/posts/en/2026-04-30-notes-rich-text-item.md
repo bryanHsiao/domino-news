@@ -17,7 +17,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATERICHTEXTITEM_METHOD.html"
   - title: "NotesEmbeddedObject (LotusScript) — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESEMBEDDEDOBJECT_CLASS.html"
-cover: "/covers/notes-rich-text-item.png"
+cover: "/covers/notes-rich-text-item.webp"
 coverStyle: "photoreal-3d"
 relatedJava: ["RichTextItem"]
 relatedSsjs: ["RichTextItem"]

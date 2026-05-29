@@ -20,7 +20,7 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/othr_refiningasearchqueryusingoperators_r.html"
 relatedJava: ["Database", "View", "DocumentCollection"]
 relatedSsjs: ["database", "view", "documentCollection"]
-cover: "/covers/lotusscript-ftsearch.png"
+cover: "/covers/lotusscript-ftsearch.webp"
 coverStyle: "oil-chiaroscuro"
 ---
 

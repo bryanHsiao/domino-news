@@ -15,7 +15,7 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/references/usingdominorestapi/index.html"
   - title: "Domino REST API walkthrough - HCL Domino REST API Documentation"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/tutorial/walkthrough/index.html"
-cover: "/covers/hcl-domino-rest-api-quickstart.png"
+cover: "/covers/hcl-domino-rest-api-quickstart.webp"
 coverStyle: "ukiyo-e"
 relatedJava: []
 relatedSsjs: []

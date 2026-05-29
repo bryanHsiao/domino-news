@@ -17,7 +17,7 @@ sources:
     url: "https://openntf.org/"
 relatedJava: []
 relatedSsjs: []
-cover: "/covers/openntf-lotusscript-class-map.png"
+cover: "/covers/openntf-lotusscript-class-map.webp"
 coverStyle: "paper-craft"
 ---
 

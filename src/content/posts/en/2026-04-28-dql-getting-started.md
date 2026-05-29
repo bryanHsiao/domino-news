@@ -18,7 +18,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/dql_simple_examples.html"
   - title: "DQL Explorer — OpenNTF community project"
     url: "https://www.openntf.org/main.nsf/project.xsp?r=project/DQL+Explorer"
-cover: "/covers/dql-getting-started.png"
+cover: "/covers/dql-getting-started.webp"
 coverStyle: "art-deco"
 relatedJava: ["DominoQuery"]
 relatedSsjs: ["DominoQuery"]

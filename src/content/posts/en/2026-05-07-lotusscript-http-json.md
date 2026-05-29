@@ -16,7 +16,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONNAVIGATOR_CLASS.html"
   - title: "NotesHTTPRequest.PreferJSONNavigator property — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_preferjsonnavigator_property_HTTPRequest.html"
-cover: "/covers/lotusscript-http-json.png"
+cover: "/covers/lotusscript-http-json.webp"
 coverStyle: "risograph"
 relatedJava: []
 relatedSsjs: []

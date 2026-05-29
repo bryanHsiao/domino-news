@@ -19,7 +19,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_NOTESACL.html"
 relatedJava: ["ACL", "ACLEntry"]
 relatedSsjs: ["ACL", "ACLEntry"]
-cover: "/covers/notes-acl-entry.png"
+cover: "/covers/notes-acl-entry.webp"
 coverStyle: "collage"
 ---
 

@@ -17,7 +17,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMINOQUERY_CLASS.html"
   - title: "DominoQuery class (Java) — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_DOMINOQUERY_CLASS_JAVA.html"
-cover: "/covers/dql-production.png"
+cover: "/covers/dql-production.webp"
 coverStyle: "low-poly-3d"
 ---
 

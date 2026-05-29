@@ -7,7 +7,7 @@ interface Props {
   lang: Lang;
   title?: string;
   description?: string;
-  /** Path under public/ (e.g. "/covers/foo.png"). Used for og:image / twitter:image. */
+  /** Path under public/ (e.g. "/covers/foo.webp"). Used for og:image / twitter:image. */
   cover?: string;
   /** "article" for post pages, "website" elsewhere. Defaults to "website". */
   ogType?: 'article' | 'website';
@@ -35,7 +35,7 @@ const baseNoSlash = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '');
 // Absolute URLs for SEO/social tags
 const siteOrigin = Astro.site ? Astro.site.origin : 'https://bryanhsiao.github.io';
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? siteOrigin).toString();
-const defaultOgImage = `${siteOrigin}${baseNoSlash}/covers/welcome.png`;
+const defaultOgImage = `${siteOrigin}${baseNoSlash}/covers/welcome.webp`;
 const ogImageUrl = cover
   ? `${siteOrigin}${baseNoSlash}${cover.startsWith('/') ? cover : `/${cover}`}`
   : defaultOgImage;

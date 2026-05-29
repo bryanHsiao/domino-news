@@ -26,7 +26,7 @@ sources:
     url: "https://blog.nashcom.de/nashcomblog.nsf/dx/hcl-domino-docker-container-moved-to-a-new-home.htm"
 relatedJava: []
 relatedSsjs: []
-cover: "/covers/build-your-own-domino-container.png"
+cover: "/covers/build-your-own-domino-container.webp"
 coverStyle: "low-poly-3d"
 ---
 

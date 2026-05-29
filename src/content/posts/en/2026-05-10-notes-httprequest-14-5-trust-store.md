@@ -17,7 +17,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTES_HTTPREQUEST_CLASS.html"
 relatedJava: []
 relatedSsjs: []
-cover: "/covers/notes-httprequest-14-5-trust-store.png"
+cover: "/covers/notes-httprequest-14-5-trust-store.webp"
 coverStyle: "low-poly-3d"
 ---
 

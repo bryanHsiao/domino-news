@@ -18,7 +18,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATEDATERANGE_METHOD.html"
 relatedJava: ["DateTime", "DateRange"]
 relatedSsjs: []
-cover: "/covers/notes-datetime.png"
+cover: "/covers/notes-datetime.webp"
 coverStyle: "art-deco"
 ---
 

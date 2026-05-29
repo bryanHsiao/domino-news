@@ -15,7 +15,7 @@ sources:
     url: "https://github.com/OpenNTF/ls-classmap"
   - title: "OpenNTF — open community for Notes/Domino"
     url: "https://openntf.org/"
-cover: "/covers/openntf-lotusscript-class-map.png"
+cover: "/covers/openntf-lotusscript-class-map.webp"
 coverStyle: "paper-craft"
 ---
 

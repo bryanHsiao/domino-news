@@ -15,7 +15,7 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/whatsnew/index.html"
   - title: "HCL Domino REST API Documentation (home)"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/"
-cover: "/covers/domino-rest-api-v1-1-7-release.png"
+cover: "/covers/domino-rest-api-v1-1-7-release.webp"
 coverStyle: "minimalist-mono"
 relatedJava: []
 relatedSsjs: []

@@ -16,7 +16,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATENOTECOLLECTION_METHOD_DATABASE.html"
   - title: "NotesDXLExporter (LotusScript) — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLEXPORTER_CLASS.html"
-cover: "/covers/notes-note-collection.png"
+cover: "/covers/notes-note-collection.webp"
 coverStyle: "oil-chiaroscuro"
 relatedJava: ["NoteCollection"]
 relatedSsjs: ["NoteCollection"]

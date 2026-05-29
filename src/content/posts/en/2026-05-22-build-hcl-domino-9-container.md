@@ -19,7 +19,7 @@ sources:
     url: "https://github.com/shillem/domino-docker"
 relatedJava: []
 relatedSsjs: []
-cover: "/covers/build-hcl-domino-9-container.png"
+cover: "/covers/build-hcl-domino-9-container.webp"
 coverStyle: "risograph"
 ---
 

@@ -3,9 +3,10 @@
  * them, when FORCE_REGEN=1).
  *
  * Per pair of zh-TW + en posts sharing a slug:
- *   - if neither has a cover that exists on disk, call gpt-image-1
- *     and save the image to public/covers/{slug}.png
- *   - update both .md files to add `cover: /covers/{slug}.png` and
+ *   - if neither has a cover that exists on disk, call gpt-image-1,
+ *     convert PNG → WebP (quality 85), and save to
+ *     public/covers/{slug}.webp
+ *   - update both .md files to add `cover: /covers/{slug}.webp` and
  *     `coverStyle: <id>` to the frontmatter
  *
  * The `coverStyle` frontmatter field powers sampling without
@@ -155,6 +156,10 @@ async function main() {
         existsSync(join(ROOT, 'public', enEntry.fm.cover.replace(/^\//, '')))) ||
       (zhEntry?.fm.cover &&
         existsSync(join(ROOT, 'public', zhEntry.fm.cover.replace(/^\//, '')))) ||
+      existsSync(join(COVERS_DIR, `${slug}.webp`)) ||
+      // Legacy: covers generated before the WebP migration were saved as .png.
+      // After scripts/convert-covers-to-webp.ts ran, the disk has only .webp,
+      // but keep this fallback for any historical edge case.
       existsSync(join(COVERS_DIR, `${slug}.png`));
 
     posts.push({

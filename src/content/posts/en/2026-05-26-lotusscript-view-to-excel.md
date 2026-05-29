@@ -20,7 +20,7 @@ sources:
     url: "https://datatracker.ietf.org/doc/html/rfc4180"
 relatedJava: []
 relatedSsjs: []
-cover: "/covers/lotusscript-view-to-excel.png"
+cover: "/covers/lotusscript-view-to-excel.webp"
 coverStyle: "bw-grain"
 ---
 
