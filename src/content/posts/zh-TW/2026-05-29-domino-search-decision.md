@@ -19,7 +19,7 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_COLLECTING_DOCUMENTS_BY_SEARCHING.html"
 relatedJava: []
 relatedSsjs: []
-cover: "/covers/domino-search-decision.png"
+cover: "/covers/domino-search-decision.webp"
 coverStyle: "pencil-sketch"
 ---
 
