@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-05-30 · Posts scanned: 40 · Classes catalogued: 97*
+*Generated: 2026-05-30 · Posts scanned: 41 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -203,6 +203,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [domino-14-key-changes](https://bryanhsiao.github.io/domino-news/posts/domino-14-key-changes/) | — | — | — |
 | [notesregistration-lotusscript](https://bryanhsiao.github.io/domino-news/posts/notesregistration-lotusscript/) | `NotesRegistration` | `Registration` | — |
 | [domino-search-decision](https://bryanhsiao.github.io/domino-news/posts/domino-search-decision/) | `NotesDatabase` | — | — |
 | [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/) | `NotesDatabase`, `NotesDocumentCollection` | `Database` | `database` |
