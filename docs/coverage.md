@@ -1,13 +1,13 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-05-28 · Posts scanned: 39 · Classes catalogued: 97*
+*Generated: 2026-05-30 · Posts scanned: 40 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
-**Overall: 33 / 97 classes covered (34.0%)**
+**Overall: 34 / 97 classes covered (35.1%)**
 
 ```
-██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░ 34.0%
+██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░ 35.1%
 ```
 
 ## Coverage by category
@@ -24,15 +24,15 @@
 | Database | 4 | 7 | 57% | 🟨 `███████░░░░░` |
 | View | 2 | 5 | 40% | 🟨 `█████░░░░░░░` |
 | DOM/XML | 7 | 25 | 28% | 🟧 `███░░░░░░░░░` |
+| Admin | 1 | 4 | 25% | 🟧 `███░░░░░░░░░` |
 | Rich Text | 1 | 9 | 11% | 🟧 `█░░░░░░░░░░░` |
 | Session | 1 | 10 | 10% | 🟧 `█░░░░░░░░░░░` |
 | UI | 0 | 8 | 0% | 🟥 `░░░░░░░░░░░░` |
-| Admin | 0 | 4 | 0% | 🟥 `░░░░░░░░░░░░` |
 | Calendar | 0 | 3 | 0% | 🟥 `░░░░░░░░░░░░` |
 | GPS | 0 | 3 | 0% | 🟥 `░░░░░░░░░░░░` |
 | Composite Apps | 0 | 2 | 0% | 🟥 `░░░░░░░░░░░░` |
 
-## ✓ Covered classes (33)
+## ✓ Covered classes (34)
 
 | Class | Category | Posts | First mention |
 |---|---|---|---|
@@ -60,6 +60,7 @@
 | [NotesOutline](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESOUTLINE_CLASS.html) | Document | [notes-outline](https://bryanhsiao.github.io/domino-news/posts/notes-outline/) | 2026-05-20 |
 | [NotesOutlineEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESOUTLINEENTRY_CLASS.html) | Document | [notes-outline](https://bryanhsiao.github.io/domino-news/posts/notes-outline/) | 2026-05-20 |
 | [NotesQueryResultsProcessor](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESQUERYRESULTSPROCESSOR_CLASS.html) | DQL | [notes-query-results-processor](https://bryanhsiao.github.io/domino-news/posts/notes-query-results-processor/) | 2026-04-28 |
+| [NotesRegistration](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESREGISTRATION_CLASS.html) | Admin | [notesregistration-lotusscript](https://bryanhsiao.github.io/domino-news/posts/notesregistration-lotusscript/) | 2026-05-30 |
 | [NotesRichTextItem](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTITEM_CLASS.html) | Rich Text | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/) | 2026-04-30 |
 | [NotesSAXAttributeList](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXATTRIBUTELIST_CLASS.html) | DOM/XML | [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/) | 2026-05-16 |
 | [NotesSAXParser](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXPARSER_CLASS.html) | DOM/XML | [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-16 |
@@ -70,13 +71,12 @@
 | [NotesXMLProcessor](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-06 |
 | [NotesXSLTransformer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | 2026-05-06 |
 
-## ⨯ Uncovered classes (64)
+## ⨯ Uncovered classes (63)
 
 | Class | Category | Description |
 |---|---|---|
 | [NotesAdministrationProcess](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESADMINISTRATIONPROCESS_CLASS.html) | Admin | Represents the administration process. |
 | [NotesIDVault](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESIDVAULT_CLASS.html) | Admin | The NotesIDVault class is a representation of the secure storage facility for UserIDs that |
-| [NotesRegistration](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESREGISTRATION_CLASS.html) | Admin | Represents the creation or administration of an ID file. |
 | [NotesUserID](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUSERID_CLASS.html) | Admin | The NotesUserID class represents the Notes ID file or a Notes ID when it resides within th |
 | [NotesCalendar](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDAR_CLASS.html) | Calendar | Represents a Domino® calendar. |
 | [NotesCalendarEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDARENTRY_CLASS.html) | Calendar | Represents a Domino® calendar entry. |
@@ -163,6 +163,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `Outline` | [notes-outline](https://bryanhsiao.github.io/domino-news/posts/notes-outline/) |
 | `OutlineEntry` | [notes-outline](https://bryanhsiao.github.io/domino-news/posts/notes-outline/) |
 | `QueryResultsProcessor` | [notes-query-results-processor](https://bryanhsiao.github.io/domino-news/posts/notes-query-results-processor/) |
+| `Registration` | [notesregistration-lotusscript](https://bryanhsiao.github.io/domino-news/posts/notesregistration-lotusscript/) |
 | `RichTextItem` | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/) |
 | `SAXParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/) |
 | `Session` | [notes-session](https://bryanhsiao.github.io/domino-news/posts/notes-session/) |
@@ -202,6 +203,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [notesregistration-lotusscript](https://bryanhsiao.github.io/domino-news/posts/notesregistration-lotusscript/) | `NotesRegistration` | `Registration` | — |
 | [domino-search-decision](https://bryanhsiao.github.io/domino-news/posts/domino-search-decision/) | `NotesDatabase` | — | — |
 | [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/) | `NotesDatabase`, `NotesDocumentCollection` | `Database` | `database` |
 | [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) | `NotesDatabase`, `NotesDocumentCollection`, `NotesView` | `Database`, `View`, `DocumentCollection` | `database`, `view`, `documentCollection` |
