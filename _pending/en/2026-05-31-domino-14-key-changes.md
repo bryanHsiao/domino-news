@@ -39,7 +39,7 @@ The reality: Domino 14.x's truly structural changes — the ones that affect exi
 - **14.5 removes 5 things**: [iNotes UI](https://help.hcl-software.com/domino/14.5.0/admin/wn_components_no_longer_included_in_release.html), SNMP MIB server start/stop/restart, Domino Configuration Tuner, Server Load Utility from the install panel, and the "Send upgrade notifications" action on `pubnames.ntf`.
 - **14.0 additions**: AdminCentral (`admincentral.nsf`), AutoUpdate, 64-bit-only Notes clients, Domino Restyle UI.
 - **14.5 additions**: [Domino IQ](/domino-news/en/posts/domino-iq) (server-embedded LLM inference engine), DQL integration of `@FTSearch`, external meeting invitation description limit lifted from 40 KB to 1 MB.
-- **14.5.1 additions**: [`Copy` method on NotesJSONArray / NotesJSONObject / NotesJSONElement](https://help.hcl-software.com/dom_designer/14.5.1/basic/whats_new_14.5.1.html), plus new NotesSession methods (LotusScript + Java) for acquiring tokens from the Domino OIDC Provider.
+- **14.5.1 additions**: [`Copy` method on NotesJSONArray / NotesJSONObject / NotesJSONElement](https://help.hcl-software.com/dom_designer/14.5.1/basic/whats_new_14.5.1.html), new NotesSession methods (LotusScript + Java) for acquiring tokens from the Domino OIDC Provider, and [the XPages file upload UI now supports multiple selections by default](https://help.hcl-software.com/domino/14.5.1/admin/wn_xpages_support_for_multiple_file_uploads.html).
 
 ---
 
@@ -123,6 +123,7 @@ Starting with 14.0, Notes client **is 64-bit only**. Environments still running 
 - **14.5**: XPages adds [`unsafe-inline` CSP support](https://help.hcl-software.com/dom_designer/14.5.0/basic/wn_generalupdates.html), opt-in on the server (inline scripts in XPages used to hit CSP policy walls; now there's a path)
 - **14.5.1**: [`NotesJSONArray` / `NotesJSONObject` / `NotesJSONElement` gain a `Copy` method](https://help.hcl-software.com/dom_designer/14.5.1/basic/whats_new_14.5.1.html) (copying JSON structures used to mean walking the tree; now there's a native API — see the [site article on the JSON trio](/domino-news/en/posts/notes-json-array-element-object))
 - **14.5.1**: new `NotesSession` method (LotusScript) and `Session` method (Java) for acquiring an access token from the Domino OIDC Provider
+- **14.5.1**: [the XPages file upload UI now supports multiple selections by default](https://help.hcl-software.com/domino/14.5.1/admin/wn_xpages_support_for_multiple_file_uploads.html) — verbatim: "The XPages file upload UI now supports multiple selections by default." Users can now select multiple files at once; the `fileUpload` control's default behaviour changed, no extra attribute needed
 
 ---
 
@@ -278,6 +279,7 @@ Organised into an admin / dev checklist you can run through:
 - [ ] Run a full XPages regression after upgrade, paying particular attention to Dojo-based components
 - [ ] In-house Eclipse plugins (if any): rebuild and test against Eclipse 4.30
 - [ ] Code using Java reflection: compatibility-test against Java 17 / 21
+- [ ] Post-14.5.1: revisit any in-house `fileUpload` customisation that assumed single-file selection — the default behaviour now allows multiple files
 
 ---
 
