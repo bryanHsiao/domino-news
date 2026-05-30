@@ -16,6 +16,8 @@ sources:
     url: "https://ds-infolib.hcltechsw.com/ldd/dominowiki.nsf/dx/Is_it_possible_to_write_an_agent_in_Lotus_Domino%C2%AE_to_automate_a_user_registration"
 relatedJava: ["Registration"]
 relatedSsjs: []
+cover: "/covers/notesregistration-lotusscript.webp"
+coverStyle: "collage"
 ---
 
 公司的人事系統收到新人報到單、留停通知、離職單 — 流程的尾端常常會回到 Domino 管理員手上：建一個 Notes 使用者、給一個郵件信箱、加進對應的群組、過陣子可能還要把同一個人改名 / 換部門 / 鎖帳號 / 移除。一筆一筆打開 Admin Client 點滑鼠、十筆還好、上百筆就崩潰。

@@ -16,6 +16,8 @@ sources:
     url: "https://ds-infolib.hcltechsw.com/ldd/dominowiki.nsf/dx/Is_it_possible_to_write_an_agent_in_Lotus_Domino%C2%AE_to_automate_a_user_registration"
 relatedJava: ["Registration"]
 relatedSsjs: []
+cover: "/covers/notesregistration-lotusscript.webp"
+coverStyle: "collage"
 ---
 
 Your HR system fires off a new-hire form, a leave-of-absence notice, or a resignation — and the tail of that workflow lands on the Domino admin's desk: create a Notes user, provision a mailbox, add to the right groups, then maybe later rename / move departments / lock the account / delete it. One at a time through Admin Client is fine for 10 employees; for 100, it's a time sink; for a 500-person acquisition, it's impossible.
