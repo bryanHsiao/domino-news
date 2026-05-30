@@ -26,6 +26,8 @@ sources:
     url: "https://openjdk.org/jeps/220"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-14-key-changes.webp"
+coverStyle: "photoreal-3d"
 ---
 
 Your org is planning to upgrade Domino from V11 or V12 to 14.5 — the admin pages through release notes, the developer reads the Designer 14 docs, and in the end neither is sure which of *their* existing pieces will actually break versus which are just nice-to-haves.
