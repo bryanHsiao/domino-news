@@ -20,6 +20,10 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/whats_new_14.5.1.html"
   - title: "Splitting the CKEditor/TinyMCE Difference in XPages on Domino 14.5 — frostillic.us"
     url: "https://frostillic.us/blog/posts/2026/2/4/splitting-the-ckeditor-tinymce-difference-in-xpages-on-domino-14-5"
+  - title: "Running servlets in Domino — HCL Domino Designer 14.5"
+    url: "https://help.hcl-software.com/dom_designer/14.5.0/basic/H_RUNNING_SERVLETS_IN_DOMINO.html"
+  - title: "JEP 220: Modular Run-Time Images — OpenJDK"
+    url: "https://openjdk.org/jeps/220"
 relatedJava: []
 relatedSsjs: []
 ---
@@ -34,7 +38,7 @@ The reality: Domino 14.x's truly structural changes — the ones that affect exi
 
 - **Java jumps twice**: [Domino 14.0](https://help.hcl-software.com/domino/14.0.0/admin/wn_140.html) lifts the main JVM from Java 8 to **Java 17 LTS** (Win / Linux / AIX); [Domino 14.5](https://help.hcl-software.com/domino/14.5.0/admin/wn_145_general_updates.html) lifts it again to **Java 21 LTS**. IBM i only catches up to Java 17 in 14.5.
 - **`notes.ini` can no longer live in the executable directory** — the 14.0 Windows installer dropped that support; the 14.5 installer actively moves it into `data directory` and updates the service registry to match.
-- **JAR placement changed** — extension jars that used to go in `jvm/lib/ext` must move to `ndext` starting in 14.5.
+- **JAR placement: `jvm/lib/ext` stops working in 14.x** — V12 (Java 8) auto-scanned that location into classpath; that's a real and load-bearing deployment pattern many shops relied on. Starting with 14.0 the main JVM is [Java 17, which removed the ext mechanism entirely](https://openjdk.org/jeps/220) (deprecated in Java 9, dropped in Java 11). Jars in `jvm/lib/ext` are no longer picked up; `ndext` is the practical fallback.
 - **The XPages editor was replaced wholesale** — 14.5 ships TinyMCE 6.7 instead of CKEditor 4, with **no opt-out** (CKEditor no longer ships with Domino).
 - **14.5 removes 5 things**: [iNotes UI](https://help.hcl-software.com/domino/14.5.0/admin/wn_components_no_longer_included_in_release.html), SNMP MIB server start/stop/restart, Domino Configuration Tuner, Server Load Utility from the install panel, and the "Send upgrade notifications" action on `pubnames.ntf`.
 - **14.0 additions**: AdminCentral (`admincentral.nsf`), AutoUpdate, 64-bit-only Notes clients, Domino Restyle UI.
@@ -102,16 +106,23 @@ Starting with 14.0, Java applications need to **explicitly add [`glassfish-corba
 
 In 14.5, Notes Standard, Domino Administrator, Domino Designer, and XPages all move from [Eclipse 4.22 to 4.30](https://help.hcl-software.com/domino/14.5.0/admin/wn_145_general_updates.html). Biggest impact is on anyone shipping Eclipse plugins — Eclipse APIs aren't always backward-compatible across minor versions, so in-house plugins need recompilation and testing.
 
-### JAR placement — `jvm/lib/ext` → `ndext`
+### JAR placement — fallout from Java 17 removing the ext mechanism
 
-Pre-V14, `jvm/lib/ext` was the standard place for extension jars (Domino auto-scanned them into classpath on startup). **Starting with 14.5, that location is no longer scanned** — jars must move to the `ndext` folder.
+In the V11 / V12 era (Java 8), the [ext class loader mechanism](https://openjdk.org/jeps/220) was still in play — jars dropped into `<domino>/jvm/lib/ext/` got auto-scanned into classpath. That was a real, load-bearing deployment pattern; many shops kept in-house and third-party extensions there.
+
+**Starting with 14.0, the main JVM is Java 17** — Java 9 deprecated the ext mechanism, Java 11 removed it outright. On 14.x running Java 17, `jvm/lib/ext` is no longer scanned at all and jars sitting there silently stop loading. This is one of the highest-impact V12 → 14 upgrade traps — the class-load failures show up in places that don't obviously point at the JVM change, costing hours of misdirected debugging.
+
+Where to move things? Two paths worth keeping separate:
+
+- **`JSDK.JAR` (the Java Servlet Development Kit jar, for servlet compilation)**: the [official documentation](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_RUNNING_SERVLETS_IN_DOMINO.html) points at `<domino>/ndext/`. This isn't a 14.5 change — the [same page in Domino 12.0](https://help.hcl-software.com/dom_designer/12.0.0/basic/H_RUNNING_SERVLETS_IN_DOMINO.html) had the same text.
+- **In-house / third-party extension jars**: HCL hasn't issued a blanket "every extension jar now belongs in `ndext`" announcement, but the practical fallback is `ndext` (the same directory as `JSDK.JAR`). Cleaner alternatives include packaging as an OSGi plugin or declaring the classpath explicitly in server config.
 
 ```
-Old: <domino>/jvm/lib/ext/yourlib.jar
-New: <domino>/ndext/yourlib.jar
+V12 path:   <domino>/jvm/lib/ext/yourlib.jar   (auto-scanned by Java 8 ext mechanism)
+14.x path:  <domino>/ndext/yourlib.jar          (or OSGi / explicit classpath)
 ```
 
-This is downstream of Java 17/21 removing the old ext mechanism. During upgrade, audit every in-house jar and third-party extension still in `jvm/lib/ext` and migrate them.
+Upgrade action: enumerate every jar currently deployed to `jvm/lib/ext`, migrate it to `ndext` or change its load mechanism. Anything left in `jvm/lib/ext` will fail to load on 14.x.
 
 ### 64-bit Notes clients only
 
@@ -271,7 +282,7 @@ Organised into an admin / dev checklist you can run through:
 
 ### Developer
 
-- [ ] Move every jar in `jvm/lib/ext` to `ndext`
+- [ ] Migrate every in-house / third-party jar deployed to `jvm/lib/ext` on V12 to `ndext` (or OSGi / explicit classpath) — Java 17 removed the ext mechanism so 14.x no longer scans that location. `JSDK.JAR` was already in `ndext` as of the 12.0 docs, but plain extension jars still loaded from `jvm/lib/ext` on V12 (Java 8) and must move for 14.x
 - [ ] Add `glassfish-corba-omgapi.jar` to the Java application classpath
 - [ ] In 32-bit Notes client environments: confirm 64-bit migration is feasible
 - [ ] XPages apps: grep for CKEditor usage; check `toolbar` / `toolbarType` attributes that might break
