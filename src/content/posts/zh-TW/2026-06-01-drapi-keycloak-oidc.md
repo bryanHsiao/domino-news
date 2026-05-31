@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/domino/12.0.2/admin/secu_config_oidc_based_sso_for_web.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/drapi-keycloak-oidc.webp"
+coverStyle: "low-poly-3d"
 ---
 
 想把 DRAPI（Domino REST API）接到現代 IdP — Keycloak、Azure AD、Okta — 跳開傳統 LTPA cookie 跟 domcfg 表單登入、走 OIDC 認證。直覺上會以為要等 Domino 14 才有支援、官方文件也以 14 起為主。

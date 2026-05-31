@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/domino/12.0.2/admin/secu_config_oidc_based_sso_for_web.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/drapi-keycloak-oidc.webp"
+coverStyle: "low-poly-3d"
 ---
 
 You want to plug DRAPI (Domino REST API) into a modern IdP — Keycloak, Azure AD, Okta — to bypass the legacy LTPA cookie and `domcfg.nsf` form-login. The instinct is to assume this requires Domino 14, since most of the public OIDC documentation centres on 14-era features.
