@@ -19,7 +19,15 @@ const { lang, title, description, cover, ogType = 'website', jsonLd } = Astro.pr
 const t = useTranslations(lang);
 const siteTitle = t('site.title');
 const pageTitle = title ? `${title} · ${siteTitle}` : `${siteTitle} — ${t('site.tagline')}`;
-const pageDesc = description ?? t('site.description');
+const fullDesc = description ?? t('site.description');
+// Google SERP shows ~155 chars of meta description; longer descriptions are
+// truncated mid-sentence. Twitter cards similarly cap around 200 chars,
+// LinkedIn around 150. The article frontmatter often runs 300-500 chars
+// (it's a rich summary, useful for JSON-LD structured data which has no
+// limit). For HTML meta tags + og: + twitter: cards we truncate to 155
+// chars so SERPs / share previews display the full string.
+const pageDesc =
+  fullDesc.length <= 155 ? fullDesc : fullDesc.slice(0, 155).trimEnd() + '…';
 
 // Build the "switch language" target by replacing the lang segment.
 const otherLang: Lang = lang === 'zh-TW' ? 'en' : 'zh-TW';
