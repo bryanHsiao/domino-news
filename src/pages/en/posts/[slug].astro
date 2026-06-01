@@ -38,6 +38,18 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? siteOrigin).toString
 const absCover = post.data.cover
   ? `${siteOrigin}${base}${post.data.cover.startsWith('/') ? post.data.cover : `/${post.data.cover}`}`
   : undefined;
+
+// Extract identifier-shaped tokens from the markdown body (backticks-wrapped
+// camelCase or @-prefixed names like `NotesDateTime`, `@FTSearch`, `cert.id`).
+// These are stronger SEO signals than just the frontmatter tags — readers
+// searching for "NotesDateTime" should be able to find a post that doesn't
+// have NotesDateTime as a tag but mentions it 30 times in code blocks.
+const inlineIdentifiers = Array.from(
+  new Set([...(post.body ?? '').matchAll(/`(@?[A-Za-z][\w.-]+)`/g)].map((m) => m[1]))
+)
+  .filter((s) => /[A-Z@]/.test(s)) // keep PascalCase / @function / mixed-case identifiers
+  .slice(0, 12);
+const keywordsList = [...post.data.tags, ...inlineIdentifiers];
 // JSON-LD as @graph so we can emit BlogPosting + BreadcrumbList
 // in a single <script> tag. BlogPosting carries article metadata
 // (author, dates, image, publisher.logo for rich result); BreadcrumbList
@@ -60,7 +72,7 @@ const jsonLd = {
       mainEntityOfPage: canonical,
       url: canonical,
       ...(absCover ? { image: absCover.replace(/\.webp$/, '.png') } : {}),
-      keywords: post.data.tags.join(', '),
+      keywords: keywordsList.join(', '),
       publisher: {
         '@type': 'Organization',
         name: 'Domino News',
@@ -94,7 +106,9 @@ const jsonLd = {
   <article class="post" data-pagefind-body data-pagefind-meta={`image:${cover ?? ''}`}>
     {post.data.slug !== 'welcome' && (
       cover ? (
-        <div class="post-cover" style={`background-image: url('${cover}')`} />
+        <div class="post-cover">
+          <img src={cover} alt={post.data.title} loading="eager" decoding="async" />
+        </div>
       ) : (
         <div class="post-cover fallback" style={`--g-from:${grad.from};--g-to:${grad.to}`}>
           {post.data.tags[0] && <span class="cover-icon">{post.data.tags[0]}</span>}
