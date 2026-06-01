@@ -9,9 +9,9 @@ export type Lang = keyof typeof languages;
 
 export const ui = {
   'zh-TW': {
-    'site.title': 'HCL Domino Daily',
-    'site.tagline': 'HCL Domino 日報 — 每日新知與技術深度',
-    'site.description': 'HCL Domino 中英雙語日報，每日整理生態系最新動態與技術深度文章。',
+    'site.title': 'HCL Domino 日報',
+    'site.tagline': '每日技術精選',
+    'site.description': 'HCL Domino 中英雙語日報，每日精選生態系最新動態與技術深度文章。',
     'nav.home': '首頁',
     'nav.posts': '所有文章',
     'nav.tags': '標籤',
@@ -43,7 +43,7 @@ export const ui = {
   },
   en: {
     'site.title': 'HCL Domino Daily',
-    'site.tagline': 'Daily HCL Domino Insights & Technical Deep-Dives',
+    'site.tagline': 'Daily Technical Picks',
     'site.description': 'A bilingual daily HCL Domino publication — fresh ecosystem news and technical deep-dives, every day.',
     'nav.home': 'Home',
     'nav.posts': 'All Posts',

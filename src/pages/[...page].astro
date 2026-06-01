@@ -37,7 +37,7 @@ const homeJsonLd = isFirstPage
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: 'HCL Domino Daily',
-      alternateName: 'HCL Domino Daily（HCL Domino 日報）',
+      alternateName: 'HCL Domino Daily',
       url: siteRoot,
       description: t('site.description'),
       inLanguage: 'zh-TW',
@@ -69,7 +69,7 @@ const homeJsonLd = isFirstPage
         <div class="hero" aria-hidden="true">
           <img src={`${base}/covers/welcome.webp`} alt="" loading="eager" />
         </div>
-        <h1>{t('site.tagline')}</h1>
+        <h1>{t('site.title')} — {t('site.tagline')}</h1>
         <p class="lead">{t('site.description')}</p>
         <h2>{t('home.latest')}</h2>
       </>
