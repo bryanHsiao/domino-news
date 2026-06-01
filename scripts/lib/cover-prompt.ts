@@ -205,15 +205,24 @@ export async function generateCoverImage(
       return null;
     }
     await mkdir(coversDir, { recursive: true });
-    // gpt-image-1 returns PNG; convert to WebP (quality 85) before writing.
-    // PNG is poor for the smooth-gradient illustrative styles this prompt
-    // produces — WebP shrinks them ~90% (see scripts/convert-covers-to-webp.ts
-    // for the one-time migration of the original PNG batch).
-    const filename = `${slug}.webp`;
-    const filepath = join(coversDir, filename);
-    await sharp(Buffer.from(b64, 'base64')).webp({ quality: 85 }).toFile(filepath);
-    console.log(`[cover]   saved -> ${filepath} (style=${styleId})`);
-    return { coverPath: `/covers/${filename}`, styleId };
+    // gpt-image-1 returns PNG. We emit two artifacts from the same buffer:
+    //   - {slug}.webp (quality 85) — used for actual page rendering; ~10% the
+    //     size of an unconverted PNG on the smooth-gradient illustrative
+    //     styles this prompt produces.
+    //   - {slug}.png  — fallback for og:image / twitter:image, since some
+    //     social-share preview generators (LinkedIn in particular) don't
+    //     handle WebP reliably. Larger than the WebP but only consumed by
+    //     share-preview crawlers, not page traffic.
+    // See scripts/convert-covers-to-webp.ts and
+    // scripts/generate-png-cover-fallback.ts for the one-time backfills
+    // that established this two-artifact pattern.
+    const buffer = Buffer.from(b64, 'base64');
+    const webpName = `${slug}.webp`;
+    const pngName = `${slug}.png`;
+    await sharp(buffer).webp({ quality: 85 }).toFile(join(coversDir, webpName));
+    await sharp(buffer).png({ compressionLevel: 9 }).toFile(join(coversDir, pngName));
+    console.log(`[cover]   saved -> ${webpName} + ${pngName} (style=${styleId})`);
+    return { coverPath: `/covers/${webpName}`, styleId };
   } catch (err) {
     console.warn(`[cover] Generation FAILED for ${slug}:`, err);
     return null;

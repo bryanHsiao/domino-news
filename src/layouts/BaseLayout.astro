@@ -35,9 +35,16 @@ const baseNoSlash = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '');
 // Absolute URLs for SEO/social tags
 const siteOrigin = Astro.site ? Astro.site.origin : 'https://bryanhsiao.github.io';
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? siteOrigin).toString();
-const defaultOgImage = `${siteOrigin}${baseNoSlash}/covers/welcome.webp`;
-const ogImageUrl = cover
-  ? `${siteOrigin}${baseNoSlash}${cover.startsWith('/') ? cover : `/${cover}`}`
+// og:image / twitter:image use the .png fallback (not .webp) because some
+// social-share preview generators — LinkedIn in particular — don't render
+// WebP reliably. Page-internal use of the cover (post hero / card grid)
+// stays on .webp via the original `cover` prop. PNG fallbacks are produced
+// alongside every WebP by scripts/lib/cover-prompt.ts and the one-time
+// scripts/generate-png-cover-fallback.ts.
+const defaultOgImage = `${siteOrigin}${baseNoSlash}/covers/welcome.png`;
+const coverPngPath = cover ? cover.replace(/\.webp$/, '.png') : null;
+const ogImageUrl = coverPngPath
+  ? `${siteOrigin}${baseNoSlash}${coverPngPath.startsWith('/') ? coverPngPath : `/${coverPngPath}`}`
   : defaultOgImage;
 const otherLangPath = stripped || '/';
 const otherLangUrl = new URL(localizedPath(otherLang, otherLangPath), Astro.site ?? siteOrigin).toString();
