@@ -39,6 +39,36 @@ export async function getPostsByLang(lang: Lang): Promise<Post[]> {
   return all.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 }
 
+/**
+ * Pick related posts for a given post by tag overlap, then pubDate.
+ *
+ * Scoring: count of shared tags with the current post; ties broken
+ * by most-recent pubDate. The current post itself is excluded.
+ *
+ * SEO benefit: internal linking density + dwell time + helps Google
+ * cluster topically related content. Returns [] if no overlap candidates
+ * exist (caller should hide the section).
+ */
+export async function getRelatedPosts(current: Post, lang: Lang, limit = 4): Promise<Post[]> {
+  const all = await getPostsByLang(lang);
+  const currentTags = new Set(current.data.tags);
+  if (currentTags.size === 0) return [];
+
+  const scored = all
+    .filter((p) => p.data.slug !== current.data.slug)
+    .map((p) => {
+      const shared = p.data.tags.filter((t) => currentTags.has(t)).length;
+      return { post: p, shared };
+    })
+    .filter((x) => x.shared > 0)
+    .sort((a, b) => {
+      if (b.shared !== a.shared) return b.shared - a.shared;
+      return b.post.data.pubDate.getTime() - a.post.data.pubDate.getTime();
+    });
+
+  return scored.slice(0, limit).map((x) => x.post);
+}
+
 export async function getAllTags(lang: Lang): Promise<{ tag: string; count: number }[]> {
   const posts = await getPostsByLang(lang);
   const counts = new Map<string, number>();

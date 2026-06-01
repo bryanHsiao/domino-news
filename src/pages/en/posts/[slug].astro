@@ -1,7 +1,7 @@
 ---
 import { render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { getPostsByLang, postReadingStats } from '../../../lib/posts';
+import { getPostsByLang, postReadingStats, getRelatedPosts } from '../../../lib/posts';
 import { tagPalette, slugGradient } from '../../../lib/tags';
 import { useTranslations, localizedPath } from '../../../i18n/ui';
 
@@ -50,6 +50,8 @@ const inlineIdentifiers = Array.from(
   .filter((s) => /[A-Z@]/.test(s)) // keep PascalCase / @function / mixed-case identifiers
   .slice(0, 12);
 const keywordsList = [...post.data.tags, ...inlineIdentifiers];
+
+const related = await getRelatedPosts(post, lang, 4);
 // JSON-LD as @graph so we can emit BlogPosting + BreadcrumbList
 // in a single <script> tag. BlogPosting carries article metadata
 // (author, dates, image, publisher.logo for rich result); BreadcrumbList
@@ -167,6 +169,22 @@ const jsonLd = {
               <li>
                 <a href={s.url} target="_blank" rel="noopener noreferrer">
                   {s.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {related.length > 0 && (
+        <section class="related-posts">
+          <h2>Related posts</h2>
+          <ul class="related-list">
+            {related.map((p) => (
+              <li>
+                <a href={localizedPath(lang, `/posts/${p.data.slug}`)}>
+                  <strong>{p.data.title}</strong>
+                  <span class="related-desc">{p.data.description.slice(0, 100)}…</span>
                 </a>
               </li>
             ))}
