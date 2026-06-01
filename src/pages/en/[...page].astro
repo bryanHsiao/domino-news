@@ -26,9 +26,44 @@ const t = useTranslations(lang);
 const { page } = Astro.props;
 const isFirstPage = page.currentPage === 1;
 const base = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '');
+const siteOrigin = Astro.site?.origin ?? 'https://bryanhsiao.github.io';
+const siteRoot = `${siteOrigin}${base}/`;
+const enRoot = `${siteOrigin}${base}/en/`;
+
+// Home-only JSON-LD: WebSite with SearchAction so Google can show a
+// sitelinks search box for the site. URL template uses /en/search/?q=…;
+// search.astro reads the q parameter and pre-fills the Pagefind input.
+const homeJsonLd = isFirstPage
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'Domino News',
+      alternateName: 'Domino News (English)',
+      url: enRoot,
+      description: t('site.description'),
+      inLanguage: 'en',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: `${enRoot}search/?q={search_term_string}`,
+        },
+        'query-input': 'required name=search_term_string',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Domino News',
+        url: siteRoot,
+        logo: {
+          '@type': 'ImageObject',
+          url: `${siteRoot}logo.png`,
+        },
+      },
+    }
+  : undefined;
 ---
 
-<BaseLayout lang={lang}>
+<BaseLayout lang={lang} jsonLd={homeJsonLd}>
   {
     isFirstPage && (
       <>
