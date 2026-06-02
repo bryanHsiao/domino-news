@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-06-02 · Posts scanned: 42 · Classes catalogued: 97*
+*Generated: 2026-06-02 · Posts scanned: 43 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -42,7 +42,7 @@
 | [NotesDateRange](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATERANGE_CLASS.html) | Item | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) | 2026-05-25 |
 | [NotesDateTime](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATETIME_CLASS.html) | Item | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) | 2026-05-25 |
 | [NotesDocument](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html) | Document | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/), [notes-document](https://bryanhsiao.github.io/domino-news/posts/notes-document/) | 2026-04-30 |
-| [NotesDocumentCollection](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENTCOLLECTION_CLASS.html) | Document | [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/), [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/) | 2026-05-27 |
+| [NotesDocumentCollection](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENTCOLLECTION_CLASS.html) | Document | [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/), [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [notes-document-collection](https://bryanhsiao.github.io/domino-news/posts/notes-document-collection/) | 2026-05-27 |
 | [NotesDominoQuery](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMINOQUERY_CLASS.html) | DQL | [dql-production](https://bryanhsiao.github.io/domino-news/posts/dql-production/) | 2026-05-03 |
 | [NotesDOMNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMNODE_CLASS.html) | DOM/XML | [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/) | 2026-05-17 |
 | [NotesDOMParser](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMPARSER_CLASS.html) | DOM/XML | [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-17 |
@@ -154,7 +154,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `DateRange` | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) |
 | `DateTime` | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) |
 | `Document` | [notes-document](https://bryanhsiao.github.io/domino-news/posts/notes-document/) |
-| `DocumentCollection` | [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
+| `DocumentCollection` | [notes-document-collection](https://bryanhsiao.github.io/domino-news/posts/notes-document-collection/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
 | `DominoQuery` | [dql-production](https://bryanhsiao.github.io/domino-news/posts/dql-production/), [dql-pitfalls](https://bryanhsiao.github.io/domino-news/posts/dql-pitfalls/), [dql-getting-started](https://bryanhsiao.github.io/domino-news/posts/dql-getting-started/) |
 | `DxlExporter` | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) |
 | `LLMReq` | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) |
@@ -195,7 +195,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `XSLTransformer` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) |
 | `database` | [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
 | `document` | [notes-document](https://bryanhsiao.github.io/domino-news/posts/notes-document/) |
-| `documentCollection` | [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
+| `documentCollection` | [notes-document-collection](https://bryanhsiao.github.io/domino-news/posts/notes-document-collection/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
 | `session` | [notes-session](https://bryanhsiao.github.io/domino-news/posts/notes-session/) |
 | `view` | [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
 
@@ -203,12 +203,13 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [notes-document-collection](https://bryanhsiao.github.io/domino-news/posts/notes-document-collection/) | `NotesDocumentCollection` | `DocumentCollection` | `documentCollection` |
 | [drapi-keycloak-oidc](https://bryanhsiao.github.io/domino-news/posts/drapi-keycloak-oidc/) | — | — | — |
 | [domino-14-key-changes](https://bryanhsiao.github.io/domino-news/posts/domino-14-key-changes/) | — | — | — |
 | [notesregistration-lotusscript](https://bryanhsiao.github.io/domino-news/posts/notesregistration-lotusscript/) | `NotesRegistration` | `Registration` | — |
 | [domino-search-decision](https://bryanhsiao.github.io/domino-news/posts/domino-search-decision/) | `NotesDatabase` | — | — |
-| [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/) | `NotesDatabase`, `NotesDocumentCollection` | `Database` | `database` |
-| [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) | `NotesDatabase`, `NotesDocumentCollection`, `NotesView` | `Database`, `View`, `DocumentCollection` | `database`, `view`, `documentCollection` |
+| [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/) | `NotesDocumentCollection`, `NotesDatabase` | `Database` | `database` |
+| [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) | `NotesDocumentCollection`, `NotesDatabase`, `NotesView` | `Database`, `View`, `DocumentCollection` | `database`, `view`, `documentCollection` |
 | [lotusscript-view-to-excel](https://bryanhsiao.github.io/domino-news/posts/lotusscript-view-to-excel/) | `NotesView`, `NotesStream`, `NotesViewNavigator` | — | — |
 | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) | `NotesDateTime`, `NotesDateRange`, `NotesSession` | `DateTime`, `DateRange` | — |
 | [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | `NotesJSONElement`, `NotesJSONObject`, `NotesJSONArray`, `NotesJSONNavigator` | — | — |
