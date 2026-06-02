@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_COLLECTION.html"
 relatedJava: ["DocumentCollection"]
 relatedSsjs: ["documentCollection"]
+cover: "/covers/notes-document-collection.webp"
+coverStyle: "pencil-sketch"
 ---
 
 Almost every Domino scheduled agent ends with the same shape: `Set docs = db.FTSearch(...)` or `Set docs = db.Search(...)`, then a `Do Until doc Is Nothing` loop, save, done.
