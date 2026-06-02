@@ -38,8 +38,8 @@ export const ui = {
     'search.title': '搜尋',
     'search.heading': '搜尋文章',
     'search.hint': '輸入關鍵字搜尋所有已發布的文章。支援中英文、模糊匹配、code block 內容。',
-    'lang.current': '繁中',
-    'lang.switch': 'EN',
+    'lang.current': '文',
+    'lang.switch': 'A',
     'footer.poweredBy': '由 Astro 與 GitHub Actions 驅動',
   },
   en: {
@@ -72,8 +72,8 @@ export const ui = {
     'search.title': 'Search',
     'search.heading': 'Search posts',
     'search.hint': 'Search across all published posts. Supports English + Chinese, fuzzy matching, and code-block content.',
-    'lang.current': 'EN',
-    'lang.switch': '繁中',
+    'lang.current': 'A',
+    'lang.switch': '文',
     'footer.poweredBy': 'Powered by Astro and GitHub Actions',
   },
 } as const;

@@ -149,21 +149,29 @@ header.site-header nav a:hover {
   color: var(--color-accent);
 }
 
-/* Language toggle — MkDocs-style segmented control */
+/* Language toggle — translate-icon style segmented control
+   Shows 文 (Chinese) and A (English) like translation app icons */
 .lang-toggle {
   display: inline-flex;
   align-items: center;
   border: 1px solid var(--color-border);
-  border-radius: 999px;
+  border-radius: 10px;
   overflow: hidden;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
   flex-shrink: 0;
+  gap: 2px;
+  padding: 2px;
+  background: var(--color-card, #f8f8f8);
 }
 
 .lang-toggle .lang-option {
-  padding: 0.22rem 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
   line-height: 1;
   text-decoration: none;
   color: var(--color-muted);
@@ -175,13 +183,13 @@ header.site-header nav a:hover {
 .lang-toggle .lang-option.is-active {
   background: var(--color-brand-dark);
   color: var(--color-brand-gold);
-  border-radius: 999px;
   cursor: default;
   pointer-events: none;
 }
 
 .lang-toggle .lang-option:not(.is-active):hover {
   color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
 }
 
 /* ---------- footer ---------- */
