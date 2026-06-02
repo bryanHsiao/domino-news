@@ -26,8 +26,6 @@ sources:
     url: "https://openjdk.org/jeps/220"
 relatedJava: []
 relatedSsjs: []
-cover: "/covers/domino-14-key-changes.webp"
-coverStyle: "photoreal-3d"
 ---
 
 公司預計把 Domino 從 V11 或 V12 升到 14.5 — 管理員拿到版本變動說明一頁一頁翻、開發者看 Designer 14 文件、最後還是不確定「**我們現有的東西哪些會壞掉、哪些只是順帶有的新功能**」。
