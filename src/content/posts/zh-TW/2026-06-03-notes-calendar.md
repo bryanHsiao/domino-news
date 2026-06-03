@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDARNOTICE_CLASS.html"
 relatedJava: ["Session"]
 relatedSsjs: []
+cover: "/covers/notes-calendar.webp"
+coverStyle: "ukiyo-e"
 ---
 
 公司的 Domino 行事曆系統要做自動化 — 每週五自動建下週一到週五的定期會議、或者把外部系統（人事、專案管理）產生的行程同步進 mail.nsf。看了文件才發現：行事曆資料不是存在一般 `NotesDocument` 裡、而是用 **iCalendar 格式（RFC 5545）** 結構化儲存、必須透過三個專用 class 操作。

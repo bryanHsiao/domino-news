@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDARNOTICE_CLASS.html"
 relatedJava: ["Session"]
 relatedSsjs: []
+cover: "/covers/notes-calendar.webp"
+coverStyle: "ukiyo-e"
 ---
 
 You want to automate Domino calendar entries — auto-create weekly stand-up meetings, sync external scheduling systems (HR, project management) into mail.nsf, or build an agent that auto-accepts certain types of invitations. Then you read the docs and discover: calendar data isn't stored in ordinary documents. It lives in mail.nsf in **iCalendar format (RFC 5545)**, accessible only through three specialised classes.
