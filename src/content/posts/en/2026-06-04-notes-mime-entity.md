@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETMIMEENTITY_METHOD.html"
 relatedJava: ["MIMEEntity", "MIMEHeader"]
 relatedSsjs: []
+cover: "/covers/notes-mime-entity.webp"
+coverStyle: "risograph"
 ---
 
 Your agent needs to parse incoming mail — extract the HTML body, list attachments, or read a specific header like `Reply-To` or `X-Mailer`. You open the `NotesDocument`, call `GetItemValue("Body")`, and get empty or mangled text.

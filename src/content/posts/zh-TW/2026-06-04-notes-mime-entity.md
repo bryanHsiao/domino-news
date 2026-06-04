@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETMIMEENTITY_METHOD.html"
 relatedJava: ["MIMEEntity", "MIMEHeader"]
 relatedSsjs: []
+cover: "/covers/notes-mime-entity.webp"
+coverStyle: "risograph"
 ---
 
 你的 agent 需要解析收到的郵件 — 找 HTML body、抓附件清單、或讀特定 header（譬如 `X-Mailer` 或 `Reply-To`）。打開 `NotesDocument`、`GetItemValue("Body")` 卻拿到空的或破碎的文字。
