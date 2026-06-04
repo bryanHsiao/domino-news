@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETDIRECTORY_METHOD.html"
 relatedJava: ["Directory", "DirectoryNavigator"]
 relatedSsjs: []
+cover: "/covers/notes-directory.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 Your agent needs to look up a user's mail server, check group membership, or verify that a Notes name exists. The instinct is `db.GetView("($Users)")` and scan — but that means opening names.nsf manually, managing view caching, and accounting for multiple directory sources (primary + extended + LDAP).

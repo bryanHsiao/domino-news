@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETDIRECTORY_METHOD.html"
 relatedJava: ["Directory", "DirectoryNavigator"]
 relatedSsjs: []
+cover: "/covers/notes-directory.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 你的 agent 需要查使用者的郵件伺服器、確認某個群組的成員清單、或驗證一個 Notes 名稱是不是存在。最直接的做法是 `db.GetView("($Users)")` 然後逐行找 — 但這樣要自己開 names.nsf、管 view 快取、處理多個目錄來源。
