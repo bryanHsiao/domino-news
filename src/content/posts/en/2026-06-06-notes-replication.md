@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_REPLICATIONINFO_PROPERTY_DB.html"
 relatedJava: ["Replication", "ReplicationEntry"]
 relatedSsjs: []
+cover: "/covers/notes-replication.webp"
+coverStyle: "low-poly-3d"
 ---
 
 You're preparing a maintenance window across a Domino environment with dozens of NSFs. You need to pause replication on all of them beforehand, and restore it cleanly afterward — without opening Admin Client for each one. Or you're building a deployment tool that adjusts replication priority on dev environments before pushing changes.

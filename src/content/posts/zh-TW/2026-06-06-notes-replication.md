@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_REPLICATIONINFO_PROPERTY_DB.html"
 relatedJava: ["Replication", "ReplicationEntry"]
 relatedSsjs: []
+cover: "/covers/notes-replication.webp"
+coverStyle: "low-poly-3d"
 ---
 
 Domino 環境裡有幾十個 NSF、每次升版或做維護時、需要暫停部分資料庫的複製、事後再恢復。或者你要做一套自動化工具、批次調整開發環境裡所有 NSF 的複製優先等級。
