@@ -1,13 +1,13 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-06-05 · Posts scanned: 47 · Classes catalogued: 97*
+*Generated: 2026-06-06 · Posts scanned: 48 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
-**Overall: 43 / 97 classes covered (44.3%)**
+**Overall: 44 / 97 classes covered (45.4%)**
 
 ```
-██████████████████░░░░░░░░░░░░░░░░░░░░░░ 44.3%
+██████████████████░░░░░░░░░░░░░░░░░░░░░░ 45.4%
 ```
 
 ## Coverage by category
@@ -23,8 +23,8 @@
 | Session File Operations | 1 | 1 | 100% | 🟩 `████████████` |
 | Database | 6 | 7 | 86% | 🟩 `██████████░░` |
 | Document | 5 | 6 | 83% | 🟩 `██████████░░` |
+| Session | 4 | 10 | 40% | 🟨 `█████░░░░░░░` |
 | View | 2 | 5 | 40% | 🟨 `█████░░░░░░░` |
-| Session | 3 | 10 | 30% | 🟨 `████░░░░░░░░` |
 | DOM/XML | 7 | 25 | 28% | 🟧 `███░░░░░░░░░` |
 | Admin | 1 | 4 | 25% | 🟧 `███░░░░░░░░░` |
 | Rich Text | 1 | 9 | 11% | 🟧 `█░░░░░░░░░░░` |
@@ -32,7 +32,7 @@
 | GPS | 0 | 3 | 0% | 🟥 `░░░░░░░░░░░░` |
 | Composite Apps | 0 | 2 | 0% | 🟥 `░░░░░░░░░░░░` |
 
-## ✓ Covered classes (43)
+## ✓ Covered classes (44)
 
 | Class | Category | Posts | First mention |
 |---|---|---|---|
@@ -61,6 +61,7 @@
 | [NotesJSONObject](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONOBJECT_CLASS.html) | JSON | [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | 2026-05-24 |
 | [NotesLLMRequest](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NotesLLMRequest_Class.html) | DominoIQ | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) | 2026-05-23 |
 | [NotesLLMResponse](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NotesLLMResponse_class.html) | DominoIQ | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) | 2026-05-23 |
+| [NotesLog](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESLOG_CLASS.html) | Session | [notes-log](https://bryanhsiao.github.io/domino-news/posts/notes-log/) | 2026-06-07 |
 | [NotesMIMEEntity](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESMIMEENTITY_CLASS_OVERVIEW.html) | Item | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) | 2026-06-04 |
 | [NotesMIMEHeader](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESMIMEHEADER_CLASS.html) | Item | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) | 2026-06-04 |
 | [NotesNoteCollection](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESNOTECOLLECTION_CLASS.html) | Database | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/) | 2026-04-29 |
@@ -80,7 +81,7 @@
 | [NotesXMLProcessor](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-06 |
 | [NotesXSLTransformer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | 2026-05-06 |
 
-## ⨯ Uncovered classes (54)
+## ⨯ Uncovered classes (53)
 
 | Class | Category | Description |
 |---|---|---|
@@ -124,7 +125,6 @@
 | [NotesColorObject](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCOLOROBJECT_CLASS.html) | Session | Represents a color. |
 | [NotesDbDirectory](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDBDIRECTORY_CLASS.html) | Session | Represents the Notes® databases on a specific server or local computer. |
 | [NotesInternational](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESINTERNATIONAL_CLASS.html) | Session | Represents the international settings in the operating environment, for example, the Windo |
-| [NotesLog](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESLOG_CLASS.html) | Session | Enables you to record actions and errors that take place during a script's execution. You  |
 | [NotesName](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESNAME_CLASS.html) | Session | Represents a name. |
 | [NotesTimer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESTIMER_CLASS.html) | Session | Represents a mechanism for triggering an event every fixed number of seconds. |
 | [Button](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_BUTTON_CLASS.html) | UI | Represents an action, action hotspot, or button on a form or document. |
@@ -161,6 +161,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `DxlExporter` | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) |
 | `LLMReq` | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) |
 | `LLMRes` | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) |
+| `Log` | [notes-log](https://bryanhsiao.github.io/domino-news/posts/notes-log/) |
 | `MIMEEntity` | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) |
 | `MIMEHeader` | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) |
 | `NoteCollection` | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/) |
@@ -209,6 +210,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [notes-log](https://bryanhsiao.github.io/domino-news/posts/notes-log/) | `NotesLog` | `Log` | — |
 | [notes-replication](https://bryanhsiao.github.io/domino-news/posts/notes-replication/) | `NotesReplication`, `NotesReplicationEntry` | `Replication`, `ReplicationEntry` | — |
 | [notes-directory](https://bryanhsiao.github.io/domino-news/posts/notes-directory/) | `NotesDirectory`, `NotesDirectoryNavigator`, `NotesSession` | `Directory`, `DirectoryNavigator` | — |
 | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) | `NotesMIMEEntity`, `NotesMIMEHeader` | `MIMEEntity`, `MIMEHeader` | — |
