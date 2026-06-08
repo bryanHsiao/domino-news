@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESGPSCOORDINATES_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-gps-nomad.webp"
+coverStyle: "art-deco"
 ---
 
 You're handed a requirement for a field-inspection app: the inspector arrives on site, taps "Check in here" on a Notes form, and the system should stamp their current latitude and longitude onto the document. The problem — you scan the whole LotusScript class list, from `NotesDatabase` to `NotesDocument`, and nothing touches "location." Classic LotusScript was written for the desktop Client, and desktops have no GPS, so there was never a location API.

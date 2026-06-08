@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESGPSCOORDINATES_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-gps-nomad.webp"
+coverStyle: "art-deco"
 ---
 
 你接到一個外勤稽核 app 的需求：稽核員到了現場，在 Notes 表單上按「現場簽到」，系統要把他當下的經緯度一起寫進文件。問題是 — 你翻遍 LotusScript 的 class 清單，從 `NotesDatabase` 到 `NotesDocument`，沒有任何一個跟「定位」沾得上邊。傳統的 LotusScript 是為桌面 Client 寫的，桌機沒有 GPS，自然也沒有定位 API。
