@@ -1,13 +1,13 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-06-06 · Posts scanned: 48 · Classes catalogued: 97*
+*Generated: 2026-06-08 · Posts scanned: 49 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
-**Overall: 44 / 97 classes covered (45.4%)**
+**Overall: 47 / 97 classes covered (48.5%)**
 
 ```
-██████████████████░░░░░░░░░░░░░░░░░░░░░░ 45.4%
+███████████████████░░░░░░░░░░░░░░░░░░░░░ 48.5%
 ```
 
 ## Coverage by category
@@ -17,6 +17,7 @@
 | Calendar | 3 | 3 | 100% | 🟩 `████████████` |
 | Item | 5 | 5 | 100% | 🟩 `████████████` |
 | DQL | 2 | 2 | 100% | 🟩 `████████████` |
+| GPS | 3 | 3 | 100% | 🟩 `████████████` |
 | HTTP | 1 | 1 | 100% | 🟩 `████████████` |
 | JSON | 4 | 4 | 100% | 🟩 `████████████` |
 | DominoIQ | 2 | 2 | 100% | 🟩 `████████████` |
@@ -29,10 +30,9 @@
 | Admin | 1 | 4 | 25% | 🟧 `███░░░░░░░░░` |
 | Rich Text | 1 | 9 | 11% | 🟧 `█░░░░░░░░░░░` |
 | UI | 0 | 8 | 0% | 🟥 `░░░░░░░░░░░░` |
-| GPS | 0 | 3 | 0% | 🟥 `░░░░░░░░░░░░` |
 | Composite Apps | 0 | 2 | 0% | 🟥 `░░░░░░░░░░░░` |
 
-## ✓ Covered classes (44)
+## ✓ Covered classes (47)
 
 | Class | Category | Posts | First mention |
 |---|---|---|---|
@@ -53,6 +53,9 @@
 | [NotesDOMParser](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMPARSER_CLASS.html) | DOM/XML | [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-17 |
 | [NotesDXLExporter](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLEXPORTER_CLASS.html) | DOM/XML | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/), [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | 2026-04-29 |
 | [NotesEmbeddedObject](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESEMBEDDEDOBJECT_CLASS.html) | Document | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/) | 2026-04-30 |
+| [NotesGPS](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESGPS_CLASS.html) | GPS | [notes-gps-nomad](https://bryanhsiao.github.io/domino-news/posts/notes-gps-nomad/) | 2026-06-08 |
+| [NotesGPSCoordinates](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESGPSCOORDINATES_CLASS.html) | GPS | [notes-gps-nomad](https://bryanhsiao.github.io/domino-news/posts/notes-gps-nomad/) | 2026-06-08 |
+| [NotesGPSPosition](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESGPSPOSITION_CLASS.html) | GPS | [notes-gps-nomad](https://bryanhsiao.github.io/domino-news/posts/notes-gps-nomad/) | 2026-06-08 |
 | [NotesHTTPRequest](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTES_HTTPREQUEST_CLASS.html) | HTTP | [lotusscript-http-json](https://bryanhsiao.github.io/domino-news/posts/lotusscript-http-json/), [notes-httprequest-14-5-trust-store](https://bryanhsiao.github.io/domino-news/posts/notes-httprequest-14-5-trust-store/) | 2026-05-07 |
 | [NotesItem](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESITEM_CLASS.html) | Item | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/) | 2026-04-30 |
 | [NotesJSONArray](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONARRAY_CLASS.html) | JSON | [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | 2026-05-24 |
@@ -81,7 +84,7 @@
 | [NotesXMLProcessor](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-06 |
 | [NotesXSLTransformer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | 2026-05-06 |
 
-## ⨯ Uncovered classes (53)
+## ⨯ Uncovered classes (50)
 
 | Class | Category | Description |
 |---|---|---|
@@ -110,9 +113,6 @@
 | [NotesDOMXMLDeclNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMXMLDECLNODE_CLASS.html) | DOM/XML | The XML declaration which specifies the version of XML being used. |
 | [NotesDXLImporter](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLIMPORTER_CLASS.html) | DOM/XML | Represents the conversion of DXL (Domino® XML) to Domino® data. |
 | [NotesSAXException](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXEXCEPTION_CLASS.html) | DOM/XML | Represents an exception thrown by the SAX parser. |
-| [NotesGPS](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESGPS_CLASS.html) | GPS | Provides access to user location for supported platforms. Supported for HCL Nomad on iOS a |
-| [NotesGPSCoordinates](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESGPSCOORDINATES_CLASS.html) | GPS | Contains the current coordinates of the position of a device. Currently supported for HCL  |
-| [NotesGPSPosition](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESGPSPOSITION_CLASS.html) | GPS | Represents a position provided by the global positioning device on a platform. Currently s |
 | [NotesRichTextDocLink](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTDOCLINK_CLASS.html) | Rich Text | Represents a doclink in a rich text item. |
 | [NotesRichTextNavigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTNAVIGATOR_CLASS.html) | Rich Text | Represents a means of navigation in a rich text item. |
 | [NotesRichTextParagraphStyle](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTPARAGRAPHSTYLE_CLASS_3756.html) | Rich Text | Represents rich text paragraph attributes. |
@@ -210,6 +210,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [notes-gps-nomad](https://bryanhsiao.github.io/domino-news/posts/notes-gps-nomad/) | `NotesGPS`, `NotesGPSPosition`, `NotesGPSCoordinates` | — | — |
 | [notes-log](https://bryanhsiao.github.io/domino-news/posts/notes-log/) | `NotesLog` | `Log` | — |
 | [notes-replication](https://bryanhsiao.github.io/domino-news/posts/notes-replication/) | `NotesReplication`, `NotesReplicationEntry` | `Replication`, `ReplicationEntry` | — |
 | [notes-directory](https://bryanhsiao.github.io/domino-news/posts/notes-directory/) | `NotesDirectory`, `NotesDirectoryNavigator`, `NotesSession` | `Directory`, `DirectoryNavigator` | — |
