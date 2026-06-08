@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_NOTESNAME_CLASS.html"
 relatedJava: ["Name"]
 relatedSsjs: ["Name"]
+cover: "/covers/notes-name.webp"
+coverStyle: "collage"
 ---
 
 You need to pull `John B Goode` out of `CN=John B Goode/OU=Sales/OU=East/O=Acme/C=US` to show it in the UI. What's the quickest thing to hand? Plenty of people reach straight for `Mid` plus `InStr` to find `CN=` and the first `/`, or hack it in formula language with `@Name([CN]; ...)`. It works — until a flat name with no `CN=` prefix shows up, or a name with a different number of hierarchy levels, and the string-slicing logic starts sprouting `If` statements.

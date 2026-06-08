@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_NOTESNAME_CLASS.html"
 relatedJava: ["Name"]
 relatedSsjs: ["Name"]
+cover: "/covers/notes-name.webp"
+coverStyle: "collage"
 ---
 
 你要從 `CN=王小明/OU=Sales/OU=East/O=Acme/C=TW` 這串名字裡，取出「王小明」顯示在介面上。手邊最快的做法是什麼？很多人會直接 `Mid` 加 `InStr` 找 `CN=` 跟第一個 `/`、或在公式語言裡 `@Name([CN]; ...)` 硬切。能動，但一遇到沒有 `CN=` 前綴的 flat name、或階層層數不同的名字，切字串的邏輯就開始長一堆 `If`。
