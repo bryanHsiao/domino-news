@@ -1,7 +1,7 @@
 ---
 title: "Nomad 定位三件組：NotesGPS / NotesGPSPosition / NotesGPSCoordinates"
 description: "傳統 LotusScript 沒有定位 API — 但跑在 HCL Nomad 上的 app 其實拿得到使用者的經緯度。NotesGPS 是 Domino 為 Nomad 補上的客戶端定位類別，從 NotesSession.CreateGPS() 起手，經 RequestAccess() 取得授權、GetCurrentPosition() 拿到 NotesGPSPosition、再從 Coordinates 讀出 NotesGPSCoordinates 的 Latitude / Longitude。本文拆解這條三類別鏈、官方範例逐行解說，以及 error 4508、iOS 首呼叫 Speed/Heading 為空、HighAccuracy 室內失準等幾個一定要知道的坑。"
-pubDate: 2026-06-09T07:30:00+08:00
+pubDate: 2026-06-08T07:30:00+08:00
 lang: zh-TW
 slug: notes-gps-nomad
 tags:

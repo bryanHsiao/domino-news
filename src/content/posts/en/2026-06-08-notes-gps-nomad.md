@@ -1,7 +1,7 @@
 ---
 title: "Geolocation on Nomad: NotesGPS, NotesGPSPosition, and NotesGPSCoordinates"
 description: "Classic LotusScript has no location API — but an app running on HCL Nomad can read the user's latitude and longitude. NotesGPS is Domino's client-side geolocation class for Nomad: start from NotesSession.CreateGPS(), authorise with RequestAccess(), fetch a NotesGPSPosition with GetCurrentPosition(), then read Latitude / Longitude off its NotesGPSCoordinates. This article walks the three-class chain, annotates the official example line by line, and covers the gotchas — error 4508, empty Speed/Heading on the first iOS call, and HighAccuracy failing indoors."
-pubDate: 2026-06-09T07:30:00+08:00
+pubDate: 2026-06-08T07:30:00+08:00
 lang: en
 slug: notes-gps-nomad
 tags:
