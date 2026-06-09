@@ -1,13 +1,13 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-06-08 · Posts scanned: 50 · Classes catalogued: 97*
+*Generated: 2026-06-09 · Posts scanned: 51 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
-**Overall: 48 / 97 classes covered (49.5%)**
+**Overall: 50 / 97 classes covered (51.5%)**
 
 ```
-████████████████████░░░░░░░░░░░░░░░░░░░░ 49.5%
+█████████████████████░░░░░░░░░░░░░░░░░░░ 51.5%
 ```
 
 ## Coverage by category
@@ -27,12 +27,12 @@
 | Session | 5 | 10 | 50% | 🟨 `██████░░░░░░` |
 | View | 2 | 5 | 40% | 🟨 `█████░░░░░░░` |
 | DOM/XML | 7 | 25 | 28% | 🟧 `███░░░░░░░░░` |
+| UI | 2 | 8 | 25% | 🟧 `███░░░░░░░░░` |
 | Admin | 1 | 4 | 25% | 🟧 `███░░░░░░░░░` |
 | Rich Text | 1 | 9 | 11% | 🟧 `█░░░░░░░░░░░` |
-| UI | 0 | 8 | 0% | 🟥 `░░░░░░░░░░░░` |
 | Composite Apps | 0 | 2 | 0% | 🟥 `░░░░░░░░░░░░` |
 
-## ✓ Covered classes (48)
+## ✓ Covered classes (50)
 
 | Class | Category | Posts | First mention |
 |---|---|---|---|
@@ -80,12 +80,14 @@
 | [NotesSAXParser](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXPARSER_CLASS.html) | DOM/XML | [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-16 |
 | [NotesSession](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSESSION_CLASS.html) | Session | [notes-session](https://bryanhsiao.github.io/domino-news/posts/notes-session/), [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/), [notes-directory](https://bryanhsiao.github.io/domino-news/posts/notes-directory/) | 2026-05-14 |
 | [NotesStream](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSTREAM_CLASS.html) | Session File Operations | [notes-stream](https://bryanhsiao.github.io/domino-news/posts/notes-stream/), [lotusscript-view-to-excel](https://bryanhsiao.github.io/domino-news/posts/lotusscript-view-to-excel/) | 2026-05-02 |
+| [NotesUIDocument](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIDOCUMENT_CLASS.html) | UI | [notes-ui-workspace-document](https://bryanhsiao.github.io/domino-news/posts/notes-ui-workspace-document/) | 2026-06-10 |
+| [NotesUIWorkspace](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIWORKSPACE_CLASS.html) | UI | [notes-ui-workspace-document](https://bryanhsiao.github.io/domino-news/posts/notes-ui-workspace-document/) | 2026-06-10 |
 | [NotesView](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html) | View | [notes-view-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-view-navigator/), [getalldocumentsbykey](https://bryanhsiao.github.io/domino-news/posts/getalldocumentsbykey/), [lotusscript-view-to-excel](https://bryanhsiao.github.io/domino-news/posts/lotusscript-view-to-excel/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) | 2026-04-29 |
 | [NotesViewNavigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEWNAVIGATOR_CLASS.html) | View | [notes-view-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-view-navigator/), [lotusscript-view-to-excel](https://bryanhsiao.github.io/domino-news/posts/lotusscript-view-to-excel/) | 2026-04-29 |
 | [NotesXMLProcessor](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-06 |
 | [NotesXSLTransformer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | 2026-05-06 |
 
-## ⨯ Uncovered classes (49)
+## ⨯ Uncovered classes (47)
 
 | Class | Category | Description |
 |---|---|---|
@@ -131,10 +133,8 @@
 | [Field](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FIELD_CLASS.html) | UI | Represents a field on a form. |
 | [Navigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NAVIGATOR_CLASS.html) | UI | Represents a navigator button, hotspot, or other navigator object. |
 | [NotesUIDatabase](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIDATABASE_CLASS.html) | UI | Represents the database that's currently open in the Notes® workspace. |
-| [NotesUIDocument](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIDOCUMENT_CLASS.html) | UI | Represents the document that's currently open in the Notes® workspace. |
 | [NotesUIScheduler](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUISCHEDULER_CLASS.html) | UI | Represents an embedded scheduling control in a document. |
 | [NotesUIView](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIVIEW_CLASS.html) | UI | Represents the current view in the Notes® workspace. |
-| [NotesUIWorkspace](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIWORKSPACE_CLASS.html) | UI | Represents the current Notes® workspace window. |
 | [NotesViewColumn](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEWCOLUMN_CLASS.html) | View | Represents a column in a view or folder. |
 | [NotesViewEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEWENTRY_CLASS_2925.html) | View | Represents a view entry. A view entry represents a row in a view. |
 | [NotesViewEntryCollection](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEWENTRYCOLLECTION_9327.html) | View | Represents a collection of view entries, selected according to specific criteria. This cla |
@@ -212,6 +212,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [notes-ui-workspace-document](https://bryanhsiao.github.io/domino-news/posts/notes-ui-workspace-document/) | `NotesUIWorkspace`, `NotesUIDocument` | — | — |
 | [notes-name](https://bryanhsiao.github.io/domino-news/posts/notes-name/) | `NotesName` | `Name` | `Name` |
 | [notes-gps-nomad](https://bryanhsiao.github.io/domino-news/posts/notes-gps-nomad/) | `NotesGPS`, `NotesGPSPosition`, `NotesGPSCoordinates` | — | — |
 | [notes-log](https://bryanhsiao.github.io/domino-news/posts/notes-log/) | `NotesLog` | `Log` | — |
