@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_PROMPT_METHOD_7966_ABOUT.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-ui-workspace-document.webp"
+coverStyle: "ukiyo-e"
 ---
 
 The classes this site has covered so far — `NotesDatabase`, `NotesDocument`, `NotesView` — are all back-end. They run on the server, in background agents, never seeing (and never needing) the user's screen. But there's a whole category of need they can't touch: the user is typing into a form and hasn't saved yet, and you want to read the value **on their screen right now**; or pop a "Are you sure you want to submit?" dialog when they click a button; or flip the open document straight into edit mode.

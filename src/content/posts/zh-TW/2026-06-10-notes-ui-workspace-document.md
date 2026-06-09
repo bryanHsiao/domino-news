@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_PROMPT_METHOD_7966_ABOUT.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-ui-workspace-document.webp"
+coverStyle: "ukiyo-e"
 ---
 
 站上前面拆過的類別 — `NotesDatabase`、`NotesDocument`、`NotesView` — 全是後端。它們在伺服器上、在背景 agent 裡都能跑，看不到、也不需要看到使用者的螢幕。但有一整類需求它們碰不到：使用者正在表單上打字、還沒按存檔，你想讀他**當下螢幕上**那個欄位的值；或想在他按下按鈕時跳一個「確定要送出嗎？」的對話框；或把當前開著的文件直接切到編輯模式。
