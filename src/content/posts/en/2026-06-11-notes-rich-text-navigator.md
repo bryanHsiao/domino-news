@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FINDANDREPLACE_METHOD_RTRANGE.html"
 relatedJava: ["RichTextNavigator", "RichTextRange"]
 relatedSsjs: ["RichTextNavigator", "RichTextRange"]
+cover: "/covers/notes-rich-text-navigator.webp"
+coverStyle: "photoreal-3d"
 ---
 
 Here's the task: across 500 documents, replace the old company name "Acme" with "AcmeCorp" everywhere in the `Body` field, and while you're at it, count how many doclinks each document has. The earlier [`NotesRichTextItem`](/domino-news/posts/notes-rich-text-item/) piece gets you the whole Body field and lets you `AppendText`, but it hands you the field as one block — it can't say "move to the next table" or "select this span and swap the text."

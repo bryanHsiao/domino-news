@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FINDANDREPLACE_METHOD_RTRANGE.html"
 relatedJava: ["RichTextNavigator", "RichTextRange"]
 relatedSsjs: ["RichTextNavigator", "RichTextRange"]
+cover: "/covers/notes-rich-text-navigator.webp"
+coverStyle: "photoreal-3d"
 ---
 
 你接到一個任務：500 份文件的 `Body` 欄位裡，把舊公司名「Acme」全部換成「AcmeCorp」；順便統計每份文件裡有幾個 doclink。站上先前那篇 [`NotesRichTextItem`](/domino-news/posts/notes-rich-text-item/) 能讓你拿到整個 Body 欄位、也能 `AppendText`，但它給的是「整塊」 — 它沒辦法讓你說「走到下一個表格」「選中這一段然後換字」。
