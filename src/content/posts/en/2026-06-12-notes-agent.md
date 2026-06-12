@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_RUNONSERVER_METHOD_5924_ABOUT.html"
 relatedJava: ["Agent"]
 relatedSsjs: ["Agent"]
+cover: "/covers/notes-agent.webp"
+coverStyle: "pencil-sketch"
 ---
 
 You have a heavy batch agent — one run takes several minutes. Now the requirement shifts: when a user clicks a button on a form, it should fire that agent "right now"; or another agent, partway through, needs to hand work off to it. The point is — you don't want to wait for a schedule, you want to trigger it **from code**.

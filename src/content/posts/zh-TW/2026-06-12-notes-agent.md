@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_RUNONSERVER_METHOD_5924_ABOUT.html"
 relatedJava: ["Agent"]
 relatedSsjs: ["Agent"]
+cover: "/covers/notes-agent.webp"
+coverStyle: "pencil-sketch"
 ---
 
 你有一支很重的批次處理 agent — 跑一次要好幾分鐘。現在需求變了：使用者按下表單上的按鈕時，要能「立刻把這支 agent 叫起來跑」；或是另一支 agent 處理到一半，需要把工作轉交給它。重點是 — 你不想用排程等它自己跑，你想**用程式直接觸發**。
