@@ -1,13 +1,13 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-06-11 · Posts scanned: 52 · Classes catalogued: 97*
+*Generated: 2026-06-12 · Posts scanned: 53 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
-**Overall: 52 / 97 classes covered (53.6%)**
+**Overall: 53 / 97 classes covered (54.6%)**
 
 ```
-█████████████████████░░░░░░░░░░░░░░░░░░░ 53.6%
+██████████████████████░░░░░░░░░░░░░░░░░░ 54.6%
 ```
 
 ## Coverage by category
@@ -24,7 +24,7 @@
 | Session File Operations | 1 | 1 | 100% | 🟩 `████████████` |
 | Database | 6 | 7 | 86% | 🟩 `██████████░░` |
 | Document | 5 | 6 | 83% | 🟩 `██████████░░` |
-| Session | 5 | 10 | 50% | 🟨 `██████░░░░░░` |
+| Session | 6 | 10 | 60% | 🟨 `███████░░░░░` |
 | View | 2 | 5 | 40% | 🟨 `█████░░░░░░░` |
 | Rich Text | 3 | 9 | 33% | 🟨 `████░░░░░░░░` |
 | DOM/XML | 7 | 25 | 28% | 🟧 `███░░░░░░░░░` |
@@ -32,12 +32,13 @@
 | Admin | 1 | 4 | 25% | 🟧 `███░░░░░░░░░` |
 | Composite Apps | 0 | 2 | 0% | 🟥 `░░░░░░░░░░░░` |
 
-## ✓ Covered classes (52)
+## ✓ Covered classes (53)
 
 | Class | Category | Posts | First mention |
 |---|---|---|---|
 | [NotesACL](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESACL_CLASS.html) | Database | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) | 2026-05-15 |
 | [NotesACLEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESACLENTRY_CLASS.html) | Database | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) | 2026-05-15 |
+| [NotesAgent](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESAGENT_CLASS.html) | Session | [notes-agent](https://bryanhsiao.github.io/domino-news/posts/notes-agent/) | 2026-06-12 |
 | [NotesCalendar](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDAR_CLASS.html) | Calendar | [notes-calendar](https://bryanhsiao.github.io/domino-news/posts/notes-calendar/) | 2026-06-03 |
 | [NotesCalendarEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDARENTRY_CLASS.html) | Calendar | [notes-calendar](https://bryanhsiao.github.io/domino-news/posts/notes-calendar/) | 2026-06-03 |
 | [NotesCalendarNotice](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDARNOTICE_CLASS.html) | Calendar | [notes-calendar](https://bryanhsiao.github.io/domino-news/posts/notes-calendar/) | 2026-06-03 |
@@ -89,7 +90,7 @@
 | [NotesXMLProcessor](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-06 |
 | [NotesXSLTransformer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | 2026-05-06 |
 
-## ⨯ Uncovered classes (45)
+## ⨯ Uncovered classes (44)
 
 | Class | Category | Description |
 |---|---|---|
@@ -124,7 +125,6 @@
 | [NotesRichTextStyle](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTSTYLE_CLASS.html) | Rich Text | Represents rich text attributes. |
 | [NotesRichTextTab](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_RICHTEXTTAB_CLASS.html) | Rich Text | Represents rich text tab attributes. |
 | [NotesRichTextTable](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTTABLE_CLASS.html) | Rich Text | Represents a table in a rich text item. |
-| [NotesAgent](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESAGENT_CLASS.html) | Session | Represents an agent. The agent may be shared or private, and may be a Release 3 macro. |
 | [NotesColorObject](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCOLOROBJECT_CLASS.html) | Session | Represents a color. |
 | [NotesDbDirectory](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDBDIRECTORY_CLASS.html) | Session | Represents the Notes® databases on a specific server or local computer. |
 | [NotesInternational](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESINTERNATIONAL_CLASS.html) | Session | Represents the international settings in the operating environment, for example, the Windo |
@@ -149,6 +149,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 |---|---|
 | `ACL` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
 | `ACLEntry` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
+| `Agent` | [notes-agent](https://bryanhsiao.github.io/domino-news/posts/notes-agent/) |
 | `DOMParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/) |
 | `Database` | [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
 | `DateRange` | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) |
@@ -189,6 +190,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 |---|---|
 | `ACL` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
 | `ACLEntry` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
+| `Agent` | [notes-agent](https://bryanhsiao.github.io/domino-news/posts/notes-agent/) |
 | `DOMParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/) |
 | `DominoQuery` | [dql-production](https://bryanhsiao.github.io/domino-news/posts/dql-production/), [dql-pitfalls](https://bryanhsiao.github.io/domino-news/posts/dql-pitfalls/), [dql-getting-started](https://bryanhsiao.github.io/domino-news/posts/dql-getting-started/) |
 | `DxlExporter` | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) |
@@ -216,6 +218,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [notes-agent](https://bryanhsiao.github.io/domino-news/posts/notes-agent/) | `NotesAgent` | `Agent` | `Agent` |
 | [notes-rich-text-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-navigator/) | `NotesRichTextNavigator`, `NotesRichTextRange`, `NotesRichTextItem` | `RichTextNavigator`, `RichTextRange` | `RichTextNavigator`, `RichTextRange` |
 | [notes-ui-workspace-document](https://bryanhsiao.github.io/domino-news/posts/notes-ui-workspace-document/) | `NotesUIWorkspace`, `NotesUIDocument` | — | — |
 | [notes-name](https://bryanhsiao.github.io/domino-news/posts/notes-name/) | `NotesName` | `Name` | `Name` |
