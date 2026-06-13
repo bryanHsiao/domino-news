@@ -496,6 +496,36 @@ discovered and sample-verified).
 - Run with `PYTHONIOENCODING=utf-8` on Windows to avoid CP950
   unicode errors.
 
+### Chat-history pollution — symptom and repair
+
+The `ask_question.py` script appends to the notebook's **server-side
+chat history**, which accumulates across sessions. Once that history
+grows (seen at ~10+ chat pairs), Gemini starts answering with content
+from *earlier, unrelated* questions.
+
+- **Symptom**: you ask about X and the answer is about Y — e.g. asked
+  about `NotesGPS` / `NotesName` and got a reply about FTSearch
+  constants. Cross-topic, answer-doesn't-match-question. (Observed
+  2026-06-09 on the LS reference notebook: three queries in a row
+  returned FTSearch text regardless of the question.)
+- **When this happens, NotebookLM is effectively unusable** until the
+  chat is cleared — for that session, fall back to WebFetch on the HCL
+  doc pages and note it to the user.
+- **Repair** (manual, via Claude-in-Chrome — needs the extension
+  connected and an interactive Google login):
+  1. Open the notebook URL in Chrome.
+  2. In the 對話 / Chat panel header, click the **⋮** menu.
+  3. Click **刪除對話記錄 / Delete chat history**, then confirm
+     **刪除 / Delete** in the dialog.
+  - This deletes ONLY the chat log, not the sources or the notebook.
+    It is **irreversible**.
+- **Authorisation: ASK BEFORE CLEARING.** This is an irreversible
+  delete, so always confirm with the user before clicking the final
+  Delete — do not clear chat history autonomously. (User decision,
+  2026-06-09.)
+- Not possible in headless / cron runs (no interactive browser); there
+  the only option is WebFetch fallback + flag to the user.
+
 ---
 
 ## Open todos
