@@ -17,6 +17,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/index.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/openntf-home-drapi-jakarta.webp"
+coverStyle: "minimalist-mono"
 ---
 
 Every Domino developer has fielded this question: isn't your app locked inside the NSF, dead the moment it leaves Domino? In May 2026, [Jesse Gallagher gave a very concrete counter-example on his blog](https://frostillic.us/blog/posts/2026/5/13/running-the-new-openntf-home-outside-domino) — he took [OpenNTF](https://www.openntf.org/)'s new home app and ran the whole thing **outside** Domino.

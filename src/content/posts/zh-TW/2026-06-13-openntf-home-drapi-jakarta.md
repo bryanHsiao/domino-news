@@ -17,6 +17,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/index.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/openntf-home-drapi-jakarta.webp"
+coverStyle: "minimalist-mono"
 ---
 
 Domino 開發者大概都被問過這個問題：你的 app 是不是被鎖死在 NSF 裡、離開 Domino 就動不了？2026 年 5 月，[Jesse Gallagher 在他的 blog 上](https://frostillic.us/blog/posts/2026/5/13/running-the-new-openntf-home-outside-domino)給了一個很具體的反例 —— 他把 [OpenNTF](https://www.openntf.org/) 的新首頁 app，整包搬到 Domino **之外**跑。
