@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_NOTESDBDIRECTORY_CLASS.html"
 relatedJava: ["DbDirectory"]
 relatedSsjs: ["DbDirectory"]
+cover: "/covers/notes-db-directory.webp"
+coverStyle: "paper-craft"
 ---
 
 You're writing an admin agent: sweep **every NSF** on a server and check whether any ACL is too open, or tally each database's size. The thing is — you have `NotesDatabase` (for one database) and the earlier [`NotesDirectory`](/domino-news/posts/notes-directory/), but that one looks things up in the **Domino Directory** (people, groups, and servers in names.nsf), not the files on disk.

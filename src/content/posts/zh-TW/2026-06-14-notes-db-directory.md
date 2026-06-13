@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_NOTESDBDIRECTORY_CLASS.html"
 relatedJava: ["DbDirectory"]
 relatedSsjs: ["DbDirectory"]
+cover: "/covers/notes-db-directory.webp"
+coverStyle: "paper-craft"
 ---
 
 你要寫一支管理用 agent：掃過某台伺服器上的**每一個 NSF**，檢查 ACL 有沒有開太大、或統計各 db 的大小。問題是 —— 你手上有 `NotesDatabase`（操作單一資料庫）、也有先前介紹過的 [`NotesDirectory`](/domino-news/posts/notes-directory/)，但後者是查 **Domino Directory**（names.nsf 裡的人、群組、伺服器）的，不是列檔案的。
