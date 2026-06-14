@@ -31,7 +31,7 @@ coverStyle: "paper-craft"
 - 用 `session.GetDbDirectory(server$)` 建立；`server$` 傳 `""` 代表**本機**
 - **走訪兩步驟**：`GetFirstDatabase(fileType%)` 取第一個、再迴圈 `GetNextDatabase()` 取後續
 - **四個 file-type 常數**：`DATABASE`（.nsf 等）、`TEMPLATE`（.ntf）、`REPLICA_CANDIDATE`（未停用複寫的）、`TEMPLATE_CANDIDATE`
-- **最大的坑**：走訪拿到的 `NotesDatabase` 是**關閉**的 — 官方明說「The database is closed」，要先 `.Open` 才能讀 Title 以外的東西
+- **最大的坑**：走訪拿到的 `NotesDatabase` 是**關閉**的 —— 官方明說「The database is closed」，要先 `.Open` 才能讀 Title 以外的東西
 - 不只走訪：`OpenDatabase`、`CreateDatabase`、`OpenDatabaseByReplicaID`、`OpenMailDatabase`、`OpenDatabaseIfModified`
 - 別跟 [`NotesDirectory`](/domino-news/posts/notes-directory/) 搞混：那個查人/群組，這個列資料庫檔案
 
