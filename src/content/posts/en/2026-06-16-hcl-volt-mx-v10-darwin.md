@@ -16,6 +16,8 @@ sources:
     url: "https://www.youtube.com/watch?v=CrA-dKCZ8aI"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/hcl-volt-mx-v10-darwin.webp"
+coverStyle: "photoreal-3d"
 ---
 
 Up front: this isn't breaking news. HCL [released Volt MX v10 "Darwin"](https://www.hcl-software.com/blog/volt-mx/hcl-volt-mx-v10-darwin-from-figma-to-app-aiad-carplay-and-beyond) back in **August 2025**. This is a **catch-up explainer** — laying out what the release brought for Domino developers who haven't been tracking Volt MX, and spelling out exactly how it relates to Domino.

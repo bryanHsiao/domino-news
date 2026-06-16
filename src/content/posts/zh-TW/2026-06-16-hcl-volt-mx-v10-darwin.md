@@ -16,6 +16,8 @@ sources:
     url: "https://www.youtube.com/watch?v=CrA-dKCZ8aI"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/hcl-volt-mx-v10-darwin.webp"
+coverStyle: "photoreal-3d"
 ---
 
 先把話講清楚：這不是即時新聞。HCL 在 **2025 年 8 月**就[發佈了 Volt MX v10「Darwin」](https://www.hcl-software.com/blog/volt-mx/hcl-volt-mx-v10-darwin-from-figma-to-app-aiad-carplay-and-beyond)，這篇是一篇**補課用的背景介紹** —— 把這一版帶來什麼整理給沒在追 Volt MX 的 Domino 開發者，順便講清楚它跟 Domino 到底有什麼關係。
