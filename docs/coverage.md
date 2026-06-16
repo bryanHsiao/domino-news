@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-06-14 · Posts scanned: 56 · Classes catalogued: 97*
+*Generated: 2026-06-16 · Posts scanned: 57 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -220,6 +220,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [hcl-volt-mx-v10-darwin](https://bryanhsiao.github.io/domino-news/posts/hcl-volt-mx-v10-darwin/) | — | — | — |
 | [hcl-nomad-1-0-20](https://bryanhsiao.github.io/domino-news/posts/hcl-nomad-1-0-20/) | — | — | — |
 | [notes-db-directory](https://bryanhsiao.github.io/domino-news/posts/notes-db-directory/) | `NotesDbDirectory`, `NotesDatabase` | `DbDirectory` | `DbDirectory` |
 | [openntf-home-drapi-jakarta](https://bryanhsiao.github.io/domino-news/posts/openntf-home-drapi-jakarta/) | — | — | — |
