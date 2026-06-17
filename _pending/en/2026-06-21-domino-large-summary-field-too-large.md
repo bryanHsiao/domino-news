@@ -27,9 +27,11 @@ A user presses Submit on an XPages form, the save fails, and out comes:
 Notes error: Field is too large (32K) or View's column & selection formulas are too large
 ```
 
-So you go hunting, as the message tells you, for "the field over 32K." You check every field — none crosses 32K, the largest is 26,245 bytes. Everything looks safe, yet it won't save. Copy the document to a test database, type a few more characters into any field, and the error reproduces every time.
+So you go hunting, as the message tells you, for "the field over 32K." You check every field — none crosses 32K, the largest is 26,245 bytes. And the document as a whole is actually **big** — around **7,847,405 bytes (close to 8MB)** — yet every field is within limits. Everything looks safe, yet it won't save. Copy the document to a test database, type a few more characters into any field, and the error reproduces every time.
 
 The thing is: **the number this error names is usually not the wall you actually hit.** It says "32K", but here the wall is a different number that never gets named anywhere in the message — **a document's combined summary data is capped at 64K**.
+
+Sit with that contrast for a second: **the document body is nearly 8MB, yet a 64K limit blocks it.** That absurdity is itself the clue — the 64K doesn't govern the whole document, only the slice of it flagged as summary. A document can be huge (rich text, attachments, long content all fit); the only scarce thing, the thing that overflows, is that 64K of summary budget.
 
 This article builds the mental model first (the two kinds of item in a document, the two size limits), then explains why ODS and LargeSummary are two separate things, and finally forks the fix on one question: **should this data be summary at all?**
 
@@ -104,7 +106,9 @@ Don't reflexively reach for LargeSummary on sight of this error. Ask one questio
 
 ### Should be summary → enable LargeSummary on the database
 
-If those large fields genuinely **need to be shown in views, consumed by DQL / search, sorted or categorized**, then they're meant to be summary, and the move is to let the database hold more summary data. That was the choice in this case:
+If those large fields genuinely **need to be shown in views, consumed by DQL / search, sorted or categorized**, then they're meant to be summary, and the move is to let the database hold more summary data. That was the choice in this case.
+
+**Confirm the current state first.** On site I used `show directory` (`sh dir`) at the server console to check this database's LargeSummary status — it came back not enabled, exactly matching the "ODS went up, the flag never did" diagnosis. Only after confirming "the capability is there, the switch is off" did I run:
 
 ```text
 load compact -c -LargeSummary on "xxx.nsf"
@@ -118,7 +122,9 @@ HCL also documents the short form `-ls on`. The ceiling goes from 64K to 16 MB. 
 
 ### Should not be summary → set it non-summary in code
 
-If those large fields are really payload that has no business in a view (JSON, full approval history, external sync data, long text shown only on the detail page), the right fix isn't to raise the ceiling — it's to **move them out of the summary buffer**:
+If those large fields are really payload that has no business in a view (JSON, full approval history, external sync data, long text shown only on the detail page), the right fix isn't to raise the ceiling — it's to **move them out of the summary buffer**.
+
+Think back to that nearly-8MB document from the opening: it could grow that large and still only the summary slice overflowed — which is exactly why large payload belongs in non-summary. There's plenty of room over there (a single field up to ~1GB, a document up to 4GB); don't make a blob of attachment or a wall of JSON fight for space in a summary budget of only 64K. The write looks like:
 
 ```lotusscript
 Dim item As NotesItem
@@ -143,6 +149,8 @@ For existing documents, write a repair agent that opens each target item, change
 ```
 
 In this case step 2 was the clue: no single field over 32K, yet it failed the moment a little text was added — a sign that all but announces "this document was already sitting against a combined limit", pulling the focus from "find the big field" back to "the whole summary total."
+
+**Remember the judgment in one line: when "every field is within its limit but a few extra characters tip it over", the problem isn't any one field — it's the combined summary total.** This case's nearly-8MB document, whose biggest field was only 26K, is the loudest possible version of that signal — the document's size was never the point; the only thing that mattered was whether that 64K of summary budget was full.
 
 ## What about Java and SSJS?
 

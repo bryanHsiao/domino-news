@@ -27,9 +27,11 @@ relatedSsjs: ["Item"]
 Notes error: Field is too large (32K) or View's column & selection formulas are too large
 ```
 
-你照著訊息去找「哪個欄位超過 32K」。檢查完所有欄位 —— 沒有任何一個破 32K，最大的一個才 26,245 bytes。看起來都安全，卻就是存不了。把文件複製到測試區，隨便在某個欄位多打幾個字，錯誤穩定重現。
+你照著訊息去找「哪個欄位超過 32K」。檢查完所有欄位 —— 沒有任何一個破 32K，最大的一個才 26,245 bytes。而且這份文件整體其實**很大**、約 **7,847,405 bytes（接近 8MB）**，但每個欄位都在限制內。看起來都安全，卻就是存不了。把文件複製到測試區，隨便在某個欄位多打幾個字，錯誤穩定重現。
 
 問題在於：**這個錯誤訊息報的數字，常常不是你真正撞到的那道牆。** 它寫「32K」，但這次的牆是另一個你從頭到尾沒看到被點名的數字 —— **整份文件的 summary 資料合計上限 64K**。
+
+先停在這個對比上：**文件本體有近 8MB，卻被一個 64K 的限制擋下。** 這個荒謬感本身就是線索 —— 那 64K 管的根本不是「整份文件」，只是其中被標成 summary 的那一小塊。換句話說，文件可以很大（rich text、夾檔、大段內容都能塞），真正稀缺、會爆的只有 summary 那 64K 額度。
 
 這篇先把背後的心智模型建起來（一份文件裡的兩種 item、兩道大小限制），再講 ODS 跟 LargeSummary 為什麼是兩回事，最後用一個問題把解法分流：**這筆資料到底該不該是 summary？**
 
@@ -104,7 +106,9 @@ Call doc.Save(True, False)
 
 ### 該是 summary → 對資料庫開 LargeSummary
 
-如果這些大欄位**確實需要被 view 顯示、被 DQL / 搜尋取用、被排序分類**，那它們本來就該是 summary，要做的是讓資料庫支援更大的 summary。這也是本案的選擇：
+如果這些大欄位**確實需要被 view 顯示、被 DQL / 搜尋取用、被排序分類**，那它們本來就該是 summary，要做的是讓資料庫支援更大的 summary。這也是本案的選擇。
+
+**動手前先確認現況。** 本案我在 server console 用 `show directory`（`sh dir`）確認這個 DB 目前的 LargeSummary 狀態 —— 結果顯示沒啟用，正好對上「ODS 升了、旗標沒開」的判斷。確認是「能力在、開關沒開」之後，才執行：
 
 ```text
 load compact -c -LargeSummary on "xxx.nsf"
@@ -118,7 +122,9 @@ load compact -c -LargeSummary on "xxx.nsf"
 
 ### 不該是 summary → 程式把它設成 non-summary
 
-如果這些大欄位其實是 payload、根本不需要進 view（JSON、簽核全文、外部同步資料、只在詳細頁顯示的長文），那正解不是抬高天花板，而是把它**移出 summary buffer**：
+如果這些大欄位其實是 payload、根本不需要進 view（JSON、簽核全文、外部同步資料、只在詳細頁顯示的長文），那正解不是抬高天花板，而是把它**移出 summary buffer**。
+
+回想開頭那份近 8MB 的文件：它能長到那麼大、卻只有 summary 那一塊爆掉 —— 這正說明大 payload 本來就該待在 non-summary。non-summary 那邊空間多得是（單欄位可到約 1GB、文件可到 4GB），別讓一坨夾檔或大段 JSON 跑去跟只有 64K 的 summary 額度搶位子。寫法是：
 
 ```lotusscript
 Dim item As NotesItem
@@ -143,6 +149,8 @@ item.IsSummary = False
 ```
 
 本案的關鍵就在第 2 步：單欄沒破 32K、但加一點字就爆 —— 這個訊號幾乎等於宣告「這份文件早就貼著某個總量限制在跑」，把方向從「找那個大欄位」拉回「整份 summary 合計」。
+
+**一句話記住這個判斷點：當「每個欄位都沒破限制、但隨便加幾個字就爆」時，問題不在某一個欄位，而在整份 summary 的總量。** 本案那份近 8MB、單欄最大才 26K 的文件，就是這個訊號最大聲的版本 —— 文件多大都不是重點，重點永遠是那 64K 的 summary 額度滿了沒。
 
 ## 同類別在其他語言
 
