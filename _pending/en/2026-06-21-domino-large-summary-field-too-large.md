@@ -100,6 +100,8 @@ The docs also flag two boundaries worth remembering:
 - a view's **key length + data length still can't exceed 64KB** (LargeSummary doesn't help that).
 - once enabled, if a document really does end up with an item larger than **65,406 bytes**, **pre-R12 Notes clients and Domino servers may be unable to access it** — watch out in mixed-version environments.
 
+> For how ODS itself evolved and exactly what triggers an upgrade (e.g. whether copying an old-ODS database to a newer server bumps it), there's a [follow-up piece](/domino-news/posts/domino-ods-versions/) that unpacks this.
+
 ## The fix: first ask "should this be summary?"
 
 Don't reflexively reach for LargeSummary on sight of this error. Ask one question first, then fork:

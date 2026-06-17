@@ -100,6 +100,8 @@ Call doc.Save(True, False)
 - view 的 **key length + data length 仍不能超過 64KB**（這條 LargeSummary 救不到）。
 - 啟用後若文件真的出現大於 **65,406 bytes** 的 item，**pre-R12 的 Notes client / Domino server 可能無法存取** —— 混版環境要留意。
 
+> ODS 本身怎麼演進、以及「什麼時候會升、由什麼決定」（例如把舊 ODS 的 DB 複製到新 server 會不會自動升），站上有[續篇專門拆這條](/domino-news/posts/domino-ods-versions/)。
+
 ## 解法：先問「這資料該不該是 summary」
 
 不要看到這個錯誤就反射性開 LargeSummary。先問一個問題，再分流：
