@@ -1,7 +1,7 @@
 ---
 title: "The ODS Developers Rarely Notice: Domino's Database Format Versions, and What Actually Triggers an Upgrade"
 description: "You write LotusScript / XPages all day and probably never think about a database's ODS (on-disk structure) version — until a feature like LargeSummary needs a certain ODS, or you move an old database between servers and aren't sure whether its ODS follows. This article covers the ODS-to-release mapping from a developer's angle, the most counterintuitive point (upgrading the server version does not upgrade the ODS), and exactly what triggers an ODS change and what governs it — then answers a concrete case: an R9 ODS51 database, new-copied from an R12 client to an R12 server, does its ODS change automatically?"
-pubDate: 2026-06-22T07:30:00+08:00
+pubDate: 2026-06-21T07:00:00+08:00
 lang: en
 slug: domino-ods-versions
 tags:

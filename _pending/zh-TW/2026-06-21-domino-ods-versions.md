@@ -1,7 +1,7 @@
 ---
 title: "開發者很少注意的 ODS：Domino 資料庫格式版本演進，與「什麼時候會升、由什麼決定」"
 description: "你整天寫 LotusScript / XPages，大概從來沒在意過資料庫的 ODS（on-disk structure）版本 — 直到某個功能（像 LargeSummary）需要特定 ODS，或你把一顆舊 DB 在 server 之間搬動，搞不清楚 ODS 會不會跟著變。本文從開發者角度整理 ODS 的版本對應、最反直覺的一點（升 server 版本不等於升 ODS），以及 ODS 到底「什麼時候會變、由什麼決定」，最後回答一個具體情境：R9 的 ODS51 資料庫用 R12 client 新複製到 R12 server，ODS 會自動異動嗎？"
-pubDate: 2026-06-22T07:30:00+08:00
+pubDate: 2026-06-21T07:00:00+08:00
 lang: zh-TW
 slug: domino-ods-versions
 tags:
@@ -32,7 +32,7 @@ relatedSsjs: []
 
 - **ODS = 資料庫的檔案格式版本**。每個 Domino 版本有一個預設 ODS，較高的 ODS 解鎖較大的 DB、較多 ACL、LargeSummary 等能力。
 - **最反直覺的一點：升 server 版本 ≠ 升 ODS。** 官方表上，Domino **12 / 14 新建資料庫的預設仍是 ODS 52**；要 ODS 55 必須設 `Create_R12_Databases=1`。
-- **單純把舊 DB 開在新 server 上，不會自動升 ODS。** 只有 **copy-style compact**（`compact -c` / dbmt `-ods`）會升。
+- **單純把舊 DB 開在新 server 上，不會自動升 ODS。** 只有 **複製式壓縮（copy-style compact，`compact -c` / dbmt `-ods`）** 會升 ——「複製式」指的是「整顆 DB 重寫成一個新檔」的那種壓縮。
 - **目標 ODS 由 notes.ini `Create_Rx_Databases` 決定**（沒設 = 預設 52）。
 - **新副本 / 新複本是「建一個新檔」** → 套用「檔案被建立在哪台」的建立-ODS 設定；**OS 層原始檔案複製則原樣保留 ODS**。
 - Notes **client 啟動時**會自動把「低於預設 ODS」的**本機** DB 用 copy-style compact 升上來（這是 client 行為，server 沒有）。
@@ -80,7 +80,7 @@ Create_R12_Databases=1
 
 - **OS 層的原始檔案複製**（直接 copy `.nsf`）—— 沒有重寫檔案，ODS 原樣保留。
 - **單純開啟 / 使用 / 複寫資料**。
-- **in-place 維護**：`fixup`、`updall`、in-place compact（不重建檔案的那種）。
+- **就地式維護（in-place）**：`fixup`、`updall`、就地式壓縮（in-place compact，直接在原檔上整理、不重建成新檔的那種）。
 
 **會變 ODS：**
 
