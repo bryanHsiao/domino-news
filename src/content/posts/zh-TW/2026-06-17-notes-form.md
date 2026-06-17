@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_NOTESFORM_CLASS.html"
 relatedJava: ["Form"]
 relatedSsjs: ["Form"]
+cover: "/covers/notes-form.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 你接手一個沒人留文件的 NSF：想先搞清楚它到底有哪些表單、每個表單長什麼樣、誰被允許用它建文件。打開 Designer 一個一個點當然可以，但如果你要寫一支稽核 agent、跑過幾十顆資料庫做盤點呢？

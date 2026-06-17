@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_NOTESFORM_CLASS.html"
 relatedJava: ["Form"]
 relatedSsjs: ["Form"]
+cover: "/covers/notes-form.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 You inherit an NSF nobody documented, and you want to figure out what forms it actually has, what each one looks like, and who's allowed to create documents with it. Clicking through Designer one by one works — but what if you're writing an audit agent that sweeps dozens of databases for an inventory?
