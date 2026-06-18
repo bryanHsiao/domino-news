@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_NOTESNEWSLETTER_CLASS.html"
 relatedJava: ["Newsletter"]
 relatedSsjs: ["Newsletter"]
+cover: "/covers/notes-newsletter.webp"
+coverStyle: "risograph"
 ---
 
 需求很常見：每天把「昨天新進、符合某條件」的文件，整理成一封信寄給相關的人；或使用者在 view 裡選了幾筆，按個按鈕「把這些寄給我」。信裡最好每一筆都能直接點回原文件。

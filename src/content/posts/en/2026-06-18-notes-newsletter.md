@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_NOTESNEWSLETTER_CLASS.html"
 relatedJava: ["Newsletter"]
 relatedSsjs: ["Newsletter"]
+cover: "/covers/notes-newsletter.webp"
+coverStyle: "risograph"
 ---
 
 It's a common requirement: every day, roll up the documents that "arrived yesterday and match some criteria" into one email to the relevant people; or a user selects a few rows in a view and clicks a button to "send these to me." Ideally each entry in the email links straight back to its source document.
