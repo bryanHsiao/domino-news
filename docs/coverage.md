@@ -1,13 +1,13 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-06-17 · Posts scanned: 58 · Classes catalogued: 97*
+*Generated: 2026-06-18 · Posts scanned: 59 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
-**Overall: 55 / 97 classes covered (56.7%)**
+**Overall: 56 / 97 classes covered (57.7%)**
 
 ```
-███████████████████████░░░░░░░░░░░░░░░░░ 56.7%
+███████████████████████░░░░░░░░░░░░░░░░░ 57.7%
 ```
 
 ## Coverage by category
@@ -17,13 +17,13 @@
 | Database | 7 | 7 | 100% | 🟩 `████████████` |
 | Calendar | 3 | 3 | 100% | 🟩 `████████████` |
 | Item | 5 | 5 | 100% | 🟩 `████████████` |
+| Document | 6 | 6 | 100% | 🟩 `████████████` |
 | DQL | 2 | 2 | 100% | 🟩 `████████████` |
 | GPS | 3 | 3 | 100% | 🟩 `████████████` |
 | HTTP | 1 | 1 | 100% | 🟩 `████████████` |
 | JSON | 4 | 4 | 100% | 🟩 `████████████` |
 | DominoIQ | 2 | 2 | 100% | 🟩 `████████████` |
 | Session File Operations | 1 | 1 | 100% | 🟩 `████████████` |
-| Document | 5 | 6 | 83% | 🟩 `██████████░░` |
 | Session | 7 | 10 | 70% | 🟩 `████████░░░░` |
 | View | 2 | 5 | 40% | 🟨 `█████░░░░░░░` |
 | Rich Text | 3 | 9 | 33% | 🟨 `████░░░░░░░░` |
@@ -32,7 +32,7 @@
 | Admin | 1 | 4 | 25% | 🟧 `███░░░░░░░░░` |
 | Composite Apps | 0 | 2 | 0% | 🟥 `░░░░░░░░░░░░` |
 
-## ✓ Covered classes (55)
+## ✓ Covered classes (56)
 
 | Class | Category | Posts | First mention |
 |---|---|---|---|
@@ -71,6 +71,7 @@
 | [NotesMIMEEntity](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESMIMEENTITY_CLASS_OVERVIEW.html) | Item | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) | 2026-06-04 |
 | [NotesMIMEHeader](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESMIMEHEADER_CLASS.html) | Item | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) | 2026-06-04 |
 | [NotesName](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESNAME_CLASS.html) | Session | [notes-name](https://bryanhsiao.github.io/domino-news/posts/notes-name/) | 2026-06-09 |
+| [NotesNewsletter](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESNEWSLETTER_CLASS.html) | Document | [notes-newsletter](https://bryanhsiao.github.io/domino-news/posts/notes-newsletter/) | 2026-06-18 |
 | [NotesNoteCollection](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESNOTECOLLECTION_CLASS.html) | Database | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/) | 2026-04-29 |
 | [NotesOutline](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESOUTLINE_CLASS.html) | Document | [notes-outline](https://bryanhsiao.github.io/domino-news/posts/notes-outline/) | 2026-05-20 |
 | [NotesOutlineEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESOUTLINEENTRY_CLASS.html) | Document | [notes-outline](https://bryanhsiao.github.io/domino-news/posts/notes-outline/) | 2026-05-20 |
@@ -92,7 +93,7 @@
 | [NotesXMLProcessor](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-06 |
 | [NotesXSLTransformer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | 2026-05-06 |
 
-## ⨯ Uncovered classes (42)
+## ⨯ Uncovered classes (41)
 
 | Class | Category | Description |
 |---|---|---|
@@ -101,7 +102,6 @@
 | [NotesUserID](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUSERID_CLASS.html) | Admin | The NotesUserID class represents the Notes ID file or a Notes ID when it resides within th |
 | [NotesProperty](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESPROPERTY_CLASS.html) | Composite Apps | Represents a single property in the Composite Applications properties of a Domino® applica |
 | [NotesPropertyBroker](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESPROPERTYBROKER_CLASS.html) | Composite Apps | Mediates communication between components of a composite application, allowing communicati |
-| [NotesNewsletter](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESNEWSLETTER_CLASS.html) | Document | A document or set of documents that contain information from, or links to, several other d |
 | [NotesDOMAttributeNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMATTRIBUTENODE_CLASS.html) | DOM/XML | Represents an attribute in a NotesDOMElementNode object. |
 | [NotesDOMCDATASectionNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMCDATASECTIONNODE_CLASS.html) | DOM/XML | Represents a CDATA section in the XML data source. |
 | [NotesDOMCharacterDataNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMCHARACTERDATANODE_CLASS.html) | DOM/XML | Represents character data in a DOM node. |
@@ -168,6 +168,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `MIMEEntity` | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) |
 | `MIMEHeader` | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) |
 | `Name` | [notes-name](https://bryanhsiao.github.io/domino-news/posts/notes-name/) |
+| `Newsletter` | [notes-newsletter](https://bryanhsiao.github.io/domino-news/posts/notes-newsletter/) |
 | `NoteCollection` | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/) |
 | `Outline` | [notes-outline](https://bryanhsiao.github.io/domino-news/posts/notes-outline/) |
 | `OutlineEntry` | [notes-outline](https://bryanhsiao.github.io/domino-news/posts/notes-outline/) |
@@ -199,6 +200,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `DxlExporter` | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) |
 | `Form` | [notes-form](https://bryanhsiao.github.io/domino-news/posts/notes-form/) |
 | `Name` | [notes-name](https://bryanhsiao.github.io/domino-news/posts/notes-name/) |
+| `Newsletter` | [notes-newsletter](https://bryanhsiao.github.io/domino-news/posts/notes-newsletter/) |
 | `NoteCollection` | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/) |
 | `Outline` | [notes-outline](https://bryanhsiao.github.io/domino-news/posts/notes-outline/) |
 | `OutlineEntry` | [notes-outline](https://bryanhsiao.github.io/domino-news/posts/notes-outline/) |
@@ -222,6 +224,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [notes-newsletter](https://bryanhsiao.github.io/domino-news/posts/notes-newsletter/) | `NotesNewsletter` | `Newsletter` | `Newsletter` |
 | [notes-form](https://bryanhsiao.github.io/domino-news/posts/notes-form/) | `NotesForm`, `NotesDatabase` | `Form` | `Form` |
 | [hcl-volt-mx-v10-darwin](https://bryanhsiao.github.io/domino-news/posts/hcl-volt-mx-v10-darwin/) | — | — | — |
 | [hcl-nomad-1-0-20](https://bryanhsiao.github.io/domino-news/posts/hcl-nomad-1-0-20/) | — | — | — |
