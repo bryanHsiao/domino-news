@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html"
 relatedJava: ["Session"]
 relatedSsjs: ["session"]
+cover: "/covers/lotusscript-evaluate.webp"
+coverStyle: "art-deco"
 ---
 
 有時候你在寫 LotusScript，但心裡那個「剛好能解」的工具是一個 **@function** —— 你想要 `@Name` 的階層名稱處理、`@Unique` 的去重、`@Explode` / `@Implode` 的字串拆併、或 `@DbLookup` 的跨庫查值。問題是：這些是公式語言（@formula），你人在 LotusScript 裡。

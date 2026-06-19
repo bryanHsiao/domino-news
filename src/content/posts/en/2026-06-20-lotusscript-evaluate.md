@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html"
 relatedJava: ["Session"]
 relatedSsjs: ["session"]
+cover: "/covers/lotusscript-evaluate.webp"
+coverStyle: "art-deco"
 ---
 
 Sometimes you're writing LotusScript, but the tool that fits perfectly is an **@function** — you want `@Name`'s hierarchical-name handling, `@Unique`'s dedup, `@Explode` / `@Implode`'s string split-and-join, or `@DbLookup`'s cross-database lookup. The problem: those are formula language (@formula), and you're in LotusScript.
