@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FONTSIZE_PROPERTY.html"
 relatedJava: ["RichTextStyle"]
 relatedSsjs: ["RichTextStyle"]
+cover: "/covers/notes-rich-text-style.webp"
+coverStyle: "pencil-sketch"
 ---
 
 You're appending text into Body span by span with [`NotesRichTextItem`](/domino-news/posts/notes-rich-text-item/), and now you want the heading span to be bold, two sizes bigger, in blue. The question is — when you append text, where does the "style" come from?

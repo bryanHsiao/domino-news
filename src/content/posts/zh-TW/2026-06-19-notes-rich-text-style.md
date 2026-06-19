@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FONTSIZE_PROPERTY.html"
 relatedJava: ["RichTextStyle"]
 relatedSsjs: ["RichTextStyle"]
+cover: "/covers/notes-rich-text-style.webp"
+coverStyle: "pencil-sketch"
 ---
 
 你在程式裡用 [`NotesRichTextItem`](/domino-news/posts/notes-rich-text-item/) 把文字一段段 append 進 Body，現在想讓標題那段變粗體、放大兩級、換成藍色。問題是 —— append 文字的時候，「樣式」要從哪裡來？
