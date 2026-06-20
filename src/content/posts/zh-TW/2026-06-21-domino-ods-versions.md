@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.0.0/admin/upgrading_ods_on_clients.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-ods-versions.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 身為開發者，你整天在寫 LotusScript、XPages、agent，大概從來沒主動想過一件事：你操作的那顆資料庫，**底層檔案格式是哪個版本**？這個版本就叫 **ODS（on-disk structure）**，平常它隱形，直到某天它突然變成問題 ——

@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.0.0/admin/upgrading_ods_on_clients.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-ods-versions.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 As a developer you spend all day in LotusScript, XPages, and agents, and you've probably never actively wondered: the database you're working with — **which version is its underlying file format?** That version is the **ODS (on-disk structure)**, and normally it's invisible, until one day it suddenly becomes a problem —

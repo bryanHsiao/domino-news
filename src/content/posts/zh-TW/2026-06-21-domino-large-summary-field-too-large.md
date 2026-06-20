@@ -19,6 +19,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_REPLACEITEMVALUE_METHOD.html"
 relatedJava: ["Item"]
 relatedSsjs: ["Item"]
+cover: "/covers/domino-large-summary-field-too-large.webp"
+coverStyle: "collage"
 ---
 
 使用者在 XPages 表單按下 Submit，存檔失敗，丟出這句：
