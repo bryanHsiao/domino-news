@@ -1,7 +1,7 @@
 ---
 title: "開發者很少注意的 ODS：Domino 資料庫格式版本演進，與「什麼時候會升、由什麼決定」"
 description: "你整天寫 LotusScript / XPages，大概從來沒在意過資料庫的 ODS（on-disk structure）版本 — 直到某個功能（像 LargeSummary）需要特定 ODS，或你把一顆舊 DB 在 server 之間搬動，搞不清楚 ODS 會不會跟著變。本文從開發者角度整理 ODS 的版本對應、最反直覺的一點（升 server 版本不等於升 ODS），以及 ODS 到底「什麼時候會變、由什麼決定」，最後回答一個具體情境：R9 的 ODS51 資料庫用 R12 client 新複製到 R12 server，ODS 會自動異動嗎？"
-pubDate: 2026-06-21T07:00:00+08:00
+pubDate: 2026-06-21T07:31:00+08:00
 lang: zh-TW
 slug: domino-ods-versions
 tags:
