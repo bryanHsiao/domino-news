@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html"
 relatedJava: ["ViewEntry", "ViewEntryCollection"]
 relatedSsjs: ["ViewEntry", "ViewEntryCollection"]
+cover: "/covers/notes-view-entry.webp"
+coverStyle: "pencil-sketch"
 ---
 
 你要把一個 view 裡每份文件的「訂單編號、金額、狀態」這幾個欄位讀出來做報表。直覺寫法是：迴圈跑 view 裡的文件、每筆 `doc.GetItemValue("...")`。能動 —— 但它把**每一份文件都打開了一次**，幾千筆下來，慢到讓人懷疑人生。

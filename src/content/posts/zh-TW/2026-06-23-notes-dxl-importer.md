@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_IMPORT_METHOD_DXLIMPORTER.html"
 relatedJava: ["DxlImporter"]
 relatedSsjs: ["DxlImporter"]
+cover: "/covers/notes-dxl-importer.webp"
+coverStyle: "art-deco"
 ---
 
 站上先前在 [`NotesXMLProcessor`](/domino-news/posts/notes-xml-processor/) 那篇介紹過 `NotesDXLExporter` —— 把 Domino 的設計元素或文件匯出成 **DXL（Domino XML）**。那反過來的問題自然是：拿到一份 DXL，怎麼把它**灌回**資料庫？

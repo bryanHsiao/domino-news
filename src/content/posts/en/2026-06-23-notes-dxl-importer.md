@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_IMPORT_METHOD_DXLIMPORTER.html"
 relatedJava: ["DxlImporter"]
 relatedSsjs: ["DxlImporter"]
+cover: "/covers/notes-dxl-importer.webp"
+coverStyle: "art-deco"
 ---
 
 The earlier [`NotesXMLProcessor`](/domino-news/posts/notes-xml-processor/) piece introduced `NotesDXLExporter` — turning Domino design elements or documents into **DXL (Domino XML)**. The natural reverse question: given a piece of DXL, how do you push it **back** into a database?

@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html"
 relatedJava: ["ViewEntry", "ViewEntryCollection"]
 relatedSsjs: ["ViewEntry", "ViewEntryCollection"]
+cover: "/covers/notes-view-entry.webp"
+coverStyle: "pencil-sketch"
 ---
 
 You need to read "order number, amount, status" from every document in a view for a report. The instinctive approach: loop the documents in the view and `doc.GetItemValue("...")` each one. It works — but it **opens every single document once**, and across a few thousand rows it gets slow enough to make you question your life choices.
