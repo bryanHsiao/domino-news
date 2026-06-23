@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_APPENDTABLE_METHOD.html"
 relatedJava: ["RichTextTable"]
 relatedSsjs: ["RichTextTable"]
+cover: "/covers/notes-rich-text-table.webp"
+coverStyle: "minimalist-mono"
 ---
 
 You're assembling a rich text notification email in code with [`NotesRichTextItem`](/domino-news/posts/notes-rich-text-item/), and the body needs a small table — order line items, an approval summary, a reconciliation list. Plain text can't lay out clean gridlines, and that's where [`NotesRichTextTable`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTTABLE_CLASS.html) comes in.

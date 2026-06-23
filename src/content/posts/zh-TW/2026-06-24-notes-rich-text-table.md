@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_APPENDTABLE_METHOD.html"
 relatedJava: ["RichTextTable"]
 relatedSsjs: ["RichTextTable"]
+cover: "/covers/notes-rich-text-table.webp"
+coverStyle: "minimalist-mono"
 ---
 
 你在程式裡用 [`NotesRichTextItem`](/domino-news/posts/notes-rich-text-item/) 組一封 rich text 通知信，內容要一個小表格 —— 訂單明細、簽核摘要、對帳清單。純文字排不出整齊的格線，這時要的就是 [`NotesRichTextTable`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTTABLE_CLASS.html)。
