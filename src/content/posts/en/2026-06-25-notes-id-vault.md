@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSESSION_CLASS.html"
 relatedJava: ["IDVault"]
 relatedSsjs: []
+cover: "/covers/notes-id-vault.webp"
+coverStyle: "risograph"
 ---
 
 The **ID Vault** is Domino's facility for centrally and securely storing user Notes ID files by policy — when a user forgets their password, switches machines, or corrupts their ID, an administrator (or an automated flow) can restore the ID from the vault. Operating the ID Vault from code is the job of [`NotesIDVault`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESIDVAULT_CLASS.html).

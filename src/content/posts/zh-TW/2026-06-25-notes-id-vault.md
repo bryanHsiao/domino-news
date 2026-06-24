@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSESSION_CLASS.html"
 relatedJava: ["IDVault"]
 relatedSsjs: []
+cover: "/covers/notes-id-vault.webp"
+coverStyle: "risograph"
 ---
 
 **ID Vault** 是 Domino 用 policy 集中、安全地保管使用者 Notes ID 檔的設施 —— 使用者忘記密碼、換電腦、ID 損毀時，管理員（或自動化流程）能從 vault 把 ID 補回去。那「用程式操作 ID Vault」靠的就是 [`NotesIDVault`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESIDVAULT_CLASS.html)。
