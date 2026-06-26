@@ -192,14 +192,34 @@ export async function generateCoverImage(
     `[cover] Calling ${IMAGE_MODEL} (quality=${IMAGE_QUALITY}, style=${styleId}) for "${slug}"`
   );
   try {
-    const result = await client.images.generate({
-      model: IMAGE_MODEL,
-      prompt,
-      size: '1536x1024',
-      quality: IMAGE_QUALITY,
-      n: 1,
-    });
-    const b64 = result.data?.[0]?.b64_json;
+    // Retry the image-generation call: gpt-image-1 intermittently drops the
+    // connection mid-response ("FetchError: Premature close"), which used to
+    // silently leave a post on the fallback gradient cover. A couple of
+    // backed-off retries ride out those transient failures.
+    const MAX_ATTEMPTS = 3;
+    let result: Awaited<ReturnType<typeof client.images.generate>> | undefined;
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        result = await client.images.generate({
+          model: IMAGE_MODEL,
+          prompt,
+          size: '1536x1024',
+          quality: IMAGE_QUALITY,
+          n: 1,
+        });
+        break;
+      } catch (genErr) {
+        console.warn(
+          `[cover]   generate attempt ${attempt}/${MAX_ATTEMPTS} failed for ${slug}:`,
+          genErr instanceof Error ? genErr.message : genErr
+        );
+        if (attempt === MAX_ATTEMPTS) throw genErr;
+        const delayMs = attempt * 5000; // 5s, then 10s
+        console.warn(`[cover]   retrying in ${delayMs / 1000}s...`);
+        await new Promise((r) => setTimeout(r, delayMs));
+      }
+    }
+    const b64 = result!.data?.[0]?.b64_json;
     if (!b64) {
       console.warn(`[cover] No b64_json returned for ${slug}`);
       return null;
