@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FORMULA_PROPERTY_VIEWCOLUMN.html"
 relatedJava: ["ViewColumn"]
 relatedSsjs: ["ViewColumn"]
+cover: "/covers/notes-view-column.webp"
+coverStyle: "collage"
 ---
 
 接手一個沒文件的資料庫，你想搞清楚某個 view 到底長怎樣：有哪幾欄、每欄顯示的是某個欄位還是一段公式、哪幾欄有排序、哪欄是分類、哪幾欄被隱藏。打開 Designer 一欄一欄看可以，但要寫工具盤點幾十個 view 呢？

@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FORMULA_PROPERTY_VIEWCOLUMN.html"
 relatedJava: ["ViewColumn"]
 relatedSsjs: ["ViewColumn"]
+cover: "/covers/notes-view-column.webp"
+coverStyle: "collage"
 ---
 
 You inherit an undocumented database and want to figure out what a view actually looks like: which columns it has, whether each shows a field or a formula, which are sorted, which is a category, which are hidden. Clicking through Designer column by column works — but what about a tool to inventory dozens of views?
