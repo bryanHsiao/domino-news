@@ -199,12 +199,20 @@ export async function generateCoverImage(
     const MAX_ATTEMPTS = 3;
     let result: Awaited<ReturnType<typeof client.images.generate>> | undefined;
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      // After the first attempt, drop to 'low' quality: it generates roughly
+      // twice as fast, which keeps the call under the ~20s point where the
+      // connection otherwise gets cut ("Premature close") on slower
+      // (longer-prompt) generations.
+      const attemptQuality = attempt === 1 ? IMAGE_QUALITY : 'low';
       try {
+        if (attempt > 1) {
+          console.log(`[cover]   attempt ${attempt} at quality=${attemptQuality} (faster)`);
+        }
         result = await client.images.generate({
           model: IMAGE_MODEL,
           prompt,
           size: '1536x1024',
-          quality: IMAGE_QUALITY,
+          quality: attemptQuality,
           n: 1,
         });
         break;
