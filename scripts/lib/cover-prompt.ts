@@ -188,6 +188,11 @@ export async function generateCoverImage(
   preferredStyleId?: string
 ): Promise<GeneratedCover | null> {
   const { prompt, styleId } = buildCoverPrompt(title, primaryTag, recentStyleIds, preferredStyleId);
+  // Minimal fallback prompt for the last retry: the full editorial prompt is
+  // ~2200 chars of meta-instructions, which gpt-image-1 sometimes can't finish
+  // ("Premature close"). A short prompt generates reliably.
+  const shortStyle = styleDescById(styleId) ?? styleId;
+  const shortPrompt = `A ${shortStyle} editorial cover illustration for a technical article titled "${title}". One clear visual metaphor, no text, no letters, no words.`;
   console.log(
     `[cover] Calling ${IMAGE_MODEL} (quality=${IMAGE_QUALITY}, style=${styleId}) for "${slug}"`
   );
@@ -203,14 +208,20 @@ export async function generateCoverImage(
       // twice as fast, which keeps the call under the ~20s point where the
       // connection otherwise gets cut ("Premature close") on slower
       // (longer-prompt) generations.
+      // Escalating fallback: attempt 1 = full prompt at configured quality;
+      // attempt 2 = full prompt at 'low' (faster); final attempt = the short
+      // prompt at 'low', which reliably finishes when the long one keeps
+      // getting cut.
       const attemptQuality = attempt === 1 ? IMAGE_QUALITY : 'low';
+      const attemptPrompt = attempt < MAX_ATTEMPTS ? prompt : shortPrompt;
       try {
         if (attempt > 1) {
-          console.log(`[cover]   attempt ${attempt} at quality=${attemptQuality} (faster)`);
+          const which = attempt < MAX_ATTEMPTS ? 'full prompt' : 'short prompt';
+          console.log(`[cover]   attempt ${attempt} at quality=${attemptQuality}, ${which}`);
         }
         result = await client.images.generate({
           model: IMAGE_MODEL,
-          prompt,
+          prompt: attemptPrompt,
           size: '1536x1024',
           quality: attemptQuality,
           n: 1,
