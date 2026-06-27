@@ -16,6 +16,8 @@ sources:
     url: "https://github.com/OpenNTF/org.openntf.nsfodp"
   - title: "NSF ODP Tooling 4.1.0 — GitHub release notes"
     url: "https://github.com/OpenNTF/org.openntf.nsfodp/releases/tag/4.1.0"
+  - title: "Setting Domino Designer Source Control user preferences — HCL Docs"
+    url: "https://help.hcl-software.com/dom_designer/9.0.1/user/wpd_designer_prefs_source_control.html"
 cover: "/covers/openntf-nsf-odp-tooling-4-1-0.webp"
 coverStyle: "low-poly-3d"
 ---
@@ -28,15 +30,19 @@ If you've ever tried to put a Domino application under version control, you've h
 - It runs as a **Maven plugin**, with three execution modes — a Domino server, a Docker container, or a local Notes/Domino install.
 - The **4.1.0** release is a maintenance-and-polish update: better Docker-based compilation, configurable locale/time-zone for build timestamps, ACL entry-type configuration, and dependency cleanup.
 
-## The problem: Designer is a version-control dead end
+## The problem, and what Designer already solves
 
-A traditional Domino developer lives inside Domino Designer. Designs — forms, views, agents, XPages, script libraries — are stored inside the NSF in a binary format. That's fine for a single developer clicking around the IDE, but it makes the modern toolchain impossible:
+A traditional Domino developer lives inside Domino Designer. Designs — forms, views, agents, XPages, script libraries — are stored inside the NSF in a binary format. Out of the box that makes the modern toolchain awkward: you can't `git diff` a binary NSF, two developers can't branch-and-merge design changes, and compilation has historically meant the Designer GUI.
 
-- You can't `git diff` a binary NSF and see *what* changed in a form.
-- Two developers can't work on separate branches and merge their design changes.
-- You can't compile and deploy an application from a build server, because compilation has historically required the Designer GUI.
+But Designer is *not* a complete dead end, and it's worth being precise about that. Since the 9.0.x era it ships a built-in **Source Control** feature — File ▸ Preferences ▸ Domino Designer ▸ Source Control — that ties an NSF to an on-disk project and keeps the two in sync. Three preferences matter ([HCL's documentation](https://help.hcl-software.com/dom_designer/9.0.1/user/wpd_designer_prefs_source_control.html) covers them):
 
-NSF ODP Tooling exists to break that dependency. Its [GitHub repository](https://github.com/OpenNTF/org.openntf.nsfodp) describes the core capability plainly: the ODP compiler lets you "use a Domino server or local Notes installation to compile an on-disk project into a full NSF without the need of Domino Designer."
+- **Enable automatic export of design elements (NSF → disk)** — edits inside the NSF are written out to the on-disk project automatically.
+- **Enable automatic import of design elements (disk → NSF)** — changes on disk are pulled back into the NSF (with auto-build on).
+- **Use binary DXL for source control operations** — on by default, and this is the one to know about. **Deselect it** and design elements export as *text* DXL: human-readable, and mergeable with ordinary Git tooling. Leave it on and you get binary DXL, which round-trips with perfect fidelity but can't be diffed or merged.
+
+So the version-control half is achievable in Designer alone, and plenty of teams run exactly that — binary DXL off, design elements committed as text. The tradeoff, which both the HCL docs and long-time practitioners flag, is fidelity: a few element types don't round-trip cleanly as text (a JavaScript library inserted as a resource can export as an empty shell), so you accept some lossiness in exchange for mergeable source.
+
+The limit that *remains* is the important one. Designer's on-disk project still needs **Designer itself** — a GUI IDE on a developer's machine — to compile the project back into an NSF. You can't point a headless build agent at it. That's the gap NSF ODP Tooling fills.
 
 ## What an "On-Disk Project" actually is
 
@@ -46,7 +52,7 @@ Because every element is now text on disk, Git treats a Domino app like any othe
 
 ## The three things it does
 
-The project ships three cooperating pieces:
+The [NSF ODP Tooling project](https://github.com/OpenNTF/org.openntf.nsfodp) ships three cooperating pieces:
 
 1. **ODP Compiler** — takes an on-disk project and produces a complete NSF. It resolves classic design elements, XPages, and OSGi[^osgi] plugin dependencies along the way.
 2. **ODP Exporter** — the reverse direction: it exports an existing NSF into a Designer-compatible ODP, so you can bring a legacy application into source control for the first time.
