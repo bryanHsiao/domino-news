@@ -129,6 +129,36 @@ Required: `title`, `description`, `pubDate`, `lang`, `slug`, `tags`,
 
 ---
 
+## Tag conventions
+
+Tags span 4 axes (PRODUCT / TECH / TOPIC / TYPE) — the full taxonomy
+lives in `scripts/generate-article.ts` (`TAGS_*`) and the README. Pick
+2–4 tags, ideally one per axis **that applies**. "That applies" is
+load-bearing: don't force a tag on an axis just to fill it.
+
+**TYPE tag — be precise, don't over-promise** (decided 2026-06-27):
+
+- The TYPE axis is `Release Notes | Tutorial | News | Community`.
+- **`Tutorial` ONLY when the article has runnable, follow-along
+  examples** — a hands-on "do this, then this" arc the reader can
+  actually execute.
+- **A pure syntax / class / concept introduction (reference or
+  explanation, no worked steps) leaves the TYPE tag BLANK.** The TECH
+  tag (LotusScript / DQL / Formula / …) already signals what the piece
+  is; a `Tutorial` tag on a reference piece over-promises, the same way
+  an over-claiming title does.
+- Litmus test: *"Does it walk the reader through doing something, with
+  examples they could follow?"* Yes → `Tutorial`. No → no TYPE tag (or
+  `Community` for an OpenNTF/ecosystem tool intro, `News` / `Release
+  Notes` for those).
+- Not retro-applied: ~55 existing posts use `Tutorial` as a catch-all
+  instructional bucket. This rule is forward-looking; only re-tag old
+  posts if/when you're already editing them. If "reference vs hands-on"
+  starts mattering enough to want it visible, add a `Reference` TYPE
+  tag to the taxonomy rather than stretching `Tutorial`.
+
+---
+
 ## Inline-link diversity (validation)
 
 `scripts/generate-article.ts:600+` enforces:
