@@ -17,7 +17,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createOpenAIClient } from './lib/openai-client.js';
+import OpenAI from 'openai';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -73,7 +73,7 @@ async function main() {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error('OPENAI_API_KEY env var is required.');
   }
-  const client = createOpenAIClient();
+  const client = new OpenAI();
   console.log(`[hero] Calling ${IMAGE_MODEL} (quality=${IMAGE_QUALITY}) for home banner`);
   const result = await client.images.generate({
     model: IMAGE_MODEL,
@@ -81,6 +81,9 @@ async function main() {
     size: '1536x1024',
     quality: IMAGE_QUALITY,
     n: 1,
+    // openai@6 made images.generate return ImagesResponse | Stream<...>;
+    // stream:false narrows it back so result.data is typed.
+    stream: false,
   });
   const b64 = result.data?.[0]?.b64_json;
   if (!b64) {

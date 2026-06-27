@@ -213,7 +213,10 @@ export async function generateCoverImage(
     // persistence. Hence: short prompt early + many backed-off attempts.
     const MAX_ATTEMPTS = Number(process.env.COVER_MAX_ATTEMPTS ?? 8);
     const BACKOFF_MS = Number(process.env.COVER_BACKOFF_MS ?? 8000);
-    let result: Awaited<ReturnType<typeof client.images.generate>> | undefined;
+    // openai@6's images.generate is overloaded (stream true/false), so
+    // ReturnType resolves to the streaming|non-streaming union. We always
+    // call with stream:false, so pin the non-streaming response type.
+    let result: OpenAI.Images.ImagesResponse | undefined;
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
       // Attempt 1: full editorial prompt at the configured quality (best
       // result when the API cooperates). Attempt 2+: short prompt at 'low'
@@ -234,6 +237,10 @@ export async function generateCoverImage(
           size: '1536x1024',
           quality: attemptQuality,
           n: 1,
+          // openai@6 made images.generate return a union of
+          // ImagesResponse | Stream<ImageGenStreamEvent>; pinning stream:false
+          // narrows it back to ImagesResponse so result.data is typed.
+          stream: false,
         });
         break;
       } catch (genErr) {
