@@ -18,6 +18,7 @@ import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import OpenAI from 'openai';
+import { createOpenAIClient } from './lib/openai-client.js';
 import { verifyAll, extractMarkdownLinks } from './lib/verify-urls.js';
 import { reviewArticle, type ReviewIssue, type ReviewResult, type RecentPost } from './lib/review-article.js';
 import { generateCoverImage } from './lib/cover-prompt.js';
@@ -699,7 +700,7 @@ async function generate(opts: GenerateOptions): Promise<BilingualArticle> {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error('OPENAI_API_KEY env var is required.');
   }
-  const client = new OpenAI();
+  const client = createOpenAIClient();
 
   const prompt = buildPrompt(
     opts.recentPosts,
@@ -1028,7 +1029,7 @@ async function attempt(
 }
 
 async function publish(article: BilingualArticle, fallbackReason: string | null): Promise<void> {
-  const client = new OpenAI();
+  const client = createOpenAIClient();
   const cover = await generateCover(client, article);
   if (cover) {
     article.cover = cover.coverPath;

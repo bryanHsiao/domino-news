@@ -26,7 +26,7 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import OpenAI from 'openai';
+import { createOpenAIClient } from './lib/openai-client.js';
 import { generateCoverImage } from './lib/cover-prompt.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -136,7 +136,7 @@ async function main() {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error('OPENAI_API_KEY env var is required.');
   }
-  const client = new OpenAI();
+  const client = createOpenAIClient();
 
   const zh = await processLang('zh-TW');
   const en = await processLang('en');
