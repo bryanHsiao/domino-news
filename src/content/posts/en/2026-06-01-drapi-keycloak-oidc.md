@@ -5,8 +5,8 @@ pubDate: 2026-06-01T07:30:00+08:00
 lang: en
 slug: drapi-keycloak-oidc
 tags:
-  - "Domino"
-  - "Tutorial"
+  - "Domino REST API"
+  - "OIDC"
 sources:
   - title: "DRAPI + Keycloak OIDC implementation notes — GitHub repo"
     url: "https://github.com/bryanHsiao/drapi-oidc-keycloak"

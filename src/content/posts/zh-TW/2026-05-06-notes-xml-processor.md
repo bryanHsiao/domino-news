@@ -5,7 +5,6 @@ pubDate: 2026-05-06T07:30:00+08:00
 lang: zh-TW
 slug: notes-xml-processor
 tags:
-  - "Tutorial"
   - "LotusScript"
   - "Domino Designer"
 sources:

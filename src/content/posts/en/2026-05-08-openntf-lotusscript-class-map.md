@@ -7,7 +7,6 @@ slug: openntf-lotusscript-class-map
 tags:
   - "Community"
   - "LotusScript"
-  - "Tutorial"
 sources:
   - title: "LotusScript Class Map (live demo) — OpenNTF"
     url: "https://openntf.org/ls/index.html"

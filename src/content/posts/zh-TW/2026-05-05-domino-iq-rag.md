@@ -8,7 +8,6 @@ tags:
   - "Domino IQ"
   - "AI"
   - "Domino Server"
-  - "Tutorial"
 sources:
   - title: "RAG support in Domino 14.5.1 — HCL Domino Admin Help"
     url: "https://help.hcl-software.com/domino/14.5.1/admin/conf_iq_rag_support.html"

@@ -6,7 +6,6 @@ lang: zh-TW
 slug: notes-property-broker
 tags:
   - "LotusScript"
-  - "Tutorial"
 sources:
   - title: "NotesPropertyBroker class — HCL Domino Designer 14.5"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESPROPERTYBROKER_CLASS.html"

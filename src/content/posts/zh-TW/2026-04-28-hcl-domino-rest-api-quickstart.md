@@ -5,7 +5,7 @@ pubDate: "2026-04-28"
 lang: "zh-TW"
 slug: "hcl-domino-rest-api-quickstart"
 tags:
-  - "Tutorial"
+  - "News"
   - "Domino REST API"
   - "Admin"
 sources:

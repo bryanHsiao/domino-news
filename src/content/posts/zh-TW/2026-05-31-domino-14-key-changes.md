@@ -6,7 +6,7 @@ lang: zh-TW
 slug: domino-14-key-changes
 tags:
   - "Domino"
-  - "Tutorial"
+  - "Release Notes"
 sources:
   - title: "What's New in Domino 14.0 — HCL Product Documentation"
     url: "https://help.hcl-software.com/domino/14.0.0/admin/wn_140.html"

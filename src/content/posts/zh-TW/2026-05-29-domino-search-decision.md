@@ -7,7 +7,6 @@ slug: domino-search-decision
 tags:
   - "LotusScript"
   - "DQL"
-  - "Tutorial"
 sources:
   - title: "FTSearch method (NotesDatabase) — HCL Domino Designer 14.5"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FTSEARCH_METHOD_DB.html"

@@ -5,7 +5,6 @@ pubDate: 2026-05-18T07:30:00+08:00
 lang: zh-TW
 slug: notes-xml-parser-dom-vs-sax
 tags:
-  - "Tutorial"
   - "LotusScript"
   - "Domino Designer"
 sources:
