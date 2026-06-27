@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIWORKSPACE_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-timer.webp"
+coverStyle: "pencil-sketch"
 ---
 
 You want to do something every few seconds on an open Notes client screen: refresh a view, check whether new documents have arrived, update a "last synced at" display. LotusScript has no crude `Sleep` loop for this (it would freeze the UI), but it does have a class built for exactly this — [`NotesTimer`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESTIMER_CLASS.html).

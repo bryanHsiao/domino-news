@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIWORKSPACE_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-timer.webp"
+coverStyle: "pencil-sketch"
 ---
 
 你想在 Notes client 開著的某個畫面上，每隔幾秒自動做一件事：刷新一個 view、看看有沒有新文件進來、更新一個「最後同步時間」的顯示。LotusScript 沒有 `Sleep` 迴圈那種土法（會卡住 UI），但有一個專門做這件事的類別 —— [`NotesTimer`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESTIMER_CLASS.html)。
