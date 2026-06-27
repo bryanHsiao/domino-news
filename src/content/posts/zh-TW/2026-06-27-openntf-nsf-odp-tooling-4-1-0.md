@@ -2,13 +2,14 @@
 title: "NSF ODP Tooling：不開 Designer，把 NSF 變成可版控的原始碼"
 description: "NSF ODP Tooling 是 OpenNTF 的專案，把二進位的 NSF 拆成檔案系統上的 On-Disk Project（ODP），讓你能把 Domino 應用放進 Git，再不靠 Domino Designer 就把 ODP 編譯回完整的 NSF —— 為 Domino 帶來真正的版本控制與 CI/CD。本文完整介紹它是什麼、Maven plugin 與容器化編譯怎麼運作，以及 4.1.0 這一版實際改了什麼。"
 pubDate: "2026-06-27T11:45:02+08:00"
+updatedDate: 2026-06-27
 lang: "zh-TW"
 slug: "openntf-nsf-odp-tooling-4-1-0"
 tags:
   - "Domino Designer"
   - "Java"
   - "DevOps"
-  - "Tutorial"
+  - "Community"
 sources:
   - title: "NSF ODP Tooling — OpenNTF 專案頁"
     url: "https://openntf.org/main.nsf/project.xsp?r=project%2FNSF+ODP+Tooling%2Fsummary"

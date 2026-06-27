@@ -2,13 +2,14 @@
 title: "NSF ODP Tooling: Build Domino NSFs from Source, No Designer Required"
 description: "NSF ODP Tooling is an OpenNTF project that turns a binary NSF into a file-system On-Disk Project you can keep in Git, then compiles it back into a full NSF without Domino Designer — bringing real version control and CI/CD to Domino. Here's what it is, how the Maven plugin and container-based compilation work, and what the 4.1.0 release actually changed."
 pubDate: "2026-06-27T11:45:02+08:00"
+updatedDate: 2026-06-27
 lang: "en"
 slug: "openntf-nsf-odp-tooling-4-1-0"
 tags:
   - "Domino Designer"
   - "Java"
   - "DevOps"
-  - "Tutorial"
+  - "Community"
 sources:
   - title: "NSF ODP Tooling — OpenNTF project page"
     url: "https://openntf.org/main.nsf/project.xsp?r=project%2FNSF+ODP+Tooling%2Fsummary"
