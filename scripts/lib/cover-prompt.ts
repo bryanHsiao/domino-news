@@ -197,27 +197,36 @@ export async function generateCoverImage(
     `[cover] Calling ${IMAGE_MODEL} (quality=${IMAGE_QUALITY}, style=${styleId}) for "${slug}"`
   );
   try {
-    // Retry the image-generation call: gpt-image-1 intermittently drops the
-    // connection mid-response ("FetchError: Premature close"), which used to
-    // silently leave a post on the fallback gradient cover. A couple of
-    // backed-off retries ride out those transient failures.
-    const MAX_ATTEMPTS = 3;
+    // Retry the image-generation call: gpt-image-1 frequently drops the
+    // connection mid-response ("FetchError: Premature close" /
+    // ERR_STREAM_PREMATURE_CLOSE), which used to silently leave a post on
+    // the fallback gradient cover. Empirically (see the removed
+    // scripts/gen-one-cover.ts one-off that salvaged the 2026-06-26 cover)
+    // the reliable recipe is: try the full editorial prompt ONCE for best
+    // quality when the API is healthy, then fall back fast to the short
+    // prompt at 'low' quality and keep retrying — a handful of attempts
+    // gets through even when most requests are being cut.
+    //
+    // Two failure modes are conflated under "Premature close": (a) slow
+    // generations from the long ~2200-char prompt getting cut, fixed by the
+    // short prompt; (b) transient transport-level resets, fixed only by
+    // persistence. Hence: short prompt early + many backed-off attempts.
+    const MAX_ATTEMPTS = Number(process.env.COVER_MAX_ATTEMPTS ?? 8);
+    const BACKOFF_MS = Number(process.env.COVER_BACKOFF_MS ?? 8000);
     let result: Awaited<ReturnType<typeof client.images.generate>> | undefined;
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-      // After the first attempt, drop to 'low' quality: it generates roughly
-      // twice as fast, which keeps the call under the ~20s point where the
-      // connection otherwise gets cut ("Premature close") on slower
-      // (longer-prompt) generations.
-      // Escalating fallback: attempt 1 = full prompt at configured quality;
-      // attempt 2 = full prompt at 'low' (faster); final attempt = the short
-      // prompt at 'low', which reliably finishes when the long one keeps
-      // getting cut.
+      // Attempt 1: full editorial prompt at the configured quality (best
+      // result when the API cooperates). Attempt 2+: short prompt at 'low'
+      // quality — smaller generation, smaller b64 body, far less likely to
+      // be cut mid-stream, and the recipe the one-off proved out.
+      const useShort = attempt >= 2;
       const attemptQuality = attempt === 1 ? IMAGE_QUALITY : 'low';
-      const attemptPrompt = attempt < MAX_ATTEMPTS ? prompt : shortPrompt;
+      const attemptPrompt = useShort ? shortPrompt : prompt;
       try {
         if (attempt > 1) {
-          const which = attempt < MAX_ATTEMPTS ? 'full prompt' : 'short prompt';
-          console.log(`[cover]   attempt ${attempt} at quality=${attemptQuality}, ${which}`);
+          console.log(
+            `[cover]   attempt ${attempt}/${MAX_ATTEMPTS} at quality=${attemptQuality}, short prompt`
+          );
         }
         result = await client.images.generate({
           model: IMAGE_MODEL,
@@ -233,9 +242,8 @@ export async function generateCoverImage(
           genErr instanceof Error ? genErr.message : genErr
         );
         if (attempt === MAX_ATTEMPTS) throw genErr;
-        const delayMs = attempt * 5000; // 5s, then 10s
-        console.warn(`[cover]   retrying in ${delayMs / 1000}s...`);
-        await new Promise((r) => setTimeout(r, delayMs));
+        console.warn(`[cover]   retrying in ${BACKOFF_MS / 1000}s...`);
+        await new Promise((r) => setTimeout(r, BACKOFF_MS));
       }
     }
     const b64 = result!.data?.[0]?.b64_json;

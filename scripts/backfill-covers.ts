@@ -195,6 +195,7 @@ async function main() {
     `[backfill] ${todoSlugs.size} post(s) need a cover. (FORCE_REGEN=${FORCE_REGEN ? '1' : '0'})`
   );
 
+  const failedSlugs: string[] = [];
   for (let idx = 0; idx < posts.length; idx++) {
     const p = posts[idx];
     if (!todoSlugs.has(p.slug)) {
@@ -228,7 +229,10 @@ async function main() {
       recentStyles,
       preferredStyle
     );
-    if (!generated) continue;
+    if (!generated) {
+      failedSlugs.push(p.slug);
+      continue;
+    }
 
     // Update in-memory so subsequent iterations see this style as taken.
     p.coverStyle = generated.styleId;
@@ -241,6 +245,20 @@ async function main() {
       await writeFile(f.file, withStyle, 'utf8');
       console.log(`[backfill]   updated frontmatter -> ${f.file}`);
     }
+  }
+
+  if (failedSlugs.length > 0) {
+    // Surface the failure as a non-zero exit so the workflow goes RED.
+    // Previously a cover-generation failure was swallowed (return null +
+    // exit 0), so the post silently shipped on the fallback gradient and
+    // the green check hid it — which is exactly how this went unnoticed for
+    // days. Any successful covers from this run were already written to disk
+    // and frontmatter, and the workflow's commit step runs with
+    // `if: always()`, so those are still committed before the job fails.
+    console.error(
+      `[backfill] FAILED to generate covers for ${failedSlugs.length} post(s): ${failedSlugs.join(', ')}`
+    );
+    process.exit(1);
   }
 
   console.log('[backfill] Done.');
