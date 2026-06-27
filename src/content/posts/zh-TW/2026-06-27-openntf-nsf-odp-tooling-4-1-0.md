@@ -1,32 +1,95 @@
 ---
-title: "OpenNTF 發布 NSF ODP Tooling 4.1.0 版"
-description: "OpenNTF 於 2026 年 3 月 28 日發布了 NSF ODP Tooling 4.1.0 版，該版本改進了 JavaSourceClassLoader 的效能，並降低了部分日誌訊息的層級。"
+title: "NSF ODP Tooling：不開 Designer，把 NSF 變成可版控的原始碼"
+description: "NSF ODP Tooling 是 OpenNTF 的專案，把二進位的 NSF 拆成檔案系統上的 On-Disk Project（ODP），讓你能把 Domino 應用放進 Git，再不靠 Domino Designer 就把 ODP 編譯回完整的 NSF —— 為 Domino 帶來真正的版本控制與 CI/CD。本文完整介紹它是什麼、Maven plugin 與容器化編譯怎麼運作，以及 4.1.0 這一版實際改了什麼。"
 pubDate: "2026-06-27T11:45:02+08:00"
 lang: "zh-TW"
 slug: "openntf-nsf-odp-tooling-4-1-0"
 tags:
   - "Domino Designer"
-  - "LotusScript"
-  - "Admin"
-  - "Release Notes"
+  - "Java"
+  - "DevOps"
+  - "Tutorial"
 sources:
-  - title: "OpenNTF.org - NSF ODP Tooling 4.1.0 Release"
-    url: "https://openntf.org/main.nsf/project.xsp?r=project%2FNSF+ODP+Tooling%2Freleases%2FD1AE627FE95698F786258B0B0056CACD"
-  - title: "OpenNTF.org - NSF ODP Tooling Project"
+  - title: "NSF ODP Tooling — OpenNTF 專案頁"
     url: "https://openntf.org/main.nsf/project.xsp?r=project%2FNSF+ODP+Tooling%2Fsummary"
+  - title: "OpenNTF/org.openntf.nsfodp — GitHub 原始碼庫"
+    url: "https://github.com/OpenNTF/org.openntf.nsfodp"
+  - title: "NSF ODP Tooling 4.1.0 — GitHub release notes"
+    url: "https://github.com/OpenNTF/org.openntf.nsfodp/releases/tag/4.1.0"
 cover: "/covers/openntf-nsf-odp-tooling-4-1-0.webp"
 coverStyle: "low-poly-3d"
 ---
-OpenNTF 於 2026 年 3 月 28 日發布了 NSF ODP Tooling 4.1.0 版，該工具旨在增強 HCL Domino 開發者的開發體驗。
+只要你試過把 Domino 應用放進版本控制，大概都撞過同一道牆：NSF 是二進位容器、Domino Designer 是只能用滑鼠點的 GUI IDE，Git 根本沒東西可以 diff。NSF ODP Tooling 就是 OpenNTF 用來打掉這道牆的專案。它在台灣的 Domino 圈子知道的人不多，所以這篇不是發版快訊，而是一篇完整介紹 —— 它是什麼、怎麼運作，以及最新的 4.1.0 帶來了什麼。
 
-## 主要更新
+## 重點摘要
 
-- **JavaSourceClassLoader 的改進**：此版本修改了 JavaSourceClassLoader，使用 ConcurrentHashMaps 以提升效能，解決了 [Issue #319](https://github.com/OpenNTF/org.openntf.nsfodp/pull/321)。
+- **NSF ODP Tooling** 把二進位的 NSF 轉成 *On-Disk Project*（ODP）—— 一個由文字／XML 設計檔組成、可以 commit 進 Git 的資料夾 —— 並且能**不透過 Domino Designer**就把 ODP 編譯回完整的 NSF。
+- 這解鎖了 Designer 做不到的事：有意義的 diff、分支與合併，以及在 CI/CD（Jenkins、GitHub Actions、GitLab CI）裡的**無頭編譯**[^headless]。
+- 它以 **Maven plugin** 形式運作，提供三種執行模式 —— Domino 伺服器、Docker 容器，或本機 Notes／Domino 安裝。
+- **4.1.0** 是一版維護與打磨更新：改善 Docker 容器編譯、可設定建置時間戳的語系／時區、ACL entry 類型設定，以及依賴清理。
 
-- **日誌訊息層級調整**：降低了 NSFODPContainer 中多個 INFO 級別的日誌訊息至 DEBUG 級別，解決了 [Issue #320](https://github.com/OpenNTF/org.openntf.nsfodp/pull/322)。
+## 問題所在：Designer 是版控的死路
 
-## 下載與更多資訊
+傳統的 Domino 開發者整天待在 Domino Designer 裡。所有設計元件 —— form、view、agent、XPages、script library —— 都以二進位格式存在 NSF 內部。對一個人在 IDE 裡點來點去當然沒問題，但這讓現代工具鏈完全動不了：
 
-開發者可從 [OpenNTF 官方網站](https://openntf.org/main.nsf/project.xsp?r=project%2FNSF+ODP+Tooling%2Freleases%2FD1AE627FE95698F786258B0B0056CACD)下載 NSF ODP Tooling 4.1.0 版，並查看完整的變更日誌。
+- 你沒辦法對二進位 NSF 下 `git diff`，看出一個 form 到底改了什麼。
+- 兩個開發者沒辦法各開分支、再把設計變更合併起來。
+- 你沒辦法從建置伺服器編譯並部署應用，因為編譯一直以來都需要 Designer GUI。
 
-NSF ODP Tooling 是一個開源項目，旨在為 HCL Domino 開發者提供更高效的開發工具。更多關於該項目的資訊，請參閱 [NSF ODP Tooling 項目頁面](https://openntf.org/main.nsf/project.xsp?r=project%2FNSF+ODP+Tooling%2Fsummary)。
+NSF ODP Tooling 就是為了打斷這個依賴而存在。它的 [GitHub 原始碼庫](https://github.com/OpenNTF/org.openntf.nsfodp)把核心能力講得很直白：ODP compiler 讓你「使用 Domino 伺服器或本機 Notes 安裝，把 on-disk project 編譯成完整的 NSF，不需要 Domino Designer」。
+
+## On-Disk Project 到底是什麼
+
+**On-Disk Project（ODP）** 是 NSF 設計的檔案系統表示法。原本一坨不透明的二進位，攤開成一棵目錄樹：form 與 view 是 DXL／XML、LotusScript library 是原始檔、Java 與 XPages 維持各自正常的原始碼形式，外加 file resource、圖片，以及資料庫的 ACL 與屬性。這個格式是 Designer 相容的 —— Designer 本身就能把 NSF 與 on-disk project 雙向同步 —— 但 NSF ODP Tooling 讓你能在 Designer **之外**操作同一份結構，這正是重點。
+
+因為每個元件現在都是磁碟上的文字，Git 就把 Domino 應用當成任何一般專案來對待：逐行 diff、blame、pull request，一應俱全。
+
+## 它做的三件事
+
+這個專案由三個互相搭配的部件組成：
+
+1. **ODP Compiler** —— 吃進一個 on-disk project，產出完整的 NSF。過程中會解析傳統設計元件、XPages 以及 OSGi[^osgi] plugin 依賴。
+2. **ODP Exporter** —— 反方向：把既有的 NSF 匯出成 Designer 相容的 ODP，讓你第一次把一個老應用納入版本控制。
+3. **Maven 與 Eclipse 整合** —— 一個 Maven plugin（`org.openntf.maven:nsfodp-maven-plugin`）在建置流程裡驅動編譯與部署，另有 Eclipse plugin 在 IDE 裡加上 XPages 自動完成與編譯／部署動作。此外還有一個 NSF 部署服務，能不透過 Notes 用戶端就把編好的 NSF 推上伺服器；以及一個 XSP transpiler，把 XPages 與 Custom Control 轉成純 Java 原始碼。
+
+## 實際怎麼用
+
+實務上你會採用 `domino-nsf` 這個 Maven packaging，並在 `pom.xml` 裡設定 plugin：
+
+```xml
+<plugin>
+  <groupId>org.openntf.maven</groupId>
+  <artifactId>nsfodp-maven-plugin</artifactId>
+  <version>4.1.0</version>
+  <extensions>true</extensions>
+</plugin>
+```
+
+常用的 Maven goal 有 `compile`（ODP → NSF）、`export-odp`（NSF → ODP）、`transpile-xsp`（XPages → Java）與 `deploy`（把建好的 NSF 推上伺服器）。編譯本身需要一個 Domino runtime 來解析設計元件，工具提供三種方式來給它：
+
+- **容器化（Container-based）** —— 4.0 系列加入的招牌功能。編譯跑在一個內含 Domino runtime 的 Docker 容器裡，所以建置代理機**完全不需要**本機 Notes 或 Designer 安裝。這是最適合 CI 的路線。
+- **遠端（Remote）** —— 讓建置指向一台已安裝本工具 update site 的專用 Domino 伺服器。
+- **本機（Local）** —— 使用本機 Notes／Domino 安裝，並在 plugin 裡設定 program 與 platform 目錄。
+
+整體需求是 Maven 3.x 加上一個現代 JDK；伺服器端部件以 Domino 9.0.1 FP10 以上為目標。多數團隊會想走容器化這條路，正因為它拿掉了「建置機器上必須裝 Notes」這個多年來讓 Domino CI 很痛的限制。
+
+## 4.1.0 實際改了什麼
+
+這點值得仔細講，因為這個版號聽起來比 changelog 實際內容更有戲 —— 4.1.0 是一版聚焦的維護更新。根據 [4.1.0 release notes](https://github.com/OpenNTF/org.openntf.nsfodp/releases/tag/4.1.0)，實質變更是：
+
+- **Docker 容器編譯改善**與 GitHub Actions 建置 scaffolding，延續 4.0 定下的容器優先方向。
+- **語系與時區設定** —— 為容器、以及寫進建置的時間戳，新增 `timeZone` 與語系屬性，並讓 title 時間戳格式可設定，全部從 Maven 端驅動。
+- **ACL 設定** —— 支援在 ACL 設定中指定 `aclEntry` 類型。
+- **正確處理 PNG 圖片資源**，並修正本機 Maven repository 位置查找。
+- **依賴清理** —— 移除 `com.ibm.commons.xml` 依賴，並升級數個依賴版本。
+- **內部重構** —— 把操作 ODP 的程序整併進一個 `OnDiskProject` 類別，並改善 parent template 名稱邏輯。
+
+這裡沒有任何東西會改變你採用工具的方式；它就是那種拿來把容器建置磨順、把設定收緊的版本。有些摘要把執行緒安全的修正（把 `JavaSourceClassLoader` 改用 `ConcurrentHashMap` 以修掉 `ConcurrentModificationException`）算在 4.1.0 頭上，但那其實更早就進到 4.0.x 系列了 —— 這也提醒我們：要看 release tag，別信一份生成出來的摘要。
+
+## 誰該關注
+
+如果你維護 Domino 應用、又希望它們表現得像正常的軟體專案 —— 設計變更能 code review、能自動建置、能可重現地部署 —— NSF ODP Tooling 就是那座橋。它採 Apache 2.0 授權且持續維護中，[OpenNTF 上的專案頁](https://openntf.org/main.nsf/project.xsp?r=project%2FNSF+ODP+Tooling%2Fsummary)連到下載與文件。對一個還在靠 Designer 做完所有事的台灣團隊來說，光是容器化編譯就值得一看：它是「我們靠在用戶端 replace design 來部署」和「每次 merge 我們的 pipeline 就建置並出貨 NSF」之間的差別。
+
+[^headless]: 無頭（headless）指不開圖形介面、純由指令或服務驅動的執行方式；無頭編譯就是不開 Designer GUI、由建置流程自動把 ODP 編譯成 NSF。
+
+[^osgi]: OSGi 是 Java 的模組／plugin 框架，Domino 伺服器與 Designer 都建構在它之上；NSF ODP Tooling 在編譯 XPages 與 Java 設計元件時，必須解析 OSGi plugin 依賴。
