@@ -6,7 +6,6 @@ lang: en
 slug: notes-form
 tags:
   - "LotusScript"
-  - "Tutorial"
 sources:
   - title: "NotesForm class — HCL Domino Designer 14.5"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESFORM_CLASS.html"
