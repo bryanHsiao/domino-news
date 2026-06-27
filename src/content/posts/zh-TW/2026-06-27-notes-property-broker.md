@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSESSION_CLASS.html"
 relatedJava: ["PropertyBroker", "Property"]
 relatedSsjs: []
+cover: "/covers/notes-property-broker.webp"
+coverStyle: "paper-craft"
 ---
 
 先把定位講清楚：**Composite Applications 是 Notes 8.x 時代的功能**。它讓你把好幾個元件 —— 幾個 Notes 表單／view、加上 Java/Eclipse 元件 —— 拼在同一個 Notes client 畫面上，並讓它們**互相傳值**（在 A 元件選一筆，B 元件跟著變）。這在今天偏 legacy、新專案很少用，但它對應的兩個類別還在 catalogue 裡，這篇把它補完、也說清楚它到底在做什麼。

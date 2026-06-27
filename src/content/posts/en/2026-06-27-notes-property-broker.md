@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSESSION_CLASS.html"
 relatedJava: ["PropertyBroker", "Property"]
 relatedSsjs: []
+cover: "/covers/notes-property-broker.webp"
+coverStyle: "paper-craft"
 ---
 
 Let's be clear about where this sits first: **Composite Applications were a Notes 8.x feature.** They let you assemble several components — a few Notes forms / views, plus Java/Eclipse components — onto one Notes client screen and have them **pass values to each other** (pick a row in component A, component B updates to match). That's fairly legacy today and rare in new projects, but the two classes it maps to are still in the catalogue, so this article finishes them off and explains what they actually do.
