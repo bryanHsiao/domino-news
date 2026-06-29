@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_DELETEUSER_METHOD_ADMINP.html"
 relatedJava: ["AdministrationProcess"]
 relatedSsjs: []
+cover: "/covers/notes-administration-process.webp"
+coverStyle: "risograph"
 ---
 
 A user gets married and changes their last name. In the Administration client you'd open the person document, pick Rename, and let the Administration Process (AdminP) ripple the change through every database's ACL, Reader/Author fields, and group memberships over the next few hours. Now imagine you need to do that for 200 users from an HR feed. Clicking is not the answer.

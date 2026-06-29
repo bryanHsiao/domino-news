@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_DELETEUSER_METHOD_ADMINP.html"
 relatedJava: ["AdministrationProcess"]
 relatedSsjs: []
+cover: "/covers/notes-administration-process.webp"
+coverStyle: "risograph"
 ---
 
 一個使用者結婚改了姓。在 Administration 用戶端你會打開 person document、選 Rename，然後讓 Administration Process（AdminP）在接下來幾個小時把這個變更擴散到每個資料庫的 ACL、Reader/Author 欄位、群組成員。現在想像你得從一份 HR 資料餵進來、對 200 個使用者做同一件事 —— 用點的不是辦法。
