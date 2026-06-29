@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_AMSTRING_PROPERTY.html"
 relatedJava: ["International"]
 relatedSsjs: ["International"]
+cover: "/covers/notes-international.webp"
+coverStyle: "photoreal-3d"
 ---
 
 你寫了一個 agent，把日期格式化成 `month & "/" & day & "/" & year`，在自己機器上測一切正常。然後它跑在一台設定成歐洲地區的伺服器上 —— 那裡日期是日在前；或者客戶把它複製到一台小數分隔符號是逗號的主機上 —— 突然之間「01/02」指的是錯的那一天，貨幣金額也看起來怪怪的。

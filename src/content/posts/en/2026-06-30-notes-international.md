@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_AMSTRING_PROPERTY.html"
 relatedJava: ["International"]
 relatedSsjs: ["International"]
+cover: "/covers/notes-international.webp"
+coverStyle: "photoreal-3d"
 ---
 
 You write an agent that formats a date as `month & "/" & day & "/" & year`, test it on your machine, and it's fine. Then it runs on a server configured for a European locale where dates read day-first, or a customer copies it to a host where the decimal separator is a comma — and suddenly "01/02" means the wrong day and your currency totals look wrong.
