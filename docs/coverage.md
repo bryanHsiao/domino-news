@@ -1,13 +1,13 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-06-27 · Posts scanned: 71 · Classes catalogued: 97*
+*Generated: 2026-06-29 · Posts scanned: 72 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
-**Overall: 67 / 97 classes covered (69.1%)**
+**Overall: 68 / 97 classes covered (70.1%)**
 
 ```
-████████████████████████████░░░░░░░░░░░░ 69.1%
+████████████████████████████░░░░░░░░░░░░ 70.1%
 ```
 
 ## Coverage by category
@@ -15,6 +15,7 @@
 | Category | Covered | Total | % | |
 |---|---:|---:|---:|---|
 | Database | 7 | 7 | 100% | 🟩 `████████████` |
+| Admin | 4 | 4 | 100% | 🟩 `████████████` |
 | Calendar | 3 | 3 | 100% | 🟩 `████████████` |
 | Item | 5 | 5 | 100% | 🟩 `████████████` |
 | Document | 6 | 6 | 100% | 🟩 `████████████` |
@@ -27,17 +28,17 @@
 | Session File Operations | 1 | 1 | 100% | 🟩 `████████████` |
 | View | 5 | 5 | 100% | 🟩 `████████████` |
 | Session | 8 | 10 | 80% | 🟩 `██████████░░` |
-| Admin | 3 | 4 | 75% | 🟩 `█████████░░░` |
 | Rich Text | 5 | 9 | 56% | 🟨 `███████░░░░░` |
 | DOM/XML | 8 | 25 | 32% | 🟨 `████░░░░░░░░` |
 | UI | 2 | 8 | 25% | 🟧 `███░░░░░░░░░` |
 
-## ✓ Covered classes (67)
+## ✓ Covered classes (68)
 
 | Class | Category | Posts | First mention |
 |---|---|---|---|
 | [NotesACL](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESACL_CLASS.html) | Database | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) | 2026-05-15 |
 | [NotesACLEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESACLENTRY_CLASS.html) | Database | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) | 2026-05-15 |
+| [NotesAdministrationProcess](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESADMINISTRATIONPROCESS_CLASS.html) | Admin | [notes-administration-process](https://bryanhsiao.github.io/domino-news/posts/notes-administration-process/) | 2026-06-29 |
 | [NotesAgent](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESAGENT_CLASS.html) | Session | [notes-agent](https://bryanhsiao.github.io/domino-news/posts/notes-agent/) | 2026-06-12 |
 | [NotesCalendar](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDAR_CLASS.html) | Calendar | [notes-calendar](https://bryanhsiao.github.io/domino-news/posts/notes-calendar/) | 2026-06-03 |
 | [NotesCalendarEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDARENTRY_CLASS.html) | Calendar | [notes-calendar](https://bryanhsiao.github.io/domino-news/posts/notes-calendar/) | 2026-06-03 |
@@ -104,11 +105,10 @@
 | [NotesXMLProcessor](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-06 |
 | [NotesXSLTransformer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | 2026-05-06 |
 
-## ⨯ Uncovered classes (30)
+## ⨯ Uncovered classes (29)
 
 | Class | Category | Description |
 |---|---|---|
-| [NotesAdministrationProcess](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESADMINISTRATIONPROCESS_CLASS.html) | Admin | Represents the administration process. |
 | [NotesDOMAttributeNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMATTRIBUTENODE_CLASS.html) | DOM/XML | Represents an attribute in a NotesDOMElementNode object. |
 | [NotesDOMCDATASectionNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMCDATASECTIONNODE_CLASS.html) | DOM/XML | Represents a CDATA section in the XML data source. |
 | [NotesDOMCharacterDataNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMCHARACTERDATANODE_CLASS.html) | DOM/XML | Represents character data in a DOM node. |
@@ -149,6 +149,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 |---|---|
 | `ACL` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
 | `ACLEntry` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
+| `AdministrationProcess` | [notes-administration-process](https://bryanhsiao.github.io/domino-news/posts/notes-administration-process/) |
 | `Agent` | [notes-agent](https://bryanhsiao.github.io/domino-news/posts/notes-agent/) |
 | `DOMParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/) |
 | `Database` | [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
@@ -241,6 +242,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [notes-administration-process](https://bryanhsiao.github.io/domino-news/posts/notes-administration-process/) | `NotesAdministrationProcess` | `AdministrationProcess` | — |
 | [notes-timer](https://bryanhsiao.github.io/domino-news/posts/notes-timer/) | `NotesTimer`, `NotesUIWorkspace` | — | — |
 | [openntf-nsf-odp-tooling-4-1-0](https://bryanhsiao.github.io/domino-news/posts/openntf-nsf-odp-tooling-4-1-0/) | — | — | — |
 | [notes-property-broker](https://bryanhsiao.github.io/domino-news/posts/notes-property-broker/) | `NotesPropertyBroker`, `NotesProperty`, `NotesSession` | `PropertyBroker`, `Property` | — |
