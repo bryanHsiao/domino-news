@@ -1,13 +1,13 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-06-29 · Posts scanned: 73 · Classes catalogued: 97*
+*Generated: 2026-06-30 · Posts scanned: 74 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
-**Overall: 69 / 97 classes covered (71.1%)**
+**Overall: 72 / 97 classes covered (74.2%)**
 
 ```
-████████████████████████████░░░░░░░░░░░░ 71.1%
+██████████████████████████████░░░░░░░░░░ 74.2%
 ```
 
 ## Coverage by category
@@ -16,6 +16,7 @@
 |---|---:|---:|---:|---|
 | Database | 7 | 7 | 100% | 🟩 `████████████` |
 | Admin | 4 | 4 | 100% | 🟩 `████████████` |
+| Session | 10 | 10 | 100% | 🟩 `████████████` |
 | Calendar | 3 | 3 | 100% | 🟩 `████████████` |
 | Item | 5 | 5 | 100% | 🟩 `████████████` |
 | Document | 6 | 6 | 100% | 🟩 `████████████` |
@@ -27,12 +28,11 @@
 | Composite Apps | 2 | 2 | 100% | 🟩 `████████████` |
 | Session File Operations | 1 | 1 | 100% | 🟩 `████████████` |
 | View | 5 | 5 | 100% | 🟩 `████████████` |
-| Session | 9 | 10 | 90% | 🟩 `███████████░` |
-| Rich Text | 5 | 9 | 56% | 🟨 `███████░░░░░` |
+| Rich Text | 7 | 9 | 78% | 🟩 `█████████░░░` |
 | DOM/XML | 8 | 25 | 32% | 🟨 `████░░░░░░░░` |
 | UI | 2 | 8 | 25% | 🟧 `███░░░░░░░░░` |
 
-## ✓ Covered classes (69)
+## ✓ Covered classes (72)
 
 | Class | Category | Posts | First mention |
 |---|---|---|---|
@@ -43,6 +43,7 @@
 | [NotesCalendar](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDAR_CLASS.html) | Calendar | [notes-calendar](https://bryanhsiao.github.io/domino-news/posts/notes-calendar/) | 2026-06-03 |
 | [NotesCalendarEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDARENTRY_CLASS.html) | Calendar | [notes-calendar](https://bryanhsiao.github.io/domino-news/posts/notes-calendar/) | 2026-06-03 |
 | [NotesCalendarNotice](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDARNOTICE_CLASS.html) | Calendar | [notes-calendar](https://bryanhsiao.github.io/domino-news/posts/notes-calendar/) | 2026-06-03 |
+| [NotesColorObject](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCOLOROBJECT_CLASS.html) | Session | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) | 2026-07-01 |
 | [NotesDatabase](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATABASE_CLASS.html) | Database | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/), [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [domino-search-decision](https://bryanhsiao.github.io/domino-news/posts/domino-search-decision/), [notes-db-directory](https://bryanhsiao.github.io/domino-news/posts/notes-db-directory/), [notes-form](https://bryanhsiao.github.io/domino-news/posts/notes-form/), [notes-dxl-importer](https://bryanhsiao.github.io/domino-news/posts/notes-dxl-importer/) | 2026-04-29 |
 | [NotesDateRange](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATERANGE_CLASS.html) | Item | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) | 2026-05-25 |
 | [NotesDateTime](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATETIME_CLASS.html) | Item | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) | 2026-05-25 |
@@ -87,8 +88,10 @@
 | [NotesReplicationEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESREPLICATIONENTRY_CLASS.html) | Database | [notes-replication](https://bryanhsiao.github.io/domino-news/posts/notes-replication/) | 2026-06-06 |
 | [NotesRichTextItem](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTITEM_CLASS.html) | Rich Text | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/), [notes-rich-text-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-navigator/), [notes-rich-text-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-style/), [notes-rich-text-table](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-table/) | 2026-04-30 |
 | [NotesRichTextNavigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTNAVIGATOR_CLASS.html) | Rich Text | [notes-rich-text-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-navigator/) | 2026-06-11 |
+| [NotesRichTextParagraphStyle](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTPARAGRAPHSTYLE_CLASS_3756.html) | Rich Text | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) | 2026-07-01 |
 | [NotesRichTextRange](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTRANGE_CLASS.html) | Rich Text | [notes-rich-text-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-navigator/) | 2026-06-11 |
 | [NotesRichTextStyle](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTSTYLE_CLASS.html) | Rich Text | [notes-rich-text-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-style/) | 2026-06-19 |
+| [NotesRichTextTab](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_RICHTEXTTAB_CLASS.html) | Rich Text | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) | 2026-07-01 |
 | [NotesRichTextTable](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTTABLE_CLASS.html) | Rich Text | [notes-rich-text-table](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-table/) | 2026-06-24 |
 | [NotesSAXAttributeList](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXATTRIBUTELIST_CLASS.html) | DOM/XML | [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/) | 2026-05-16 |
 | [NotesSAXParser](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXPARSER_CLASS.html) | DOM/XML | [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-16 |
@@ -106,7 +109,7 @@
 | [NotesXMLProcessor](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-06 |
 | [NotesXSLTransformer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | 2026-05-06 |
 
-## ⨯ Uncovered classes (28)
+## ⨯ Uncovered classes (25)
 
 | Class | Category | Description |
 |---|---|---|
@@ -128,10 +131,7 @@
 | [NotesDOMXMLDeclNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMXMLDECLNODE_CLASS.html) | DOM/XML | The XML declaration which specifies the version of XML being used. |
 | [NotesSAXException](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXEXCEPTION_CLASS.html) | DOM/XML | Represents an exception thrown by the SAX parser. |
 | [NotesRichTextDocLink](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTDOCLINK_CLASS.html) | Rich Text | Represents a doclink in a rich text item. |
-| [NotesRichTextParagraphStyle](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTPARAGRAPHSTYLE_CLASS_3756.html) | Rich Text | Represents rich text paragraph attributes. |
 | [NotesRichTextSection](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTSECTION_CLASS.html) | Rich Text | Represents a collapsible section in a rich text item. |
-| [NotesRichTextTab](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_RICHTEXTTAB_CLASS.html) | Rich Text | Represents rich text tab attributes. |
-| [NotesColorObject](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCOLOROBJECT_CLASS.html) | Session | Represents a color. |
 | [Button](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_BUTTON_CLASS.html) | UI | Represents an action, action hotspot, or button on a form or document. |
 | [Field](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FIELD_CLASS.html) | UI | Represents a field on a form. |
 | [Navigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NAVIGATOR_CLASS.html) | UI | Represents a navigator button, hotspot, or other navigator object. |
@@ -151,6 +151,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `ACLEntry` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
 | `AdministrationProcess` | [notes-administration-process](https://bryanhsiao.github.io/domino-news/posts/notes-administration-process/) |
 | `Agent` | [notes-agent](https://bryanhsiao.github.io/domino-news/posts/notes-agent/) |
+| `ColorObject` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
 | `DOMParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/) |
 | `Database` | [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
 | `DateRange` | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) |
@@ -185,8 +186,10 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `ReplicationEntry` | [notes-replication](https://bryanhsiao.github.io/domino-news/posts/notes-replication/) |
 | `RichTextItem` | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/) |
 | `RichTextNavigator` | [notes-rich-text-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-navigator/) |
+| `RichTextParagraphStyle` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
 | `RichTextRange` | [notes-rich-text-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-navigator/) |
 | `RichTextStyle` | [notes-rich-text-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-style/) |
+| `RichTextTab` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
 | `RichTextTable` | [notes-rich-text-table](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-table/) |
 | `SAXParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/) |
 | `Session` | [lotusscript-evaluate](https://bryanhsiao.github.io/domino-news/posts/lotusscript-evaluate/), [notes-calendar](https://bryanhsiao.github.io/domino-news/posts/notes-calendar/), [notes-session](https://bryanhsiao.github.io/domino-news/posts/notes-session/) |
@@ -206,6 +209,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `ACL` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
 | `ACLEntry` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
 | `Agent` | [notes-agent](https://bryanhsiao.github.io/domino-news/posts/notes-agent/) |
+| `ColorObject` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
 | `DOMParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/) |
 | `DbDirectory` | [notes-db-directory](https://bryanhsiao.github.io/domino-news/posts/notes-db-directory/) |
 | `DominoQuery` | [dql-production](https://bryanhsiao.github.io/domino-news/posts/dql-production/), [dql-pitfalls](https://bryanhsiao.github.io/domino-news/posts/dql-pitfalls/), [dql-getting-started](https://bryanhsiao.github.io/domino-news/posts/dql-getting-started/) |
@@ -222,8 +226,10 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `QueryResultsProcessor` | [notes-query-results-processor](https://bryanhsiao.github.io/domino-news/posts/notes-query-results-processor/) |
 | `RichTextItem` | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/) |
 | `RichTextNavigator` | [notes-rich-text-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-navigator/) |
+| `RichTextParagraphStyle` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
 | `RichTextRange` | [notes-rich-text-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-navigator/) |
 | `RichTextStyle` | [notes-rich-text-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-style/) |
+| `RichTextTab` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
 | `RichTextTable` | [notes-rich-text-table](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-table/) |
 | `SAXParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/) |
 | `Stream` | [notes-stream](https://bryanhsiao.github.io/domino-news/posts/notes-stream/) |
@@ -244,6 +250,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) | `NotesRichTextParagraphStyle`, `NotesRichTextTab`, `NotesColorObject` | `RichTextParagraphStyle`, `RichTextTab`, `ColorObject` | `RichTextParagraphStyle`, `RichTextTab`, `ColorObject` |
 | [notes-international](https://bryanhsiao.github.io/domino-news/posts/notes-international/) | `NotesInternational` | `International` | `International` |
 | [notes-administration-process](https://bryanhsiao.github.io/domino-news/posts/notes-administration-process/) | `NotesAdministrationProcess` | `AdministrationProcess` | — |
 | [notes-timer](https://bryanhsiao.github.io/domino-news/posts/notes-timer/) | `NotesTimer`, `NotesUIWorkspace` | — | — |
