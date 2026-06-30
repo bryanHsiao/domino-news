@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCOLOROBJECT_CLASS.html"
 relatedJava: ["RichTextParagraphStyle", "RichTextTab", "ColorObject"]
 relatedSsjs: ["RichTextParagraphStyle", "RichTextTab", "ColorObject"]
+cover: "/covers/notes-rich-text-paragraph-style.webp"
+coverStyle: "low-poly-3d"
 ---
 
 你用 agent 產一份報表文件 —— 標題置中、內文縮排、數字對齊在小數 tab 上、標題用你的品牌藍。在 Designer 裡你會在編輯器裡點一點搞定。但在 LotusScript，格式不是 `AppendText` 的一部分 —— 它住在獨立的 style 物件裡，而且你要在「它要管的文字」*之前*先套上去。

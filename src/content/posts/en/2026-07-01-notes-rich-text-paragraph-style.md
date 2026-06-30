@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCOLOROBJECT_CLASS.html"
 relatedJava: ["RichTextParagraphStyle", "RichTextTab", "ColorObject"]
 relatedSsjs: ["RichTextParagraphStyle", "RichTextTab", "ColorObject"]
+cover: "/covers/notes-rich-text-paragraph-style.webp"
+coverStyle: "low-poly-3d"
 ---
 
 You're generating a report document from an agent — a title centred, body indented, figures lined up on a decimal tab, a heading in your brand blue. In Designer you'd do all this by clicking in the editor. From LotusScript, formatting isn't part of `AppendText` — it lives in separate style objects you apply *before* the text they govern.
