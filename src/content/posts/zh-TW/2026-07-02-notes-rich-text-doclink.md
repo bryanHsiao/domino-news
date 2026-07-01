@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTSECTION_CLASS.html"
 relatedJava: ["RichTextDoclink", "RichTextSection"]
 relatedSsjs: ["NotesRichTextDoclink", "NotesRichTextSection"]
+cover: "/covers/notes-rich-text-doclink.webp"
+coverStyle: "minimalist-mono"
 ---
 
 你用 agent 組一封通知信，想讓它包含一個直接點進來源文件的可點連結 —— 不是 URL，是真正的 Notes doclink。或者你在做一份很長的報表，想把附錄收進一個讀者可以展開的摺疊區段。兩者都是 rich-text 元件、都能用程式做 —— 但方式跟你想的不太一樣。

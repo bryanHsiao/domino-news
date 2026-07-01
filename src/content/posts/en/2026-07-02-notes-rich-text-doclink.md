@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTSECTION_CLASS.html"
 relatedJava: ["RichTextDoclink", "RichTextSection"]
 relatedSsjs: ["NotesRichTextDoclink", "NotesRichTextSection"]
+cover: "/covers/notes-rich-text-doclink.webp"
+coverStyle: "minimalist-mono"
 ---
 
 You're assembling a notification email from an agent and you want it to contain a clickable link straight into the source document — not a URL, a real Notes doclink. Or you're building a long report and want the appendix tucked into a collapsible section the reader can expand. Both are rich-text elements, and both are scriptable — but not the way you might expect.
