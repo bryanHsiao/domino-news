@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMNAMEDNODEMAP_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-dom-document-node.webp"
+coverStyle: "art-deco"
 ---
 
 You've fed an XML file through [`NotesDOMParser`](/domino-news/en/posts/notes-dom-parser) and called `Process`. Now you have a tree in memory and need to pull values out of it — the root element, every `<item>` under it, the `id` attribute on each. The navigation surface is a small family of node classes, and while it follows the W3C DOM shape, the LotusScript binding has a few sharp edges worth knowing before you write the loop.

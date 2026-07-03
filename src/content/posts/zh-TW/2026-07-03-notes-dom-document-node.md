@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMNAMEDNODEMAP_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-dom-document-node.webp"
+coverStyle: "art-deco"
 ---
 
 你把一份 XML 餵進 [`NotesDOMParser`](/domino-news/zh-TW/posts/notes-dom-parser) 並呼叫了 `Process`。現在記憶體裡有一棵樹，你得把值從裡面撈出來 —— 根元素、它底下每個 `<item>`、每個上面的 `id` 屬性。導覽介面是一小組節點類別，雖然它照著 W3C DOM 的形狀，但 LotusScript 的繫結有幾個鋒利的邊角，值得在寫迴圈之前先知道。
