@@ -1,13 +1,13 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-07-01 · Posts scanned: 75 · Classes catalogued: 97*
+*Generated: 2026-07-03 · Posts scanned: 76 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
-**Overall: 74 / 97 classes covered (76.3%)**
+**Overall: 77 / 97 classes covered (79.4%)**
 
 ```
-███████████████████████████████░░░░░░░░░ 76.3%
+████████████████████████████████░░░░░░░░ 79.4%
 ```
 
 ## Coverage by category
@@ -29,10 +29,10 @@
 | Rich Text | 9 | 9 | 100% | 🟩 `████████████` |
 | Session File Operations | 1 | 1 | 100% | 🟩 `████████████` |
 | View | 5 | 5 | 100% | 🟩 `████████████` |
-| DOM/XML | 8 | 25 | 32% | 🟨 `████░░░░░░░░` |
+| DOM/XML | 11 | 25 | 44% | 🟨 `█████░░░░░░░` |
 | UI | 2 | 8 | 25% | 🟧 `███░░░░░░░░░` |
 
-## ✓ Covered classes (74)
+## ✓ Covered classes (77)
 
 | Class | Category | Posts | First mention |
 |---|---|---|---|
@@ -52,7 +52,10 @@
 | [NotesDirectoryNavigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDIRECTORYNAVIGATOR_CLASS.html) | Session | [notes-directory](https://bryanhsiao.github.io/domino-news/posts/notes-directory/) | 2026-06-05 |
 | [NotesDocument](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html) | Document | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/), [notes-document](https://bryanhsiao.github.io/domino-news/posts/notes-document/), [lotusscript-evaluate](https://bryanhsiao.github.io/domino-news/posts/lotusscript-evaluate/), [domino-large-summary-field-too-large](https://bryanhsiao.github.io/domino-news/posts/domino-large-summary-field-too-large/) | 2026-04-30 |
 | [NotesDocumentCollection](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENTCOLLECTION_CLASS.html) | Document | [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/), [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [notes-document-collection](https://bryanhsiao.github.io/domino-news/posts/notes-document-collection/) | 2026-05-27 |
+| [NotesDOMDocumentNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMDOCUMENTNODE_CLASS.html) | DOM/XML | [notes-dom-document-node](https://bryanhsiao.github.io/domino-news/posts/notes-dom-document-node/) | 2026-07-03 |
+| [NotesDOMElementNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMELEMENTNODE_CLASS.html) | DOM/XML | [notes-dom-document-node](https://bryanhsiao.github.io/domino-news/posts/notes-dom-document-node/) | 2026-07-03 |
 | [NotesDominoQuery](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMINOQUERY_CLASS.html) | DQL | [dql-production](https://bryanhsiao.github.io/domino-news/posts/dql-production/) | 2026-05-03 |
+| [NotesDOMNamedNodeMap](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMNAMEDNODEMAP_CLASS.html) | DOM/XML | [notes-dom-document-node](https://bryanhsiao.github.io/domino-news/posts/notes-dom-document-node/) | 2026-07-03 |
 | [NotesDOMNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMNODE_CLASS.html) | DOM/XML | [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/) | 2026-05-17 |
 | [NotesDOMParser](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMPARSER_CLASS.html) | DOM/XML | [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-17 |
 | [NotesDXLExporter](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLEXPORTER_CLASS.html) | DOM/XML | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/), [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/), [notes-dxl-importer](https://bryanhsiao.github.io/domino-news/posts/notes-dxl-importer/) | 2026-04-29 |
@@ -111,7 +114,7 @@
 | [NotesXMLProcessor](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-06 |
 | [NotesXSLTransformer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | 2026-05-06 |
 
-## ⨯ Uncovered classes (23)
+## ⨯ Uncovered classes (20)
 
 | Class | Category | Description |
 |---|---|---|
@@ -120,12 +123,9 @@
 | [NotesDOMCharacterDataNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMCHARACTERDATANODE_CLASS.html) | DOM/XML | Represents character data in a DOM node. |
 | [NotesDOMCommentNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMCOMMENTNODE_CLASS.html) | DOM/XML | Represents a comment in the XML. |
 | [NotesDOMDocumentFragmentNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMDOCUMENTFRAGMENTNODE_CLASS.html) | DOM/XML | Represents a document fragment in the XML. |
-| [NotesDOMDocumentNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMDOCUMENTNODE_CLASS.html) | DOM/XML | Represents the entire XML document. The root of the document tree. |
 | [NotesDOMDocumentTypeNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMDOCUMENTTYPENODE_CLASS.html) | DOM/XML | The list of entities that are defined for the document. |
-| [NotesDOMElementNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMELEMENTNODE_CLASS.html) | DOM/XML | Represents an element in an XML document. |
 | [NotesDOMEntityNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMENTITYNODE_CLASS.html) | DOM/XML | Represents an entity node in the XML. |
 | [NotesDOMEntityReferenceNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMENTITYREFERENCENODE_CLASS.html) | DOM/XML | Represents an entity reference node in the XML. |
-| [NotesDOMNamedNodeMap](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMNAMEDNODEMAP_CLASS.html) | DOM/XML | Used by methods of the NotesDOMNode class for returning the list of an element node's attr |
 | [NotesDOMNodeList](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMNODELIST_CLASS.html) | DOM/XML | Used by methods of the NotesDOMNode class for returning the list of an element node's chil |
 | [NotesDOMNotationNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMNOTATIONNODE_CLASS.html) | DOM/XML | Represents a notation declared in the DTD. |
 | [NotesDOMProcessingInstructionNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMPROCESSINGINSTRUCTIONNODE_CLASS.html) | DOM/XML | Represents a processing instruction, used in XML as a way to keep processor-specific infor |
@@ -254,6 +254,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [notes-dom-document-node](https://bryanhsiao.github.io/domino-news/posts/notes-dom-document-node/) | `NotesDOMDocumentNode`, `NotesDOMElementNode`, `NotesDOMNamedNodeMap` | — | — |
 | [notes-rich-text-doclink](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-doclink/) | `NotesRichTextDocLink`, `NotesRichTextSection` | `RichTextDoclink`, `RichTextSection` | `NotesRichTextDoclink`, `NotesRichTextSection` |
 | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) | `NotesRichTextParagraphStyle`, `NotesRichTextTab`, `NotesColorObject` | `RichTextParagraphStyle`, `RichTextTab`, `ColorObject` | `RichTextParagraphStyle`, `RichTextTab`, `ColorObject` |
 | [notes-international](https://bryanhsiao.github.io/domino-news/posts/notes-international/) | `NotesInternational` | `International` | `International` |
