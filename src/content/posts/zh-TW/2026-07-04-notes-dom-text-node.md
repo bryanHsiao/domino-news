@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMATTRIBUTENODE_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-dom-text-node.webp"
+coverStyle: "paper-craft"
 ---
 
 [上一篇](/domino-news/zh-TW/posts/notes-dom-document-node)講了在解析後的 DOM 裡四處走動 —— document、元素、node list。但元素多半只是骨架；*資料*在葉子上：標籤裡的文字、屬性的值、一段註解、一塊 CDATA。這些是承載內容的節點，而它們的 LotusScript 繫結有一個大到足以讓你第一次嘗試就壞掉的意外。

@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMATTRIBUTENODE_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-dom-text-node.webp"
+coverStyle: "paper-craft"
 ---
 
 The [previous article](/domino-news/en/posts/notes-dom-document-node) covered getting around a parsed DOM — document, elements, node lists. But the elements are mostly scaffolding; the *data* is in the leaves: the text inside a tag, the value of an attribute, a comment, a CDATA block. These are the content-carrying nodes, and the LotusScript binding for them has one surprise big enough to break your first attempt.
