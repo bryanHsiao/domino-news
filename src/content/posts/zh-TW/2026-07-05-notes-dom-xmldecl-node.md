@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXEXCEPTION_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-dom-xmldecl-node.webp"
+coverStyle: "collage"
 ---
 
 [導覽](/domino-news/zh-TW/posts/notes-dom-document-node)與[內容](/domino-news/zh-TW/posts/notes-dom-text-node)那兩篇講的是你每天都會用到的 DOM 節點。這一篇講你幾乎不會碰的那一層 —— XML 宣告、DOCTYPE、processing instruction、entity、notation —— 加上 SAX 那一側唯一真正有用的類別 `NotesSAXException`。老實說的主題是：在 Domino 的 LotusScript 繫結裡，這個 DTD/宣告層多半是*導覽*層、不是*資料*層。這裡好幾個類別除了基底節點成員之外什麼都不給你。

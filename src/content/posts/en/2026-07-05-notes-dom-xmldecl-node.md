@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXEXCEPTION_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-dom-xmldecl-node.webp"
+coverStyle: "collage"
 ---
 
 The [navigation](/domino-news/en/posts/notes-dom-document-node) and [content](/domino-news/en/posts/notes-dom-text-node) articles covered the DOM nodes you use every day. This one covers the tier you almost never touch — the XML declaration, the DOCTYPE, processing instructions, entities, notations — plus the SAX side's one genuinely useful class, `NotesSAXException`. The honest theme: in the Domino LotusScript binding, this DTD/declaration tier is mostly a *navigation* layer, not a *data* layer. Several of these classes give you nothing beyond the base node members.
