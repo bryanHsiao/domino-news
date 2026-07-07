@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXTRACTFILE_METHOD.html"
 relatedJava: ["EmbeddedObject", "RichTextItem"]
 relatedSsjs: ["EmbeddedObject", "RichTextItem"]
+cover: "/covers/notes-embedded-object.webp"
+coverStyle: "minimalist-mono"
 ---
 
 一個 agent 要把產生好的 PDF 附到文件上再寄出；另一個要掃過進來的文件、把每個附件抽到網路資料夾、再刪掉原檔。兩者都是家常工作，也都經過同一個類別 —— [`NotesEmbeddedObject`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESEMBEDDEDOBJECT_CLASS.html) —— 加上 `NotesRichTextItem` 與 `NotesDocument` 上的幾個方法。這組 API 帶著一些 OLE 時代的包袱，所以訣竅是知道哪些部分現在還重要。

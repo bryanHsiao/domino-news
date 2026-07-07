@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXTRACTFILE_METHOD.html"
 relatedJava: ["EmbeddedObject", "RichTextItem"]
 relatedSsjs: ["EmbeddedObject", "RichTextItem"]
+cover: "/covers/notes-embedded-object.webp"
+coverStyle: "minimalist-mono"
 ---
 
 An agent needs to attach a generated PDF to a document and mail it; another needs to sweep incoming documents, pull every attachment to a network folder, and delete the originals. Both are everyday jobs, and both run through one class — [`NotesEmbeddedObject`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESEMBEDDEDOBJECT_CLASS.html) — plus a couple of methods on `NotesRichTextItem` and `NotesDocument`. The API carries some OLE-era baggage, so the trick is knowing which parts still matter.
