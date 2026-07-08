@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_POSITION_PROPERTY_STREAM.html"
 relatedJava: ["Stream"]
 relatedSsjs: ["Stream"]
+cover: "/covers/notes-stream-encoding.webp"
+coverStyle: "pencil-sketch"
 ---
 
 You write a CSV export from an agent, it opens fine on your machine, and then a colleague reports the accented names come out as mojibake — or the file has a stray character at the very start that breaks their importer. Both are `NotesStream` encoding issues, and both are avoidable once you know three facts the class quietly assumes you understand: the charset you opened with, whether a byte-order mark got written, and that `Position` counts bytes, not characters.

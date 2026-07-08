@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_POSITION_PROPERTY_STREAM.html"
 relatedJava: ["Stream"]
 relatedSsjs: ["Stream"]
+cover: "/covers/notes-stream-encoding.webp"
+coverStyle: "pencil-sketch"
 ---
 
 你用 agent 寫一個 CSV 匯出，在自己機器上開沒問題，然後同事回報帶重音的名字變成亂碼 —— 或者檔案最前面多了一個怪字元、弄壞了他們的匯入程式。這兩個都是 `NotesStream` 的編碼問題，而只要你知道這個類別默默假設你懂的三件事，兩者都可避免：你用哪個字元集開的、有沒有寫進 BOM、以及 `Position` 數的是位元組、不是字元。
