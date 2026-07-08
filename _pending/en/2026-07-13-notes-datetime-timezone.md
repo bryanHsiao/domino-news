@@ -1,7 +1,7 @@
 ---
 title: "NotesDateTime and Time Zones: GMTTime, ConvertToZone, and the Sign Convention That Trips Everyone"
 description: "One NotesDateTime is a single instant you can read out three ways — as GMT, as the machine's local time, and as a converted zone. This article covers GMTTime vs LocalTime vs ZoneTime, the TimeZone integer's counter-intuitive Notes sign convention (positive means west of GMT), ConvertToZone and its DST gotcha, LSGMTTime for native date math, and why GMTTime is the only safe form to store and compare across machines."
-pubDate: 2026-07-09T07:30:00+08:00
+pubDate: 2026-07-13T07:30:00+08:00
 lang: en
 slug: notes-datetime-timezone
 tags:

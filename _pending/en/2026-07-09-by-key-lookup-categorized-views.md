@@ -1,7 +1,7 @@
 ---
 title: "GetAllDocumentsByKey in Multi-Level Categorized Views: Why Your Count Is Silently Wrong"
 description: "In a single-level categorized view, GetAllDocumentsByKey('Belgien', True) correctly returns the 2 documents under that category. But add a second level of categorization — Form then Country — and GetAllDocumentsByKey('Customer', True) returns 3, not all the documents. It stops at the first sub-category. This article documents the empirically verified trap and the workarounds."
-pubDate: 2026-07-13T07:30:00+08:00
+pubDate: 2026-07-09T07:30:00+08:00
 lang: en
 slug: by-key-lookup-categorized-views
 tags:

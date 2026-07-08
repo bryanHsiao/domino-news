@@ -1,7 +1,7 @@
 ---
 title: "NotesDateTime 與時區：GMTTime、ConvertToZone，與那個絆倒每個人的正負號慣例"
 description: "一個 NotesDateTime 是單一個瞬間，你可以用三種方式讀出來 —— GMT、機器的本地時間、以及轉換後的時區。本文說明 GMTTime vs LocalTime vs ZoneTime、TimeZone 整數那個反直覺的 Notes 正負號慣例（正值代表 GMT 以西）、ConvertToZone 與它的 DST 陷阱、用 LSGMTTime 做原生日期運算，以及為什麼 GMTTime 是唯一能跨機器安全儲存與比較的形式。"
-pubDate: 2026-07-09T07:30:00+08:00
+pubDate: 2026-07-13T07:30:00+08:00
 lang: zh-TW
 slug: notes-datetime-timezone
 tags:

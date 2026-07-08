@@ -1,7 +1,7 @@
 ---
 title: "多層分類 view 裡的 GetAllDocumentsByKey：為什麼你的 count 悄悄就錯了"
 description: "在單層分類 view，GetAllDocumentsByKey('Belgien', True) 正確回傳那個分類下的 2 筆文件。但加上第二層分類 — Form 再 Country — GetAllDocumentsByKey('Customer', True) 回傳 3，不是全部。它停在第一個子分類就不走了。本文記錄這個實測驗證過的陷阱與繞法。"
-pubDate: 2026-07-13T07:30:00+08:00
+pubDate: 2026-07-09T07:30:00+08:00
 lang: zh-TW
 slug: by-key-lookup-categorized-views
 tags:
