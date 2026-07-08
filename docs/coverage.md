@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-07-07 · Posts scanned: 80 · Classes catalogued: 97*
+*Generated: 2026-07-08 · Posts scanned: 81 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -106,7 +106,7 @@
 | [NotesSAXException](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXEXCEPTION_CLASS.html) | DOM/XML | [notes-dom-xmldecl-node](https://bryanhsiao.github.io/domino-news/posts/notes-dom-xmldecl-node/) | 2026-07-05 |
 | [NotesSAXParser](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXPARSER_CLASS.html) | DOM/XML | [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-16 |
 | [NotesSession](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSESSION_CLASS.html) | Session | [notes-session](https://bryanhsiao.github.io/domino-news/posts/notes-session/), [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/), [notes-directory](https://bryanhsiao.github.io/domino-news/posts/notes-directory/), [lotusscript-evaluate](https://bryanhsiao.github.io/domino-news/posts/lotusscript-evaluate/), [notes-id-vault](https://bryanhsiao.github.io/domino-news/posts/notes-id-vault/), [notes-property-broker](https://bryanhsiao.github.io/domino-news/posts/notes-property-broker/) | 2026-05-14 |
-| [NotesStream](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSTREAM_CLASS.html) | Session File Operations | [notes-stream](https://bryanhsiao.github.io/domino-news/posts/notes-stream/), [lotusscript-view-to-excel](https://bryanhsiao.github.io/domino-news/posts/lotusscript-view-to-excel/) | 2026-05-02 |
+| [NotesStream](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSTREAM_CLASS.html) | Session File Operations | [notes-stream](https://bryanhsiao.github.io/domino-news/posts/notes-stream/), [lotusscript-view-to-excel](https://bryanhsiao.github.io/domino-news/posts/lotusscript-view-to-excel/), [notes-stream-encoding](https://bryanhsiao.github.io/domino-news/posts/notes-stream-encoding/) | 2026-05-02 |
 | [NotesTimer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESTIMER_CLASS.html) | Session | [notes-timer](https://bryanhsiao.github.io/domino-news/posts/notes-timer/) | 2026-06-28 |
 | [NotesUIDocument](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIDOCUMENT_CLASS.html) | UI | [notes-ui-workspace-document](https://bryanhsiao.github.io/domino-news/posts/notes-ui-workspace-document/) | 2026-06-10 |
 | [NotesUIWorkspace](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIWORKSPACE_CLASS.html) | UI | [notes-ui-workspace-document](https://bryanhsiao.github.io/domino-news/posts/notes-ui-workspace-document/), [notes-timer](https://bryanhsiao.github.io/domino-news/posts/notes-timer/) | 2026-06-10 |
@@ -196,7 +196,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `RichTextTable` | [notes-rich-text-table](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-table/) |
 | `SAXParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/) |
 | `Session` | [lotusscript-evaluate](https://bryanhsiao.github.io/domino-news/posts/lotusscript-evaluate/), [notes-calendar](https://bryanhsiao.github.io/domino-news/posts/notes-calendar/), [notes-session](https://bryanhsiao.github.io/domino-news/posts/notes-session/) |
-| `Stream` | [notes-stream](https://bryanhsiao.github.io/domino-news/posts/notes-stream/) |
+| `Stream` | [notes-stream-encoding](https://bryanhsiao.github.io/domino-news/posts/notes-stream-encoding/), [notes-stream](https://bryanhsiao.github.io/domino-news/posts/notes-stream/) |
 | `View` | [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/), [getalldocumentsbykey](https://bryanhsiao.github.io/domino-news/posts/getalldocumentsbykey/) |
 | `ViewColumn` | [notes-view-column](https://bryanhsiao.github.io/domino-news/posts/notes-view-column/) |
 | `ViewEntry` | [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
@@ -238,7 +238,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `RichTextTab` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
 | `RichTextTable` | [notes-rich-text-table](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-table/) |
 | `SAXParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/) |
-| `Stream` | [notes-stream](https://bryanhsiao.github.io/domino-news/posts/notes-stream/) |
+| `Stream` | [notes-stream-encoding](https://bryanhsiao.github.io/domino-news/posts/notes-stream-encoding/), [notes-stream](https://bryanhsiao.github.io/domino-news/posts/notes-stream/) |
 | `View` | [getalldocumentsbykey](https://bryanhsiao.github.io/domino-news/posts/getalldocumentsbykey/) |
 | `ViewColumn` | [notes-view-column](https://bryanhsiao.github.io/domino-news/posts/notes-view-column/) |
 | `ViewEntry` | [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
@@ -256,6 +256,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [notes-stream-encoding](https://bryanhsiao.github.io/domino-news/posts/notes-stream-encoding/) | `NotesStream` | `Stream` | `Stream` |
 | [notes-embedded-object](https://bryanhsiao.github.io/domino-news/posts/notes-embedded-object/) | `NotesEmbeddedObject` | `EmbeddedObject`, `RichTextItem` | `EmbeddedObject`, `RichTextItem` |
 | [hcl-sametime-12-0-3](https://bryanhsiao.github.io/domino-news/posts/hcl-sametime-12-0-3/) | — | — | — |
 | [notes-dom-xmldecl-node](https://bryanhsiao.github.io/domino-news/posts/notes-dom-xmldecl-node/) | `NotesDOMXMLDeclNode`, `NotesDOMParser`, `NotesSAXException` | — | — |
@@ -300,7 +301,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | [domino-search-decision](https://bryanhsiao.github.io/domino-news/posts/domino-search-decision/) | `NotesDatabase` | — | — |
 | [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/) | `NotesDatabase`, `NotesDocumentCollection` | `Database` | `database` |
 | [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) | `NotesView`, `NotesDatabase`, `NotesDocumentCollection` | `Database`, `View`, `DocumentCollection` | `database`, `view`, `documentCollection` |
-| [lotusscript-view-to-excel](https://bryanhsiao.github.io/domino-news/posts/lotusscript-view-to-excel/) | `NotesView`, `NotesStream`, `NotesViewNavigator` | — | — |
+| [lotusscript-view-to-excel](https://bryanhsiao.github.io/domino-news/posts/lotusscript-view-to-excel/) | `NotesStream`, `NotesView`, `NotesViewNavigator` | — | — |
 | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) | `NotesSession`, `NotesDateTime`, `NotesDateRange` | `DateTime`, `DateRange` | — |
 | [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | `NotesJSONElement`, `NotesJSONObject`, `NotesJSONArray`, `NotesJSONNavigator` | — | — |
 | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) | `NotesLLMRequest`, `NotesLLMResponse` | `LLMReq`, `LLMRes` | — |
