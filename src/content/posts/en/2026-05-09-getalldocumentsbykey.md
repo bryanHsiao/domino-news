@@ -170,6 +170,8 @@ Per the docs: "columns formatted with both categories and subcategories using th
 
 If a sorted column uses backslashes for two-level categories (`Region\Country`, `Year\Month`), the by-key methods can't find documents in it. Workaround: split into two separate sorted columns and use an array key.
 
+There's a subtler variant that doesn't *break* the lookup but **silently truncates the result**: when a view has two separate categorized columns (category-within-category), a single key matches the top-level category but returns only the first sub-category's documents — not the full set. That trap and its workarounds are documented in the follow-up [multi-level categorized view article](/domino-news/en/posts/by-key-lookup-categorized-views).
+
 ### 3. `exactMatch=False` (the default) catches what it shouldn't
 
 Covered above. **Always pass `exactMatch%=True`** unless you genuinely want prefix matching. Leaving it default is one of those "what felt sensible in 1996 doesn't feel sensible now" defaults — designed for "find customers whose name starts with C" rather than the strict-lookup case modern code usually wants.

@@ -172,6 +172,8 @@ End Sub
 
 也就是 view 排序欄位若用反斜線做兩層分類（例如 `Region\Country` 或 `Year\Month`），by-key 方法會找不到。Workaround：把分類拆成兩個獨立欄位、key 用陣列傳。
 
+還有一個更隱蔽的變體：查詢不會*壞掉*，但會**悄悄截斷結果** —— 當 view 有兩個獨立的分類欄位（分類再分類），單一 key 比對到最上層分類、卻只回傳第一個子分類的文件，不是全部。那個陷阱與繞法記在續篇[多層分類 view 的 by-key 陷阱](/domino-news/zh-TW/posts/by-key-lookup-categorized-views)。
+
 ### 3. exactMatch=False（default）會撈到不該撈的
 
 前面提過。**永遠把 `exactMatch%` 設成 `True` 除非你真的要前綴比對**。讓 default 是 False 這個設計可能是 1996 年「找跟『陳』姓開頭的客戶」這類用法 —— 在現代寫嚴格 lookup 的 use case，default 反而誤導。
