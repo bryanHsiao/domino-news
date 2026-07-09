@@ -17,6 +17,8 @@ sources:
     url: "https://www.wissel.net/blog/2014/01/domino-development-back-to-basics-part-5-finding-data-collections-and-search.html"
 relatedJava: ["View"]
 relatedSsjs: ["View"]
+cover: "/covers/by-key-lookup-categorized-views.webp"
+coverStyle: "risograph"
 ---
 
 在一個以 Country 分類的 view 裡，`GetAllDocumentsByKey("Belgien", True)` 回傳 2 — Maison Dewey 與 Suprêmes délices。完全正確。單層分類加上 by-key 查詢，運作得一如預期。

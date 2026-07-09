@@ -17,6 +17,8 @@ sources:
     url: "https://www.wissel.net/blog/2014/01/domino-development-back-to-basics-part-5-finding-data-collections-and-search.html"
 relatedJava: ["View"]
 relatedSsjs: ["View"]
+cover: "/covers/by-key-lookup-categorized-views.webp"
+coverStyle: "risograph"
 ---
 
 In a view categorized by Country, `GetAllDocumentsByKey("Belgien", True)` returns 2 — Maison Dewey and Suprêmes délices. That's correct. Single-level categorization and by-key lookups work exactly as you'd expect.
