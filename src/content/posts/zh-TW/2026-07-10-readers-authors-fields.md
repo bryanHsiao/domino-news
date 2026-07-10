@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESITEM_CLASS.html"
 relatedJava: ["Item", "Document"]
 relatedSsjs: ["item", "document"]
+cover: "/covers/readers-authors-fields.webp"
+coverStyle: "low-poly-3d"
 ---
 
 你做一個 HR 應用，每筆紀錄應該只有員工本人和他的主管看得到。資料庫 ACL 給所有人 Reader 存取 —— 那太粗了。你要的是*逐文件*的控制，而在 Domino 裡它住在 ACL 下一層、在文件本身：一個 **Readers 欄位**。對從其他平台過來的人來說，意外的是它根本不是什麼特殊的安全 API —— 它是一個普通 item，上面設了一個旗標。

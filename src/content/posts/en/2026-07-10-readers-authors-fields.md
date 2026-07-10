@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESITEM_CLASS.html"
 relatedJava: ["Item", "Document"]
 relatedSsjs: ["item", "document"]
+cover: "/covers/readers-authors-fields.webp"
+coverStyle: "low-poly-3d"
 ---
 
 You build an HR application where each record should be visible only to the employee and their manager. The database ACL gives everyone Reader access — that's too coarse. What you want is *per-document* control, and in Domino that lives one level below the ACL, in the document itself: a **Readers field**. The surprise for people coming from other platforms is that it's not a special security API at all — it's a normal item with a flag set on it.
