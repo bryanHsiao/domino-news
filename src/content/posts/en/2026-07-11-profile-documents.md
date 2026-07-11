@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_KEY_PROPERTY.html"
 relatedJava: ["Database", "Document"]
 relatedSsjs: ["database", "document"]
+cover: "/covers/profile-documents.webp"
+coverStyle: "minimalist-mono"
 ---
 
 Every non-trivial Domino application needs somewhere to keep settings — the company logo, the default page size, a per-user theme. You could make a "config" form and a view, but Domino has a purpose-built mechanism: the **profile document**. It's a document, but a special one — invisible in views, excluded from the database's document count, and cached for speed. That caching is exactly why profiles are fast, and also exactly what trips developers up.

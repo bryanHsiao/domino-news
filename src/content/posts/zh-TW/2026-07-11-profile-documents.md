@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_KEY_PROPERTY.html"
 relatedJava: ["Database", "Document"]
 relatedSsjs: ["database", "document"]
+cover: "/covers/profile-documents.webp"
+coverStyle: "minimalist-mono"
 ---
 
 每個像樣的 Domino 應用都需要一個地方放設定 —— 公司 logo、預設頁面大小、每個人的佈景。你可以做一個「config」表單加一個 view，但 Domino 有一個為此打造的機制：**profile document**。它是一份文件，但是特殊的一份 —— 在 view 裡看不到、不計入資料庫的文件數、而且為了速度被快取。那個快取正是 profile 快的原因，也正是絆倒開發者的東西。
