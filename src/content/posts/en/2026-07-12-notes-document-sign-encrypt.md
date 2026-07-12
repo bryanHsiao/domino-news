@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_ENCRYPTIONKEYS_PROPERTY.html"
 relatedJava: ["Document"]
 relatedSsjs: ["document"]
+cover: "/covers/notes-document-sign-encrypt.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 Two of Domino's oldest security features are one method call each — and both fail quietly if you get the sequence wrong. [`Sign`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SIGN_METHOD.html) attaches a cryptographic signature proving who wrote the document; [`Encrypt`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_ENCRYPT_METHOD.html) scrambles chosen items so only key-holders can read them. The traps aren't in the crypto — they're in *when the change hits disk* and *whose identity does the work*.

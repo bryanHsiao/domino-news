@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_ENCRYPTIONKEYS_PROPERTY.html"
 relatedJava: ["Document"]
 relatedSsjs: ["document"]
+cover: "/covers/notes-document-sign-encrypt.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 Domino 兩個最老的安全功能各是一個方法呼叫 —— 而兩者只要你把順序弄錯就會安靜地失敗。[`Sign`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SIGN_METHOD.html) 附上一個證明是誰寫了這份文件的加密簽章；[`Encrypt`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_ENCRYPT_METHOD.html) 把選定的 item 打亂，讓只有持金鑰的人讀得到。陷阱不在密碼學 —— 在*變更何時落盤*，以及*誰的身分在做事*。
