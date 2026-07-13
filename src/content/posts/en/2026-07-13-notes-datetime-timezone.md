@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CONVERTTOZONE_METHOD.html"
 relatedJava: ["DateTime"]
 relatedSsjs: ["DateTime"]
+cover: "/covers/notes-datetime-timezone.webp"
+coverStyle: "risograph"
 ---
 
 A user in Taipei creates a record at 9 AM; a scheduled agent on a server in Frankfurt processes it; a report renders it for a reader in New York. If you stored and compared the raw local-time strings, all three see a different "9:00" and your sort order is nonsense. [`NotesDateTime`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATETIME_CLASS.html) has the tools to get this right — but they come with a sign convention and a DST rule that catch almost everyone the first time.

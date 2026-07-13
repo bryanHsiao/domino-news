@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CONVERTTOZONE_METHOD.html"
 relatedJava: ["DateTime"]
 relatedSsjs: ["DateTime"]
+cover: "/covers/notes-datetime-timezone.webp"
+coverStyle: "risograph"
 ---
 
 台北的使用者在早上 9 點建一筆紀錄；法蘭克福伺服器上的排程 agent 處理它；報表把它呈現給紐約的讀者。如果你儲存與比較的是原始的本地時間字串，這三方看到的是三個不同的「9:00」，你的排序也就亂了。[`NotesDateTime`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATETIME_CLASS.html) 有把這件事做對的工具 —— 但它們附帶一個正負號慣例和一條 DST 規則，幾乎每個人第一次都會被絆到。
