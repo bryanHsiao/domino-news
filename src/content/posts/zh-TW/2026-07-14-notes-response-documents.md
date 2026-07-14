@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_PARENTDOCUMENTUNID_PROPERTY.html"
 relatedJava: ["Document"]
 relatedSsjs: ["document"]
+cover: "/covers/notes-response-documents.webp"
+coverStyle: "pencil-sketch"
 ---
 
 討論串、一張採購單與它的明細、一張工單與它的後續追蹤 — 這些在 Domino 裡都是同一個形狀：一份**主文件**，底下掛著**回應文件**，有時回應底下還掛著回應。LotusScript 用幾個 `NotesDocument` 成員就能建立與走訪那棵樹。它們很簡單，但其中兩個有個鋒利的邊角，不知道的話會悄悄產生錯的結果。

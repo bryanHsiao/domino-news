@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_PARENTDOCUMENTUNID_PROPERTY.html"
 relatedJava: ["Document"]
 relatedSsjs: ["document"]
+cover: "/covers/notes-response-documents.webp"
+coverStyle: "pencil-sketch"
 ---
 
 Threaded discussions, a purchase order with its line items, a ticket with its follow-ups — these are all the same Domino shape: a **main document** with **response documents** hanging off it, and sometimes responses hanging off those. LotusScript builds and walks that tree with just a few `NotesDocument` members. They're simple, but two of them have a sharp edge that quietly produces wrong results if you don't know it.
