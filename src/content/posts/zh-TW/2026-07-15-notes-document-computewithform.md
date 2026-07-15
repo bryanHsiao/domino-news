@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html"
 relatedJava: ["Document"]
 relatedSsjs: ["document"]
+cover: "/covers/notes-document-computewithform.webp"
+coverStyle: "minimalist-mono"
 ---
 
 當使用者填好表單按存檔，Domino 會跑表單的公式：預設值填入、輸入轉換公式把資料整理乾淨、輸入驗證公式擋掉不合格的輸入。一個在後端建立文件的 agent 跳過了這一切 — 除非你呼叫 `ComputeWithForm`。這是你用程式拿到同一套驗證的方式。但它跟 UI 存檔的行為差異大到：天真地依賴它，會讓無效資料長驅直入你的資料庫。

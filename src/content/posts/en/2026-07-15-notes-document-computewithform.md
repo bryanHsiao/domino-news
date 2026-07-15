@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html"
 relatedJava: ["Document"]
 relatedSsjs: ["document"]
+cover: "/covers/notes-document-computewithform.webp"
+coverStyle: "minimalist-mono"
 ---
 
 When a user fills in a form and saves, Domino runs the form's formulas: default values fill in, input-translation formulas tidy the data, input-validation formulas reject bad input. An agent that creates documents in the back-end skips all of that — unless you call `ComputeWithForm`. It's how you get the same validation from code. But it behaves differently enough from a UI save that leaning on it naively will let invalid data straight into your database.
