@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_LOCKING_DOCUMENTS_AND_DESIGN_ELEMENTS.html"
 relatedJava: ["Document", "Database"]
 relatedSsjs: ["document", "database"]
+cover: "/covers/notes-document-locking.webp"
+coverStyle: "bw-grain"
 ---
 
 Two users open the same document, both edit, both save — and now you have a replication or save conflict and someone's work is gone. Domino's answer is document locking: claim a document, edit it, release it, and while you hold the lock nobody else can save over you. The API is four members on `NotesDocument` plus one switch on `NotesDatabase`. The catch is that all of it raises an error unless a couple of prerequisites are in place — and those prerequisites are what people forget.

@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_LOCKING_DOCUMENTS_AND_DESIGN_ELEMENTS.html"
 relatedJava: ["Document", "Database"]
 relatedSsjs: ["document", "database"]
+cover: "/covers/notes-document-locking.webp"
+coverStyle: "bw-grain"
 ---
 
 兩個使用者打開同一份文件、都編輯、都存檔 — 現在你有一個 replication 或存檔衝突，某個人的工作不見了。Domino 的答案是文件鎖定：認領一份文件、編輯它、釋放它，而在你持有鎖的期間沒有別人能覆蓋你的存檔。API 是 `NotesDocument` 上的四個成員加上 `NotesDatabase` 上的一個開關。陷阱是：這一切都會拋錯，除非幾個前置條件到位 — 而那些前置條件正是大家會忘記的。
