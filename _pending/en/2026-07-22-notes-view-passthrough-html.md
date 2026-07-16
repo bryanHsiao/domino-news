@@ -70,6 +70,8 @@ What's left after `size="` closes the runaway value — `2" face="新細明體">
 
 The visible result: the checkbox and the subject end up in the **same cell**, because the `</td><td>` boundary between them was eaten. Two columns rendered as one.
 
+![Three-step diagram: an unclosed value quote in a Domino view puts the browser's tokenizer in the double-quoted attribute-value state, swallowing the `</td><td>` cell boundary until the next quote and merging two columns into one cell](/domino-news/post-images/notes-view-passthrough-unclosed-quote.png)
+
 ## Why the header ends up off by one
 
 Now the off-by-one falls out for free. The **header row is generated separately** — Domino emits one `<td>` per column for the titles, and none of those title cells carries a runaway quote. So the header row has its full, correct number of cells, while every *data* row is short by one (two columns merged into one). From the merge point rightward, each heading now sits above the *next* column's data. The header isn't "misaligned" by some CSS bug — it has literally one more cell than the rows it's labelling.

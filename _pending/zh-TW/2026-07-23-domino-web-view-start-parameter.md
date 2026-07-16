@@ -45,6 +45,8 @@ relatedSsjs: ["ViewEntry"]
 | `Start=1.1.1.1.59999`（末段超界）| 被**夾到**該分支尾端 |
 | `Start=2.99999.1`（中段超界）| **No documents found**（中間段不 clamp）|
 
+![三段式示意：Start 階層座標樹（085.總務處 → 104 → 一般（實體）→ 085D02_01 → 該分類第 6 筆文件）、Start=1.1.1.1.6 逐段對應五層的 URL 解剖、以及五種 URL 寫法的實測行為速查表](/domino-news/post-images/domino-web-view-start-coordinates.png)
+
 把點號形式讀成一條樹路徑。`1.1.1.1.6` 代表：第 1 個最上層分類 → 它的第 1 個子分類 → 它的第 1 個 → 它的第 1 個 → 底下第 6 筆文件。每一段回答「這裡是第幾個兄弟」，而結尾那段是文件在它直屬分類裡的索引。這正是你在 LotusScript/Java 裡看到的 `NotesViewEntry.Position`、以及 [`?ReadViewEntries`](https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_ABOUT_URL_COMMANDS_FOR_OPENING_SERVERS_DATABASES_AND_VIEWS.html) 回應裡的 `position`。
 
 兩個值得內化的後果。第一，「末段 clamp、中段不 clamp」規則代表你可以安全地在一個分類*內*超界（做「這個分類的最後一頁」很方便），但不能跨樹超界。第二 —— 這是殺死天真分頁器的那個 —— **沒有單一 URL 能跳到絕對最後一頁**，因為你得先知道最後一個葉節點的完整座標。內建的 `ViewNextPage` / `ViewPreviousPage` `@DbCommand` 之所以能動，正是因為 Domino 走過樹、幫你算好座標。（那些內建的一個怪癖：「下一頁」把上一頁的最後一列當新頁的第一列 —— 一個刻意的一列重疊。）
