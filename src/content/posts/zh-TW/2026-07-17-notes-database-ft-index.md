@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_ISFTINDEXED_PROPERTY.html"
 relatedJava: ["Database"]
 relatedSsjs: ["database"]
+cover: "/covers/notes-database-ft-index.webp"
+coverStyle: "low-poly-3d"
 ---
 
 全文索引是讓 [`FTSearch`](/domino-news/zh-TW/posts/lotusscript-ftsearch) 快的東西 — 沒有它，文字查詢會退回 `db.Search`，一個 O(N) 的公式掃描，在大資料庫上爬得很慢。所以自然會想用程式建立與維護那個索引。`NotesDatabase` 讓你做：`CreateFTIndex`、`UpdateFTIndex`、`RemoveFTIndex`、`IsFTIndexed`。絆倒人的不是 API — 是一個本機 vs 伺服器的分界，直到你的程式對著伺服器資料庫悄悄什麼都沒做（或拋錯）才會發現。

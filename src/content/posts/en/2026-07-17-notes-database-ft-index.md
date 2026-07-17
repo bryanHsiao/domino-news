@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_ISFTINDEXED_PROPERTY.html"
 relatedJava: ["Database"]
 relatedSsjs: ["database"]
+cover: "/covers/notes-database-ft-index.webp"
+coverStyle: "low-poly-3d"
 ---
 
 A full-text index is what makes [`FTSearch`](/domino-news/en/posts/lotusscript-ftsearch) fast — without one, a text query falls back to `db.Search`, an O(N) formula scan that crawls on a large database. So it's natural to want to build and maintain that index from code. `NotesDatabase` lets you: `CreateFTIndex`, `UpdateFTIndex`, `RemoveFTIndex`, `IsFTIndexed`. What trips people up isn't the API — it's a local-versus-server split that isn't obvious until your code silently does nothing (or errors) against a server database.
