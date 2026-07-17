@@ -1,6 +1,6 @@
 ---
 title: "用程式管理全文索引：CreateFTIndex、UpdateFTIndex，與本機 vs 伺服器的分界"
-description: "FTSearch 要快就需要全文索引 — 而 NotesDatabase 能用 LotusScript 建立、更新、移除索引。陷阱是一個幾乎沒人料到的分界：CreateFTIndex / UpdateFTIndex / RemoveFTIndex 只對本機資料庫有效，而 FTIndexFrequency 只對伺服器有效，伺服器索引其實是由 Updall 工作管理的（updall -X 是重建、不是建立）。本文說明 options bitmask、create 與 update 的差別、以及那個分界。"
+description: "FTSearch 要快、要能用萬用字元與相關性排序，就需要全文索引 — 而 NotesDatabase 能用 LotusScript 建立、更新、移除索引。陷阱是一個幾乎沒人料到的分界：CreateFTIndex / UpdateFTIndex / RemoveFTIndex 只對本機資料庫有效，而 FTIndexFrequency 只對伺服器有效，伺服器索引其實是由 Updall 工作管理的（updall -X 是重建、不是建立）。本文說明 options bitmask、create 與 update 的差別、以及那個分界。"
 pubDate: 2026-07-17T07:30:00+08:00
 lang: zh-TW
 slug: notes-database-ft-index
@@ -21,7 +21,7 @@ cover: "/covers/notes-database-ft-index.webp"
 coverStyle: "low-poly-3d"
 ---
 
-全文索引是讓 [`FTSearch`](/domino-news/zh-TW/posts/lotusscript-ftsearch) 快的東西 — 沒有它，文字查詢會退回 `db.Search`，一個 O(N) 的公式掃描，在大資料庫上爬得很慢。所以自然會想用程式建立與維護那個索引。`NotesDatabase` 讓你做：`CreateFTIndex`、`UpdateFTIndex`、`RemoveFTIndex`、`IsFTIndexed`。絆倒人的不是 API — 是一個本機 vs 伺服器的分界，直到你的程式對著伺服器資料庫悄悄什麼都沒做（或拋錯）才會發現。
+全文索引是讓 [`FTSearch`](/domino-news/zh-TW/posts/lotusscript-ftsearch) 又快又強的來源 —— 它不只讓查詢變快，還開啟了萬用字元、`AND`/`OR`/`NEAR` 這類運算子、以及依相關性排序（`FTSearchScore`）這些一般公式掃描做不到的能力。少了它，`FTSearch` **不會**自動退成 `db.Search`（那是另一個以公式選取、逐份文件求值的方法）：在本機資料庫，`FTSearch` 照樣能查，只是退化成慢的即時掃描並失去相關性排序；在伺服器資料庫，沒索引的全文查詢通常直接拋出「資料庫沒有全文索引」的錯（就是你在 XPages view 搜尋沒索引時會看到的那則訊息），除非設了 `TEMP_INDEX_MAX_DOC` 之類的 ini。所以自然會想用程式建立與維護那個索引。`NotesDatabase` 讓你做：`CreateFTIndex`、`UpdateFTIndex`、`RemoveFTIndex`、`IsFTIndexed`。絆倒人的不是 API — 是一個本機 vs 伺服器的分界，直到你的程式對著伺服器資料庫悄悄什麼都沒做（或拋錯）才會發現。
 
 ---
 
@@ -78,7 +78,7 @@ End Sub
 
 - **agent 建立並搜尋的本機暫存/臨時資料庫**：放心用 `CreateFTIndex` / `UpdateFTIndex` — 那正是它們的範圍。
 - **伺服器正式資料庫**：別想用 LotusScript 索引它們；那是管理員/Updall 的地盤。從程式你能讀 `IsFTIndexed` 來*檢查*、設 `FTIndexFrequency` 來*調頻率*，但建立本身在伺服器端。
-- 永遠用 `IsFTIndexed` 把關 `FTSearch`、沒索引時退回 `db.Search`，讓你的搜尋程式優雅降級、而不是對著沒索引的資料庫跑得很慢。
+- 永遠用 `IsFTIndexed` 把關 `FTSearch`。沒索引時，由你的程式決定路徑 —— 先建／刷新索引，或改用公式版的 `db.Search`（O(N) 掃描）當明確的替代路徑 —— 而不是假設 `FTSearch` 會自己降級。尤其在伺服器資料庫上，沒索引的全文查詢會直接拋錯，不會默默慢慢跑。
 
 ## 同類別在其他語言
 

@@ -1,6 +1,6 @@
 ---
 title: "Managing the Full-Text Index from Code: CreateFTIndex, UpdateFTIndex, and the Local-vs-Server Split"
-description: "FTSearch needs a full-text index to be fast — and NotesDatabase can create, update, and remove one from LotusScript. The catch is a split almost nobody expects: CreateFTIndex / UpdateFTIndex / RemoveFTIndex work on LOCAL databases only, while FTIndexFrequency is server-only, and server indexes are actually managed by the Updall task (updall -X rebuilds, it doesn't create). This article covers the options bitmask, the create-vs-update distinction, and that split."
+description: "FTSearch needs a full-text index to be fast — and to support wildcards and relevance ranking — and NotesDatabase can create, update, and remove one from LotusScript. The catch is a split almost nobody expects: CreateFTIndex / UpdateFTIndex / RemoveFTIndex work on LOCAL databases only, while FTIndexFrequency is server-only, and server indexes are actually managed by the Updall task (updall -X rebuilds, it doesn't create). This article covers the options bitmask, the create-vs-update distinction, and that split."
 pubDate: 2026-07-17T07:30:00+08:00
 lang: en
 slug: notes-database-ft-index
@@ -21,7 +21,7 @@ cover: "/covers/notes-database-ft-index.webp"
 coverStyle: "low-poly-3d"
 ---
 
-A full-text index is what makes [`FTSearch`](/domino-news/en/posts/lotusscript-ftsearch) fast — without one, a text query falls back to `db.Search`, an O(N) formula scan that crawls on a large database. So it's natural to want to build and maintain that index from code. `NotesDatabase` lets you: `CreateFTIndex`, `UpdateFTIndex`, `RemoveFTIndex`, `IsFTIndexed`. What trips people up isn't the API — it's a local-versus-server split that isn't obvious until your code silently does nothing (or errors) against a server database.
+A full-text index is what makes [`FTSearch`](/domino-news/en/posts/lotusscript-ftsearch) both fast and capable — beyond speed, it's what enables wildcards, the `AND`/`OR`/`NEAR` operators, and relevance-ranked sorting (`FTSearchScore`) that a plain formula scan can't do. Without one, `FTSearch` does **not** silently become `db.Search` (a different method that selects with a formula, evaluated document by document): on a local database it still runs, but degrades to a slow on-the-fly scan and loses relevance ranking; on a server database an un-indexed full-text query typically throws a "database is not full-text indexed" error (the message you'll see from an XPages view search with no index) unless a Notes.ini like `TEMP_INDEX_MAX_DOC` is set. So it's natural to want to build and maintain that index from code. `NotesDatabase` lets you: `CreateFTIndex`, `UpdateFTIndex`, `RemoveFTIndex`, `IsFTIndexed`. What trips people up isn't the API — it's a local-versus-server split that isn't obvious until your code silently does nothing (or errors) against a server database.
 
 ---
 
@@ -78,7 +78,7 @@ And the one property that *is* server-scoped is the mirror image: `FTIndexFreque
 
 - **Local scratch/temp databases** an agent builds and searches: use `CreateFTIndex` / `UpdateFTIndex` freely — that's exactly their scope.
 - **Server production databases:** don't try to index them from LotusScript; that's admin/Updall territory. From code you can read `IsFTIndexed` to *check* and set `FTIndexFrequency` to tune the cadence, but the build itself is server-side.
-- Always gate `FTSearch` on `IsFTIndexed` and fall back to `db.Search` when there's no index, so your search code degrades gracefully instead of running slowly against a non-indexed database.
+- Always gate `FTSearch` on `IsFTIndexed`. When there's no index, have *your* code decide the path — build/refresh the index first, or fall back to a formula-based `db.Search` (an O(N) scan) as an explicit alternative — rather than assuming `FTSearch` degrades on its own. On a server database especially, an un-indexed full-text query errors outright instead of quietly running slow.
 
 ## What about Java and SSJS?
 
