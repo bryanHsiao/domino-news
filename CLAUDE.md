@@ -106,6 +106,18 @@ loses the source-grounded citation chain.
   tomorrow's / today's" / "earlier this week" / "day after." A reader
   arriving via search has no "yesterday" context; the article needs
   to stand on its own.
+- **Humanizer pass before shipping.** Every article's prose (zh above
+  all, en too) goes through the **`humanizer-zh-tw`** skill before it
+  ships — it's the enforcement arm of the "No AI-generated framing"
+  rule above. It flags the 24 AI tells (誇大象徵 / promotional 語言 /
+  `-ing` 膚淺分析 / 模糊歸因 / 破折號過度 / rule-of-three 硬湊 / AI
+  詞彙群聚 / 否定式排比 / 同義詞循環 / 罐頭正向結論 …) and scores on a
+  5-dimension rubric (直接性 / 節奏 / 信任 / 真實 / 精煉). Apply with
+  judgement: keep the earned first-person field-report voice, the
+  concrete measured details, and deliberate em-dashes that carry a
+  real aside; strip only the *unearned* tells. Never let it touch
+  identifiers, HCL UI labels, or citation-backed claims. The
+  `domino-news-tech-article` skill's Step 3 owns the procedural detail.
 
 ---
 

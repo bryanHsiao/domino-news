@@ -464,6 +464,26 @@ If no Java/SSJS counterpart exists (e.g. `NotesHTTPRequest` ↔
 explicitly — that's an interesting framing ("LS is more convenient
 than Java/SSJS in this corner") rather than a missing piece.
 
+### Humanizer pass — mandatory before shipping (zh especially)
+
+Once both language drafts are written, run the **`humanizer-zh-tw`**
+skill over the prose — the zh body above all, but the en body too.
+It's the enforcement arm of CLAUDE.md's "No AI-generated framing"
+editorial rule: it hunts the 24 tells (誇大象徵 / promotional 語言 /
+`-ing` 膚淺分析 / 模糊歸因 / 破折號過度 / rule-of-three 硬湊 / AI 詞彙
+群聚 / 否定式排比 / 同義詞循環 / 罐頭正向結論 …) and grades the result
+on the 5-dimension rubric (直接性 / 節奏 / 信任 / 真實 / 精煉).
+
+Apply it with judgement, not mechanically — this site's voice is a
+longtime Domino developer writing field reports, so keep the earned
+first-person ("我踩過這個雷"), the concrete measured details, and the
+deliberate em-dashes that carry a real aside. Strip the *unearned*
+tells: filler transitions, forced triplets, thesaurus-cycling a term
+that should just repeat, and vague-optimism conclusions. Do NOT let it
+rewrite identifiers, HCL UI labels, or the citation-backed technical
+claims — those are load-bearing and stay verbatim. Target ≥ 45/50;
+if a section scores low, revise that section, don't gut the article.
+
 ---
 
 ## Step 4 — Frontmatter
