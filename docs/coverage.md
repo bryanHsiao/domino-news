@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-07-17 · Posts scanned: 90 · Classes catalogued: 97*
+*Generated: 2026-07-18 · Posts scanned: 91 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -73,10 +73,10 @@
 | [NotesIDVault](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESIDVAULT_CLASS.html) | Admin | [notes-id-vault](https://bryanhsiao.github.io/domino-news/posts/notes-id-vault/) | 2026-06-25 |
 | [NotesInternational](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESINTERNATIONAL_CLASS.html) | Session | [notes-international](https://bryanhsiao.github.io/domino-news/posts/notes-international/) | 2026-06-30 |
 | [NotesItem](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESITEM_CLASS.html) | Item | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/), [domino-large-summary-field-too-large](https://bryanhsiao.github.io/domino-news/posts/domino-large-summary-field-too-large/), [readers-authors-fields](https://bryanhsiao.github.io/domino-news/posts/readers-authors-fields/) | 2026-04-30 |
-| [NotesJSONArray](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONARRAY_CLASS.html) | JSON | [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | 2026-05-24 |
+| [NotesJSONArray](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONARRAY_CLASS.html) | JSON | [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/), [notes-json-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-json-navigator/) | 2026-05-24 |
 | [NotesJSONElement](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONELEMENT_CLASS.html) | JSON | [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | 2026-05-24 |
-| [NotesJSONNavigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONNAVIGATOR_CLASS.html) | JSON | [notes-query-results-processor](https://bryanhsiao.github.io/domino-news/posts/notes-query-results-processor/), [lotusscript-http-json](https://bryanhsiao.github.io/domino-news/posts/lotusscript-http-json/), [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | 2026-04-28 |
-| [NotesJSONObject](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONOBJECT_CLASS.html) | JSON | [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | 2026-05-24 |
+| [NotesJSONNavigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONNAVIGATOR_CLASS.html) | JSON | [notes-query-results-processor](https://bryanhsiao.github.io/domino-news/posts/notes-query-results-processor/), [lotusscript-http-json](https://bryanhsiao.github.io/domino-news/posts/lotusscript-http-json/), [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/), [notes-json-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-json-navigator/) | 2026-04-28 |
+| [NotesJSONObject](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONOBJECT_CLASS.html) | JSON | [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/), [notes-json-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-json-navigator/) | 2026-05-24 |
 | [NotesLLMRequest](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NotesLLMRequest_Class.html) | DominoIQ | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) | 2026-05-23 |
 | [NotesLLMResponse](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NotesLLMResponse_class.html) | DominoIQ | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) | 2026-05-23 |
 | [NotesLog](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESLOG_CLASS.html) | Session | [notes-log](https://bryanhsiao.github.io/domino-news/posts/notes-log/) | 2026-06-07 |
@@ -258,6 +258,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [notes-json-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-json-navigator/) | `NotesJSONNavigator`, `NotesJSONObject`, `NotesJSONArray` | — | — |
 | [notes-database-ft-index](https://bryanhsiao.github.io/domino-news/posts/notes-database-ft-index/) | `NotesDatabase` | `Database` | `database` |
 | [notes-document-locking](https://bryanhsiao.github.io/domino-news/posts/notes-document-locking/) | `NotesDatabase`, `NotesDocument` | `Document`, `Database` | `document`, `database` |
 | [notes-document-computewithform](https://bryanhsiao.github.io/domino-news/posts/notes-document-computewithform/) | `NotesDocument` | `Document` | `document` |
@@ -314,7 +315,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) | `NotesDatabase`, `NotesView`, `NotesDocumentCollection` | `Database`, `View`, `DocumentCollection` | `database`, `view`, `documentCollection` |
 | [lotusscript-view-to-excel](https://bryanhsiao.github.io/domino-news/posts/lotusscript-view-to-excel/) | `NotesView`, `NotesStream`, `NotesViewNavigator` | — | — |
 | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) | `NotesDateTime`, `NotesSession`, `NotesDateRange` | `DateTime`, `DateRange` | — |
-| [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | `NotesJSONElement`, `NotesJSONObject`, `NotesJSONArray`, `NotesJSONNavigator` | — | — |
+| [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | `NotesJSONNavigator`, `NotesJSONObject`, `NotesJSONArray`, `NotesJSONElement` | — | — |
 | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) | `NotesLLMRequest`, `NotesLLMResponse` | `LLMReq`, `LLMRes` | — |
 | [build-hcl-domino-9-container](https://bryanhsiao.github.io/domino-news/posts/build-hcl-domino-9-container/) | — | — | — |
 | [build-your-own-domino-container](https://bryanhsiao.github.io/domino-news/posts/build-your-own-domino-container/) | — | — | — |
