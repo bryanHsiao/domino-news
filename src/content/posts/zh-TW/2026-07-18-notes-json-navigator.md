@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONARRAY_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-json-navigator.webp"
+coverStyle: "art-deco"
 ---
 
 如果你做 Domino 夠久，會記得用 LotusScript 解析 JSON 的苦法：`Evaluate` 配 `@Explode`、或一有值裡含逗號就爆掉的 regex 式字串手術。從 Domino 10.0.1 起有了正經的答案 — [`NotesJSONNavigator`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONNAVIGATOR_CLASS.html)，「一個用來解析 JSON 資料的 LotusScript 類別」。它交給你一棵由物件、陣列、值組成的型別化樹，讓你直接導覽。API 很乾淨；唯一的摩擦是幾個跟你會猜的不一樣的命名。

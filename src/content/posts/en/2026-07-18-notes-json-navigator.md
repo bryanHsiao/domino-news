@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONARRAY_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-json-navigator.webp"
+coverStyle: "art-deco"
 ---
 
 If you've been doing Domino long enough, you remember parsing JSON in LotusScript the hard way: `Evaluate` with `@Explode`, or regex-flavoured string surgery that broke the moment a value contained a comma. Since Domino 10.0.1 there's a proper answer — [`NotesJSONNavigator`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONNAVIGATOR_CLASS.html), "a LotusScript class used to parse JSON data." It hands you a typed tree of objects, arrays, and values that you navigate directly. The API is clean; the only friction is a couple of naming choices that don't match what you'd guess.
