@@ -22,6 +22,8 @@ coverStyle: "watercolor"
 
 An external system hands you a chunk of XML — a batch of orders, or an HR roster — and you need it as Notes documents. The problem is the tag structure doesn't line up with your form: what arrives is `<order><customer>`, and your form wants fields named `CustName`, `OrderNo`. You could write a loop that parses the XML element by element and calls `doc.ReplaceItemValue` field by field — or you write one XSLT stylesheet that reshapes that foreign XML straight into DXL matching your form, and hand it to [`NotesDXLImporter`](/domino-news/en/posts/notes-dxl-importer) to create the documents. The engine that does the reshaping is [`NotesXSLTransformer`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) — "the transformation of DXL (Domino XML) data through XSLT." It's the last member of the LotusScript XML family, alongside the [DOM](/domino-news/en/posts/notes-dom-parser) and [SAX](/domino-news/en/posts/notes-sax-parser) parsers, slotting into the same stream-based pipeline. The same engine runs the other direction too: export documents to DXL, then transform them into whatever shape another system expects.
 
+![Three-step diagram: an external system sends `<order>` XML whose tags don't match your form → one XSLT stylesheet maps @id/customer/total onto OrderNo/CustName/Amount → producing DXL that matches the Order form, which NotesDXLImporter turns into a Notes document](/domino-news/post-images/notes-xslt-xml-to-dxl-mapping.png)
+
 ---
 
 ## TL;DR

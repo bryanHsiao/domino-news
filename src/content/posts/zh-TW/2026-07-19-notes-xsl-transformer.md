@@ -22,6 +22,8 @@ coverStyle: "watercolor"
 
 一個外部系統丟給你一份 XML — 一批訂單、或一份 HR 名冊 — 而你要它變成 Notes 文件。問題是它的標籤結構跟你的表單欄位對不起來：進來的是 `<order><customer>`，你的表單要的是 `CustName`、`OrderNo` 這些欄位名。你可以寫一支逐欄 parse XML、再逐欄 `doc.ReplaceItemValue` 的迴圈 —— 或者，你用一張 XSLT stylesheet 把那份外部 XML 直接重塑成符合表單的 DXL，交給 [`NotesDXLImporter`](/domino-news/zh-TW/posts/notes-dxl-importer) 建文件。做這個重塑的引擎，就是 [`NotesXSLTransformer`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) —「DXL（Domino XML）資料透過 XSLT 的轉換」。它是 LotusScript XML 家族的最後一員，與 [DOM](/domino-news/zh-TW/posts/notes-dom-parser) 和 [SAX](/domino-news/zh-TW/posts/notes-sax-parser) parser 並列，嵌進同一條以 stream 為基礎的 pipeline。同一個引擎也反過來用：把文件匯出成 DXL、再轉成別的系統要的格式送出去。
 
+![三步驟示意：外部系統送來的 `<order>` XML（標籤名跟表單對不起來）→ 一張 XSLT stylesheet 把 @id/customer/total 映射成 OrderNo/CustName/Amount → 產出符合 Order 表單的 DXL，由 NotesDXLImporter 建成 Notes 文件](/domino-news/post-images/notes-xslt-xml-to-dxl-mapping.png)
+
 ---
 
 ## 重點摘要
