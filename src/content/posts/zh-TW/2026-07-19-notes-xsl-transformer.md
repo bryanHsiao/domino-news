@@ -20,7 +20,7 @@ cover: "/covers/notes-xsl-transformer.webp"
 coverStyle: "watercolor"
 ---
 
-你手上有 XML 形式的 Domino 資料 — 一批文件的 DXL 匯出、或你拉進來的 XML feed — 而你需要它變成不同的形狀：一份 HTML 報表、一個 CSV、給另一個系統的重新格式化 XML。做這件事的工具是 XSLT，而 Domino 透過 [`NotesXSLTransformer`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) 原生地跑它 —「DXL（Domino XML）資料透過 XSLT 的轉換」。它是 LotusScript XML 家族的最後一員，與 [DOM](/domino-news/zh-TW/posts/notes-dom-parser) 和 [SAX](/domino-news/zh-TW/posts/notes-sax-parser) parser 並列，並嵌進同一條以 stream 為基礎的 pipeline。
+一個外部系統丟給你一份 XML — 一批訂單、或一份 HR 名冊 — 而你要它變成 Notes 文件。問題是它的標籤結構跟你的表單欄位對不起來：進來的是 `<order><customer>`，你的表單要的是 `CustName`、`OrderNo` 這些欄位名。你可以寫一支逐欄 parse XML、再逐欄 `doc.ReplaceItemValue` 的迴圈 —— 或者，你用一張 XSLT stylesheet 把那份外部 XML 直接重塑成符合表單的 DXL，交給 [`NotesDXLImporter`](/domino-news/zh-TW/posts/notes-dxl-importer) 建文件。做這個重塑的引擎，就是 [`NotesXSLTransformer`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) —「DXL（Domino XML）資料透過 XSLT 的轉換」。它是 LotusScript XML 家族的最後一員，與 [DOM](/domino-news/zh-TW/posts/notes-dom-parser) 和 [SAX](/domino-news/zh-TW/posts/notes-sax-parser) parser 並列，嵌進同一條以 stream 為基礎的 pipeline。同一個引擎也反過來用：把文件匯出成 DXL、再轉成別的系統要的格式送出去。
 
 ---
 
@@ -79,11 +79,18 @@ End Sub
 
 ## Pipelining：跳過暫存檔
 
-transformer 之所以把 parser 與 DXL 物件也當作 input/output、不只是 stream，原因是 pipelining —「把操作組合起來，讓一個 XML 程序的輸出成為另一個的輸入」。與其把文件匯出成一個 DXL 檔、轉換那個檔、再匯入結果，你直接把物件串起來：
+transformer 之所以把 parser 與 DXL 物件也當作 input/output、不只是 stream，原因是 pipelining —「把操作組合起來，讓一個 XML 程序的輸出成為另一個的輸入」。舉一個具體的：你要把一批文件從舊資料庫搬到一個表單設計不同的新資料庫，其中一個欄位改了名 —— 舊的叫 `Cust`，新表單要 `CustomerName`。與其寫 LotusScript 逐份文件複製、逐欄改名，你把三個物件串起來：
 
-- `NotesDXLExporter`（把文件匯出成 DXL）→ **`NotesXSLTransformer`**（套 stylesheet）→ [`NotesDXLImporter`](/domino-news/zh-TW/posts/notes-dxl-importer)（把轉換後的 DXL 寫進另一個資料庫）。
+- `NotesDXLExporter`（把舊庫文件匯出成 DXL）→ **`NotesXSLTransformer`**（stylesheet 把 `<item name='Cust'>` 改寫成 `<item name='CustomerName'>`）→ [`NotesDXLImporter`](/domino-news/zh-TW/posts/notes-dxl-importer)（把改寫後的 DXL 寫進新庫）。
 
-stylesheet 仍然是一個 `NotesStream`，但 XML 輸入與輸出變成活的物件，沒有任何中間檔碰到磁碟。`AddParameter` 讓你把最上層的 `<xsl:param>` 值傳進 stylesheet，所以同一個轉換能每次跑用不同參數。
+那支 stylesheet 做的就是這種節點層級的改寫：
+
+```xml
+<!-- 進來的 -->  <item name='Cust'><text>Acme</text></item>
+<!-- 出去的 -->  <item name='CustomerName'><text>Acme</text></item>
+```
+
+欄位對應寫在宣告式的 stylesheet 裡，不寫在程式流程裡 —— 多一個欄位改名就多一條 template，不動 LotusScript。stylesheet 仍然是一個 `NotesStream`，但 XML 輸入與輸出變成活的物件，沒有任何中間檔碰到磁碟。`AddParameter` 讓你把最上層的 `<xsl:param>` 值傳進 stylesheet，所以同一個轉換能每次跑用不同參數（例如目標表單名、或一個批次代碼）。
 
 ## 同類別在其他語言
 

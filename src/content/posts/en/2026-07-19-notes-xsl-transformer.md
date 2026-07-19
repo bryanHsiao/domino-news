@@ -20,7 +20,7 @@ cover: "/covers/notes-xsl-transformer.webp"
 coverStyle: "watercolor"
 ---
 
-You've got Domino data as XML — a DXL export of some documents, or an XML feed you pulled in — and you need it in a different shape: an HTML report, a CSV, a reformatted XML for another system. The tool for that is XSLT, and Domino runs it natively through [`NotesXSLTransformer`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) — "the transformation of DXL (Domino XML) data through XSLT." It's the last member of the LotusScript XML family, alongside the [DOM](/domino-news/en/posts/notes-dom-parser) and [SAX](/domino-news/en/posts/notes-sax-parser) parsers, and it slots into the same stream-based pipeline.
+An external system hands you a chunk of XML — a batch of orders, or an HR roster — and you need it as Notes documents. The problem is the tag structure doesn't line up with your form: what arrives is `<order><customer>`, and your form wants fields named `CustName`, `OrderNo`. You could write a loop that parses the XML element by element and calls `doc.ReplaceItemValue` field by field — or you write one XSLT stylesheet that reshapes that foreign XML straight into DXL matching your form, and hand it to [`NotesDXLImporter`](/domino-news/en/posts/notes-dxl-importer) to create the documents. The engine that does the reshaping is [`NotesXSLTransformer`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) — "the transformation of DXL (Domino XML) data through XSLT." It's the last member of the LotusScript XML family, alongside the [DOM](/domino-news/en/posts/notes-dom-parser) and [SAX](/domino-news/en/posts/notes-sax-parser) parsers, slotting into the same stream-based pipeline. The same engine runs the other direction too: export documents to DXL, then transform them into whatever shape another system expects.
 
 ---
 
@@ -79,11 +79,18 @@ This is where the class differs from its SAX sibling and where a wrong assumptio
 
 ## Pipelining: skip the temp files
 
-The reason the transformer takes parsers and DXL objects as input/output, not just streams, is pipelining — "combine operations so that the output of one XML process becomes the input to another." Instead of exporting a document to a DXL file, transforming that file, and importing the result, you chain the objects directly:
+The reason the transformer takes parsers and DXL objects as input/output, not just streams, is pipelining — "combine operations so that the output of one XML process becomes the input to another." Here's a concrete one: you're moving a batch of documents from an old database into a new one whose form design differs — a field was renamed, `Cust` in the old, `CustomerName` in the new form. Instead of a LotusScript loop that copies each document and renames the field by hand, you chain three objects:
 
-- `NotesDXLExporter` (export documents to DXL) → **`NotesXSLTransformer`** (apply the stylesheet) → [`NotesDXLImporter`](/domino-news/en/posts/notes-dxl-importer) (write the transformed DXL into another database).
+- `NotesDXLExporter` (export the old DB's documents to DXL) → **`NotesXSLTransformer`** (a stylesheet that rewrites `<item name='Cust'>` to `<item name='CustomerName'>`) → [`NotesDXLImporter`](/domino-news/en/posts/notes-dxl-importer) (write the rewritten DXL into the new DB).
 
-The stylesheet is still a `NotesStream`, but the XML input and output become live objects, and no intermediate files touch disk. `AddParameter` lets you pass top-level `<xsl:param>` values into the stylesheet, so one transform can be parameterised per run.
+That stylesheet does exactly this node-level rewrite:
+
+```xml
+<!-- in  -->  <item name='Cust'><text>Acme</text></item>
+<!-- out -->  <item name='CustomerName'><text>Acme</text></item>
+```
+
+The field mapping lives in the declarative stylesheet, not in the flow of your code — add another rename and it's one more template, no LotusScript change. The stylesheet is still a `NotesStream`, but the XML input and output become live objects, and no intermediate file touches disk. `AddParameter` lets you pass top-level `<xsl:param>` values into the stylesheet, so one transform can be parameterised per run (a target form name, say, or a batch code).
 
 ## What about Java and SSJS?
 
