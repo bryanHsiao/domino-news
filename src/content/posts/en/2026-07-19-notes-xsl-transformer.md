@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_NOTESXSLTRANSFORMER_CLASS.html"
 relatedJava: ["XSLTransformer"]
 relatedSsjs: ["XSLTransformer"]
+cover: "/covers/notes-xsl-transformer.webp"
+coverStyle: "watercolor"
 ---
 
 You've got Domino data as XML — a DXL export of some documents, or an XML feed you pulled in — and you need it in a different shape: an HTML report, a CSV, a reformatted XML for another system. The tool for that is XSLT, and Domino runs it natively through [`NotesXSLTransformer`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) — "the transformation of DXL (Domino XML) data through XSLT." It's the last member of the LotusScript XML family, alongside the [DOM](/domino-news/en/posts/notes-dom-parser) and [SAX](/domino-news/en/posts/notes-sax-parser) parsers, and it slots into the same stream-based pipeline.

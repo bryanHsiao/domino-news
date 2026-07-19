@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_NOTESXSLTRANSFORMER_CLASS.html"
 relatedJava: ["XSLTransformer"]
 relatedSsjs: ["XSLTransformer"]
+cover: "/covers/notes-xsl-transformer.webp"
+coverStyle: "watercolor"
 ---
 
 你手上有 XML 形式的 Domino 資料 — 一批文件的 DXL 匯出、或你拉進來的 XML feed — 而你需要它變成不同的形狀：一份 HTML 報表、一個 CSV、給另一個系統的重新格式化 XML。做這件事的工具是 XSLT，而 Domino 透過 [`NotesXSLTransformer`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) 原生地跑它 —「DXL（Domino XML）資料透過 XSLT 的轉換」。它是 LotusScript XML 家族的最後一員，與 [DOM](/domino-news/zh-TW/posts/notes-dom-parser) 和 [SAX](/domino-news/zh-TW/posts/notes-sax-parser) parser 並列，並嵌進同一條以 stream 為基礎的 pipeline。
