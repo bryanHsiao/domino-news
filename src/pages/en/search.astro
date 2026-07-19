@@ -17,14 +17,10 @@ const pagefindBundle = `${base}/pagefind/`;
     <link rel="stylesheet" href={pagefindCss} />
     <div id="search"></div>
     <script is:inline define:vars={{ pagefindJs, pagefindBundle }}>
-      // See the comment in /search.astro for the rationale — same pattern
-      // applies here, just with English UI defaults instead of zh-TW
-      // translations.
+      // See the comment in /search.astro for the rationale — same
+      // astro:page-load pattern, just with English UI defaults instead of
+      // zh-TW translations.
       (function () {
-        var el = document.getElementById('search');
-        if (!el || el.dataset.pfInited) return;
-        el.dataset.pfInited = 'true';
-
         var uiOpts = {
           element: '#search',
           bundlePath: pagefindBundle,
@@ -67,25 +63,63 @@ const pagefindBundle = `${base}/pagefind/`;
           tryFocus(20);
         }
 
-        if (typeof window.PagefindUI !== 'undefined') {
+        // Mount Pagefind into #search, VERIFYING the input actually rendered.
+        // Under view transitions the freshly-swapped #search can momentarily
+        // not be queryable when PagefindUI runs (it logs "couldn't find the
+        // selector" and renders nothing). The search box renders synchronously,
+        // so we check right after and retry on a fresh #search until it sticks.
+        function tryMount(retries) {
+          // Only the en page — the zh page has its own initialiser.
+          if ((document.documentElement.lang || '').toLowerCase().indexOf('zh') === 0) return;
+          var el = document.getElementById('search');
+          if (!el) {
+            if (retries > 0) setTimeout(function () { tryMount(retries - 1); }, 50);
+            return;
+          }
+          if (el.querySelector('.pagefind-ui__search-input')) return; // already mounted
+
+          if (typeof window.PagefindUI === 'undefined') {
+            if (!window.__pfScriptLoading) {
+              window.__pfScriptLoading = true;
+              var script = document.createElement('script');
+              script.src = pagefindJs;
+              script.onerror = function () {
+                el.innerHTML =
+                  '<p style="color:#999;font-size:0.95rem;padding:1rem 0">⚠️ Search index not generated — for local preview run <code>npm run build</code> + <code>npm run preview</code>. Live site is fine.</p>';
+              };
+              script.onload = function () { tryMount(20); };
+              document.head.appendChild(script);
+            } else if (retries > 0) {
+              setTimeout(function () { tryMount(retries - 1); }, 50);
+            }
+            return;
+          }
+
+          el.innerHTML = '';
+          // Pass the resolved node, not the '#search' selector string:
+          // PagefindUI's own selector lookup can miss the freshly-swapped
+          // element under view transitions (it then logs "couldn't find the
+          // selector" and renders nothing). Handing it the node we already
+          // resolved sidesteps that entirely.
+          uiOpts.element = el;
           new window.PagefindUI(uiOpts);
-          applyQueryFromUrl();
-          focusSearchInput();
-          return;
+          if (el.querySelector('.pagefind-ui__search-input')) {
+            applyQueryFromUrl();
+            focusSearchInput();
+          } else if (retries > 0) {
+            setTimeout(function () { tryMount(retries - 1); }, 50);
+          }
         }
 
-        var script = document.createElement('script');
-        script.src = pagefindJs;
-        script.onerror = function () {
-          el.innerHTML =
-            '<p style="color:#999;font-size:0.95rem;padding:1rem 0">⚠️ Search index not generated — for local preview run <code>npm run build</code> + <code>npm run preview</code>. Live site is fine.</p>';
-        };
-        script.onload = function () {
-          new window.PagefindUI(uiOpts);
-          applyQueryFromUrl();
-          focusSearchInput();
-        };
-        document.head.appendChild(script);
+        // Run on this load, and re-run after every view-transition navigation.
+        // Astro dedupes identical is:inline scripts, so this body won't re-run
+        // on repeat visits to /search — the persistent astro:page-load listener
+        // (bound once) is what re-mounts on each navigation.
+        tryMount(20);
+        if (!window.__pfSearchBoundEn) {
+          window.__pfSearchBoundEn = true;
+          document.addEventListener('astro:page-load', function () { tryMount(20); });
+        }
       })();
     </script>
   </section>

@@ -17,23 +17,17 @@ const pagefindBundle = `${base}/pagefind/`;
     <link rel="stylesheet" href={pagefindCss} />
     <div id="search"></div>
     <script is:inline define:vars={{ pagefindJs, pagefindBundle }}>
-      // Init runs at script-execution time (not DOMContentLoaded) so it
-      // works under view transitions too — the inline script re-runs on
-      // each navigation to /search, and at that moment the #search div
-      // above is already in the DOM.
-      //
-      // Dataset-based idempotency guard prevents double-init if the
-      // event fires twice (initial load + astro:page-load).
-      //
-      // If user revisits /search after first load, window.PagefindUI is
-      // already in scope (the script we appended to <head> persists across
-      // view transitions) — just re-instantiate the UI on the fresh
-      // #search element instead of re-downloading.
+      // The page uses <ClientRouter/> (view transitions). Astro DEDUPLICATES
+      // identical is:inline scripts, so this block runs the first time
+      // /search appears but NOT when you navigate back to it (e.g. 所有文章
+      // → 搜尋). Relying on a re-run left #search empty on repeat visits.
+      // Fix: drive init from astro:page-load, which fires on the initial load
+      // AND after every ClientRouter navigation. A single persistent listener
+      // re-inits pagefind on the fresh #search element each time; the dataset
+      // guard keeps it idempotent, window.PagefindUI (appended to <head>)
+      // persists so repeat inits don't re-download, and the lang check keeps
+      // the zh/en pages from stealing each other's initialiser.
       (function () {
-        var el = document.getElementById('search');
-        if (!el || el.dataset.pfInited) return;
-        el.dataset.pfInited = 'true';
-
         var uiOpts = {
           element: '#search',
           bundlePath: pagefindBundle,
@@ -87,25 +81,63 @@ const pagefindBundle = `${base}/pagefind/`;
           tryFocus(20);
         }
 
-        if (typeof window.PagefindUI !== 'undefined') {
+        // Mount Pagefind into #search, VERIFYING the input actually rendered.
+        // Under view transitions the freshly-swapped #search can momentarily
+        // not be queryable when PagefindUI runs (it logs "couldn't find the
+        // selector" and renders nothing). The search box renders synchronously,
+        // so we check right after and retry on a fresh #search until it sticks.
+        function tryMount(retries) {
+          // Only the zh page — the en page has its own initialiser.
+          if ((document.documentElement.lang || '').toLowerCase().indexOf('zh') !== 0) return;
+          var el = document.getElementById('search');
+          if (!el) {
+            if (retries > 0) setTimeout(function () { tryMount(retries - 1); }, 50);
+            return;
+          }
+          if (el.querySelector('.pagefind-ui__search-input')) return; // already mounted
+
+          if (typeof window.PagefindUI === 'undefined') {
+            if (!window.__pfScriptLoading) {
+              window.__pfScriptLoading = true;
+              var script = document.createElement('script');
+              script.src = pagefindJs;
+              script.onerror = function () {
+                el.innerHTML =
+                  '<p style="color:#999;font-size:0.95rem;padding:1rem 0">⚠️ 搜尋索引尚未生成 — 本地預覽請跑 <code>npm run build</code> + <code>npm run preview</code>。Production 站正常。</p>';
+              };
+              script.onload = function () { tryMount(20); };
+              document.head.appendChild(script);
+            } else if (retries > 0) {
+              setTimeout(function () { tryMount(retries - 1); }, 50);
+            }
+            return;
+          }
+
+          el.innerHTML = '';
+          // Pass the resolved node, not the '#search' selector string:
+          // PagefindUI's own selector lookup can miss the freshly-swapped
+          // element under view transitions (it then logs "couldn't find the
+          // selector" and renders nothing). Handing it the node we already
+          // resolved sidesteps that entirely.
+          uiOpts.element = el;
           new window.PagefindUI(uiOpts);
-          applyQueryFromUrl();
-          focusSearchInput();
-          return;
+          if (el.querySelector('.pagefind-ui__search-input')) {
+            applyQueryFromUrl();
+            focusSearchInput();
+          } else if (retries > 0) {
+            setTimeout(function () { tryMount(retries - 1); }, 50);
+          }
         }
 
-        var script = document.createElement('script');
-        script.src = pagefindJs;
-        script.onerror = function () {
-          el.innerHTML =
-            '<p style="color:#999;font-size:0.95rem;padding:1rem 0">⚠️ 搜尋索引尚未生成 — 本地預覽請跑 <code>npm run build</code> + <code>npm run preview</code>。Production 站正常。</p>';
-        };
-        script.onload = function () {
-          new window.PagefindUI(uiOpts);
-          applyQueryFromUrl();
-          focusSearchInput();
-        };
-        document.head.appendChild(script);
+        // Run on this load, and re-run after every view-transition navigation.
+        // Astro dedupes identical is:inline scripts, so this body won't re-run
+        // on repeat visits to /search — the persistent astro:page-load listener
+        // (bound once) is what re-mounts on each navigation.
+        tryMount(20);
+        if (!window.__pfSearchBoundZh) {
+          window.__pfSearchBoundZh = true;
+          document.addEventListener('astro:page-load', function () { tryMount(20); });
+        }
       })();
     </script>
   </section>
