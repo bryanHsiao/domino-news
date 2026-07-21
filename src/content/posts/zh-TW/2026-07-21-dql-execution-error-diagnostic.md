@@ -16,6 +16,8 @@ sources:
     url: "https://bryanhsiao.github.io/domino-dev-kb/cases/2026-07-16-dql-4854-diagnostic-ladder/"
 relatedJava: ["DominoQuery"]
 relatedSsjs: ["DominoQuery"]
+cover: "/covers/dql-execution-error-diagnostic.webp"
+coverStyle: "risograph"
 ---
 
 你的 DQL 查詢失敗，畫面顯示 `Domino Query 執行時錯誤:` 後面拖著好幾行文字。你會很想抓那個錯誤數字去搜。別：你在 LotusScript 的 `Err` 裡找到的 `4854` 是這裡*最*沒用的東西。這是一篇關於「用它真正想被讀的方式去讀這個訊息」的實測報告——而簡短版是：整個診斷住在某一行特定的文字裡、不在錯誤碼裡。（環境：Domino 12.0.2，一個 412 份文件的測試資料庫；可重跑素材——5 個 view 與 4 個 agent——在[知識庫案例](https://bryanhsiao.github.io/domino-dev-kb/cases/2026-07-16-dql-4854-diagnostic-ladder/)裡。）

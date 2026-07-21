@@ -18,6 +18,8 @@ sources:
     url: "https://bryanhsiao.github.io/domino-dev-kb/cases/2026-07-16-dql-view-date-column/"
 relatedJava: ["DominoQuery"]
 relatedSsjs: ["DominoQuery"]
+cover: "/covers/dql-view-date-column.webp"
+coverStyle: "paper-craft"
 ---
 
 一位工程師帶著一個謎題來找我：「我把 view 直欄轉成日期、用它查詢——但有些文件抓得到、有些抓不到，蠻怪的。」一個對*部分*文件有效的 DQL 日期查詢是最糟的那種 bug，因為它看起來像是會動。我們用單一變數的測試把它拆開，結果那「一個怪 bug」是**三個獨立成因**疊在一起。每一個都無聲失敗——沒有錯誤，只有一個你根本不會去質疑的錯誤筆數。

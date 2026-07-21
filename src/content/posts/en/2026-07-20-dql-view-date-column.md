@@ -18,6 +18,8 @@ sources:
     url: "https://bryanhsiao.github.io/domino-dev-kb/cases/2026-07-16-dql-view-date-column/"
 relatedJava: ["DominoQuery"]
 relatedSsjs: ["DominoQuery"]
+cover: "/covers/dql-view-date-column.webp"
+coverStyle: "paper-craft"
 ---
 
 An engineer came to me with a puzzle: "I converted the view column to a date and query by it — but some documents match and some don't. It's weird." A DQL date lookup that works for *some* documents is the worst kind of bug, because it looks like it works. We took it apart with single-variable tests, and the "one weird bug" turned out to be **three independent causes** stacked on top of each other. Every one of them fails silently — no error, just a wrong count you'd never question.

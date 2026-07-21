@@ -16,6 +16,8 @@ sources:
     url: "https://bryanhsiao.github.io/domino-dev-kb/cases/2026-07-16-dql-4854-diagnostic-ladder/"
 relatedJava: ["DominoQuery"]
 relatedSsjs: ["DominoQuery"]
+cover: "/covers/dql-execution-error-diagnostic.webp"
+coverStyle: "risograph"
 ---
 
 Your DQL query fails and the screen shows `Domino Query 執行時錯誤:` — "Domino Query execution error:" — trailed by several lines of text. It's tempting to grab the error number and search for it. Don't: the `4854` you'll find in LotusScript's `Err` is the *least* useful thing here. This is a field report on reading that message the way it actually wants to be read — and the short version is that the whole diagnosis lives in one specific line, not in the error code. (Environment: Domino 12.0.2, a 412-document test database; the reproduction assets — 5 views and 4 agents — are in the [knowledge-base case](https://bryanhsiao.github.io/domino-dev-kb/cases/2026-07-16-dql-4854-diagnostic-ladder/).)
