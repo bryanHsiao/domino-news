@@ -17,6 +17,8 @@ sources:
     url: "https://html.spec.whatwg.org/multipage/parsing.html#attribute-value-(double-quoted)-state"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-view-passthrough-html.webp"
+coverStyle: "pencil-sketch"
 ---
 
 You inherit a twenty-year-old Domino application. Open one of its views in the browser — the old [`?OpenView`](https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_ABOUT_URL_COMMANDS_FOR_OPENING_SERVERS_DATABASES_AND_VIEWS.html) classic-web kind — and the column headers are subtly wrong: every heading sits one cell to the right of the data it labels. It's been that way for years; the last three people to touch it shrugged and moved on. Nobody knows why, and nobody wants to be the one who "fixes" it and breaks something.

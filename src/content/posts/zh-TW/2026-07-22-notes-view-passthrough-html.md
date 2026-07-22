@@ -17,6 +17,8 @@ sources:
     url: "https://html.spec.whatwg.org/multipage/parsing.html#attribute-value-(double-quoted)-state"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-view-passthrough-html.webp"
+coverStyle: "pencil-sketch"
 ---
 
 你接手一個二十年的 Domino 應用。在瀏覽器裡打開它的某個 view —— 那種老 [`?OpenView`](https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_ABOUT_URL_COMMANDS_FOR_OPENING_SERVERS_DATABASES_AND_VIEWS.html) classic-web 的 —— 直欄標題有點微妙地不對：每個標題都坐在它所標示的資料往右一格的位置。它這樣好幾年了；最近三個碰過它的人都聳聳肩走人。沒人知道為什麼，也沒人想當那個「修好它」卻弄壞別的東西的人。
