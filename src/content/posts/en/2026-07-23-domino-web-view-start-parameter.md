@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_ABOUT_URL_COMMANDS_FOR_OPENING_SERVERS_DATABASES_AND_VIEWS.html"
 relatedJava: ["ViewEntry"]
 relatedSsjs: ["ViewEntry"]
+cover: "/covers/domino-web-view-start-parameter.webp"
+coverStyle: "ukiyo-e"
 ---
 
 I wanted a simple thing: a custom pager on a classic Domino web view where the row numbers continue across pages — page 2 starts at 31, page 3 at 61, and so on. So I did the obvious thing and computed `offset = Start - 1` from the URL. Then I loaded `?OpenView&Start=31` and got a blank page. `No documents found`. The view has thousands of documents.

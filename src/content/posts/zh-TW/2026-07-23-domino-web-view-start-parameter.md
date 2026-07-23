@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_ABOUT_URL_COMMANDS_FOR_OPENING_SERVERS_DATABASES_AND_VIEWS.html"
 relatedJava: ["ViewEntry"]
 relatedSsjs: ["ViewEntry"]
+cover: "/covers/domino-web-view-start-parameter.webp"
+coverStyle: "ukiyo-e"
 ---
 
 我想要一件簡單的事：在一個 classic Domino web view 上做一個自訂分頁器，列號跨頁接續 —— 第 2 頁從 31 起、第 3 頁從 61 起，以此類推。所以我做了最直覺的事，從 URL 算 `offset = Start - 1`。然後我載入 `?OpenView&Start=31`，拿到一個空白頁。`No documents found`。這個 view 有好幾千份文件。
