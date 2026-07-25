@@ -346,13 +346,17 @@ publishing) can still go straight to `src/content/posts/` + manual
   Still used as a defence-in-depth for any post in `src/content/posts/`
   with a future pubDate, though the pending-queue flow makes this
   rarely needed.
-- `src/pages/[...page].astro` and `posts/[...page].astro` use Astro's
-  `paginate()` helper. First page is `/` (homepage) and `/posts/`;
-  subsequent pages live at `/2/`, `/posts/2/`, etc.
+- `src/pages/[...page].astro` uses Astro's `paginate()` helper for the
+  homepage. First page is `/`; subsequent pages live at `/2/`, etc.
+- **`/posts/` is a single filterable page, not paginated** (changed
+  2026-07 — see "All-posts category browser" below). `src/pages/posts/
+  index.astro` + `src/pages/en/posts/index.astro` render every published
+  post through `PostBrowser.astro`, which shows the total count and a
+  tag-filter chip bar grouped by the four axes. Client-side single-select
+  filtering, wired via `astro:page-load` so it survives view-transition
+  navigation.
 - **Homepage** has the hero (`/covers/welcome.png`) + tagline only on
-  page 1. pageSize for homepage: 9. For `/posts/`: currently 6
-  (temporary low value to surface the pagination UI; raise back to 12
-  once article count makes that obvious).
+  page 1. pageSize for homepage: 9.
 - **deploy.yml** triggers on every push to main, plus
   `nightly-rebuild.yml` at 23:30 UTC daily as a safety net so a future-
   scheduled post reveals itself even if no other commit lands that day.
@@ -580,9 +584,9 @@ from *earlier, unrelated* questions.
   4 false negatives — see Coverage tracker / Known limitations).
 - [ ] Patch `generate-article.ts` prompt to reduce
   saturated-source / inline-link-diversity failures.
-- [ ] Reconsider `/posts/` `pageSize` — currently 6 (set low to
-  surface pagination UI for inspection). Bump back to 12 once 30+
-  articles published.
+- [x] Reconsider `/posts/` `pageSize` — resolved 2026-07 by dropping
+  pagination on `/posts/` entirely in favour of a single filterable
+  page (`PostBrowser.astro`, count + axis-grouped tag filter).
 - [ ] If Astro/remark adds a `footnoteLabel` per-page setting, replace
   the custom rehype plugin in `astro.config.mjs` with the built-in.
 
