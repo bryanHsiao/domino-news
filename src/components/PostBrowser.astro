@@ -15,9 +15,10 @@ interface PostItem {
 interface Props {
   lang: Lang;
   posts: PostItem[];
+  title: string;
 }
 
-const { lang, posts } = Astro.props;
+const { lang, posts, title } = Astro.props;
 
 // Count each tag across all posts, then bucket into the four axes.
 const counts = new Map<string, number>();
@@ -44,7 +45,10 @@ const postsWord = lang === 'zh-TW' ? '篇' : '';
 ---
 
 <div class="post-browser" data-total={total}>
-  <span class="pb-count">{countLabel}</span>
+  <div class="pb-head">
+    <h1>{title}</h1>
+    <span class="pb-count">{countLabel}</span>
+  </div>
 
   <div class="pb-filters">
     <button class="pb-chip pb-all is-active" data-tag="__all" data-count={total} type="button">
@@ -54,20 +58,22 @@ const postsWord = lang === 'zh-TW' ? '篇' : '';
       groups.map((g) => (
         <div class="pb-group">
           <span class="pb-axis">{g.label}</span>
-          {g.tags.map(({ tag, count }) => {
-            const pal = tagPalette(tag);
-            return (
-              <button
-                class="pb-chip"
-                data-tag={tag}
-                data-count={count}
-                type="button"
-                style={`--c-bg:${pal.bg};--c-fg:${pal.fg};--c-bg-d:${pal.bgDark};--c-fg-d:${pal.fgDark}`}
-              >
-                {tag} <span class="pb-n">{count}</span>
-              </button>
-            );
-          })}
+          <div class="pb-chips">
+            {g.tags.map(({ tag, count }) => {
+              const pal = tagPalette(tag);
+              return (
+                <button
+                  class="pb-chip"
+                  data-tag={tag}
+                  data-count={count}
+                  type="button"
+                  style={`--c-bg:${pal.bg};--c-fg:${pal.fg};--c-bg-d:${pal.bgDark};--c-fg-d:${pal.fgDark}`}
+                >
+                  {tag} <span class="pb-n">{count}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       ))
     }
@@ -85,6 +91,14 @@ const postsWord = lang === 'zh-TW' ? '篇' : '';
 
 <style>
   .post-browser { margin-top: 0.5rem; }
+  .pb-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .pb-head h1 { margin: 0; }
   .pb-count {
     display: inline-block;
     background: var(--color-brand-dark, #0a0a0a);
@@ -93,14 +107,17 @@ const postsWord = lang === 'zh-TW' ? '篇' : '';
     font-weight: 700;
     padding: 0.2rem 0.7rem;
     border-radius: 999px;
-    margin-bottom: 1rem;
   }
-  .pb-filters { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
-  .pb-group { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+  .pb-filters {
+    display: flex; flex-direction: column; gap: 0.75rem;
+    margin-bottom: 1rem; align-items: flex-start;
+  }
+  .pb-group { display: flex; align-items: baseline; gap: 0.4rem 0.6rem; flex-wrap: wrap; width: 100%; }
   .pb-axis {
     font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em;
-    color: var(--text-muted, #999); min-width: 4.5rem;
+    color: var(--text-muted, #999); flex: 0 0 4rem;
   }
+  .pb-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; flex: 1 1 12rem; min-width: 0; }
   .pb-chip {
     font: inherit; font-size: 0.8rem; line-height: 1.4;
     border: 1px solid transparent; border-radius: 999px;
@@ -110,7 +127,7 @@ const postsWord = lang === 'zh-TW' ? '篇' : '';
   }
   .pb-chip:hover { filter: brightness(0.95); }
   .pb-chip.is-active { outline: 2px solid var(--color-brand-dark, #0a0a0a); outline-offset: 1px; }
-  .pb-chip.pb-all { background: var(--color-brand-dark, #0a0a0a); color: #fff; font-weight: 700; }
+  .pb-chip.pb-all { align-self: flex-start; background: var(--color-brand-dark, #0a0a0a); color: #fff; font-weight: 700; }
   .pb-n { opacity: 0.6; font-weight: 400; }
   .pb-status {
     display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
@@ -121,6 +138,13 @@ const postsWord = lang === 'zh-TW' ? '篇' : '';
   .pb-label strong { color: var(--text, #111); }
   .pb-clear { font: inherit; font-size: 0.8rem; color: #1d4ed8; background: none; border: none; cursor: pointer; padding: 0; }
   .pb-empty { text-align: center; color: var(--text-muted, #999); padding: 2rem 0; }
+
+  @media (max-width: 560px) {
+    .pb-group { flex-direction: column; align-items: flex-start; gap: 0.35rem; }
+    .pb-axis { flex: none; }
+    .pb-chips { flex: none; width: 100%; }
+    .pb-chip { font-size: 0.78rem; padding: 0.2rem 0.65rem; }
+  }
 
   @media (prefers-color-scheme: dark) {
     .pb-chip { background: var(--c-bg-d, #1e293b); color: var(--c-fg-d, #cbd5e0); }
