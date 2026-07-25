@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMNOTATIONNODE_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-dom-dtd-nodes.webp"
+coverStyle: "low-poly-3d"
 ---
 
 The [`NotesDOMParser`](/domino-news/en/posts/notes-dom-parser) family implements the full W3C node model, and "full" includes the corner almost nobody visits: the Document Type Definition. Four node types live there — `NotesDOMDocumentTypeNode`, `NotesDOMEntityNode`, `NotesDOMEntityReferenceNode`, and `NotesDOMNotationNode`. They're the last four uncovered classes in the DOM/XML family on this site, and this piece finishes the map. It's a short one on purpose: the honest summary is that in 2026 you can walk past all four most days, and the value here is knowing what they are the day you can't.

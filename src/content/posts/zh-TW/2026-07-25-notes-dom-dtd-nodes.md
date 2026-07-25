@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMNOTATIONNODE_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-dom-dtd-nodes.webp"
+coverStyle: "low-poly-3d"
 ---
 
 [`NotesDOMParser`](/domino-news/zh-TW/posts/notes-dom-parser) 這一家實作了完整的 W3C 節點模型，而「完整」包含那個幾乎沒人造訪的角落：Document Type Definition。四種節點型別住在那裡 —— `NotesDOMDocumentTypeNode`、`NotesDOMEntityNode`、`NotesDOMEntityReferenceNode`、`NotesDOMNotationNode`。它們是本站 DOM/XML 家族最後四個未涵蓋的類別，這篇把地圖收尾。它刻意寫得短：誠實的結論是，在 2026 年你多數日子都能直接走過這四個，這裡的價值在於「哪天走不過去時，你知道它們是什麼」。
