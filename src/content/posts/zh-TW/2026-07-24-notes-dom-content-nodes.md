@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMPROCESSINGINSTRUCTIONNODE_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-dom-content-nodes.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 你用過 [`NotesDOMParser`](/domino-news/zh-TW/posts/notes-dom-parser) —— 用 `GetFirstChild` / `GetNextSibling` 走一趟樹、讀 element 跟 text 節點，收工。然後桌上來了一份真實文件：一個開頭寫著 `<!-- generated, do not edit -->` 註解的 XML 設定檔、一個裝了一段 markup 的 `<![CDATA[ ... ]]>` 區塊、最上面還有一行 `<?xml-stylesheet ... ?>` processing instruction。你解析它、改一個屬性、序列化回去 —— 註解跟 PI 不見了，CDATA 變成被跳脫的文字。沒有任何錯誤。輸出就是靜靜地錯了。

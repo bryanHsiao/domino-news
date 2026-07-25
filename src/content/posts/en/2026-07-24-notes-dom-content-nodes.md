@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMPROCESSINGINSTRUCTIONNODE_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-dom-content-nodes.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 You've used [`NotesDOMParser`](/domino-news/en/posts/notes-dom-parser) before — walk the tree with `GetFirstChild` / `GetNextSibling`, read element and text nodes, done. Then a real document lands on your desk: an XML config with a leading `<!-- generated, do not edit -->` comment, a `<![CDATA[ ... ]]>` block holding a chunk of markup, and a `<?xml-stylesheet ... ?>` processing instruction at the top. You parse it, change one attribute, serialise it back — and the comment and the PI are gone, the CDATA came out as escaped text. Nothing errored. The output is just quietly wrong.
