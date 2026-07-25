@@ -17,6 +17,5 @@ const posts = (await getPostsByLang(lang)).map((p) => ({
 ---
 
 <BaseLayout lang={lang} title={t('nav.posts')}>
-  <h1>{t('nav.posts')}</h1>
-  <PostBrowser lang={lang} posts={posts} />
+  <PostBrowser lang={lang} posts={posts} title={t('nav.posts')} />
 </BaseLayout>
