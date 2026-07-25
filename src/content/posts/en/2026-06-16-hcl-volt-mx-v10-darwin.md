@@ -9,7 +9,7 @@ tags:
   - "News"
 sources:
   - title: "HCL Volt MX v10 'Darwin': From Figma to App, AIAD, CarPlay, and Beyond — HCL Blog"
-    url: "https://www.hcl-software.com/blog/volt-mx/hcl-volt-mx-v10-darwin-from-figma-to-app-aiad-carplay-and-beyond"
+    url: "https://www.hcltechsw.com/blog/volt-mx/hcl-volt-mx-v10-darwin-from-figma-to-app-aiad-carplay-and-beyond"
   - title: "HCL Volt MX Release Notes — HCL Documentation"
     url: "https://help.hcl-software.com/voltmx/latest/VMX_release_notes.html"
   - title: "HCL Volt MX Release Part 1: The Future of App Development (video)"
@@ -20,7 +20,7 @@ cover: "/covers/hcl-volt-mx-v10-darwin.webp"
 coverStyle: "photoreal-3d"
 ---
 
-Up front: this isn't breaking news. HCL [released Volt MX v10 "Darwin"](https://www.hcl-software.com/blog/volt-mx/hcl-volt-mx-v10-darwin-from-figma-to-app-aiad-carplay-and-beyond) back in **August 2025**. This is a **catch-up explainer** — laying out what the release brought for Domino developers who haven't been tracking Volt MX, and spelling out exactly how it relates to Domino.
+Up front: this isn't breaking news. HCL [released Volt MX v10 "Darwin"](https://www.hcltechsw.com/blog/volt-mx/hcl-volt-mx-v10-darwin-from-figma-to-app-aiad-carplay-and-beyond) back in **August 2025**. This is a **catch-up explainer** — laying out what the release brought for Domino developers who haven't been tracking Volt MX, and spelling out exactly how it relates to Domino.
 
 Volt MX is HCL's **low-code application development platform**, used to build cross-platform mobile and web apps quickly. The v10 "Darwin" release bets almost everything on **AI and the design-to-development pipeline**.
 

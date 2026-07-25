@@ -29,7 +29,7 @@ Every NSF has exactly one replication configuration. [`NotesReplication`](https:
 ## TL;DR
 
 - Every `NotesDatabase` has exactly one `NotesReplication` object, obtained via `db.ReplicationInfo`
-- **You must call [`Save()`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_REPLICATION.html) after every property change** — unlike most LotusScript classes, modifications stay in memory until explicitly saved
+- **You must call [`Save()`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_3588.html) after every property change** — unlike most LotusScript classes, modifications stay in memory until explicitly saved
 - `IsDisabled`: pause or resume replication
 - `Priority`: replication priority (`REPLICATION_PRIORITY_LOW` / `MED` / `HIGH`)
 - `Abstract`: truncate large documents and strip attachments on replication (bandwidth saving)
@@ -118,7 +118,7 @@ Call repl.ClearHistory()
 Print "Replication history cleared"
 ```
 
-Use cases: after database repair following corruption, or when forcing a full resync between two servers after maintenance. Note: the next replication after `ClearHistory` will scan every document in the database — expensive on large NSFs. See the [`ClearHistory` method documentation](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CLEARHISTORY_METHOD_REPLICATION.html) for details.
+Use cases: after database repair following corruption, or when forcing a full resync between two servers after maintenance. Note: the next replication after `ClearHistory` will scan every document in the database — expensive on large NSFs. See the [`ClearHistory` method documentation](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CLEARHISTORY_METHOD_8188.html) for details.
 
 ---
 

@@ -13,7 +13,7 @@ sources:
   - title: "NotesRichTextItem class — HCL Domino Designer 14.5"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTITEM_CLASS.html"
   - title: "AppendTable method (NotesRichTextItem) — HCL Domino Designer 14.5"
-    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_APPENDTABLE_METHOD.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_APPENDTABLE_METHOD_RTITEM.html"
 relatedJava: ["RichTextTable"]
 relatedSsjs: ["RichTextTable"]
 cover: "/covers/notes-rich-text-table.webp"
@@ -28,7 +28,7 @@ The official definition is short: "Represents a table in a rich text item." (new
 
 ## TL;DR
 
-- Create it with [`NotesRichTextItem`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTITEM_CLASS.html)'s [`AppendTable`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_APPENDTABLE_METHOD.html), which "Inserts a table in a rich text item."
+- Create it with [`NotesRichTextItem`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTITEM_CLASS.html)'s [`AppendTable`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_APPENDTABLE_METHOD_RTITEM.html), which "Inserts a table in a rich text item."
 - Properties (mostly read-only): `RowCount` / `ColumnCount`, `Color` / `AlternateColor` (primary / alternate color), `RightToLeft` (read-write, right-to-left reading order).
 - Methods: `AddRow`, `RemoveRow`, `SetColor`, `SetAlternateColor`.
 - Walk an existing table with `NotesRichTextNavigator` using `RTELEM_TYPE_TABLE` to find the table and `RTELEM_TYPE_TABLECELL` to get cells (cells are ordered by row, then column).

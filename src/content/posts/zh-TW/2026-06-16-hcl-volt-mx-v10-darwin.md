@@ -9,7 +9,7 @@ tags:
   - "News"
 sources:
   - title: "HCL Volt MX v10 'Darwin': From Figma to App, AIAD, CarPlay, and Beyond — HCL Blog"
-    url: "https://www.hcl-software.com/blog/volt-mx/hcl-volt-mx-v10-darwin-from-figma-to-app-aiad-carplay-and-beyond"
+    url: "https://www.hcltechsw.com/blog/volt-mx/hcl-volt-mx-v10-darwin-from-figma-to-app-aiad-carplay-and-beyond"
   - title: "HCL Volt MX Release Notes — HCL Documentation"
     url: "https://help.hcl-software.com/voltmx/latest/VMX_release_notes.html"
   - title: "HCL Volt MX Release Part 1: The Future of App Development (video)"
@@ -20,7 +20,7 @@ cover: "/covers/hcl-volt-mx-v10-darwin.webp"
 coverStyle: "photoreal-3d"
 ---
 
-先把話講清楚：這不是即時新聞。HCL 在 **2025 年 8 月**就[發佈了 Volt MX v10「Darwin」](https://www.hcl-software.com/blog/volt-mx/hcl-volt-mx-v10-darwin-from-figma-to-app-aiad-carplay-and-beyond)，這篇是一篇**補課用的背景介紹** —— 把這一版帶來什麼整理給沒在追 Volt MX 的 Domino 開發者，順便講清楚它跟 Domino 到底有什麼關係。
+先把話講清楚：這不是即時新聞。HCL 在 **2025 年 8 月**就[發佈了 Volt MX v10「Darwin」](https://www.hcltechsw.com/blog/volt-mx/hcl-volt-mx-v10-darwin-from-figma-to-app-aiad-carplay-and-beyond)，這篇是一篇**補課用的背景介紹** —— 把這一版帶來什麼整理給沒在追 Volt MX 的 Domino 開發者，順便講清楚它跟 Domino 到底有什麼關係。
 
 Volt MX 是 HCL 的**低程式碼（low-code）應用開發平台**，用來快速做跨平台的行動與 web app。v10「Darwin」這一版的主軸，幾乎全押在 **AI 與設計到開發的流程**上。
 

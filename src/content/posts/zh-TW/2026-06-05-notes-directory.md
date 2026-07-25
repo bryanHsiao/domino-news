@@ -32,7 +32,7 @@ LotusScript 從 Notes 7 起有 [`NotesDirectory`](https://help.hcl-software.com/
 - **取得方式**：[`session.GetDirectory(serverName)`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETDIRECTORY_METHOD.html)、`serverName` 是空字串 `""` 表示本地
 - **`LookupNames(view, names, items)`** — 指定 view 名稱、查一批名稱的指定欄位、快取進物件
 - **`LookupAllNames`** — 掃整個 view 的所有名稱
-- **[`GetMailInfo(name)`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETMAILINFO_METHOD.html)** — 快速取一個使用者的郵件伺服器跟郵件路徑、不需手動 lookup
+- **[`GetMailInfo(name)`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETMAILINFO_METHOD_DIRECTORY.html)** — 快速取一個使用者的郵件伺服器跟郵件路徑、不需手動 lookup
 - **查詢結果用 `NotesDirectoryNavigator` 走訪** — `FindFirstName` / `FindNextName` / `GetFirstItemValue`
 - `LimitMatches = True` 限制單次最多 50 筆（效能保護）、`SearchAllDirectories = True` 搜所有已配置的目錄
 

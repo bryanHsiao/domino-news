@@ -19,7 +19,7 @@ sources:
   - title: "Domino IQ — HCL Domino 14.5.1 Admin Help"
     url: "https://help.hcl-software.com/domino/14.5.1/admin/domino_iq_server.html"
   - title: "Quick LLM Access via 4 Lines of Code — XPagesDeveloper.com"
-    url: "https://www.xpagedeveloper.com/2025/quick-llm-access-via-4-lines-of-code"
+    url: "https://web.archive.org/web/20251212062909/https://www.xpagedeveloper.com/2025/quick-llm-access-via-4-lines-of-code"
 relatedJava: ["LLMReq", "LLMRes"]
 relatedSsjs: []
 cover: "/covers/notes-llm-request.webp"
@@ -274,7 +274,7 @@ The cost: LotusScript's callback model isn't as ergonomic as JavaScript's — yo
 | Advanced: NSF as a vector source for RAG | [Domino IQ RAG](/en/posts/domino-iq-rag/) |
 | **This article: how to call it from LotusScript** | You're reading it |
 
-Community supplement: [XPagesDeveloper's "Quick LLM Access via 4 Lines of Code"](https://www.xpagedeveloper.com/2025/quick-llm-access-via-4-lines-of-code) is the cleanest demo of how compact this API really is.
+Community supplement: [XPagesDeveloper's "Quick LLM Access via 4 Lines of Code"](https://web.archive.org/web/20251212062909/https://www.xpagedeveloper.com/2025/quick-llm-access-via-4-lines-of-code) is the cleanest demo of how compact this API really is.
 
 ---
 

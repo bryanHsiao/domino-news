@@ -13,7 +13,7 @@ sources:
   - title: "NotesView class — HCL Domino Designer 14.5"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html"
   - title: "Formula property (NotesViewColumn) — HCL Domino Designer 14.5"
-    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FORMULA_PROPERTY_VIEWCOLUMN.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FORMULA_PROPERTY.html"
 relatedJava: ["ViewColumn"]
 relatedSsjs: ["ViewColumn"]
 cover: "/covers/notes-view-column.webp"
@@ -62,7 +62,7 @@ End Forall
 | `IsHidden` | whether it's hidden (read-write) |
 | `Width` / `IsResize` | column width / whether resizable |
 
-To "auto-generate view documentation," these are the key ones: `IsField` / `IsFormula` distinguish a column that shows a field directly from one that's computed; if it's a formula, read [`Formula`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FORMULA_PROPERTY_VIEWCOLUMN.html) to pull that formula out.
+To "auto-generate view documentation," these are the key ones: `IsField` / `IsFormula` distinguish a column that shows a field directly from one that's computed; if it's a formula, read [`Formula`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FORMULA_PROPERTY.html) to pull that formula out.
 
 ## Lining it up with NotesViewEntry
 

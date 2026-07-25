@@ -190,7 +190,7 @@ Print someHeaders
 
 ## 建立 MIME 郵件
 
-[`CreateMIMEEntity`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATEMIMEENTITY_METHOD.html) 從頭建立結構：
+[`CreateMIMEEntity`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATEMIMEENTITY_METHOD_DOC.html) 從頭建立結構：
 
 ```lotusscript
 session.ConvertMIME = False

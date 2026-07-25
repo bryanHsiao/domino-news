@@ -19,7 +19,7 @@ sources:
   - title: "Domino IQ — HCL Domino 14.5.1 Admin Help"
     url: "https://help.hcl-software.com/domino/14.5.1/admin/domino_iq_server.html"
   - title: "Quick LLM Access via 4 Lines of Code — XPagesDeveloper.com"
-    url: "https://www.xpagedeveloper.com/2025/quick-llm-access-via-4-lines-of-code"
+    url: "https://web.archive.org/web/20251212062909/https://www.xpagedeveloper.com/2025/quick-llm-access-via-4-lines-of-code"
 relatedJava: ["LLMReq", "LLMRes"]
 relatedSsjs: []
 cover: "/covers/notes-llm-request.webp"
@@ -274,7 +274,7 @@ End Function
 | 進階：把 NSF 當 vector source 做 RAG | [Domino IQ RAG](/posts/domino-iq-rag/) |
 | **本篇：從 LotusScript 怎麼呼叫** | 你在看的這篇 |
 
-社群實戰補充：[XPagesDeveloper 的「4 行 LLM 範例」](https://www.xpagedeveloper.com/2025/quick-llm-access-via-4-lines-of-code) 是這個 API 簡潔感的最佳示範。
+社群實戰補充：[XPagesDeveloper 的「4 行 LLM 範例」](https://web.archive.org/web/20251212062909/https://www.xpagedeveloper.com/2025/quick-llm-access-via-4-lines-of-code) 是這個 API 簡潔感的最佳示範。
 
 ---
 

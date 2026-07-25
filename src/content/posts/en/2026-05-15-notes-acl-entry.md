@@ -16,7 +16,7 @@ sources:
   - title: "NotesACL.CreateACLEntry method — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATEACLENTRY_METHOD.html"
   - title: "NotesACL.Save method — HCL Domino 14.5 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_NOTESACL.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_ACL.html"
 relatedJava: ["ACL", "ACLEntry"]
 relatedSsjs: ["ACL", "ACLEntry"]
 cover: "/covers/notes-acl-entry.webp"
@@ -215,7 +215,7 @@ Note `Remove` lives on `NotesACLEntry`, not on `NotesACL` — you get the entry 
 
 ## Five pitfalls
 
-### 1. Forgetting [`acl.Save`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_NOTESACL.html) — changes silently lost
+### 1. Forgetting [`acl.Save`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_ACL.html) — changes silently lost
 
 HCL's direct warning: "If you don't call Save before closing a database, the changes you made to its ACL will be lost."
 

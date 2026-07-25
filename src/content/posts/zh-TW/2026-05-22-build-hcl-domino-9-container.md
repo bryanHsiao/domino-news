@@ -12,7 +12,7 @@ sources:
   - title: "bryanHsiao/build-hcl-domino9-container — GitHub repo"
     url: "https://github.com/bryanHsiao/build-hcl-domino9-container"
   - title: "HCL FlexNet Operations Portal — installer download"
-    url: "https://hclsoftware.flexnetoperations.com/"
+    url: "https://my.hcltechsw.com/"
   - title: "HCL-TECH-SOFTWARE/domino-container — official V10+ build tooling"
     url: "https://github.com/HCL-TECH-SOFTWARE/domino-container"
   - title: "shillem/domino-docker — earlier community reference"
@@ -214,7 +214,7 @@ docker run -d -e DOMINO_ID_PASSWORD='your-passphrase' ...
 
 需要的東西：
 
-1. **HCL Domino 9 entitlement** + **FlexNet Portal 帳號** — 從 [hclsoftware.flexnetoperations.com](https://hclsoftware.flexnetoperations.com/) 下安裝包：`DOMINO_9.0.1_64_BIT_LIN_XS_EN.tar`（~834 MB）+ `domino901FP10_linux64_x86.tar`（~441 MB）
+1. **HCL Domino 9 entitlement** + **FlexNet Portal 帳號** — 從 [my.hcltechsw.com](https://my.hcltechsw.com/) 下安裝包：`DOMINO_9.0.1_64_BIT_LIN_XS_EN.tar`（~834 MB）+ `domino901FP10_linux64_x86.tar`（~441 MB）
 2. **Linux host 或 WSL2** — Ubuntu 22.04/24.04、Debian 12、RHEL 9 都可
 3. **Docker Engine 20.10+**（tested to 29.x）
 4. **~5 GB 磁碟空間** + container 至少 2 GB RAM

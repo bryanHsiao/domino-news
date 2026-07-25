@@ -13,7 +13,7 @@ sources:
   - title: "NotesRichTextItem class — HCL Domino Designer 14.5"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTITEM_CLASS.html"
   - title: "AppendTable method (NotesRichTextItem) — HCL Domino Designer 14.5"
-    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_APPENDTABLE_METHOD.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_APPENDTABLE_METHOD_RTITEM.html"
 relatedJava: ["RichTextTable"]
 relatedSsjs: ["RichTextTable"]
 cover: "/covers/notes-rich-text-table.webp"
@@ -28,7 +28,7 @@ coverStyle: "minimalist-mono"
 
 ## 重點摘要
 
-- 用 [`NotesRichTextItem`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTITEM_CLASS.html) 的 [`AppendTable`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_APPENDTABLE_METHOD.html) 建立，「Inserts a table in a rich text item」。
+- 用 [`NotesRichTextItem`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESRICHTEXTITEM_CLASS.html) 的 [`AppendTable`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_APPENDTABLE_METHOD_RTITEM.html) 建立，「Inserts a table in a rich text item」。
 - 屬性（多唯讀）：`RowCount` / `ColumnCount`（列數 / 欄數）、`Color` / `AlternateColor`（主色 / 交替色）、`RightToLeft`（讀寫，由右至左排列）。
 - 方法：`AddRow`（加列）、`RemoveRow`（刪列）、`SetColor` / `SetAlternateColor`（設色）。
 - 走訪既有表格：用 `NotesRichTextNavigator` 的 `RTELEM_TYPE_TABLE` 定位表格、`RTELEM_TYPE_TABLECELL` 取儲存格（儲存格依「先列後欄」排序）。

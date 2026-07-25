@@ -12,7 +12,7 @@ sources:
   - title: "bryanHsiao/build-hcl-domino9-container — GitHub repo"
     url: "https://github.com/bryanHsiao/build-hcl-domino9-container"
   - title: "HCL FlexNet Operations Portal — installer download"
-    url: "https://hclsoftware.flexnetoperations.com/"
+    url: "https://my.hcltechsw.com/"
   - title: "HCL-TECH-SOFTWARE/domino-container — official V10+ build tooling"
     url: "https://github.com/HCL-TECH-SOFTWARE/domino-container"
   - title: "shillem/domino-docker — earlier community reference"
@@ -214,7 +214,7 @@ Full troubleshooting (including 4 other secondary pitfalls, complete log dumps, 
 
 What you need:
 
-1. **HCL Domino 9 entitlement** + a **FlexNet Portal account** — download installers from [hclsoftware.flexnetoperations.com](https://hclsoftware.flexnetoperations.com/): `DOMINO_9.0.1_64_BIT_LIN_XS_EN.tar` (~834 MB) + `domino901FP10_linux64_x86.tar` (~441 MB)
+1. **HCL Domino 9 entitlement** + a **FlexNet Portal account** — download installers from [my.hcltechsw.com](https://my.hcltechsw.com/): `DOMINO_9.0.1_64_BIT_LIN_XS_EN.tar` (~834 MB) + `domino901FP10_linux64_x86.tar` (~441 MB)
 2. **Linux host or WSL2** — Ubuntu 22.04/24.04, Debian 12, RHEL 9 all work
 3. **Docker Engine 20.10+** (tested up to 29.x)
 4. **~5 GB of disk space** + at least 2 GB RAM available to the container

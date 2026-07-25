@@ -32,7 +32,7 @@ LotusScript's [`NotesDirectory`](https://help.hcl-software.com/dom_designer/14.5
 - **Entry point**: [`session.GetDirectory(serverName)`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETDIRECTORY_METHOD.html) — empty string `""` means local
 - **`LookupNames(view, names, items)`** — specify a view, a batch of names, and which fields to fetch; results are cached in the object
 - **`LookupAllNames`** — scans every name in a view
-- **[`GetMailInfo(name)`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETMAILINFO_METHOD.html)** — retrieves mail server and mail file path for a user in one call
+- **[`GetMailInfo(name)`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETMAILINFO_METHOD_DIRECTORY.html)** — retrieves mail server and mail file path for a user in one call
 - **Walk results with `NotesDirectoryNavigator`** — `FindFirstName` / `FindNextName` / `GetFirstItemValue`
 - `LimitMatches = True` caps results at 50 (performance guard); `SearchAllDirectories = True` searches all configured directories
 

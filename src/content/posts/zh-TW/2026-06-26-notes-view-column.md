@@ -13,7 +13,7 @@ sources:
   - title: "NotesView class — HCL Domino Designer 14.5"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html"
   - title: "Formula property (NotesViewColumn) — HCL Domino Designer 14.5"
-    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FORMULA_PROPERTY_VIEWCOLUMN.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FORMULA_PROPERTY.html"
 relatedJava: ["ViewColumn"]
 relatedSsjs: ["ViewColumn"]
 cover: "/covers/notes-view-column.webp"
@@ -62,7 +62,7 @@ End Forall
 | `IsHidden` | 是否隱藏（讀寫） |
 | `Width` / `IsResize` | 欄寬 / 可否調整 |
 
-要「自動產生 view 文件」就靠這幾個：`IsField` / `IsFormula` 分辨這欄是直接顯示欄位、還是算出來的；是公式就讀 [`Formula`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FORMULA_PROPERTY_VIEWCOLUMN.html) 把那段公式抓出來。
+要「自動產生 view 文件」就靠這幾個：`IsField` / `IsFormula` 分辨這欄是直接顯示欄位、還是算出來的；是公式就讀 [`Formula`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FORMULA_PROPERTY.html) 把那段公式抓出來。
 
 ## 跟 NotesViewEntry 接起來
 

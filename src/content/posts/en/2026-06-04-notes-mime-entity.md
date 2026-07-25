@@ -184,7 +184,7 @@ Commonly useful headers: `Content-Type`, `Content-Disposition`, `Content-Transfe
 
 ## Building a MIME message from scratch with CreateMIMEEntity
 
-The [`CreateMIMEEntity`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATEMIMEENTITY_METHOD.html) method on NotesDocument creates the root node:
+The [`CreateMIMEEntity`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATEMIMEENTITY_METHOD_DOC.html) method on NotesDocument creates the root node:
 
 ```lotusscript
 session.ConvertMIME = False

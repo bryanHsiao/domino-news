@@ -29,7 +29,7 @@ Domino 環境裡有幾十個 NSF、每次升版或做維護時、需要暫停部
 ## 重點摘要
 
 - 每個 [`NotesDatabase`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESREPLICATION_CLASS_1289.html) 都有唯一一個 `NotesReplication` 物件、透過 `db.ReplicationInfo` 取得
-- **改完屬性必須呼叫 [`Save()`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_REPLICATION.html)**、否則設定不會儲存
+- **改完屬性必須呼叫 [`Save()`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SAVE_METHOD_3588.html)**、否則設定不會儲存
 - `IsDisabled`：暫停 / 恢復複製
 - `Priority`：設複製優先等級（`REPLICATION_PRIORITY_LOW` / `MED` / `HIGH`）
 - `Abstract`：截斷大文件 + 移除附件（減少複製流量用）
@@ -118,7 +118,7 @@ Call repl.ClearHistory()
 Print "複製歷史已清除"
 ```
 
-這個操作的使用場景：資料庫被損壞後修復、或者強制讓兩台伺服器重新同步所有文件（通常維護後用）。注意：清了之後**下次複製會全量掃整個資料庫**、流量大。詳細的 [ClearHistory 方法文件](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CLEARHISTORY_METHOD_REPLICATION.html)有更多說明。
+這個操作的使用場景：資料庫被損壞後修復、或者強制讓兩台伺服器重新同步所有文件（通常維護後用）。注意：清了之後**下次複製會全量掃整個資料庫**、流量大。詳細的 [ClearHistory 方法文件](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CLEARHISTORY_METHOD_8188.html)有更多說明。
 
 ---
 
