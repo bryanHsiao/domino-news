@@ -42,7 +42,7 @@ function coverUrl(cover?: string): string | null {
       const visibleTags = p.tags.slice(0, 2);
       const extra = p.tags.length - visibleTags.length;
       return (
-        <li class="card">
+        <li class="card" data-tags={`|${p.tags.join('|')}|`}>
           <a
             class={`cover${cover ? '' : ' fallback'}`}
             href={href}

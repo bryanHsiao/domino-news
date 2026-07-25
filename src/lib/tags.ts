@@ -69,11 +69,77 @@ const TAG_CATEGORIES: Record<string, TagPalette> = {
   Tutorial: META,
   News: META,
   Community: META,
+
+  // Additional tags in use (kept in sync with tagAxis below)
+  Domino: PRODUCT,
+  DRAPI: PRODUCT,
+  OpenNTF: PRODUCT,
+  AI: TOPIC,
+  Container: TOPIC,
 };
 
 export function tagPalette(tag: string): TagPalette {
   return TAG_CATEGORIES[tag] ?? META;
 }
+
+/**
+ * Which of the four taxonomy axes a tag belongs to. Drives the grouped
+ * filter bar on the "all posts" page. Kept consistent with the palette
+ * above: PRODUCT/TECH/TOPIC map to their colours, TYPE uses the META
+ * (slate) palette. Unknown tags fall to TYPE so they still group somewhere.
+ */
+export type TagAxis = 'TECH' | 'PRODUCT' | 'TOPIC' | 'TYPE';
+
+const TAG_AXIS: Record<string, TagAxis> = {
+  'Domino Server': 'PRODUCT',
+  'Notes Client': 'PRODUCT',
+  'Domino Designer': 'PRODUCT',
+  'Domino REST API': 'PRODUCT',
+  'Volt MX': 'PRODUCT',
+  Nomad: 'PRODUCT',
+  'AppDev Pack': 'PRODUCT',
+  Sametime: 'PRODUCT',
+  'Domino IQ': 'PRODUCT',
+  Domino: 'PRODUCT',
+  DRAPI: 'PRODUCT',
+  OpenNTF: 'PRODUCT',
+
+  LotusScript: 'TECH',
+  Formula: 'TECH',
+  Java: 'TECH',
+  XPages: 'TECH',
+  JavaScript: 'TECH',
+  DQL: 'TECH',
+  OIDC: 'TECH',
+
+  Security: 'TOPIC',
+  Performance: 'TOPIC',
+  Migration: 'TOPIC',
+  Backup: 'TOPIC',
+  DevOps: 'TOPIC',
+  Admin: 'TOPIC',
+  AI: 'TOPIC',
+  Container: 'TOPIC',
+
+  'Release Notes': 'TYPE',
+  Tutorial: 'TYPE',
+  News: 'TYPE',
+  Community: 'TYPE',
+};
+
+export function tagAxis(tag: string): TagAxis {
+  return TAG_AXIS[tag] ?? 'TYPE';
+}
+
+/** Display order + labels for the axis groups, per language. */
+export const TAG_AXIS_ORDER: TagAxis[] = ['TECH', 'PRODUCT', 'TOPIC', 'TYPE'];
+
+export const TAG_AXIS_LABEL: Record<TagAxis, { 'zh-TW': string; en: string }> = {
+  TECH: { 'zh-TW': '技術', en: 'Tech' },
+  PRODUCT: { 'zh-TW': '產品/模組', en: 'Product' },
+  TOPIC: { 'zh-TW': '主題', en: 'Topic' },
+  TYPE: { 'zh-TW': '類型', en: 'Type' },
+};
 
 /**
  * Deterministic gradient pair from a slug, used as a fallback cover when no

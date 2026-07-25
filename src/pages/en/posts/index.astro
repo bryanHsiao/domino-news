@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostBrowser from '../../../components/PostBrowser.astro';
+import { getPostsByLang } from '../../../lib/posts';
+import { useTranslations } from '../../../i18n/ui';
+
+const lang = 'en' as const;
+const t = useTranslations(lang);
+const posts = (await getPostsByLang(lang)).map((p) => ({
+  slug: p.data.slug,
+  title: p.data.title,
+  description: p.data.description,
+  pubDate: p.data.pubDate,
+  tags: p.data.tags,
+  cover: p.data.cover,
+}));
+---
+
+<BaseLayout lang={lang} title={t('nav.posts')}>
+  <h1>{t('nav.posts')}</h1>
+  <PostBrowser lang={lang} posts={posts} />
+</BaseLayout>

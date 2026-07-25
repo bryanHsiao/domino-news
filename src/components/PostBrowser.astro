@@ -1,0 +1,174 @@
+---
+import PostList from './PostList.astro';
+import { tagPalette, tagAxis, TAG_AXIS_ORDER, TAG_AXIS_LABEL, type TagAxis } from '../lib/tags';
+import type { Lang } from '../i18n/ui';
+
+interface PostItem {
+  slug: string;
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags: string[];
+  cover?: string;
+}
+
+interface Props {
+  lang: Lang;
+  posts: PostItem[];
+}
+
+const { lang, posts } = Astro.props;
+
+// Count each tag across all posts, then bucket into the four axes.
+const counts = new Map<string, number>();
+for (const p of posts) {
+  for (const t of p.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
+}
+
+const groups: { axis: TagAxis; label: string; tags: { tag: string; count: number }[] }[] =
+  TAG_AXIS_ORDER.map((axis) => ({
+    axis,
+    label: TAG_AXIS_LABEL[axis][lang],
+    tags: [...counts.entries()]
+      .filter(([t]) => tagAxis(t) === axis)
+      .map(([tag, count]) => ({ tag, count }))
+      .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag)),
+  })).filter((g) => g.tags.length > 0);
+
+const total = posts.length;
+const allLabel = lang === 'zh-TW' ? '全部' : 'All';
+const countLabel = lang === 'zh-TW' ? `目前累積 ${total} 篇` : `${total} articles`;
+const filterWord = lang === 'zh-TW' ? '篩選' : 'Filter';
+const clearWord = lang === 'zh-TW' ? '清除篩選' : 'Clear';
+const postsWord = lang === 'zh-TW' ? '篇' : '';
+---
+
+<div class="post-browser" data-total={total}>
+  <span class="pb-count">{countLabel}</span>
+
+  <div class="pb-filters">
+    <button class="pb-chip pb-all is-active" data-tag="__all" data-count={total} type="button">
+      {allLabel} <span class="pb-n">{total}</span>
+    </button>
+    {
+      groups.map((g) => (
+        <div class="pb-group">
+          <span class="pb-axis">{g.label}</span>
+          {g.tags.map(({ tag, count }) => {
+            const pal = tagPalette(tag);
+            return (
+              <button
+                class="pb-chip"
+                data-tag={tag}
+                data-count={count}
+                type="button"
+                style={`--c-bg:${pal.bg};--c-fg:${pal.fg};--c-bg-d:${pal.bgDark};--c-fg-d:${pal.fgDark}`}
+              >
+                {tag} <span class="pb-n">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="pb-status">
+    <span class="pb-label">{filterWord}：<strong data-pb-current>{allLabel}</strong> · <span data-pb-shown>{total}</span> {postsWord}</span>
+    <button class="pb-clear" type="button" data-pb-clear hidden>{clearWord}</button>
+  </div>
+
+  <PostList lang={lang} posts={posts} />
+
+  <p class="pb-empty" data-pb-empty hidden></p>
+</div>
+
+<style>
+  .post-browser { margin-top: 0.5rem; }
+  .pb-count {
+    display: inline-block;
+    background: var(--color-brand-dark, #0a0a0a);
+    color: var(--color-brand, #fbbf24);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+  }
+  .pb-filters { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+  .pb-group { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+  .pb-axis {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em;
+    color: var(--text-muted, #999); min-width: 4.5rem;
+  }
+  .pb-chip {
+    font: inherit; font-size: 0.8rem; line-height: 1.4;
+    border: 1px solid transparent; border-radius: 999px;
+    padding: 0.15rem 0.7rem; cursor: pointer;
+    background: var(--c-bg, #f1f5f9); color: var(--c-fg, #475569);
+    transition: filter 0.12s, outline-color 0.12s;
+  }
+  .pb-chip:hover { filter: brightness(0.95); }
+  .pb-chip.is-active { outline: 2px solid var(--color-brand-dark, #0a0a0a); outline-offset: 1px; }
+  .pb-chip.pb-all { background: var(--color-brand-dark, #0a0a0a); color: #fff; font-weight: 700; }
+  .pb-n { opacity: 0.6; font-weight: 400; }
+  .pb-status {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+    border-top: 1px solid var(--border-color, #eee);
+    padding-top: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;
+  }
+  .pb-label { font-size: 0.9rem; color: var(--text-muted, #555); }
+  .pb-label strong { color: var(--text, #111); }
+  .pb-clear { font: inherit; font-size: 0.8rem; color: #1d4ed8; background: none; border: none; cursor: pointer; padding: 0; }
+  .pb-empty { text-align: center; color: var(--text-muted, #999); padding: 2rem 0; }
+
+  @media (prefers-color-scheme: dark) {
+    .pb-chip { background: var(--c-bg-d, #1e293b); color: var(--c-fg-d, #cbd5e0); }
+    .pb-clear { color: #93c5fd; }
+  }
+  :global(:root[data-theme='dark']) .pb-chip { background: var(--c-bg-d, #1e293b); color: var(--c-fg-d, #cbd5e0); }
+</style>
+
+<script>
+  function initPostBrowser() {
+    const root = document.querySelector('.post-browser');
+    if (!root) return;
+
+    const chips = Array.from(root.querySelectorAll('.pb-chip')) as HTMLElement[];
+    const cards = Array.from(root.querySelectorAll('.card-grid .card')) as HTMLElement[];
+    const currentEl = root.querySelector('[data-pb-current]') as HTMLElement | null;
+    const shownEl = root.querySelector('[data-pb-shown]') as HTMLElement | null;
+    const clearBtn = root.querySelector('[data-pb-clear]') as HTMLElement | null;
+    const emptyEl = root.querySelector('[data-pb-empty]') as HTMLElement | null;
+    const total = Number(root.getAttribute('data-total') || cards.length);
+    const allLabel = chips.find((c) => c.dataset.tag === '__all')?.textContent?.trim().split(/\s+/)[0] || 'All';
+
+    function apply(tag: string) {
+      const isAll = tag === '__all';
+      chips.forEach((c) => c.classList.toggle('is-active', c.dataset.tag === tag));
+
+      let shown = 0;
+      cards.forEach((card) => {
+        const tags = card.getAttribute('data-tags') || '';
+        const match = isAll || tags.indexOf('|' + tag + '|') > -1;
+        card.style.display = match ? '' : 'none';
+        if (match) shown++;
+      });
+
+      if (currentEl) currentEl.textContent = isAll ? allLabel : tag;
+      if (shownEl) shownEl.textContent = String(shown);
+      if (clearBtn) clearBtn.hidden = isAll;
+      if (emptyEl) emptyEl.hidden = shown > 0;
+    }
+
+    chips.forEach((chip) =>
+      chip.addEventListener('click', () => apply(chip.dataset.tag || '__all'))
+    );
+    if (clearBtn) clearBtn.addEventListener('click', () => apply('__all'));
+
+    apply('__all');
+    void total;
+  }
+
+  document.addEventListener('astro:page-load', initPostBrowser);
+</script>
