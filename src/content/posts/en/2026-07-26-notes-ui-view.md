@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-ui-view.webp"
+coverStyle: "pencil-sketch"
 ---
 
 You add an action button to a view: "Approve selected." The user ticks three rows, clicks it, and your code needs *those three documents*. So you reach for the back-end `NotesView` — and there's nothing there. `NotesView` can give you every document, the first document, a document by key; it cannot tell you which rows are highlighted in front of the user, because a back-end view has no user and no selection. That state lives one layer up, in the Notes client, and there's exactly one class that exposes it: [`NotesUIView`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIVIEW_CLASS.html).

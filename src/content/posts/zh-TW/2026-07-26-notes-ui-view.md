@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-ui-view.webp"
+coverStyle: "pencil-sketch"
 ---
 
 你在一個 view 上加了動作按鈕：「核准選取項目」。使用者勾了三列、按下去，你的程式需要*那三份文件*。於是你伸手去拿後端的 `NotesView` —— 那裡什麼都沒有。`NotesView` 能給你每一份文件、第一份文件、用 key 查一份文件；它沒辦法告訴你使用者面前反白的是哪幾列，因為後端 view 沒有使用者、也沒有選取狀態。那個狀態住在上一層、在 Notes client 裡，而暴露它的類別剛好只有一個：[`NotesUIView`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIVIEW_CLASS.html)。
