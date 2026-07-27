@@ -69,4 +69,4 @@ coverStyle: "minimalist-mono"
 
 ## 同類別在其他語言
 
-這一個搬得很乾淨，很難得。Java 的 `Document.save(boolean force, boolean createResponse)` 收同樣兩個布林值、同樣的碰撞語意，而 XPages 裡 SSJS 的 `document.save()` 坐在同一個後端呼叫上。所以上面那張真值表跟語言無關 —— 「要覆蓋、要分支到衝突、還是要取消」這個決定，是文件儲存體的性質，不是 API 面的性質。所以要是你把一段常常在存檔的程式從 LotusScript 改寫到 Java 或 SSJS，語法查一下就會 —— 真正要一起搬過去、也最容易漏掉的，是「`force` 和 `createResponse` 各自該填 True 還是 False」這個判斷。填錯了，語法再正確，一樣會覆蓋掉別人剛存的資料、或生出一堆沒人處理的衝突文件。
+這一個跨語言幾乎一模一樣。Java 的 `Document.save(boolean force, boolean createResponse)` 收同樣兩個布林值、同樣的碰撞語意，而 XPages 裡 SSJS 的 `document.save()` 坐在同一個後端呼叫上。所以上面那張真值表跟語言無關 —— 「要覆蓋、要分支到衝突、還是要取消」這個決定，是文件儲存體的性質，不是 API 面的性質。所以要是你把一段常常在存檔的程式從 LotusScript 改寫到 Java 或 SSJS，語法查一下就會 —— 真正要一起搬過去、也最容易漏掉的，是「`force` 和 `createResponse` 各自該填 True 還是 False」這個判斷。填錯了，語法再正確，一樣會覆蓋掉別人剛存的資料、或生出一堆沒人處理的衝突文件。
