@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_MAKERESPONSE_METHOD.html"
 relatedJava: ["Document"]
 relatedSsjs: ["Document"]
+cover: "/covers/notes-document-save-conflict.webp"
+coverStyle: "minimalist-mono"
 ---
 
 一個排程 agent 走過一個 view、更新訂單文件。它跑的時候，有個使用者正在 client 裡開著其中一筆訂單、按了儲存。兩邊都寫同一份 note。兩次寫入裡有一次靜靜地消失 —— 或者一份 `$Conflict` 文件悄悄出現在 view 裡、一個禮拜都沒人注意到。你拿到這兩種結果的哪一種，不是運氣。是你傳給 [`NotesDocument.Save`](/domino-news/zh-TW/posts/notes-document) 的那兩個布林值，而多數程式傳它們的時候根本沒想。

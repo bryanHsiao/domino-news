@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_MAKERESPONSE_METHOD.html"
 relatedJava: ["Document"]
 relatedSsjs: ["Document"]
+cover: "/covers/notes-document-save-conflict.webp"
+coverStyle: "minimalist-mono"
 ---
 
 A scheduled agent walks a view and updates order documents. While it runs, a user has one of those orders open in the client and clicks Save. Both write the same note. One of the two writes silently disappears — or a `$Conflict` document quietly appears in the view and nobody notices for a week. Which of those two outcomes you get isn't luck. It's the two booleans you passed to [`NotesDocument.Save`](/domino-news/en/posts/notes-document), and most code passes them without thinking.
