@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATABASE_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-ui-database.webp"
+coverStyle: "collage"
 ---
 
 你想擋住使用者硬刪紀錄 —— 留一條稽核軌跡，或翻一個 `Deleted` 旗標、而不是真的把 note 移掉。於是你開始找地方掛鉤，而問題是 Notes client 裡的「刪除」不是單一路徑。使用者可以在任何 view 按 Delete 鍵、剪下一份文件、把它拖進垃圾桶、或從一個你沒守的 view 刪。守每個 view 的事件，代表要守全部、永遠，包含明年某人新加的那些。

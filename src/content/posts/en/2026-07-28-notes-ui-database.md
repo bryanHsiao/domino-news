@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATABASE_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-ui-database.webp"
+coverStyle: "collage"
 ---
 
 You want to stop users from hard-deleting records — keep an audit trail, or flip a `Deleted` flag instead of really removing the note. So you start looking for where to hook it, and the problem is that "delete" in the Notes client isn't one path. A user can hit the Delete key in any view, cut a document, drag it to the trash, or delete from a different view than the one you guarded. Guarding each view's events means guarding all of them, forever, including the ones someone adds next year.
