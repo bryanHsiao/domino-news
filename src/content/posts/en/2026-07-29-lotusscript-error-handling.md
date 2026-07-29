@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/LSAZ_RESUME_STATEMENT.html"
   - title: "Error statement (LotusScript Language) — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/LSAZ_ERROR_STATEMENT.html"
+  - title: "Web Agent Patterns — claude-code-hcl-domino-skill"
+    url: "https://github.com/bryanHsiao/claude-code-hcl-domino-skill/blob/main/lotusscript/web-agent-patterns.md"
 relatedJava: []
 relatedSsjs: []
 cover: "/covers/lotusscript-error-handling.webp"
@@ -89,16 +91,24 @@ An unhandled error in a LotusScript web agent is worse than in the client: there
 ```lotusscript
 Sub Initialize
     On Error Goto Handler
+    ' Build the whole body first — if this errors, nothing has been
+    ' printed yet, so the handler can still emit a clean response.
+    Dim body As String
+    body = |{"status":"ok"}|             ' ... your real JSON ...
     Print "Content-Type: application/json"
-    ' ... build and Print the real JSON response ...
+    Print ""                             ' blank line separates headers from body — required
+    Print body
     Exit Sub
 Handler:
-    Print "{""error"":""" & Error$ & """,""code"":" & Err & "}"
+    Print "Content-Type: application/json"
+    Print ""
+    ' Error$ may contain quotes; escape them before embedding in JSON
+    Print |{"error":"| & Replace(Error$, |"|, |\"|) & |","code":| & Err & |}|
     Exit Sub
 End Sub
 ```
 
-The caller (the browser) gets a structured failure it can act on, your logs get `Err` / `Erl`, and the agent exits cleanly instead of emitting half a document. That single top-level handler in `Initialize` is the difference between a web endpoint that fails legibly and one that fails as a mystery.
+Three details make that production-correct rather than illustrative: the blank line after `Content-Type` is the required header/body separator, `Error$` is escaped before it goes into the JSON (an error message with a quote in it would otherwise produce invalid JSON), and the body is built as a string and printed last so a mid-build error leaves the handler free to emit its own clean response. The caller (the browser) gets a structured failure it can act on, your logs get `Err` / `Erl`, and the agent exits cleanly instead of emitting half a document. That single top-level handler in `Initialize` is the difference between a web endpoint that fails legibly and one that fails as a mystery. A fuller version — logging `Err` / `Erl` to a document and returning a generic message to the client while keeping the real one in the log — is collected in [these web-agent patterns notes](https://github.com/bryanHsiao/claude-code-hcl-domino-skill/blob/main/lotusscript/web-agent-patterns.md).
 
 ## What about Java and SSJS?
 

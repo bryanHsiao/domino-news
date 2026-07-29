@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/LSAZ_RESUME_STATEMENT.html"
   - title: "Error statement (LotusScript Language) — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/LSAZ_ERROR_STATEMENT.html"
+  - title: "Web Agent Patterns — claude-code-hcl-domino-skill"
+    url: "https://github.com/bryanHsiao/claude-code-hcl-domino-skill/blob/main/lotusscript/web-agent-patterns.md"
 relatedJava: []
 relatedSsjs: []
 cover: "/covers/lotusscript-error-handling.webp"
@@ -89,16 +91,23 @@ End If
 ```lotusscript
 Sub Initialize
     On Error Goto Handler
+    ' 先把整個 body 組好 —— 這段若出錯，還沒印出任何東西，handler 才吐得出乾淨回應
+    Dim body As String
+    body = |{"status":"ok"}|             ' ... 你真正的 JSON ...
     Print "Content-Type: application/json"
-    ' ... 組出並 Print 真正的 JSON 回應 ...
+    Print ""                             ' 空行分隔 header 與 body（必要，少了它回應會壞）
+    Print body
     Exit Sub
 Handler:
-    Print "{""error"":""" & Error$ & """,""code"":" & Err & "}"
+    Print "Content-Type: application/json"
+    Print ""
+    ' Error$ 可能含引號，塞進 JSON 前先跳脫，否則會產生壞掉的 JSON
+    Print |{"error":"| & Replace(Error$, |"|, |\"|) & |","code":| & Err & |}|
     Exit Sub
 End Sub
 ```
 
-呼叫端（瀏覽器）拿到一個它能據以處理的結構化失敗，你的 log 拿到 `Err`／`Erl`，agent 乾淨地離開、而不是吐出半份文件。`Initialize` 裡那個單一的頂層 handler，就是「一個 web 端點失敗得清楚易讀」與「失敗得像個謎」之間的差別。
+有三個細節讓這段是「production 可用」而不只是「示意」：`Content-Type` 後那個空行是 HTTP 規定的 header/body 分隔，少了它回應就壞；`Error$` 在塞進 JSON 前先跳脫（訊息裡若有引號，不跳脫就會產生非法 JSON）；body 先組成字串、最後才 Print，這樣萬一組到一半出錯，handler 還能吐出它自己那份乾淨回應。呼叫端（瀏覽器）拿到一個能據以處理的結構化失敗，你的 log 拿到 `Err`／`Erl`，agent 乾淨地離開、而不是吐出半份文件。`Initialize` 裡那個單一的頂層 handler，就是「一個 web 端點失敗得清楚易讀」與「失敗得像個謎」之間的差別。更完整的版本 —— 把 `Err`／`Erl` 記進一份文件、同時只回給 client 一個通用訊息、真訊息留在 log —— 整理在[這份 web agent patterns 筆記](https://github.com/bryanHsiao/claude-code-hcl-domino-skill/blob/main/lotusscript/web-agent-patterns.md)裡。
 
 ## 同類別在其他語言
 
