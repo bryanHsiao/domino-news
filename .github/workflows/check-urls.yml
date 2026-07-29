@@ -1,6 +1,12 @@
 name: Check Post URLs
 
 on:
+  push:
+    # 只有動到文章或檢查腳本才跑 — 避免封面/coverage/部署 commit 也去打 ~289 個外部 URL
+    paths:
+      - 'src/content/posts/**'
+      - 'scripts/check-post-urls.ts'
+      - 'scripts/lib/verify-urls.ts'
   schedule:
     # 每週日 23:00 UTC (台灣週一 07:00) — 跟 daily-article 同時段，但沒衝突
     - cron: '0 23 * * 0'
