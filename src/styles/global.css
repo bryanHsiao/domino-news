@@ -490,8 +490,8 @@ article.post {
 
 article.post .post-cover {
   width: 100%;
-  aspect-ratio: 3.4 / 1;
-  max-height: 260px;
+  aspect-ratio: 2.8 / 1;
+  max-height: 420px;
   border-radius: 0;
   /* Kept for the .fallback variant (no img child, draws via background) */
   background-size: cover;
