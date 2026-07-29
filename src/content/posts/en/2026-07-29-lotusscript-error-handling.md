@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/LSAZ_ERROR_STATEMENT.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/lotusscript-error-handling.webp"
+coverStyle: "risograph"
 ---
 
 Two habits quietly wreck most LotusScript error handling, and they're the two things the language makes easiest to get wrong. The first is treating `On Error Goto` as if it protected your whole program — it doesn't; it protects the procedure it's written in, and nothing else. The second is reaching for `On Error Resume Next` whenever something throws, as a blanket "make the error go away" switch — which it does, in the worst possible sense: it doesn't handle the error, it hides the bug that caused it.

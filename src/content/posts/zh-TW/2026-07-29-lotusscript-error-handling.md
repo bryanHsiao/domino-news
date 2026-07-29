@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/LSAZ_ERROR_STATEMENT.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/lotusscript-error-handling.webp"
+coverStyle: "risograph"
 ---
 
 兩個習慣悄悄地毀掉多數 LotusScript 錯誤處理，而它們正好是這個語言最容易讓你做錯的兩件事。第一個是把 `On Error Goto` 當成保護整支程式 —— 它不是；它保護它被寫進去的那個程序，其他什麼都不保護。第二個是每次有東西丟錯就伸手拿 `On Error Resume Next`、當成一鍵「讓錯誤消失」的開關 —— 它確實會，但以最糟的方式：它沒有處理錯誤，它藏起了造成錯誤的 bug。
