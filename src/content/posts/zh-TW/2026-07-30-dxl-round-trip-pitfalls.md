@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLIMPORTER_CLASS.html"
 relatedJava: ["DxlExporter", "DxlImporter"]
 relatedSsjs: ["DxlExporter", "DxlImporter"]
+cover: "/covers/dxl-round-trip-pitfalls.webp"
+coverStyle: "bw-grain"
 ---
 
 計畫很簡單：把一組文件匯出成 DXL、搬走檔案、匯入第二個資料庫，然後兩個資料庫就一致了。你跑了，匯入成功、沒有錯誤 —— 而目標資料庫的文件數是你預期的*兩倍*，或者你本想原地更新的每一份都多了一份新副本。每一份匯入的文件都帶著全新的 UNID，跟它在來源端那個毫無關係。這趟 round-trip 沒有搬動文件；它把文件複製了。

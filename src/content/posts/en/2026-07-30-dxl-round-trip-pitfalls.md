@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLIMPORTER_CLASS.html"
 relatedJava: ["DxlExporter", "DxlImporter"]
 relatedSsjs: ["DxlExporter", "DxlImporter"]
+cover: "/covers/dxl-round-trip-pitfalls.webp"
+coverStyle: "bw-grain"
 ---
 
 The plan is simple: export a set of documents to DXL, move the file, import it into a second database, and now the two databases match. You run it, the import succeeds, no errors — and the target database has *twice* as many documents as you expected, or a fresh copy of everything you meant to update in place. Every imported document came in with a brand-new UNID, unrelated to the one it had in the source. The round-trip didn't move the documents; it cloned them.
