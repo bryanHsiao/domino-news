@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSESSION_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/lotusscript-web-agent-io.webp"
+coverStyle: "ukiyo-e"
 ---
 
 Come to a LotusScript web agent from any modern web framework and the first thing you'll look for is the request object and the response object. There isn't one of either. A Domino web agent — the kind you invoke with `?OpenAgent` to build a small JSON endpoint or serve a dynamic fragment — has two much older seams instead: `Print`, whose accumulated output *is* the HTTP response body, and `DocumentContext`, a special in-memory document whose fields *are* the CGI variables of the request. Learn those two and the whole model falls into place; miss how they work and you get an agent that returns HTML when you wanted JSON, or reads an empty query string and can't tell why.

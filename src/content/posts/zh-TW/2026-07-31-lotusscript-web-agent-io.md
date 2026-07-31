@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSESSION_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/lotusscript-web-agent-io.webp"
+coverStyle: "ukiyo-e"
 ---
 
 從任何一個現代 web 框架來到 LotusScript web agent，你第一個會找的是 request 物件與 response 物件。兩個都沒有。一個 Domino web agent —— 你用 `?OpenAgent` 叫起來、拿去建一個小 JSON 端點或吐一段動態片段的那種 —— 有的是兩道老得多的縫：`Print`，它累積起來的輸出*就是* HTTP 回應 body，以及 `DocumentContext`，一份記憶體裡的特殊文件、它的欄位*就是*請求的 CGI 變數。學會這兩個，整個模型就到位了；沒搞懂它們怎麼運作，你就得到一個「你要 JSON 它回 HTML」的 agent，或一個讀到空 query string、又不知道為什麼的 agent。
