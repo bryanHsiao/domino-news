@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ClassMap from '../components/ClassMap.astro';
+import { useTranslations, localizedPath } from '../i18n/ui';
+import { buildCoverageReport } from '../../scripts/lib/coverage';
+import rawData from '../../data/ls_classes.json';
+
+const lang = 'zh-TW' as const;
+const t = useTranslations(lang);
+const raw = rawData as { nodes: any[]; links: any[] };
+
+const report = await buildCoverageReport();
+function slugOf(id: string): string | null {
+  const posts = report.coverage.get(id);
+  return posts && posts.length ? posts[0].slug : null;
+}
+
+const nodes = raw.nodes.map((n) => {
+  const slug = slugOf(n.id);
+  return {
+    id: n.id,
+    name: n.name,
+    cat: n.category,
+    ui: !!n.isUI,
+    key: !!n.key,
+    x: n.x,
+    y: n.y,
+    url: slug ? localizedPath(lang, `/posts/${slug}`) : null,
+  };
+});
+const links = raw.links.map((l) => ({ s: l.source, t: l.target }));
+const data = { nodes, links };
+const coveredCount = nodes.filter((n) => n.url).length;
+---
+
+<BaseLayout lang={lang} title={t('nav.map')} description="HCL Domino LotusScript 類別的相依關係互動地圖 —— 節點是類別、連線代表回傳關係，已寫過的類別可直接點進文章。">
+  <ClassMap lang={lang} data={data} coveredCount={coveredCount} total={nodes.length} />
+</BaseLayout>

@@ -1,0 +1,303 @@
+---
+import type { Lang } from '../i18n/ui';
+
+interface MapNode {
+  id: string;
+  name: string;
+  cat: string;
+  ui: boolean;
+  key: boolean;
+  x: number;
+  y: number;
+  url: string | null;
+}
+interface MapData {
+  nodes: MapNode[];
+  links: { s: string; t: string }[];
+}
+interface Props {
+  lang: Lang;
+  data: MapData;
+  coveredCount: number;
+  total: number;
+}
+const { lang, data, coveredCount, total } = Astro.props;
+const cats = [...new Set(data.nodes.map((n) => n.cat))].sort();
+const T =
+  lang === 'zh-TW'
+    ? {
+        title: 'LotusScript 類別相依地圖',
+        sub: 'HCL Domino · 節點＝類別，連線＝「A 的方法/屬性回傳 B」 · 亮起的節點可點進文章',
+        covered: '已涵蓋',
+        search: '搜尋類別…',
+        allCat: '全部分類',
+        all: '全部',
+        backend: '後端',
+        ui: 'UI',
+        cov: '已涵蓋',
+        uncov: '未涵蓋',
+        fit: '符合',
+        legBe: '後端（已涵蓋）',
+        legUi: 'UI（已涵蓋）',
+        legUn: '未涵蓋',
+        legKey: 'key class',
+        hint: '雙指縮放 · 點節點看關係',
+      }
+    : {
+        title: 'LotusScript Class Map',
+        sub: 'HCL Domino · nodes are classes, edges mean "A returns B via a method/property" · lit nodes link to an article',
+        covered: 'covered',
+        search: 'Search classes…',
+        allCat: 'All categories',
+        all: 'All',
+        backend: 'Backend',
+        ui: 'UI',
+        cov: 'Covered',
+        uncov: 'Uncovered',
+        fit: 'Fit',
+        legBe: 'Backend (covered)',
+        legUi: 'UI (covered)',
+        legUn: 'Uncovered',
+        legKey: 'key class',
+        hint: 'Pinch to zoom · tap a node for relations',
+      };
+---
+
+<div
+  id="cm"
+  data-covered={T.cov}
+  data-uncovered={T.uncov}
+  data-open={lang === 'zh-TW' ? '開啟文章 →' : 'Open article →'}
+>
+  <header class="cm-top">
+    <div class="cm-title">
+      <h1>{T.title}</h1>
+      <p class="cm-sub">{T.sub}</p>
+    </div>
+    <div class="cm-stat"><b>{coveredCount}</b><span>/ {total} {T.covered}</span></div>
+  </header>
+  <div class="cm-controls">
+    <input id="cm-q" type="search" placeholder={T.search} autocomplete="off" />
+    <select id="cm-cat">
+      <option value="">{T.allCat}</option>
+      {cats.map((c) => <option value={c}>{c}</option>)}
+    </select>
+    <div class="cm-seg" id="cm-type">
+      <button data-v="" class="on">{T.all}</button>
+      <button data-v="backend">{T.backend}</button>
+      <button data-v="ui">{T.ui}</button>
+    </div>
+    <div class="cm-seg" id="cm-cov">
+      <button data-v="" class="on">{T.all}</button>
+      <button data-v="1">{T.cov}</button>
+      <button data-v="0">{T.uncov}</button>
+    </div>
+    <div class="cm-zoom">
+      <button id="cm-out" aria-label="zoom out">−</button>
+      <button id="cm-fit">{T.fit}</button>
+      <button id="cm-in" aria-label="zoom in">＋</button>
+    </div>
+  </div>
+  <div class="cm-stage">
+    <svg id="cm-svg" role="img" aria-label={T.title}><g id="cm-cam"><g id="cm-edges"></g><g id="cm-nodes"></g></g></svg>
+    <div id="cm-hint" class="cm-hint" data-hint={T.hint}></div>
+    <div id="cm-tip" class="cm-tip" hidden></div>
+    <div class="cm-legend">
+      <span><i class="sw be"></i>{T.legBe}</span>
+      <span><i class="sw ui"></i>{T.legUi}</span>
+      <span><i class="sw un"></i>{T.legUn}</span>
+      <span><i class="sw ky"></i>{T.legKey}</span>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="cm-data" set:html={JSON.stringify(data)}></script>
+
+<style>
+  #cm {
+    --cbg: #faf9f6; --cpanel: #fff; --cink: #1a1a1a; --cmuted: #6b6b6b; --cline: #e2e0d8;
+    --cgold: #d99000; --cbe: #1d4ed8; --cui: #7c3aed; --cun: #9aa0a8; --cedge: #c9c6bd;
+    display: flex; flex-direction: column; height: 78vh; min-height: 500px;
+    border: 1px solid var(--cline); border-radius: 12px; overflow: hidden; background: var(--cbg); color: var(--cink);
+  }
+  #cm * { box-sizing: border-box; }
+  #cm .cm-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--cline); flex-wrap: wrap; }
+  #cm .cm-title h1 { margin: 0; font-size: 18px; font-weight: 600; }
+  #cm .cm-sub { margin: 3px 0 0; font-size: 12px; color: var(--cmuted); }
+  #cm .cm-stat { display: flex; align-items: baseline; gap: 6px; background: var(--color-brand-dark, #0a0a0a); color: var(--color-brand, #fbbf24); padding: 6px 14px; border-radius: 999px; }
+  #cm .cm-stat b { font-size: 20px; font-variant-numeric: tabular-nums; } #cm .cm-stat span { font-size: 12px; opacity: 0.85; }
+  #cm .cm-controls { display: flex; gap: 8px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--cline); flex-wrap: wrap; background: var(--cpanel); }
+  #cm .cm-controls input, #cm .cm-controls select { font: inherit; font-size: 13px; padding: 6px 10px; border: 1px solid var(--cline); border-radius: 8px; background: var(--cbg); color: var(--cink); }
+  #cm .cm-controls input { min-width: 150px; flex: 1 1 150px; }
+  #cm .cm-seg { display: inline-flex; border: 1px solid var(--cline); border-radius: 8px; overflow: hidden; }
+  #cm .cm-seg button { font: inherit; font-size: 12.5px; padding: 6px 11px; border: 0; background: var(--cpanel); color: var(--cmuted); cursor: pointer; }
+  #cm .cm-seg button.on { background: var(--color-brand-dark, #0a0a0a); color: #fff; }
+  #cm .cm-zoom { margin-left: auto; display: inline-flex; gap: 4px; }
+  #cm .cm-zoom button { font: inherit; width: 36px; height: 34px; border: 1px solid var(--cline); border-radius: 8px; background: var(--cpanel); color: var(--cink); cursor: pointer; }
+  #cm .cm-zoom #cm-fit { width: auto; padding: 0 12px; font-size: 12.5px; }
+  #cm .cm-stage { position: relative; flex: 1; overflow: hidden; background: radial-gradient(circle at 50% 40%, #fff, var(--cbg)); }
+  #cm #cm-svg { width: 100%; height: 100%; cursor: grab; touch-action: none; display: block; }
+  #cm #cm-svg.grabbing { cursor: grabbing; }
+  #cm .cm-edge { stroke: var(--cedge); stroke-width: 1.2; fill: none; }
+  #cm .cm-edge.hl { stroke: var(--cgold); stroke-width: 2.6; }
+  #cm .nd text { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 19px; dominant-baseline: middle; text-anchor: middle; }
+  #cm .nd.be rect { fill: var(--cbe); stroke: #12379a; stroke-width: 1.5; } #cm .nd.be text { fill: #fff; }
+  #cm .nd.ui rect { fill: var(--cui); stroke: #5b21a8; stroke-width: 1.5; } #cm .nd.ui text { fill: #fff; }
+  #cm .nd.un rect { fill: transparent; stroke: var(--cun); stroke-width: 1.5; stroke-dasharray: 5 4; } #cm .nd.un text { fill: var(--cun); }
+  #cm .nd.key rect { stroke: var(--cgold); stroke-width: 3; }
+  #cm .nd .star { fill: var(--cgold); font-size: 22px; text-anchor: middle; }
+  #cm .nd.clk { cursor: pointer; }
+  #cm .nd.dim { opacity: 0.1; }
+  #cm .nd.focus rect { stroke: var(--cgold); stroke-width: 3.5; }
+  #cm .cm-tip { position: absolute; z-index: 5; max-width: 260px; background: #111; color: #f4f4f4; border: 1px solid #333; border-radius: 8px; padding: 9px 11px; font-size: 12px; line-height: 1.5; pointer-events: none; box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+  #cm .cm-tip.pin { pointer-events: auto; }
+  #cm .cm-tip b { color: #fbbf24; } #cm .cm-tip .rel { color: #bbb; display: block; margin-top: 4px; }
+  #cm .cm-tip a.open { display: inline-block; margin-top: 7px; color: #0a0a0a; background: #fbbf24; padding: 4px 10px; border-radius: 6px; text-decoration: none; font-weight: 600; }
+  #cm .cm-tip .cls { position: absolute; top: 5px; right: 8px; color: #888; cursor: pointer; font-size: 14px; }
+  #cm .cm-legend { position: absolute; left: 14px; bottom: 12px; display: flex; gap: 14px; flex-wrap: wrap; background: rgba(255,255,255,.9); border: 1px solid var(--cline); border-radius: 8px; padding: 7px 12px; font-size: 12px; color: var(--cmuted); }
+  #cm .cm-legend .sw { display: inline-block; width: 14px; height: 11px; border-radius: 3px; vertical-align: -1px; margin-right: 5px; }
+  #cm .sw.be { background: var(--cbe); } #cm .sw.ui { background: var(--cui); } #cm .sw.un { border: 1.5px dashed var(--cun); } #cm .sw.ky { border: 2px solid var(--cgold); }
+  #cm .cm-hint { display: none; }
+  @media (max-width: 640px) {
+    #cm { height: 82vh; }
+    #cm .cm-top { padding: 10px 12px; } #cm .cm-title h1 { font-size: 16px; } #cm .cm-sub { display: none; }
+    #cm .cm-controls { padding: 8px 12px; gap: 6px; }
+    #cm .cm-controls select { flex: 1 1 40%; min-width: 0; }
+    #cm .cm-controls input { flex: 1 1 100%; }
+    #cm .cm-seg button { padding: 6px 9px; font-size: 12px; }
+    #cm .cm-zoom { margin-left: 0; }
+    #cm .cm-legend { gap: 9px; padding: 6px 9px; font-size: 11px; left: 8px; bottom: 8px; max-width: calc(100% - 16px); }
+    #cm .cm-hint { display: block; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); background: rgba(17,17,17,.82); color: #eee; font-size: 11.5px; padding: 5px 12px; border-radius: 999px; z-index: 6; pointer-events: none; transition: opacity .4s; }
+  }
+  @media (prefers-color-scheme: dark) {
+    #cm { --cbg: #0f0f0f; --cpanel: #171717; --cink: #ececec; --cmuted: #9a9a9a; --cline: #2a2a2a; --cgold: #fbbf24; --cbe: #3b82f6; --cui: #a78bfa; --cun: #5a606a; --cedge: #333; }
+    #cm .cm-stage { background: radial-gradient(circle at 50% 40%, #1a1a1a, #0f0f0f); }
+    #cm .nd.be rect { stroke: #1e40af; } #cm .nd.ui rect { stroke: #6d28d9; } #cm .nd.be text, #cm .nd.ui text { fill: #0a0a0a; }
+    #cm .cm-legend { background: rgba(23,23,23,.9); }
+  }
+  :root[data-theme='dark'] #cm { --cbg: #0f0f0f; --cpanel: #171717; --cink: #ececec; --cmuted: #9a9a9a; --cline: #2a2a2a; --cgold: #fbbf24; --cbe: #3b82f6; --cui: #a78bfa; --cun: #5a606a; --cedge: #333; }
+  :root[data-theme='dark'] #cm .cm-stage { background: radial-gradient(circle at 50% 40%, #1a1a1a, #0f0f0f); }
+  :root[data-theme='dark'] #cm .nd.be rect { stroke: #1e40af; } :root[data-theme='dark'] #cm .nd.ui rect { stroke: #6d28d9; }
+  :root[data-theme='dark'] #cm .nd.be text, :root[data-theme='dark'] #cm .nd.ui text { fill: #0a0a0a; }
+  :root[data-theme='dark'] #cm .cm-legend { background: rgba(23,23,23,.9); }
+  :root[data-theme='light'] #cm { --cbg: #faf9f6; --cpanel: #fff; --cink: #1a1a1a; --cmuted: #6b6b6b; --cline: #e2e0d8; --cgold: #d99000; --cbe: #1d4ed8; --cui: #7c3aed; --cun: #9aa0a8; --cedge: #c9c6bd; }
+</style>
+
+<script>
+  function initClassMap() {
+    var root = document.getElementById('cm');
+    var dataEl = document.getElementById('cm-data');
+    if (!root || !dataEl || root.dataset.ready) return;
+    root.dataset.ready = '1';
+    var DATA = JSON.parse(dataEl.textContent || '{"nodes":[],"links":[]}');
+    var NW = 250, NH = 84, NS = 'http://www.w3.org/2000/svg';
+    var byId = {}; DATA.nodes.forEach(function (n) { byId[n.id] = n; });
+    var adj = {}; DATA.nodes.forEach(function (n) { adj[n.id] = new Set(); });
+    DATA.links.forEach(function (l) { if (byId[l.s] && byId[l.t]) { adj[l.s].add(l.t); adj[l.t].add(l.s); } });
+    var svg = document.getElementById('cm-svg'), cam = document.getElementById('cm-cam');
+    var gE = document.getElementById('cm-edges'), gN = document.getElementById('cm-nodes'), tip = document.getElementById('cm-tip');
+    var hint = document.getElementById('cm-hint');
+    var minx = 1e9, miny = 1e9, maxx = -1e9, maxy = -1e9;
+    DATA.nodes.forEach(function (n) { minx = Math.min(minx, n.x); miny = Math.min(miny, n.y); maxx = Math.max(maxx, n.x + NW); maxy = Math.max(maxy, n.y + NH); });
+    var cx = function (n) { return n.x + NW / 2; }, cy = function (n) { return n.y + NH / 2; };
+    var edgeEls = [];
+    DATA.links.forEach(function (l) { var a = byId[l.s], b = byId[l.t]; if (!a || !b) return; var ln = document.createElementNS(NS, 'line'); ln.setAttribute('x1', cx(a)); ln.setAttribute('y1', cy(a)); ln.setAttribute('x2', cx(b)); ln.setAttribute('y2', cy(b)); ln.setAttribute('class', 'cm-edge'); ln.dataset.s = l.s; ln.dataset.t = l.t; gE.appendChild(ln); edgeEls.push(ln); });
+    var nodeEls = {};
+    DATA.nodes.forEach(function (n) {
+      var wrap = n.url ? document.createElementNS(NS, 'a') : document.createElementNS(NS, 'g');
+      if (n.url) { wrap.setAttribute('href', n.url); wrap.addEventListener('click', function (e) { if (lastTouch) e.preventDefault(); }); }
+      var g = document.createElementNS(NS, 'g');
+      g.setAttribute('class', 'nd ' + (n.url ? (n.ui ? 'ui' : 'be') : 'un') + (n.key ? ' key' : '') + (n.url ? ' clk' : ''));
+      g.setAttribute('transform', 'translate(' + n.x + ',' + n.y + ')');
+      g.dataset.id = n.id;
+      var r = document.createElementNS(NS, 'rect'); r.setAttribute('width', NW); r.setAttribute('height', NH); r.setAttribute('rx', 9); g.appendChild(r);
+      var t = document.createElementNS(NS, 'text'); t.setAttribute('x', NW / 2); t.setAttribute('y', NH / 2);
+      if (n.name.length > 22) t.setAttribute('font-size', '14'); t.textContent = n.name; g.appendChild(t);
+      if (n.key) { var st = document.createElementNS(NS, 'text'); st.setAttribute('class', 'star'); st.setAttribute('x', NW - 16); st.setAttribute('y', 20); st.textContent = '★'; g.appendChild(st); }
+      wrap.appendChild(g); gN.appendChild(wrap); nodeEls[n.id] = g;
+      g.addEventListener('mouseenter', function () { if (!pinnedId) highlight(n.id); });
+      g.addEventListener('mousemove', function (e) { if (!pinnedId) showTip(n, e, false); });
+      g.addEventListener('mouseleave', function () { if (!pinnedId) { tip.hidden = true; clearHi(); } });
+    });
+
+    var sc = 1, tx = 0, ty = 0;
+    function apply() { cam.setAttribute('transform', 'translate(' + tx + ',' + ty + ') scale(' + sc + ')'); }
+    function fit() { var rect = svg.getBoundingClientRect(); var w = maxx - minx + 120, h = maxy - miny + 120; sc = Math.min(rect.width / w, rect.height / h); tx = (rect.width - (minx + maxx) * sc) / 2; ty = (rect.height - (miny + maxy) * sc) / 2; apply(); }
+    function zoomAt(px, py, f) { var nx = (px - tx) / sc, ny = (py - ty) / sc; sc = Math.max(0.06, Math.min(5, sc * f)); tx = px - nx * sc; ty = py - ny * sc; apply(); }
+    svg.addEventListener('wheel', function (e) { e.preventDefault(); var r = svg.getBoundingClientRect(); zoomAt(e.clientX - r.left, e.clientY - r.top, e.deltaY < 0 ? 1.15 : 1 / 1.15); }, { passive: false });
+
+    var pts = new Map(), panStart = null, lastDist = 0, tapC = null, lastTouch = false;
+    function two() { var a = []; pts.forEach(function (v) { a.push(v); }); return a; }
+    function d2(a, b) { var dx = a.x - b.x, dy = a.y - b.y; return Math.sqrt(dx * dx + dy * dy); }
+    svg.addEventListener('pointerdown', function (e) {
+      lastTouch = (e.pointerType === 'touch');
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      try { svg.setPointerCapture(e.pointerId); } catch (_) {}
+      if (pts.size === 1) { panStart = { x: e.clientX, y: e.clientY, tx: tx, ty: ty }; var g = e.target.closest ? e.target.closest('.nd') : null; tapC = { x: e.clientX, y: e.clientY, id: g ? g.dataset.id : null, moved: false }; svg.classList.add('grabbing'); }
+      else { panStart = null; tapC = null; lastDist = 0; }
+      if (hint) hint.style.opacity = '0';
+    });
+    svg.addEventListener('pointermove', function (e) {
+      if (!pts.has(e.pointerId)) return;
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pts.size >= 2) { var a = two(); var nd = d2(a[0], a[1]); var r = svg.getBoundingClientRect(); var mx = (a[0].x + a[1].x) / 2 - r.left, my = (a[0].y + a[1].y) / 2 - r.top; if (lastDist) zoomAt(mx, my, nd / lastDist); lastDist = nd; return; }
+      if (panStart) { tx = panStart.tx + (e.clientX - panStart.x); ty = panStart.ty + (e.clientY - panStart.y); apply(); if (tapC && Math.abs(e.clientX - tapC.x) + Math.abs(e.clientY - tapC.y) > 8) tapC.moved = true; }
+    });
+    function endPtr(e) {
+      if (tapC && !tapC.moved && pts.size === 1) { if (tapC.id) pinNode(tapC.id); else clearPin(); }
+      pts.delete(e.pointerId);
+      if (pts.size < 2) lastDist = 0;
+      if (pts.size === 0) { panStart = null; svg.classList.remove('grabbing'); }
+      else if (pts.size === 1) { var p = two()[0]; panStart = { x: p.x, y: p.y, tx: tx, ty: ty }; }
+    }
+    svg.addEventListener('pointerup', endPtr);
+    svg.addEventListener('pointercancel', endPtr);
+    document.getElementById('cm-in').onclick = function () { var r = svg.getBoundingClientRect(); zoomAt(r.width / 2, r.height / 2, 1.3); };
+    document.getElementById('cm-out').onclick = function () { var r = svg.getBoundingClientRect(); zoomAt(r.width / 2, r.height / 2, 1 / 1.3); };
+    document.getElementById('cm-fit').onclick = function () { clearPin(); fit(); };
+
+    function highlight(id) { var nb = adj[id]; Object.keys(nodeEls).forEach(function (k) { if (k !== id && !nb.has(k)) nodeEls[k].classList.add('dim'); }); nodeEls[id].classList.add('focus'); edgeEls.forEach(function (ln) { if (ln.dataset.s === id || ln.dataset.t === id) ln.classList.add('hl'); }); }
+    function clearHi() { Object.keys(nodeEls).forEach(function (k) { nodeEls[k].classList.remove('dim', 'focus'); }); edgeEls.forEach(function (ln) { ln.classList.remove('hl'); }); applyFilter(); }
+    var OPEN = root.dataset.open || 'Open article →';
+    function tipHtml(n, pin) {
+      var outs = DATA.links.filter(function (l) { return l.s === n.id; }).slice(0, 6).map(function (l) { return '→ ' + l.t; }).join('<br>');
+      var covTxt = n.url ? root.dataset.covered : root.dataset.uncovered;
+      var s = (pin ? "<span class='cls' id='cm-cls'>✕</span>" : '') + '<b>' + n.name + '</b><br>' + n.cat + (n.ui ? ' · UI' : '') + ' · ' + covTxt;
+      if (outs) s += "<span class='rel'>" + outs + '</span>';
+      if (pin && n.url) s += "<a class='open' href='" + n.url + "'>" + OPEN + '</a>';
+      return s;
+    }
+    function showTip(n, e, pin) {
+      tip.className = 'cm-tip' + (pin ? ' pin' : ''); tip.innerHTML = tipHtml(n, pin); tip.hidden = false;
+      var st = document.querySelector('.cm-stage').getBoundingClientRect();
+      if (pin) { var g = nodeEls[n.id].getBoundingClientRect(); var lx = g.left - st.left, ly = g.bottom - st.top + 8; tip.style.left = Math.max(8, Math.min(lx, st.width - 250)) + 'px'; tip.style.top = Math.min(ly, st.height - 120) + 'px'; var c = document.getElementById('cm-cls'); if (c) c.onclick = clearPin; }
+      else { tip.style.left = (e.clientX - st.left + 14) + 'px'; tip.style.top = (e.clientY - st.top + 14) + 'px'; }
+    }
+    var pinnedId = null;
+    function pinNode(id) { pinnedId = id; clearHi(); highlight(id); showTip(byId[id], null, true); }
+    function clearPin() { pinnedId = null; tip.hidden = true; clearHi(); }
+
+    var q = document.getElementById('cm-q'), catSel = document.getElementById('cm-cat');
+    var fType = '', fCov = '';
+    function applyFilter() {
+      var qq = q.value.trim().toLowerCase(), cc = catSel.value;
+      DATA.nodes.forEach(function (n) {
+        var g = nodeEls[n.id]; var ok = true;
+        if (qq && n.name.toLowerCase().indexOf(qq) < 0) ok = false;
+        if (cc && n.cat !== cc) ok = false;
+        if (fType === 'ui' && !n.ui) ok = false; if (fType === 'backend' && n.ui) ok = false;
+        if (fCov === '1' && !n.url) ok = false; if (fCov === '0' && n.url) ok = false;
+        g.classList.toggle('dim', !ok); g.parentNode.style.pointerEvents = ok ? '' : 'none';
+      });
+      var vis = {}; DATA.nodes.forEach(function (n) { if (!nodeEls[n.id].classList.contains('dim')) vis[n.id] = 1; });
+      edgeEls.forEach(function (ln) { ln.style.opacity = (vis[ln.dataset.s] && vis[ln.dataset.t]) ? '' : '0.05'; });
+    }
+    q.addEventListener('input', function () { pinnedId = null; tip.hidden = true; applyFilter(); });
+    catSel.addEventListener('change', function () { pinnedId = null; tip.hidden = true; applyFilter(); });
+    Array.prototype.forEach.call(document.querySelectorAll('#cm-type button'), function (b) { b.onclick = function () { fType = b.dataset.v; Array.prototype.forEach.call(document.querySelectorAll('#cm-type button'), function (x) { x.classList.toggle('on', x === b); }); applyFilter(); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('#cm-cov button'), function (b) { b.onclick = function () { fCov = b.dataset.v; Array.prototype.forEach.call(document.querySelectorAll('#cm-cov button'), function (x) { x.classList.toggle('on', x === b); }); applyFilter(); }; });
+    requestAnimationFrame(fit);
+    if (hint && hint.dataset.hint && window.matchMedia && window.matchMedia('(max-width:640px)').matches) { hint.textContent = hint.dataset.hint; setTimeout(function () { hint.style.opacity = '0'; }, 4200); }
+  }
+  document.addEventListener('astro:page-load', initClassMap);
+</script>
