@@ -151,6 +151,15 @@ header.site-header nav a:hover {
   color: var(--color-accent);
 }
 
+/* Current-section indicator — gold, semibold, underlined (no box-size shift). */
+header.site-header nav a[aria-current='page'] {
+  color: var(--color-accent);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+
 /* Language toggle — translate-icon style segmented control
    Shows 文 (Chinese) and A (English) like translation app icons */
 .lang-toggle {

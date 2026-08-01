@@ -40,6 +40,19 @@ const stripped = path.startsWith(`/${lang}/`)
 const switchHref = localizedPath(otherLang, stripped || '/');
 const baseNoSlash = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '');
 
+// Highlight the nav entry for whichever section the current page belongs to.
+// `stripped` is the path with base + lang prefix already removed; drop any
+// trailing slash so "/map/" and "/map" match the same entry. "welcome" is a
+// post URL but belongs to About, so it's excluded from the Posts match.
+const curPath = (stripped || '/').replace(/\/$/, '') || '/';
+const navActive = {
+  posts: (curPath === '/posts' || curPath.startsWith('/posts/')) && curPath !== '/posts/welcome',
+  tags: curPath === '/tags' || curPath.startsWith('/tags/'),
+  search: curPath === '/search',
+  map: curPath === '/map',
+  about: curPath === '/posts/welcome',
+};
+
 // Absolute URLs for SEO/social tags
 const siteOrigin = Astro.site ? Astro.site.origin : 'https://bryanhsiao.github.io';
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? siteOrigin).toString();
@@ -111,11 +124,11 @@ const otherLangUrl = new URL(localizedPath(otherLang, otherLangPath), Astro.site
           <span>{siteTitle}</span>
         </a>
         <nav>
-          <a href={localizedPath(lang, '/posts')}>{t('nav.posts')}</a>
-          <a href={localizedPath(lang, '/tags')}>{t('nav.tags')}</a>
-          <a href={localizedPath(lang, '/search')}>{t('nav.search')}</a>
-          <a href={localizedPath(lang, '/map')}>{t('nav.map')}</a>
-          <a href={localizedPath(lang, '/posts/welcome')}>{t('nav.about')}</a>
+          <a href={localizedPath(lang, '/posts')} aria-current={navActive.posts ? 'page' : undefined}>{t('nav.posts')}</a>
+          <a href={localizedPath(lang, '/tags')} aria-current={navActive.tags ? 'page' : undefined}>{t('nav.tags')}</a>
+          <a href={localizedPath(lang, '/search')} aria-current={navActive.search ? 'page' : undefined}>{t('nav.search')}</a>
+          <a href={localizedPath(lang, '/map')} aria-current={navActive.map ? 'page' : undefined}>{t('nav.map')}</a>
+          <a href={localizedPath(lang, '/posts/welcome')} aria-current={navActive.about ? 'page' : undefined}>{t('nav.about')}</a>
           <div class="lang-toggle" role="group" aria-label="language switch">
             <span class="lang-option is-active" aria-current="true">{t('lang.current')}</span>
             <a href={switchHref} class="lang-option" aria-label="switch language" data-lang-switch>{t('lang.switch')}</a>
