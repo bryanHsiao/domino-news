@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NAVIGATOR_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/button-field-navigator.webp"
+coverStyle: "collage"
 ---
 
 Open the Designer help for the [`Button`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_BUTTON_CLASS.html) class expecting a `Caption` or a `Click` method, and you find one flat sentence: "A Button object has no properties or methods." Open [`Field`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FIELD_CLASS.html) — same. Open [`Navigator`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NAVIGATOR_CLASS.html) — same. Three classes in the catalogue with nothing on them at all.

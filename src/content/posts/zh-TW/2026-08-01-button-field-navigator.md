@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NAVIGATOR_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/button-field-navigator.webp"
+coverStyle: "collage"
 ---
 
 打開 [`Button`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_BUTTON_CLASS.html) 類別的 Designer 說明，想找個 `Caption` 屬性或 `Click` 方法，結果只看到一句平淡的話：「Button 物件沒有屬性或方法。」打開 [`Field`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FIELD_CLASS.html) —— 一樣。打開 [`Navigator`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NAVIGATOR_CLASS.html) —— 一樣。目錄裡三個類別，上面什麼都沒有。
