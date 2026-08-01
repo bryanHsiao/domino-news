@@ -41,9 +41,9 @@ This piece covers three things: why the same Domino objects are hands-off in LS 
 
 LotusScript and Java call into the same C-written Domino engine. The difference is who cleans up the layer behind it.
 
-In LotusScript, when an object goes out of scope the runtime tears the back end down with it — you never think about it. Java doesn't work that way. The documentation states it plainly:
+In LotusScript, when an object goes out of scope the runtime tears the back end down with it — you never think about it. Java doesn't work that way. It knows only the lightweight objects that represent the back ends, never the heavyweight back-end objects themselves, and the documentation is blunt about the consequence:
 
-> Java has no knowlege of the heavyweight back-end Domino Objects, only the lightweight Java objects representing them. Garbage collection has no effect on Domino Objects unless you first explicitly recycle them.
+> Garbage collection has no effect on Domino Objects unless you first explicitly recycle them.
 
 So the `Document` you get back from `db.getDocumentByUNID(...)` is a small Java front object; the thing that actually holds the data and the memory is the C back-end object behind it. Java's garbage collector can see and eventually free that small front — but **it cannot see the back end at all**, so the handle is orphaned until the process exits. Ten documents, a hundred, and you never notice; fifty thousand, and the orphaned handles pile into a mountain long before GC would have run. That's why it passes in test and dies in production.
 
@@ -63,7 +63,7 @@ The second recycles a whole Vector of objects at once — a real win for remote 
 The four official rules, read the way they bite in practice:
 
 1. **Recycle only when the object is no longer needed.** A recycled object's handle is dead; touching it afterward means reaching into a destroyed back end — an exception at best, undefined behaviour at worst.
-2. **Recycle on the same thread that created it.** The back-end handle is tied to the thread-local storage of the thread that made it; recycling across threads breaks. This rule is what pulls in the `NotesThread` section below.
+2. **Recycle on the same thread that created it.** The back-end handle is tied to the thread-local storage of the thread that made it; recycling across threads breaks. (The one exception is a remote IIOP session, where recycle can be called from any thread.) This rule is what pulls in the `NotesThread` section below.
 3. **Recycling a parent recycles all its children.** Recycle a `Database` and its `View`, `Document`, and `Item` objects go with it. That's your friend at cleanup time and your trap inside a loop — see below.
 4. **Several representations of one element recycle together.** `View v1 = db.getView("All"); View v2 = db.getView("All");` — two Java objects, one back-end view; after `v1.recycle()`, `v2` is dead too.
 

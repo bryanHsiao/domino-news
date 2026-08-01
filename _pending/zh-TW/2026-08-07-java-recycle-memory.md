@@ -63,7 +63,7 @@ public void recycle(java.util.Vector objects)
 官方列的四條規則，實務上是這樣讀：
 
 1. **只在不再需要時才 recycle。** recycle 過的物件 handle 已經失效，再去碰它就是存取已銷毀的後端——輕則例外，重則不可預期。
-2. **在建立它的同一條執行緒裡 recycle。** 後端 handle 綁在建立它的那條執行緒的 thread-local 儲存上，跨執行緒收會出事。這條規則直接牽出下面 `NotesThread` 的段落。
+2. **在建立它的同一條執行緒裡 recycle。** 後端 handle 綁在建立它的那條執行緒的 thread-local 儲存上，跨執行緒收會出事（唯一例外是遠端 IIOP session，可從任一執行緒 recycle）。這條規則直接牽出下面 `NotesThread` 的段落。
 3. **recycle 父物件會連帶 recycle 所有子物件。** recycle 掉 `Database`，它底下的 `View`、`Document`、`Item` 全部一起沒了。這是收尾時的好朋友，也是迴圈裡的陷阱（後面會說明）。
 4. **同一元素的多個代表，recycle 一個等於全部。** `View v1 = db.getView("All"); View v2 = db.getView("All");` 兩個 Java 物件指向同一個後端 view，`v1.recycle()` 之後 `v2` 也一起失效。
 

@@ -15,14 +15,29 @@ notebook、問了什麼、有沒有走完 NotebookLM → WebFetch 研究鏈、�
 
 ## 格式
 
-frontmatter：`slug` / `title` / `lang` / `pubDate` / `model` / `status`
-（`staged` → `shipped`）/ `tags`。內文四段：
+frontmatter（對應投影片那套「誰提出／用什麼模型／何時」的標示）：
+
+| 欄位 | 意義 |
+|---|---|
+| `slug` / `title` / `lang` / `pubDate` / `tags` | 對應文章本身 |
+| `status` | `staged`（在 `_pending`）→ `shipped`（已 promote） |
+| `requester` | **誰提出**這篇（使用者 / cron / 救援…） |
+| `author_model` | **寫作模型**（AI 用什麼模型寫的） |
+| `review_model` | **審查模型**——獨立於寫作的那個模型（見下） |
+| `review_result` | 審查結論（humanizer 分數 + 獨立事實查核 verdict） |
+| `created` / `updated` | 建檔 / 最後更新日期 |
+
+內文四段：
 
 1. **研究來源**：NotebookLM（notebook URL + 完整問句 + 有沒有回答 + 取得什麼）；
    WebFetch（每個 URL + 驗證非 404 + 取得什麼）；矛盾檢查結論。
-2. **查證 checklist**：研究鏈走完 / 交叉驗證無矛盾 / URL 非 404 /
-   inline-link diversity / build / humanizer-zh-tw。
-3. **異動日誌**：建檔、研究、草稿、進 `_pending`、promote 的時間線。
+2. **獨立審查 (review)**：用**不同模型**的 reviewer 重新抓官方文件、逐條核對
+   文章的技術主張，記下 verdict（通過 / 有疑點）與抓到的問題。刻意跟寫作模型
+   分開，避免「同一個模型自己審自己」。
+3. **查證 checklist**：研究鏈走完 / 交叉驗證無矛盾 / URL 非 404 /
+   inline-link diversity / build / humanizer-zh-tw / 獨立審查。
+4. **異動日誌**：who + when 時間軸——建檔、研究、草稿、獨立審查、進
+   `_pending`、promote。
 
 第一篇範例：[`2026-08-07-java-recycle-memory.md`](2026-08-07-java-recycle-memory.md)。
 
