@@ -135,7 +135,8 @@ header.site-header .brand:hover {
 
 header.site-header nav {
   display: flex;
-  gap: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
   font-size: 0.95rem;
   align-items: center;
 }
@@ -143,6 +144,7 @@ header.site-header nav {
 header.site-header nav a {
   color: var(--color-fg);
   font-weight: 500;
+  white-space: nowrap;
 }
 
 header.site-header nav a:hover {
@@ -840,7 +842,7 @@ article.post hr {
     padding: 2rem 1.1rem 4rem;
   }
   header.site-header nav {
-    gap: 1rem;
+    gap: 0.5rem 0.9rem;
     font-size: 0.9rem;
   }
   article.post {
