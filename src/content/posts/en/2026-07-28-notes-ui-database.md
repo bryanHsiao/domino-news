@@ -6,6 +6,7 @@ lang: en
 slug: notes-ui-database
 tags:
   - "LotusScript"
+  - "Notes UI"
   - "Tutorial"
 sources:
   - title: "NotesUIDatabase (LotusScript) — HCL Domino Designer Help"

@@ -6,6 +6,7 @@ lang: en
 slug: notes-ui-scheduler
 tags:
   - "LotusScript"
+  - "Notes UI"
   - "Tutorial"
 sources:
   - title: "NotesUIScheduler (LotusScript) — HCL Domino Designer Help"

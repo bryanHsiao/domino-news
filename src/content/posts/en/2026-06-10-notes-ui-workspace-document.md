@@ -6,6 +6,7 @@ lang: en
 slug: notes-ui-workspace-document
 tags:
   - "LotusScript"
+  - "Notes UI"
   - "Tutorial"
 sources:
   - title: "NotesUIWorkspace class — HCL Domino Designer 14.5"

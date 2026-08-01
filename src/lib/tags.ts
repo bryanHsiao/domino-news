@@ -55,6 +55,7 @@ const TAG_CATEGORIES: Record<string, TagPalette> = {
   JavaScript: TECH,
   DQL: TECH,
   OIDC: TECH,
+  'Notes UI': TECH,
 
   // Topic
   Security: TOPIC,
@@ -111,6 +112,7 @@ const TAG_AXIS: Record<string, TagAxis> = {
   JavaScript: 'TECH',
   DQL: 'TECH',
   OIDC: 'TECH',
+  'Notes UI': 'TECH',
 
   Security: 'TOPIC',
   Performance: 'TOPIC',

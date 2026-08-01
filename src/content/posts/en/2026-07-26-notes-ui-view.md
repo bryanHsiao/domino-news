@@ -6,6 +6,7 @@ lang: en
 slug: notes-ui-view
 tags:
   - "LotusScript"
+  - "Notes UI"
   - "Tutorial"
 sources:
   - title: "NotesUIView (LotusScript) — HCL Domino Designer Help"

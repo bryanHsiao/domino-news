@@ -6,6 +6,7 @@ lang: en
 slug: button-field-navigator
 tags:
   - "LotusScript"
+  - "Notes UI"
 sources:
   - title: "Button (LotusScript) — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_BUTTON_CLASS.html"

@@ -57,6 +57,7 @@ const TAGS_TECH = [
   'JavaScript',
   'DQL',
   'OIDC',
+  'Notes UI',
 ] as const;
 
 const TAGS_TOPIC = [
