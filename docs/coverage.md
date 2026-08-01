@@ -1,13 +1,13 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-07-31 · Posts scanned: 104 · Classes catalogued: 97*
+*Generated: 2026-08-01 · Posts scanned: 105 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
-**Overall: 90 / 97 classes covered (92.8%)**
+**Overall: 93 / 97 classes covered (95.9%)**
 
 ```
-█████████████████████████████████████░░░ 92.8%
+██████████████████████████████████████░░ 95.9%
 ```
 
 ## Coverage by category
@@ -30,12 +30,15 @@
 | Session File Operations | 1 | 1 | 100% | 🟩 `████████████` |
 | View | 5 | 5 | 100% | 🟩 `████████████` |
 | DOM/XML | 22 | 25 | 88% | 🟩 `███████████░` |
-| UI | 4 | 8 | 50% | 🟨 `██████░░░░░░` |
+| UI | 7 | 8 | 88% | 🟩 `███████████░` |
 
-## ✓ Covered classes (90)
+## ✓ Covered classes (93)
 
 | Class | Category | Posts | First mention |
 |---|---|---|---|
+| [Button](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_BUTTON_CLASS.html) | UI | [button-field-navigator](https://bryanhsiao.github.io/domino-news/posts/button-field-navigator/) | 2026-08-01 |
+| [Field](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FIELD_CLASS.html) | UI | [button-field-navigator](https://bryanhsiao.github.io/domino-news/posts/button-field-navigator/) | 2026-08-01 |
+| [Navigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NAVIGATOR_CLASS.html) | UI | [button-field-navigator](https://bryanhsiao.github.io/domino-news/posts/button-field-navigator/) | 2026-08-01 |
 | [NotesACL](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESACL_CLASS.html) | Database | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) | 2026-05-15 |
 | [NotesACLEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESACLENTRY_CLASS.html) | Database | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) | 2026-05-15 |
 | [NotesAdministrationProcess](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESADMINISTRATIONPROCESS_CLASS.html) | Admin | [notes-administration-process](https://bryanhsiao.github.io/domino-news/posts/notes-administration-process/) | 2026-06-29 |
@@ -127,16 +130,13 @@
 | [NotesXMLProcessor](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-06 |
 | [NotesXSLTransformer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/), [notes-xsl-transformer](https://bryanhsiao.github.io/domino-news/posts/notes-xsl-transformer/) | 2026-05-06 |
 
-## ⨯ Uncovered classes (7)
+## ⨯ Uncovered classes (4)
 
 | Class | Category | Description |
 |---|---|---|
 | [NotesDOMCDATASectionNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMCDATASECTIONNODE_CLASS.html) | DOM/XML | Represents a CDATA section in the XML data source. |
 | [NotesDOMCommentNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMCOMMENTNODE_CLASS.html) | DOM/XML | Represents a comment in the XML. |
 | [NotesDOMEntityNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMENTITYNODE_CLASS.html) | DOM/XML | Represents an entity node in the XML. |
-| [Button](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_BUTTON_CLASS.html) | UI | Represents an action, action hotspot, or button on a form or document. |
-| [Field](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FIELD_CLASS.html) | UI | Represents a field on a form. |
-| [Navigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NAVIGATOR_CLASS.html) | UI | Represents a navigator button, hotspot, or other navigator object. |
 | [NotesUIScheduler](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUISCHEDULER_CLASS.html) | UI | Represents an embedded scheduling control in a document. |
 
 ## Cross-language tracker
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [button-field-navigator](https://bryanhsiao.github.io/domino-news/posts/button-field-navigator/) | `Button`, `Field`, `Navigator` | — | — |
 | [lotusscript-web-agent-io](https://bryanhsiao.github.io/domino-news/posts/lotusscript-web-agent-io/) | `NotesSession` | — | — |
 | [dxl-round-trip-pitfalls](https://bryanhsiao.github.io/domino-news/posts/dxl-round-trip-pitfalls/) | `NotesDXLImporter`, `NotesDXLExporter` | `DxlExporter`, `DxlImporter` | `DxlExporter`, `DxlImporter` |
 | [lotusscript-error-handling](https://bryanhsiao.github.io/domino-news/posts/lotusscript-error-handling/) | — | — | — |
