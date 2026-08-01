@@ -13,6 +13,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMENTITYREFERENCENODE_CLASS.html"
   - title: "NotesDOMNotationNode (LotusScript) — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMNOTATIONNODE_CLASS.html"
+  - title: "NotesDOMEntityNode (LotusScript) — HCL Domino Designer Help"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMENTITYNODE_CLASS.html"
 relatedJava: []
 relatedSsjs: []
 cover: "/covers/notes-dom-dtd-nodes.webp"

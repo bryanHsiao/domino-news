@@ -14,6 +14,10 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMDOCUMENTFRAGMENTNODE_CLASS.html"
   - title: "NotesDOMProcessingInstructionNode (LotusScript) — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMPROCESSINGINSTRUCTIONNODE_CLASS.html"
+  - title: "NotesDOMCDATASectionNode (LotusScript) — HCL Domino Designer Help"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMCDATASECTIONNODE_CLASS.html"
+  - title: "NotesDOMCommentNode (LotusScript) — HCL Domino Designer Help"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMCOMMENTNODE_CLASS.html"
 relatedJava: []
 relatedSsjs: []
 cover: "/covers/notes-dom-content-nodes.webp"

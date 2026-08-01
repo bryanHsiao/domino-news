@@ -4,10 +4,10 @@
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
-**Overall: 93 / 97 classes covered (95.9%)**
+**Overall: 96 / 97 classes covered (99.0%)**
 
 ```
-██████████████████████████████████████░░ 95.9%
+████████████████████████████████████████ 99.0%
 ```
 
 ## Coverage by category
@@ -20,6 +20,7 @@
 | Calendar | 3 | 3 | 100% | 🟩 `████████████` |
 | Item | 5 | 5 | 100% | 🟩 `████████████` |
 | Document | 6 | 6 | 100% | 🟩 `████████████` |
+| DOM/XML | 25 | 25 | 100% | 🟩 `████████████` |
 | DQL | 2 | 2 | 100% | 🟩 `████████████` |
 | GPS | 3 | 3 | 100% | 🟩 `████████████` |
 | HTTP | 1 | 1 | 100% | 🟩 `████████████` |
@@ -29,10 +30,9 @@
 | Rich Text | 9 | 9 | 100% | 🟩 `████████████` |
 | Session File Operations | 1 | 1 | 100% | 🟩 `████████████` |
 | View | 5 | 5 | 100% | 🟩 `████████████` |
-| DOM/XML | 22 | 25 | 88% | 🟩 `███████████░` |
 | UI | 7 | 8 | 88% | 🟩 `███████████░` |
 
-## ✓ Covered classes (93)
+## ✓ Covered classes (96)
 
 | Class | Category | Posts | First mention |
 |---|---|---|---|
@@ -56,11 +56,14 @@
 | [NotesDocument](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENT_CLASS.html) | Document | [notes-rich-text-item](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-item/), [notes-document](https://bryanhsiao.github.io/domino-news/posts/notes-document/), [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/), [lotusscript-evaluate](https://bryanhsiao.github.io/domino-news/posts/lotusscript-evaluate/), [domino-large-summary-field-too-large](https://bryanhsiao.github.io/domino-news/posts/domino-large-summary-field-too-large/), [profile-documents](https://bryanhsiao.github.io/domino-news/posts/profile-documents/), [notes-document-sign-encrypt](https://bryanhsiao.github.io/domino-news/posts/notes-document-sign-encrypt/), [notes-response-documents](https://bryanhsiao.github.io/domino-news/posts/notes-response-documents/), [notes-document-computewithform](https://bryanhsiao.github.io/domino-news/posts/notes-document-computewithform/), [notes-document-locking](https://bryanhsiao.github.io/domino-news/posts/notes-document-locking/), [notes-document-save-conflict](https://bryanhsiao.github.io/domino-news/posts/notes-document-save-conflict/) | 2026-04-30 |
 | [NotesDocumentCollection](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOCUMENTCOLLECTION_CLASS.html) | Document | [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/), [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [notes-document-collection](https://bryanhsiao.github.io/domino-news/posts/notes-document-collection/) | 2026-05-27 |
 | [NotesDOMAttributeNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMATTRIBUTENODE_CLASS.html) | DOM/XML | [notes-dom-text-node](https://bryanhsiao.github.io/domino-news/posts/notes-dom-text-node/) | 2026-07-04 |
+| [NotesDOMCDATASectionNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMCDATASECTIONNODE_CLASS.html) | DOM/XML | [notes-dom-content-nodes](https://bryanhsiao.github.io/domino-news/posts/notes-dom-content-nodes/) | 2026-07-24 |
 | [NotesDOMCharacterDataNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMCHARACTERDATANODE_CLASS.html) | DOM/XML | [notes-dom-text-node](https://bryanhsiao.github.io/domino-news/posts/notes-dom-text-node/) | 2026-07-04 |
+| [NotesDOMCommentNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMCOMMENTNODE_CLASS.html) | DOM/XML | [notes-dom-content-nodes](https://bryanhsiao.github.io/domino-news/posts/notes-dom-content-nodes/) | 2026-07-24 |
 | [NotesDOMDocumentFragmentNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMDOCUMENTFRAGMENTNODE_CLASS.html) | DOM/XML | [notes-dom-content-nodes](https://bryanhsiao.github.io/domino-news/posts/notes-dom-content-nodes/) | 2026-07-24 |
 | [NotesDOMDocumentNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMDOCUMENTNODE_CLASS.html) | DOM/XML | [notes-dom-document-node](https://bryanhsiao.github.io/domino-news/posts/notes-dom-document-node/) | 2026-07-03 |
 | [NotesDOMDocumentTypeNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMDOCUMENTTYPENODE_CLASS.html) | DOM/XML | [notes-dom-dtd-nodes](https://bryanhsiao.github.io/domino-news/posts/notes-dom-dtd-nodes/) | 2026-07-25 |
 | [NotesDOMElementNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMELEMENTNODE_CLASS.html) | DOM/XML | [notes-dom-document-node](https://bryanhsiao.github.io/domino-news/posts/notes-dom-document-node/) | 2026-07-03 |
+| [NotesDOMEntityNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMENTITYNODE_CLASS.html) | DOM/XML | [notes-dom-dtd-nodes](https://bryanhsiao.github.io/domino-news/posts/notes-dom-dtd-nodes/) | 2026-07-25 |
 | [NotesDOMEntityReferenceNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMENTITYREFERENCENODE_CLASS.html) | DOM/XML | [notes-dom-dtd-nodes](https://bryanhsiao.github.io/domino-news/posts/notes-dom-dtd-nodes/) | 2026-07-25 |
 | [NotesDominoQuery](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMINOQUERY_CLASS.html) | DQL | [dql-production](https://bryanhsiao.github.io/domino-news/posts/dql-production/) | 2026-05-03 |
 | [NotesDOMNamedNodeMap](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMNAMEDNODEMAP_CLASS.html) | DOM/XML | [notes-dom-document-node](https://bryanhsiao.github.io/domino-news/posts/notes-dom-document-node/) | 2026-07-03 |
@@ -130,13 +133,10 @@
 | [NotesXMLProcessor](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | 2026-05-06 |
 | [NotesXSLTransformer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXSLTRANSFORMER_CLASS.html) | DOM/XML | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/), [notes-xsl-transformer](https://bryanhsiao.github.io/domino-news/posts/notes-xsl-transformer/) | 2026-05-06 |
 
-## ⨯ Uncovered classes (4)
+## ⨯ Uncovered classes (1)
 
 | Class | Category | Description |
 |---|---|---|
-| [NotesDOMCDATASectionNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMCDATASECTIONNODE_CLASS.html) | DOM/XML | Represents a CDATA section in the XML data source. |
-| [NotesDOMCommentNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMCOMMENTNODE_CLASS.html) | DOM/XML | Represents a comment in the XML. |
-| [NotesDOMEntityNode](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMENTITYNODE_CLASS.html) | DOM/XML | Represents an entity node in the XML. |
 | [NotesUIScheduler](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUISCHEDULER_CLASS.html) | UI | Represents an embedded scheduling control in a document. |
 
 ## Cross-language tracker
@@ -266,8 +266,8 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | [notes-ui-database](https://bryanhsiao.github.io/domino-news/posts/notes-ui-database/) | `NotesUIDatabase`, `NotesUIWorkspace`, `NotesDatabase`, `NotesUIView` | — | — |
 | [notes-document-save-conflict](https://bryanhsiao.github.io/domino-news/posts/notes-document-save-conflict/) | `NotesDocument` | `Document` | `Document` |
 | [notes-ui-view](https://bryanhsiao.github.io/domino-news/posts/notes-ui-view/) | `NotesUIWorkspace`, `NotesUIView`, `NotesView` | — | — |
-| [notes-dom-dtd-nodes](https://bryanhsiao.github.io/domino-news/posts/notes-dom-dtd-nodes/) | `NotesDOMDocumentTypeNode`, `NotesDOMEntityReferenceNode`, `NotesDOMNotationNode` | — | — |
-| [notes-dom-content-nodes](https://bryanhsiao.github.io/domino-news/posts/notes-dom-content-nodes/) | `NotesDOMNodeList`, `NotesDOMDocumentFragmentNode`, `NotesDOMProcessingInstructionNode` | — | — |
+| [notes-dom-dtd-nodes](https://bryanhsiao.github.io/domino-news/posts/notes-dom-dtd-nodes/) | `NotesDOMDocumentTypeNode`, `NotesDOMEntityReferenceNode`, `NotesDOMNotationNode`, `NotesDOMEntityNode` | — | — |
+| [notes-dom-content-nodes](https://bryanhsiao.github.io/domino-news/posts/notes-dom-content-nodes/) | `NotesDOMNodeList`, `NotesDOMDocumentFragmentNode`, `NotesDOMProcessingInstructionNode`, `NotesDOMCDATASectionNode`, `NotesDOMCommentNode` | — | — |
 | [domino-web-view-start-parameter](https://bryanhsiao.github.io/domino-news/posts/domino-web-view-start-parameter/) | — | `ViewEntry` | `ViewEntry` |
 | [notes-view-passthrough-html](https://bryanhsiao.github.io/domino-news/posts/notes-view-passthrough-html/) | — | — | — |
 | [dql-execution-error-diagnostic](https://bryanhsiao.github.io/domino-news/posts/dql-execution-error-diagnostic/) | — | `DominoQuery` | `DominoQuery` |
