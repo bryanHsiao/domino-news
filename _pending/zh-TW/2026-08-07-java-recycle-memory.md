@@ -29,7 +29,7 @@ relatedSsjs: []
 ## 重點摘要
 
 - **每個 Java Domino 物件是「輕量前台 + 重量後台」的雙層結構。** 你手上的 Java 物件很小，它背後連著一個 C 寫的後端物件（透過一個 handle）。Java 的垃圾回收只看得到前台，看不到後台。
-- **垃圾回收清不掉後端物件——只有 `recycle()` 可以。** 不呼叫 `recycle()`，後端 handle 就一直佔著，累積到一定量就是 out of memory 或 handle 耗盡。
+- **垃圾回收清不掉後端物件，只有 `recycle()` 收得掉。** 不呼叫 `recycle()`，後端 handle 就一直佔著，累積到一定量就是 out of memory 或 handle 耗盡。
 - **四條官方規則**：只在不再需要時 recycle；在建立它的同一條執行緒裡 recycle；**recycle 父物件會連帶 recycle 所有子物件**；同一個 Domino 元素若有多個物件代表，recycle 一個等於全部 recycle。
 - **迴圈是頭號災區。** `getNextDocument()` 每一圈都生一個新的後端 handle，不逐份 recycle 就是穩定洩漏。正解是「兩變數迴圈」：先抓下一份、處理完當份、recycle 當份、再前進。
 - **`NotesThread` 決定「同一條執行緒」這條規則能不能成立。** agent（`AgentBase`）已經幫你處理好；獨立程式或 servlet 裡自己開執行緒，就得自己 `sinitThread` / `stermThread`。
@@ -64,7 +64,7 @@ public void recycle(java.util.Vector objects)
 
 1. **只在不再需要時才 recycle。** recycle 過的物件 handle 已經失效，再去碰它就是存取已銷毀的後端——輕則例外，重則不可預期。
 2. **在建立它的同一條執行緒裡 recycle。** 後端 handle 綁在建立它的那條執行緒的 thread-local 儲存上，跨執行緒收會出事。這條規則直接牽出下面 `NotesThread` 的段落。
-3. **recycle 父物件會連帶 recycle 所有子物件。** recycle 掉 `Database`，它底下的 `View`、`Document`、`Item` 全部一起沒了。這是收尾時的好朋友，卻也是迴圈裡的陷阱——後面說明。
+3. **recycle 父物件會連帶 recycle 所有子物件。** recycle 掉 `Database`，它底下的 `View`、`Document`、`Item` 全部一起沒了。這是收尾時的好朋友，也是迴圈裡的陷阱（後面會說明）。
 4. **同一元素的多個代表，recycle 一個等於全部。** `View v1 = db.getView("All"); View v2 = db.getView("All");` 兩個 Java 物件指向同一個後端 view，`v1.recycle()` 之後 `v2` 也一起失效。
 
 ## 迴圈：頭號災區
@@ -98,7 +98,7 @@ public void processDocuments(DocumentCollection collection) throws NotesExceptio
 }
 ```
 
-順手的兩個習慣：`recycle()` 之後把變數設成 `null`，避免不小心又去碰失效的 handle；以及在迴圈外包一層 `try/finally`，例外中斷時仍能把手上的 `doc` / `nextDoc` 收乾淨。還有一個惡名昭彰的細節——`DateTime` 和 `DateRange` 特別會漏，如果你在迴圈裡抽日期，抽完立刻 recycle。
+順手的兩個習慣：`recycle()` 之後把變數設成 `null`，避免不小心又去碰失效的 handle；以及在迴圈外包一層 `try/finally`，例外中斷時仍能把手上的 `doc` / `nextDoc` 收乾淨。還有一個惡名昭彰的細節：`DateTime` 和 `DateRange` 特別會漏，如果你在迴圈裡抽日期，抽完立刻 recycle。
 
 ## `NotesThread`：為什麼「同一條執行緒」成立
 
@@ -126,7 +126,7 @@ public void processDocuments(DocumentCollection collection) throws NotesExceptio
 
 ## 同類別在其他語言
 
-這篇沒有「LotusScript 版」或「SSJS 版」可對照——因為 `recycle()` 這件事在那兩邊根本不存在，而這件「不存在」本身就是重點：
+這篇沒有「LotusScript 版」或「SSJS 版」可對照，因為 `recycle()` 在那兩邊根本不存在——而這個「不存在」正是重點：
 
 | 語言 | 記憶體管理 |
 |---|---|

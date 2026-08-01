@@ -50,9 +50,13 @@ NotebookLM 與官方文件**一致，無矛盾**（機制、四條規則、簽�
 - [x] 三個官方 URL 逐一 WebFetch 驗證非 404
 - [x] inline-link diversity 通過（各語言 3 個相異 URL 各 1 次 = 33%）
 - [x] 雙語 build 通過（frontmatter schema 驗證）
-- [ ] **humanizer-zh-tw 正式 skill pass —— 待辦**（草稿已依 24 tells 原則
-      自我審過、field-report voice；正式 skill 跑分留在 8/7 promote 前）
+- [x] **humanizer-zh-tw 正式 skill pass 完成** —— 輕觸式：收斂 reveal 型
+      破折號（zh 4 處 / en 3 處）、去掉「本身就是重點」這類輕微 AI framing；
+      保留 earned 第一人稱、實測細節、承載真實 aside 的破折號；未動
+      identifier / code / 引用原文 / 連結。5 維評分 **45/50**（直接 9・
+      節奏 9・信任 9・真實 9・精煉 9）。
 
 ## 異動日誌
 - 2026-08-02 建檔、NotebookLM+WebFetch 研究、雙語草稿、sidecar（Opus 4.8）
 - 2026-08-02 進 `_pending`（Path A，pubDate 2026-08-07）
+- 2026-08-02 humanizer-zh-tw 正式 pass（雙語 45/50）

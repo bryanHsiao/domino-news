@@ -29,7 +29,7 @@ This piece covers three things: why the same Domino objects are hands-off in LS 
 ## TL;DR
 
 - **Every Java Domino object is a lightweight front paired with a heavyweight back end.** The Java object in your hand is small; behind it sits a C back-end object reached through a handle. Java's garbage collector sees only the front, never the back.
-- **The garbage collector cannot free the back-end object — only `recycle()` can.** Skip `recycle()` and the back-end handle stays allocated; enough of them and you hit out-of-memory or handle exhaustion.
+- **The garbage collector cannot free the back-end object; only `recycle()` can.** Skip `recycle()` and the back-end handle stays allocated; enough of them and you hit out-of-memory or handle exhaustion.
 - **Four official rules:** recycle only when the object is no longer needed; recycle on the same thread that created it; **recycling a parent recycles all its children**; if several objects represent the same Domino element, recycling one recycles all.
 - **Loops are the number-one hazard.** `getNextDocument()` mints a fresh back-end handle every iteration; not recycling each one is a steady leak. The fix is the two-variable loop: grab the next document, process the current one, recycle it, then advance.
 - **`NotesThread` is what makes the "same thread" rule hold.** Agents (`AgentBase`) handle it for you; a thread you spin up yourself in a servlet or standalone app needs `sinitThread` / `stermThread`.
@@ -98,7 +98,7 @@ public void processDocuments(DocumentCollection collection) throws NotesExceptio
 }
 ```
 
-Two habits worth keeping: set the variable to `null` after `recycle()` so you can't accidentally touch a dead handle; and wrap the loop in `try/finally` so an exception mid-loop still recycles whatever `doc` / `nextDoc` you're holding. And one notorious detail — `DateTime` and `DateRange` are especially leaky, so if you pull dates inside a loop, recycle them the moment you're done.
+Two habits worth keeping: set the variable to `null` after `recycle()` so you can't accidentally touch a dead handle; and wrap the loop in `try/finally` so an exception mid-loop still recycles whatever `doc` / `nextDoc` you're holding. And one notorious detail: `DateTime` and `DateRange` are especially leaky, so if you pull dates inside a loop, recycle them the moment you're done.
 
 ## `NotesThread`: what makes "same thread" hold
 
@@ -126,7 +126,7 @@ One line for the whole piece: **what you new or get, you recycle; what the envir
 
 ## What about LotusScript and SSJS?
 
-There's no "LotusScript version" or "SSJS version" of this piece to point to — because `recycle()` simply doesn't exist on those sides, and that absence *is* the point:
+There's no "LotusScript version" or "SSJS version" of this piece to point to, because `recycle()` simply doesn't exist on those sides — and that absence *is* the point:
 
 | Language | Memory management |
 |---|---|
