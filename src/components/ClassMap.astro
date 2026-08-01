@@ -87,11 +87,6 @@ const T =
       <button data-v="backend">{T.backend}</button>
       <button data-v="ui">{T.ui}</button>
     </div>
-    <div class="cm-seg" id="cm-cov">
-      <button data-v="" class="on">{T.all}</button>
-      <button data-v="1">{T.cov}</button>
-      <button data-v="0">{T.uncov}</button>
-    </div>
     <div class="cm-zoom">
       <button id="cm-out" aria-label="zoom out">−</button>
       <button id="cm-fit">{T.fit}</button>
@@ -278,7 +273,7 @@ const T =
     function clearPin() { pinnedId = null; tip.hidden = true; clearHi(); }
 
     var q = document.getElementById('cm-q'), catSel = document.getElementById('cm-cat');
-    var fType = '', fCov = '';
+    var fType = '';
     function applyFilter() {
       var qq = q.value.trim().toLowerCase(), cc = catSel.value;
       DATA.nodes.forEach(function (n) {
@@ -286,7 +281,6 @@ const T =
         if (qq && n.name.toLowerCase().indexOf(qq) < 0) ok = false;
         if (cc && n.cat !== cc) ok = false;
         if (fType === 'ui' && !n.ui) ok = false; if (fType === 'backend' && n.ui) ok = false;
-        if (fCov === '1' && !n.url) ok = false; if (fCov === '0' && n.url) ok = false;
         g.classList.toggle('dim', !ok); g.parentNode.style.pointerEvents = ok ? '' : 'none';
       });
       var vis = {}; DATA.nodes.forEach(function (n) { if (!nodeEls[n.id].classList.contains('dim')) vis[n.id] = 1; });
@@ -295,7 +289,6 @@ const T =
     q.addEventListener('input', function () { pinnedId = null; tip.hidden = true; applyFilter(); });
     catSel.addEventListener('change', function () { pinnedId = null; tip.hidden = true; applyFilter(); });
     Array.prototype.forEach.call(document.querySelectorAll('#cm-type button'), function (b) { b.onclick = function () { fType = b.dataset.v; Array.prototype.forEach.call(document.querySelectorAll('#cm-type button'), function (x) { x.classList.toggle('on', x === b); }); applyFilter(); }; });
-    Array.prototype.forEach.call(document.querySelectorAll('#cm-cov button'), function (b) { b.onclick = function () { fCov = b.dataset.v; Array.prototype.forEach.call(document.querySelectorAll('#cm-cov button'), function (x) { x.classList.toggle('on', x === b); }); applyFilter(); }; });
     requestAnimationFrame(fit);
     // Refit on window resize, and when the graph view is un-hidden by the
     // page-level tab switch (which dispatches a synthetic resize) so the
