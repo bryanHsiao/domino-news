@@ -62,6 +62,16 @@ content — MUST go through this research chain. No exceptions for
    a key fact, flag it to the user rather than inventing. "Per
    general LotusScript knowledge" or "in my experience" without
    a citation is not acceptable in this site's articles.
+5. **Leave a research-trail sidecar.** Every technical article
+   records its source-verification trail in
+   `research/<YYYY-MM-DD>-<slug>.md` — which NotebookLM notebook +
+   the exact question asked + whether it answered, every WebFetch
+   URL (verified non-404) + what it yielded, the contradiction
+   check, and a verification checklist. Internal audit only (not
+   published). See [`research/README.md`](research/README.md). This
+   exists so "was this article actually source-verified?" always has
+   an answer — added 2026-08 after a NotebookLM outage left that
+   question unanswerable for a stretch of posts.
 
 Applies regardless of: language (LS / Java / SSJS), article type
 (class deep-dive / feature walk-through / news piece with
@@ -520,6 +530,7 @@ prompt instructions, but we haven't done it yet.
 | **SSJS / XPages** (JavaScript and XPages reference) | `https://notebooklm.google.com/notebook/0c88f101-7fb7-4ce2-b35e-37a87d3547ec` | [`data/notebook-urls-ssjs.txt`](data/notebook-urls-ssjs.txt) |
 | **Domino REST API** (DRAPI on opensource.hcltechsw.com) | `https://notebooklm.google.com/notebook/ba6f849d-c040-4f59-ad51-7fb145065180` | [`data/notebook-urls-rest-api.txt`](data/notebook-urls-rest-api.txt) |
 | **Domino Admin** (server config / NRPC / certstore / Security) | `https://notebooklm.google.com/notebook/2e2b3510-0581-443a-9b82-10796613108d` | [`data/notebook-urls-admin.txt`](data/notebook-urls-admin.txt) |
+| **Formula language / @functions** (@formula, @Functions/@Commands reference) | `https://notebook.google.com/notebook/88a36413-60b3-4884-b78d-726de79832d6` | [`data/notebook-urls-formula.txt`](data/notebook-urls-formula.txt) |
 | **Domino IQ general** (overview) | `https://notebooklm.google.com/notebook/71d1e172-...` | (existing) |
 | **Domino IQ RAG** (RAG-specific deep dive) | `https://notebooklm.google.com/notebook/79906842-...` | (existing) |
 
