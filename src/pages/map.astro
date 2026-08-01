@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ClassMap from '../components/ClassMap.astro';
+import ClassDirectory from '../components/ClassDirectory.astro';
 import { useTranslations, localizedPath } from '../i18n/ui';
 import { buildCoverageReport } from '../../scripts/lib/coverage';
 import rawData from '../../data/ls_classes.json';
@@ -26,13 +27,57 @@ const nodes = raw.nodes.map((n) => {
     x: n.x,
     y: n.y,
     url: slug ? localizedPath(lang, `/posts/${slug}`) : null,
+    desc: (n.description || '').trim(),
   };
 });
-const links = raw.links.map((l) => ({ s: l.source, t: l.target }));
+const links = raw.links.map((l) => ({
+  s: l.source,
+  t: l.target,
+  via: (l.members || []).map((m: any) => m.name),
+}));
 const data = { nodes, links };
 const coveredCount = nodes.filter((n) => n.url).length;
 ---
 
-<BaseLayout lang={lang} title={t('nav.map')} description="HCL Domino LotusScript 類別的相依關係互動地圖 —— 節點是類別、連線代表回傳關係，已寫過的類別可直接點進文章。">
-  <ClassMap lang={lang} data={data} coveredCount={coveredCount} total={nodes.length} />
+<BaseLayout lang={lang} title={t('nav.map')} description="HCL Domino LotusScript 類別的互動地圖 —— 依類別分區的可讀卡片，點卡片看它回傳什麼、被誰回傳；已寫過的類別可直接點進文章。也可切換成關係散點圖。">
+  <div class="map-tabs" role="tablist" aria-label="檢視切換">
+    <button class="map-tab on" data-view="dir" type="button">分類檢視</button>
+    <button class="map-tab" data-view="graph" type="button">關係圖</button>
+  </div>
+
+  <div id="mv-dir">
+    <ClassDirectory lang={lang} data={data} coveredCount={coveredCount} total={nodes.length} />
+  </div>
+  <div id="mv-graph" hidden>
+    <ClassMap lang={lang} data={data} coveredCount={coveredCount} total={nodes.length} />
+  </div>
 </BaseLayout>
+
+<style>
+  .map-tabs { display: inline-flex; gap: 4px; margin: 0 0 18px; padding: 4px; border: 1px solid var(--color-border, #e2e0d8); border-radius: 11px; background: var(--color-surface, #fff); }
+  .map-tab { font: inherit; font-size: 0.88rem; font-weight: 600; padding: 7px 16px; border: 0; border-radius: 8px; background: transparent; color: var(--color-text-muted, #6b6b6b); cursor: pointer; }
+  .map-tab.on { background: var(--color-brand-dark, #0a0a0a); color: #fff; }
+  #mv-dir[hidden], #mv-graph[hidden] { display: none; }
+</style>
+
+<script is:inline>
+  (function () {
+    function initMapTabs() {
+      var tabs = document.querySelectorAll('.map-tab');
+      if (!tabs.length) return;
+      var dir = document.getElementById('mv-dir'), graph = document.getElementById('mv-graph');
+      if (!dir || !graph || dir.dataset.tabsReady) return;
+      dir.dataset.tabsReady = '1';
+      Array.prototype.forEach.call(tabs, function (b) {
+        b.addEventListener('click', function () {
+          Array.prototype.forEach.call(tabs, function (x) { x.classList.toggle('on', x === b); });
+          var v = b.dataset.view;
+          dir.hidden = v !== 'dir';
+          graph.hidden = v !== 'graph';
+          if (v === 'graph') window.dispatchEvent(new Event('resize'));
+        });
+      });
+    }
+    document.addEventListener('astro:page-load', initMapTabs);
+  })();
+</script>

@@ -36,7 +36,7 @@ const T =
         ui: 'UI',
         cov: '已涵蓋',
         uncov: '未涵蓋',
-        fit: '符合',
+        fit: '全覽',
         legBe: '後端（已涵蓋）',
         legUi: 'UI（已涵蓋）',
         legUn: '未涵蓋',
@@ -297,6 +297,11 @@ const T =
     Array.prototype.forEach.call(document.querySelectorAll('#cm-type button'), function (b) { b.onclick = function () { fType = b.dataset.v; Array.prototype.forEach.call(document.querySelectorAll('#cm-type button'), function (x) { x.classList.toggle('on', x === b); }); applyFilter(); }; });
     Array.prototype.forEach.call(document.querySelectorAll('#cm-cov button'), function (b) { b.onclick = function () { fCov = b.dataset.v; Array.prototype.forEach.call(document.querySelectorAll('#cm-cov button'), function (x) { x.classList.toggle('on', x === b); }); applyFilter(); }; });
     requestAnimationFrame(fit);
+    // Refit on window resize, and when the graph view is un-hidden by the
+    // page-level tab switch (which dispatches a synthetic resize) so the
+    // initial fit — computed while the container was display:none, i.e. zero
+    // width — gets recomputed against the now-visible stage.
+    window.addEventListener('resize', function () { if (svg.getBoundingClientRect().width > 0) fit(); });
     if (hint && hint.dataset.hint && window.matchMedia && window.matchMedia('(max-width:640px)').matches) { hint.textContent = hint.dataset.hint; setTimeout(function () { hint.style.opacity = '0'; }, 4200); }
   }
   document.addEventListener('astro:page-load', initClassMap);

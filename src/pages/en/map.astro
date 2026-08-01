@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ClassMap from '../../components/ClassMap.astro';
+import ClassDirectory from '../../components/ClassDirectory.astro';
 import { useTranslations, localizedPath } from '../../i18n/ui';
 import { buildCoverageReport } from '../../../scripts/lib/coverage';
 import rawData from '../../../data/ls_classes.json';
@@ -26,13 +27,57 @@ const nodes = raw.nodes.map((n) => {
     x: n.x,
     y: n.y,
     url: slug ? localizedPath(lang, `/posts/${slug}`) : null,
+    desc: (n.description || '').trim(),
   };
 });
-const links = raw.links.map((l) => ({ s: l.source, t: l.target }));
+const links = raw.links.map((l) => ({
+  s: l.source,
+  t: l.target,
+  via: (l.members || []).map((m: any) => m.name),
+}));
 const data = { nodes, links };
 const coveredCount = nodes.filter((n) => n.url).length;
 ---
 
-<BaseLayout lang={lang} title={t('nav.map')} description="An interactive dependency map of HCL Domino's LotusScript classes — nodes are classes, edges are return-type relationships, and every class already written about links to its article.">
-  <ClassMap lang={lang} data={data} coveredCount={coveredCount} total={nodes.length} />
+<BaseLayout lang={lang} title={t('nav.map')} description="An interactive map of HCL Domino's LotusScript classes — readable cards grouped by category; click a card to see what it returns and what returns it, and open the article for classes already written. Toggle to a relationship graph too.">
+  <div class="map-tabs" role="tablist" aria-label="view switch">
+    <button class="map-tab on" data-view="dir" type="button">Grouped</button>
+    <button class="map-tab" data-view="graph" type="button">Graph</button>
+  </div>
+
+  <div id="mv-dir">
+    <ClassDirectory lang={lang} data={data} coveredCount={coveredCount} total={nodes.length} />
+  </div>
+  <div id="mv-graph" hidden>
+    <ClassMap lang={lang} data={data} coveredCount={coveredCount} total={nodes.length} />
+  </div>
 </BaseLayout>
+
+<style>
+  .map-tabs { display: inline-flex; gap: 4px; margin: 0 0 18px; padding: 4px; border: 1px solid var(--color-border, #e2e0d8); border-radius: 11px; background: var(--color-surface, #fff); }
+  .map-tab { font: inherit; font-size: 0.88rem; font-weight: 600; padding: 7px 16px; border: 0; border-radius: 8px; background: transparent; color: var(--color-text-muted, #6b6b6b); cursor: pointer; }
+  .map-tab.on { background: var(--color-brand-dark, #0a0a0a); color: #fff; }
+  #mv-dir[hidden], #mv-graph[hidden] { display: none; }
+</style>
+
+<script is:inline>
+  (function () {
+    function initMapTabs() {
+      var tabs = document.querySelectorAll('.map-tab');
+      if (!tabs.length) return;
+      var dir = document.getElementById('mv-dir'), graph = document.getElementById('mv-graph');
+      if (!dir || !graph || dir.dataset.tabsReady) return;
+      dir.dataset.tabsReady = '1';
+      Array.prototype.forEach.call(tabs, function (b) {
+        b.addEventListener('click', function () {
+          Array.prototype.forEach.call(tabs, function (x) { x.classList.toggle('on', x === b); });
+          var v = b.dataset.view;
+          dir.hidden = v !== 'dir';
+          graph.hidden = v !== 'graph';
+          if (v === 'graph') window.dispatchEvent(new Event('resize'));
+        });
+      });
+    }
+    document.addEventListener('astro:page-load', initMapTabs);
+  })();
+</script>

@@ -1,0 +1,355 @@
+---
+import type { Lang } from '../i18n/ui';
+
+interface DirNode {
+  id: string;
+  name: string;
+  cat: string;
+  ui: boolean;
+  key: boolean;
+  url: string | null;
+  desc?: string;
+}
+interface DirData {
+  nodes: DirNode[];
+  links: { s: string; t: string; via?: string[] }[];
+}
+interface Props {
+  lang: Lang;
+  data: DirData;
+  coveredCount: number;
+  total: number;
+}
+const { lang, data, coveredCount, total } = Astro.props;
+
+// Category order: core containment spine first, then the rest by size desc.
+const CORE = ['Session', 'Database', 'View', 'Document', 'Item', 'Rich Text'];
+const counts: Record<string, number> = {};
+data.nodes.forEach((n) => (counts[n.cat] = (counts[n.cat] || 0) + 1));
+const cats = Object.keys(counts).sort((a, b) => {
+  const ai = CORE.indexOf(a), bi = CORE.indexOf(b);
+  if (ai !== -1 || bi !== -1) {
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  }
+  return counts[b] - counts[a];
+});
+const payload = { nodes: data.nodes, links: data.links, cats, counts };
+
+const T =
+  lang === 'zh-TW'
+    ? {
+        title: 'HCL Domino 類別地圖',
+        badge: '已寫成文章',
+        sub: 'LotusScript 類別依類別分區。點任一張卡片，看它',
+        subEm: '回傳什麼、被誰回傳',
+        sub2: '——已寫過的類別可直接開文章。',
+        search: '搜尋類別… (例如 Database、RichText)',
+        all: '全部', backend: '後端', ui: 'UI',
+        legBe: '後端類別', legUi: 'UI 類別', legUn: '尚未寫', legKey: '核心類別',
+        rel: ' 個關聯', notWritten: '尚未寫', open: '開啟文章 →',
+        read: '讀這篇文章 →', none: '尚未寫成文章',
+        outLbl: '回傳這些類別', incLbl: '由這些類別回傳',
+        noOut: '沒有回傳其他類別', noInc: '沒有被其他類別回傳',
+        uiTag: ' · UI', keyTag: ' · 核心', close: '關閉',
+        empty: '沒有符合的類別。',
+      }
+    : {
+        title: 'HCL Domino Class Map',
+        badge: 'written up',
+        sub: 'LotusScript classes grouped by category. Click a card to see what it ',
+        subEm: 'returns and what returns it',
+        sub2: ' — classes already written link to their article.',
+        search: 'Search classes… (e.g. Database, RichText)',
+        all: 'All', backend: 'Backend', ui: 'UI',
+        legBe: 'Backend', legUi: 'UI', legUn: 'Not yet written', legKey: 'Key class',
+        rel: ' links', notWritten: 'not yet', open: 'Open article →',
+        read: 'Read the article →', none: 'Not written yet',
+        outLbl: 'Returns these classes', incLbl: 'Returned by these classes',
+        noOut: 'Returns no other class', noInc: 'Not returned by any class',
+        uiTag: ' · UI', keyTag: ' · key', close: 'Close',
+        empty: 'No matching classes.',
+      };
+---
+
+<div
+  id="cd"
+  data-rel={T.rel}
+  data-notwritten={T.notWritten}
+  data-open={T.open}
+  data-read={T.read}
+  data-none={T.none}
+  data-outlbl={T.outLbl}
+  data-inclbl={T.incLbl}
+  data-noout={T.noOut}
+  data-noinc={T.noInc}
+  data-uitag={T.uiTag}
+  data-keytag={T.keyTag}
+  data-close={T.close}
+>
+  <header class="cd-head">
+    <div class="cd-title-row">
+      <h1>{T.title}</h1>
+      <span class="cd-badge"><b>{coveredCount}</b> / {total} {T.badge}</span>
+    </div>
+    <p class="cd-sub">{T.sub}<em>{T.subEm}</em>{T.sub2}</p>
+  </header>
+
+  <div class="cd-controls">
+    <div class="cd-search">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M21 21l-4.3-4.3M11 19a8 8 0 100-16 8 8 0 000 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+      <input id="cd-q" type="search" placeholder={T.search} autocomplete="off" />
+    </div>
+    <div class="cd-seg" id="cd-type" role="group">
+      <button data-type="all" class="cd-on">{T.all}</button>
+      <button data-type="be">{T.backend}</button>
+      <button data-type="ui">{T.ui}</button>
+    </div>
+  </div>
+
+  <div class="cd-legend">
+    <span><i class="sw be"></i>{T.legBe}</span>
+    <span><i class="sw ui"></i>{T.legUi}</span>
+    <span><i class="sw un"></i>{T.legUn}</span>
+    <span><i class="sw key"></i>{T.legKey}</span>
+  </div>
+
+  <nav id="cd-jump" class="cd-jump" aria-label="category jump"></nav>
+
+  <div class="cd-body">
+    <div id="cd-grid" class="cd-grid"></div>
+    <aside id="cd-panel" class="cd-panel" hidden></aside>
+  </div>
+
+  <div id="cd-empty" class="cd-empty" hidden>{T.empty}</div>
+</div>
+
+<script type="application/json" id="cd-data" set:html={JSON.stringify(payload)}></script>
+
+<style is:global>
+  #cd {
+    --bg: #faf8f4; --card: #fff; --ink: #1a1a1e; --mut: #6b6b74; --line: #e6e2d9;
+    --be: #2f6fed; --be-bg: #eaf1fe; --ui: #7c5cdf; --ui-bg: #f1ecfd;
+    --gold: #e0a01e; --gold-bg: #fdf4dd; --un: #a7a29a;
+    --shadow: 0 1px 2px rgba(20,20,25,.05), 0 4px 16px rgba(20,20,25,.06);
+    color: var(--ink); line-height: 1.5;
+  }
+  #cd * { box-sizing: border-box; }
+  #cd :where(h1, h2, p) { margin: 0; }
+  #cd .cd-head { padding: 4px 0 6px; }
+  #cd .cd-title-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  #cd .cd-head h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.01em; }
+  #cd .cd-badge { font-size: .82rem; color: var(--mut); background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; font-variant-numeric: tabular-nums; }
+  #cd .cd-badge b { color: var(--gold); font-weight: 750; }
+  #cd .cd-sub { color: var(--mut); font-size: .92rem; margin-top: 6px; max-width: 62ch; }
+  #cd .cd-sub em { font-style: normal; color: var(--ink); font-weight: 600; }
+
+  #cd .cd-controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin: 16px 0 10px; }
+  #cd .cd-search { position: relative; flex: 1; min-width: 220px; max-width: 420px; display: flex; align-items: center; }
+  #cd .cd-search svg { position: absolute; left: 12px; color: var(--mut); }
+  #cd .cd-search input { width: 100%; padding: 9px 12px 9px 36px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--ink); font: inherit; font-size: .92rem; outline: none; }
+  #cd .cd-search input:focus { border-color: var(--be); box-shadow: 0 0 0 3px var(--be-bg); }
+  #cd .cd-seg { display: inline-flex; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; }
+  #cd .cd-seg button { border: 0; background: transparent; color: var(--mut); font: inherit; font-size: .86rem; font-weight: 600; padding: 6px 14px; border-radius: 7px; cursor: pointer; }
+  #cd .cd-seg button.cd-on { background: var(--ink); color: var(--card); }
+
+  #cd .cd-legend { display: flex; gap: 18px; flex-wrap: wrap; color: var(--mut); font-size: .8rem; margin: 2px 0 16px; }
+  #cd .cd-legend span { display: inline-flex; align-items: center; gap: 7px; }
+  #cd .cd-legend .sw { width: 20px; height: 13px; border-radius: 4px; display: inline-block; }
+  #cd .sw.be { background: var(--be-bg); border: 1.5px solid var(--be); }
+  #cd .sw.ui { background: var(--ui-bg); border: 1.5px solid var(--ui); }
+  #cd .sw.un { background: transparent; border: 1.5px dashed var(--un); }
+  #cd .sw.key { background: transparent; border: 1.5px solid var(--gold); box-shadow: 0 0 0 1.5px var(--gold-bg); }
+
+  #cd .cd-jump { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 20px; }
+  #cd .cd-jump button { border: 1px solid var(--line); background: var(--card); color: var(--mut); border-radius: 999px; padding: 4px 11px; font: inherit; font-size: .78rem; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+  #cd .cd-jump button:hover { border-color: var(--gold); color: var(--ink); }
+  #cd .cd-jump button .jn { font-variant-numeric: tabular-nums; font-size: .68rem; color: var(--mut); opacity: .8; }
+
+  #cd .cd-body { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
+  #cd.has-panel .cd-body { grid-template-columns: minmax(0, 1fr) 340px; }
+
+  #cd .cd-cat { margin-bottom: 26px; scroll-margin-top: 84px; }
+  #cd .cd-cat h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--mut); font-weight: 700; margin-bottom: 11px; display: flex; align-items: center; gap: 9px; }
+  #cd .cd-cat h2 .n { font-variant-numeric: tabular-nums; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; font-size: .72rem; color: var(--mut); letter-spacing: 0; }
+  #cd .cd-cat h2::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  #cd .cd-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); gap: 9px; }
+
+  #cd .cdn { position: relative; text-align: left; border: 1.5px solid var(--line); background: var(--card); border-radius: 11px; padding: 10px 12px; cursor: pointer; font: inherit; color: inherit; display: flex; flex-direction: column; gap: 3px; transition: transform .09s, box-shadow .12s, border-color .12s, opacity .12s; }
+  #cd .cdn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+  #cd .cdn .nm { font-weight: 640; font-size: .9rem; letter-spacing: -.01em; line-height: 1.25; word-break: break-word; }
+  #cd .cdn .mt { font-size: .72rem; color: var(--mut); }
+  #cd .cdn.be { background: var(--be-bg); border-color: color-mix(in srgb, var(--be) 30%, transparent); }
+  #cd .cdn.be .nm { color: var(--be); }
+  #cd .cdn.ui { background: var(--ui-bg); border-color: color-mix(in srgb, var(--ui) 30%, transparent); }
+  #cd .cdn.ui .nm { color: var(--ui); }
+  #cd .cdn.un { background: transparent; border-style: dashed; border-color: var(--un); }
+  #cd .cdn.un .nm { color: var(--mut); }
+  #cd .cdn.key { box-shadow: inset 0 0 0 1.5px var(--gold); }
+  #cd .cdn .star { position: absolute; top: 7px; right: 9px; color: var(--gold); font-size: .7rem; }
+  #cd .cdn .go { font-size: .68rem; color: var(--mut); margin-top: 1px; }
+
+  #cd.has-sel .cdn { opacity: .32; }
+  #cd.has-sel .cdn.rel { opacity: 1; }
+  #cd.has-sel .cdn.sel { opacity: 1; transform: translateY(-1px); box-shadow: 0 0 0 2px var(--gold), var(--shadow); }
+  #cd .cdn.rel { outline: 2px solid color-mix(in srgb, var(--gold) 55%, transparent); outline-offset: 1px; }
+
+  #cd .cd-panel { position: sticky; top: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 16px 18px; box-shadow: var(--shadow); max-height: calc(100vh - 40px); overflow: auto; }
+  #cd .cd-panel .pclose { float: right; border: 0; background: transparent; color: var(--mut); cursor: pointer; font-size: 1.1rem; line-height: 1; padding: 2px 4px; }
+  #cd .cd-panel h3 { font-size: 1.12rem; font-weight: 720; letter-spacing: -.01em; margin: 0 0 2px; }
+  #cd .cd-panel .pcat { font-size: .76rem; color: var(--mut); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+  #cd .cd-panel .pdesc { font-size: .85rem; color: var(--mut); line-height: 1.5; margin: 0 0 12px; }
+  #cd .cd-panel .plink { display: inline-flex; align-items: center; gap: 6px; font-size: .86rem; font-weight: 640; color: var(--be); text-decoration: none; background: var(--be-bg); padding: 7px 12px; border-radius: 9px; margin-bottom: 4px; }
+  #cd .cd-panel .plink.none { color: var(--mut); background: var(--bg); font-weight: 500; cursor: default; }
+  #cd .cd-panel .prel { margin-top: 14px; }
+  #cd .cd-panel .prel .lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--mut); font-weight: 700; margin-bottom: 7px; }
+  #cd .cd-panel .prel .lbl .ar { color: var(--gold); }
+  #cd .cd-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  #cd .cd-chip { border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 5px 9px; font: inherit; font-size: .8rem; cursor: pointer; color: var(--ink); display: inline-flex; flex-direction: column; gap: 1px; text-align: left; max-width: 100%; }
+  #cd .cd-chip:hover { border-color: var(--gold); }
+  #cd .cd-chip .via { font-size: .66rem; color: var(--mut); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+  #cd .cd-chip.un { border-style: dashed; color: var(--mut); }
+  #cd .cd-none { font-size: .8rem; color: var(--mut); font-style: italic; }
+  #cd .cd-empty { color: var(--mut); text-align: center; padding: 40px; font-size: .95rem; }
+
+  @media (max-width: 720px) {
+    #cd.has-panel .cd-body { grid-template-columns: 1fr; }
+    #cd .cd-cards { grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); }
+    #cd .cd-panel { position: fixed; left: 0; right: 0; bottom: 0; top: auto; border-radius: 16px 16px 0 0; z-index: 20; max-height: 74vh; box-shadow: 0 -8px 30px rgba(0,0,0,.25); }
+    #cd.has-sel .cdn { opacity: .5; }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #cd { --bg: #0e0e11; --card: #191920; --ink: #ececf0; --mut: #9a9aa6; --line: #2a2a33; --be: #6ea0ff; --be-bg: #16233f; --ui: #b49bff; --ui-bg: #241a3d; --gold: #f0c04b; --gold-bg: #33280d; --un: #6a6a74; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.35); }
+  }
+  :root[data-theme='dark'] #cd { --bg: #0e0e11; --card: #191920; --ink: #ececf0; --mut: #9a9aa6; --line: #2a2a33; --be: #6ea0ff; --be-bg: #16233f; --ui: #b49bff; --ui-bg: #241a3d; --gold: #f0c04b; --gold-bg: #33280d; --un: #6a6a74; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.35); }
+  :root[data-theme='light'] #cd { --bg: #faf8f4; --card: #fff; --ink: #1a1a1e; --mut: #6b6b74; --line: #e6e2d9; --be: #2f6fed; --be-bg: #eaf1fe; --ui: #7c5cdf; --ui-bg: #f1ecfd; --gold: #e0a01e; --gold-bg: #fdf4dd; --un: #a7a29a; --shadow: 0 1px 2px rgba(20,20,25,.05), 0 4px 16px rgba(20,20,25,.06); }
+</style>
+
+<script>
+  function initClassDir() {
+    var root = document.getElementById('cd');
+    var dataEl = document.getElementById('cd-data');
+    if (!root || !dataEl || root.dataset.ready) return;
+    root.dataset.ready = '1';
+    var D = JSON.parse(dataEl.textContent || '{"nodes":[],"links":[],"cats":[],"counts":{}}');
+    var byId = {}; D.nodes.forEach(function (n) { byId[n.id] = n; });
+    var out = {}, inc = {};
+    D.links.forEach(function (l) {
+      (out[l.s] = out[l.s] || []).push({ id: l.t, via: l.via || [] });
+      (inc[l.t] = inc[l.t] || []).push({ id: l.s, via: l.via || [] });
+    });
+
+    var grid = document.getElementById('cd-grid');
+    var panel = document.getElementById('cd-panel');
+    var empty = document.getElementById('cd-empty');
+    var q = document.getElementById('cd-q');
+    var jump = document.getElementById('cd-jump');
+    var cardEls = {}, sectionEls = {};
+    var typeF = 'all';
+    var DS = root.dataset;
+
+    D.cats.forEach(function (cat) {
+      var sec = document.createElement('section');
+      sec.className = 'cd-cat';
+      var h = document.createElement('h2');
+      h.innerHTML = esc(cat) + ' <span class="n">' + D.counts[cat] + '</span>';
+      sec.appendChild(h);
+      var wrap = document.createElement('div'); wrap.className = 'cd-cards';
+      D.nodes.filter(function (n) { return n.cat === cat; }).forEach(function (n) {
+        var relN = ((out[n.id] || []).length) + ((inc[n.id] || []).length);
+        var b = document.createElement('button');
+        b.className = 'cdn ' + (n.url ? (n.ui ? 'ui' : 'be') : 'un') + (n.key ? ' key' : '');
+        b.dataset.id = n.id;
+        b.innerHTML =
+          (n.key ? '<span class="star">★</span>' : '') +
+          '<span class="nm">' + esc(n.name) + '</span>' +
+          '<span class="mt">' + (n.url ? (relN + DS.rel) : DS.notwritten) + '</span>' +
+          (n.url ? '<span class="go">' + esc(DS.open) + '</span>' : '');
+        b.addEventListener('click', function () { select(n.id); });
+        cardEls[n.id] = b;
+        wrap.appendChild(b);
+      });
+      sec.appendChild(wrap);
+      grid.appendChild(sec);
+      sectionEls[cat] = sec;
+
+      var jb = document.createElement('button');
+      jb.innerHTML = esc(cat) + ' <span class="jn">' + D.counts[cat] + '</span>';
+      jb.addEventListener('click', function () { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      jump.appendChild(jb);
+    });
+
+    function select(id) {
+      root.classList.add('has-sel', 'has-panel');
+      var n = byId[id];
+      Object.keys(cardEls).forEach(function (k) { cardEls[k].classList.remove('sel', 'rel'); });
+      cardEls[id].classList.add('sel');
+      var o = out[id] || [], i = inc[id] || [];
+      var relIds = {};
+      o.concat(i).forEach(function (x) { relIds[x.id] = 1; });
+      Object.keys(relIds).forEach(function (rid) { if (cardEls[rid]) cardEls[rid].classList.add('rel'); });
+      panel.hidden = false;
+      panel.innerHTML = renderPanel(n, o, i);
+      Array.prototype.forEach.call(panel.querySelectorAll('[data-jump]'), function (c) {
+        c.addEventListener('click', function () { select(c.dataset.jump); });
+      });
+      var pc = panel.querySelector('.pclose');
+      if (pc) pc.addEventListener('click', clearSel);
+      if (window.innerWidth > 720) cardEls[id].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+    function clearSel() {
+      root.classList.remove('has-sel', 'has-panel');
+      panel.hidden = true; panel.innerHTML = '';
+      Object.keys(cardEls).forEach(function (k) { cardEls[k].classList.remove('sel', 'rel'); });
+    }
+    function chip(x) {
+      var t = byId[x.id]; if (!t) return '';
+      var via = x.via && x.via.length ? '<span class="via">' + esc(x.via.slice(0, 2).join(', ')) + (x.via.length > 2 ? ' …' : '') + '</span>' : '';
+      return '<button class="cd-chip' + (t.url ? '' : ' un') + '" data-jump="' + esc(x.id) + '"><span>' + esc(t.name) + '</span>' + via + '</button>';
+    }
+    function renderPanel(n, o, i) {
+      var head = '<button class="pclose" aria-label="' + esc(DS.close) + '">×</button>' +
+        '<h3>' + esc(n.name) + '</h3>' +
+        '<div class="pcat">' + esc(n.cat) + (n.ui ? DS.uitag : '') + (n.key ? DS.keytag : '') + '</div>';
+      var desc = n.desc ? '<p class="pdesc">' + esc(n.desc) + '</p>' : '';
+      var link = n.url
+        ? '<a class="plink" href="' + esc(n.url) + '">' + esc(DS.read) + '</a>'
+        : '<span class="plink none">' + esc(DS.none) + '</span>';
+      var outH = o.length ? '<div class="cd-chips">' + o.map(chip).join('') + '</div>' : '<div class="cd-none">' + esc(DS.noout) + '</div>';
+      var incH = i.length ? '<div class="cd-chips">' + i.map(chip).join('') + '</div>' : '<div class="cd-none">' + esc(DS.noinc) + '</div>';
+      return head + desc + link +
+        '<div class="prel"><div class="lbl"><span class="ar">↓</span> ' + esc(DS.outlbl) + ' (' + o.length + ')</div>' + outH + '</div>' +
+        '<div class="prel"><div class="lbl"><span class="ar">↑</span> ' + esc(DS.inclbl) + ' (' + i.length + ')</div>' + incH + '</div>';
+    }
+
+    function applyFilter() {
+      var term = (q.value || '').trim().toLowerCase();
+      var anyShown = false;
+      D.cats.forEach(function (cat) {
+        var sec = sectionEls[cat], shown = 0;
+        D.nodes.filter(function (n) { return n.cat === cat; }).forEach(function (n) {
+          var el = cardEls[n.id];
+          var okType = typeF === 'all' || (typeF === 'ui' ? n.ui : !n.ui);
+          var okTerm = !term || n.name.toLowerCase().indexOf(term) >= 0 || n.id.toLowerCase().indexOf(term) >= 0;
+          var show = okType && okTerm;
+          el.style.display = show ? '' : 'none';
+          if (show) { shown++; anyShown = true; }
+        });
+        if (sec) sec.style.display = shown ? '' : 'none';
+      });
+      empty.hidden = anyShown;
+    }
+    q.addEventListener('input', applyFilter);
+    Array.prototype.forEach.call(document.querySelectorAll('#cd-type button'), function (b) {
+      b.onclick = function () {
+        Array.prototype.forEach.call(document.querySelectorAll('#cd-type button'), function (x) { x.classList.toggle('cd-on', x === b); });
+        typeF = b.dataset.type; applyFilter();
+      };
+    });
+
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  }
+  document.addEventListener('astro:page-load', initClassDir);
+</script>
