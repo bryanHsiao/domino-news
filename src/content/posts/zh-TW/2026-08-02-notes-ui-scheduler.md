@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATETIME_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-ui-scheduler.webp"
+coverStyle: "pencil-sketch"
 ---
 
 你在做一張自訂的會議或會議室預約表單，上面有一個內嵌排程控制項 —— 那個你把與會者跟會議室丟進去、看大家 free/busy 攤開來的忙碌時間格。控制項自己會渲染；問題是你怎麼用程式驅動它：預填必要與會者、把會議室當資源加進去、刷新那格、再讀回使用者最後選定的時段好存會議。這正是 [`NotesUIScheduler`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUISCHEDULER_CLASS.html) 的用途。

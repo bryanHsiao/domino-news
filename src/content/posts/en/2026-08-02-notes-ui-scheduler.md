@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATETIME_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-ui-scheduler.webp"
+coverStyle: "pencil-sketch"
 ---
 
 You're building a custom meeting or room-booking form, and it has an embedded scheduler — the busy-time grid where you drop in attendees and a room and see everyone's free/busy laid out. The control renders itself; the question is how you drive it from code: prefill the required attendees, add the room as a resource, refresh the grid, and read back the slot the user settled on so you can save the meeting. That's exactly what [`NotesUIScheduler`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUISCHEDULER_CLASS.html) is for.
