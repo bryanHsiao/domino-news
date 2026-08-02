@@ -47,7 +47,6 @@ const baseNoSlash = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '');
 const curPath = (stripped || '/').replace(/\/$/, '') || '/';
 const navActive = {
   posts: (curPath === '/posts' || curPath.startsWith('/posts/')) && curPath !== '/posts/welcome',
-  tags: curPath === '/tags' || curPath.startsWith('/tags/'),
   search: curPath === '/search',
   map: curPath === '/map',
   about: curPath === '/posts/welcome',
@@ -125,7 +124,6 @@ const otherLangUrl = new URL(localizedPath(otherLang, otherLangPath), Astro.site
         </a>
         <nav>
           <a href={localizedPath(lang, '/posts')} aria-current={navActive.posts ? 'page' : undefined}>{t('nav.posts')}</a>
-          <a href={localizedPath(lang, '/tags')} aria-current={navActive.tags ? 'page' : undefined}>{t('nav.tags')}</a>
           <a href={localizedPath(lang, '/search')} aria-current={navActive.search ? 'page' : undefined}>{t('nav.search')}</a>
           <a href={localizedPath(lang, '/map')} aria-current={navActive.map ? 'page' : undefined}>{t('nav.map')}</a>
           <a href={localizedPath(lang, '/posts/welcome')} aria-current={navActive.about ? 'page' : undefined}>{t('nav.about')}</a>
