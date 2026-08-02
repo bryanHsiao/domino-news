@@ -854,6 +854,19 @@ article.post hr {
     gap: 0.5rem 0.9rem;
     font-size: 0.9rem;
   }
+  /* On phones the English nav labels fill the row and pushed the 文/A
+     language toggle onto a lone second line. Lift the toggle up next to
+     the brand (top-right, out of the nav flow) so the header reads
+     [brand … 文/A] / [nav links] with no orphaned toggle row — in both
+     languages. */
+  header.site-header .inner {
+    position: relative;
+  }
+  header.site-header .lang-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
   article.post {
     border-radius: 0;
     border-left: none;
