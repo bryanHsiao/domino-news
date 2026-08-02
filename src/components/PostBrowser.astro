@@ -38,6 +38,7 @@ const groups: { axis: TagAxis; label: string; tags: { tag: string; count: number
 
 const total = posts.length;
 const allLabel = lang === 'zh-TW' ? '全部' : 'All';
+const countLabel = lang === 'zh-TW' ? `目前累積 ${total} 篇` : `${total} articles`;
 const filterWord = lang === 'zh-TW' ? '篩選' : 'Filter';
 const clearWord = lang === 'zh-TW' ? '清除篩選' : 'Clear';
 const postsWord = lang === 'zh-TW' ? '篇' : '';
@@ -46,11 +47,12 @@ const postsWord = lang === 'zh-TW' ? '篇' : '';
 <div class="post-browser" data-total={total}>
   <div class="pb-head">
     <h1>{title}</h1>
+    <span class="pb-count">{countLabel}</span>
   </div>
 
   <div class="pb-filters">
     <button class="pb-chip pb-all is-active" data-tag="__all" data-count={total} type="button">
-      {allLabel} <span class="pb-n">{total}</span>
+      {allLabel}
     </button>
     {
       groups.map((g) => (
@@ -97,6 +99,15 @@ const postsWord = lang === 'zh-TW' ? '篇' : '';
     margin-bottom: 1rem;
   }
   .pb-head h1 { margin: 0; }
+  .pb-count {
+    display: inline-block;
+    background: var(--color-brand-dark, #0a0a0a);
+    color: var(--color-brand, #fbbf24);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+  }
   .pb-filters {
     display: flex; flex-direction: column; gap: 0.75rem;
     margin-bottom: 1rem; align-items: flex-start;
