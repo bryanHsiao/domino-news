@@ -5,6 +5,8 @@
 
 🌐 **Site**: https://bryanhsiao.github.io/domino-news/
 
+🔬 **How it's made**: https://bryanhsiao.github.io/domino-news/how-its-made/ — 每篇技術文的研究軌跡（AI 研究 + 獨立模型審查的內容管線）。從 `research/<date>-<slug>.md` sidecar 自動渲染；與讀者內容分開的方法論展示。
+
 ---
 
 ## 站長維護手冊（記得要做的事）

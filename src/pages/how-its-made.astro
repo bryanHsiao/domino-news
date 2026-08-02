@@ -1,0 +1,268 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+
+const BASE = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const RES = path.join(process.cwd(), 'research');
+
+function parseFront(txt: string) {
+  const m = txt.match(/^---\n([\s\S]*?)\n---/);
+  const fm: Record<string, any> = {};
+  if (!m) return fm;
+  for (const line of m[1].split('\n')) {
+    const mm = line.match(/^([a-zA-Z_]+):\s*(.*)$/);
+    if (!mm) continue;
+    let k = mm[1];
+    let v: any = mm[2].trim();
+    if (v.startsWith('"')) v = v.replace(/^"(.*)"\s*$/, '$1');
+    else v = v.replace(/\s+#.*$/, '').trim();
+    if (typeof v === 'string' && v.startsWith('[') && v.endsWith(']'))
+      v = v.slice(1, -1).split(',').map((s: string) => s.trim()).filter(Boolean);
+    fm[k] = v;
+  }
+  return fm;
+}
+function section(txt: string, heading: string) {
+  const re = new RegExp('##\\s*' + heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^\\n]*\\n([\\s\\S]*?)(?=\\n##\\s|$)');
+  const m = txt.match(re);
+  return m ? m[1].trim() : '';
+}
+
+const files = fs.existsSync(RES)
+  ? fs.readdirSync(RES).filter((f) => /^\d{4}-\d{2}-\d{2}-.*\.md$/.test(f)).sort()
+  : [];
+
+const posts = files.map((f) => {
+  const txt = fs.readFileSync(path.join(RES, f), 'utf8');
+  const fm = parseFront(txt);
+  const checklist = section(txt, '查證 checklist').split('\n')
+    .filter((l) => /^\s*-\s*\[/.test(l))
+    .map((l) => ({ done: /\[x\]/i.test(l), text: l.replace(/^\s*-\s*\[[ x]\]\s*/i, '').replace(/\*\*/g, '').trim() }));
+  const changelog = section(txt, '異動日誌').split('\n')
+    .filter((l) => /^\s*-\s/.test(l)).map((l) => l.replace(/^\s*-\s*/, '').trim());
+  const nbOk = /NotebookLM\s*[—-]\s*✅/.test(txt);
+  const nbPolluted = /NotebookLM\s*[—-]\s*⚠️/.test(txt);
+  const urls = Array.from(new Set(txt.match(/H_[A-Z0-9_]+\.html/g) || []));
+  const verdict = /VERDICT：?PASS/.test(txt) ? 'PASS' : (/VERDICT：?ISSUES/.test(txt) ? 'ISSUES' : '');
+  return { fm, checklist, changelog, nbOk, nbPolluted, urls, verdict };
+});
+
+// Hand-curated highlights — the punchline: what independent review actually caught.
+const catches = [
+  { slug: 'java-dql-dominoquery', title: 'DQL from Java', find: '<code>TimeoutSec</code> → <code>TimeoutSecs</code>', note: 'DominoQuery 用複數 TimeoutSecs、QueryResultsProcessor 卻用單數 setTimeoutSec——同篇兩個類別命名不一致，reviewer 抓到寫作用錯的那個。' },
+  { slug: 'java-recycle-memory', title: 'recycle()', find: '逐字引用爭議字 <code>knowlege</code>／<code>knowledge</code>', note: '兩次 WebFetch 對同一句原文抓到不同拼字。依「矛盾即紅旗」把逐字引用收斂成兩邊一致的那句。' },
+  { slug: 'java-dql-dominoquery', title: 'DQL from Java', find: '<code>session.createDominoQuery()</code> 的假設', note: '寫作模型原本假設從 Session 取得；WebFetch 當場擋下——其實在 Database 上。' },
+  { slug: 'java-recycle-memory', title: 'recycle()', find: '漏掉的「遠端 IIOP 可跨執行緒」例外', note: '規則 2「同執行緒」被寫成絕對；官方文件另有遠端例外，reviewer 補上。' },
+  { slug: 'java-agent-anatomy', title: 'Java agent 骨架', find: '把非逐字敘述當引號呈現', note: 'getUnprocessedDocuments 的描述被當逐字引用，但不在該類別頁；去引號改 paraphrase。' },
+];
+const pipeline = [
+  { n: 1, t: '選題', d: 'coverage 缺口 / 系列 arc' },
+  { n: 2, t: 'NotebookLM 研究', d: '對應領域 notebook，source-grounded' },
+  { n: 3, t: 'WebFetch 交叉驗證', d: '官方 HCL 文件、逐一驗證非 404' },
+  { n: 4, t: '雙語寫作', d: 'zh-TW + en，各自自然行文' },
+  { n: 5, t: 'humanizer', d: '去 AI 痕跡，24 特徵 + 5 維評分' },
+  { n: 6, t: '獨立審查', d: '不同模型 fact-check，抓錯才過' },
+  { n: 7, t: 'ship', d: '_pending → cron 自動 promote' },
+];
+
+const esc = (s: any) => String(s == null ? '' : s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' } as Record<string, string>)[c]);
+const verdictBadge = (v: string) => v === 'PASS'
+  ? '<span class="badge pass">獨立審查 · PASS</span>'
+  : v === 'ISSUES' ? '<span class="badge fixed">獨立審查 · ISSUES → 已修</span>' : '<span class="badge">獨立審查</span>';
+const nbBadge = (p: any) => p.nbOk ? '<span class="chip ok">NotebookLM ✓</span>'
+  : p.nbPolluted ? '<span class="chip warn">NotebookLM ⚠ 污染→WebFetch</span>' : '';
+
+function card(p: any) {
+  const fm = p.fm;
+  const tags = Array.isArray(fm.tags) ? fm.tags : (fm.tags ? [fm.tags] : []);
+  return `<article class="prov" id="prov-${esc(fm.slug)}">
+    <header class="prov-h">
+      <div class="prov-date">${esc(fm.pubDate)} · <span class="stat ${fm.status === 'shipped' ? 'ship' : 'stage'}">${esc(fm.status)}</span></div>
+      <h3>${esc(fm.title)}</h3>
+      <div class="tagrow">${tags.map((t: string) => `<span class="tag">${esc(t)}</span>`).join('')} <span class="lang">${Array.isArray(fm.lang) ? fm.lang.join(' · ') : esc(fm.lang)}</span></div>
+    </header>
+    <div class="grid3">
+      <div class="fld"><span class="lbl">誰提出</span><span class="val">${esc(fm.requester)}</span></div>
+      <div class="fld"><span class="lbl">寫作模型</span><span class="val mono author">${esc(fm.author_model)}</span></div>
+      <div class="fld"><span class="lbl">審查模型</span><span class="val mono review">${esc(fm.review_model)}</span></div>
+    </div>
+    <div class="badges">${nbBadge(p)} ${verdictBadge(p.verdict)}</div>
+    ${fm.review_result ? `<p class="review-res">${esc(fm.review_result)}</p>` : ''}
+    <div class="cols">
+      <div class="col"><div class="ch">研究來源</div><ul class="src">${p.urls.slice(0, 6).map((u: string) => `<li class="mono">${esc(u)}</li>`).join('') || '<li class="mut">—</li>'}</ul></div>
+      <div class="col"><div class="ch">查證 checklist</div><ul class="chk">${p.checklist.map((c: any) => `<li class="${c.done ? 'y' : 'n'}">${c.done ? '✓' : '○'} ${esc(c.text)}</li>`).join('')}</ul></div>
+    </div>
+    <div class="ch">異動日誌</div>
+    <ol class="timeline">${p.changelog.map((c: string) => `<li>${esc(c)}</li>`).join('')}</ol>
+  </article>`;
+}
+
+const articleCards = posts.map((p) => {
+  const fm = p.fm;
+  return `<a class="acard" href="#prov-${esc(fm.slug)}">
+    <div class="acard-top"><span class="acard-date">${esc(fm.pubDate)}</span>${verdictBadge(p.verdict)}</div>
+    <div class="acard-title">${esc(fm.title)}</div>
+    <div class="acard-models"><span class="mono author">${esc(fm.author_model)}</span> <span class="arrow">→</span> <span class="mono review">${esc(String(fm.review_model).replace(/\s*\(.*\)/, ''))}</span></div>
+  </a>`;
+}).join('');
+
+const bodyHtml = `<div id="him">
+  <a class="backlink" href="${BASE}/">← HCL Domino 日報</a>
+  <header class="hero">
+    <div class="kicker">HOW IT'S MADE</div>
+    <h1>每篇技術文，都留下可稽核的研究軌跡</h1>
+    <p class="lede">HCL Domino 日報的技術深入文，走一條「AI 研究 + 獨立模型審查」的內容管線。每一篇都留一份 provenance 記錄：誰提出、用什麼模型寫、由哪個<em>獨立</em>模型審、查了哪些來源、審查抓到什麼。這頁把它攤開給你看。</p>
+    <div class="hero-stat">
+      <div><b>${posts.length}</b><span>篇留痕</span></div>
+      <div><b>2</b><span>模型分工（寫作／審查）</span></div>
+      <div><b>${catches.length}</b><span>獨立審查抓到的問題</span></div>
+    </div>
+  </header>
+  <section class="sec">
+    <h2 class="sh">內容管線</h2>
+    <div class="pipe">${pipeline.map((s, i) => `<div class="step${s.n === 6 ? ' hi' : ''}"><span class="sn">${s.n}</span><span class="st">${esc(s.t)}</span><span class="sd">${esc(s.d)}</span></div>${i < pipeline.length - 1 ? '<span class="sep">→</span>' : ''}`).join('')}</div>
+    <p class="pipe-note">第 6 步是關鍵：審查由<strong>不同於寫作的模型</strong>（Sonnet）重新抓官方文件、逐條 fact-check，<strong>抓到錯才算過</strong>——不是同一個模型自己說 OK。</p>
+  </section>
+  <section class="sec">
+    <h2 class="sh">獨立審查抓到什麼</h2>
+    <p class="sub">審查不是演戲。以下都是不同模型在 ship 前實際擋下的問題：</p>
+    <div class="catches">${catches.map((c) => `<a class="catch" href="#prov-${esc(c.slug)}"><div class="catch-find">${c.find}</div><div class="catch-note">${esc(c.note)}</div><div class="catch-src">${esc(c.title)} →</div></a>`).join('')}</div>
+  </section>
+  <section class="sec">
+    <h2 class="sh">每篇的研究軌跡</h2>
+    <div class="acards">${articleCards}</div>
+  </section>
+  <section class="sec provs">${posts.map(card).join('')}</section>
+  <footer class="him-foot">從 <code>research/&lt;date&gt;-&lt;slug&gt;.md</code> 自動渲染 · 與部落格讀者內容分開的方法論展示 · <a href="${BASE}/">回 HCL Domino 日報 →</a></footer>
+</div>`;
+---
+
+<!doctype html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>How It's Made — 研究軌跡 · HCL Domino 日報</title>
+    <meta name="description" content="HCL Domino 日報的內容管線：AI 研究 + 獨立模型審查，每篇留下可稽核的研究軌跡。" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%AC%3C/text%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <Fragment set:html={bodyHtml} />
+    <style is:global>
+      html { scroll-behavior: smooth; }
+      body { margin: 0; background: #f7f8fa; }
+      @media (prefers-color-scheme: dark) { body { background: #111318; } }
+      :root[data-theme="dark"] body { background: #111318; }
+      :root[data-theme="light"] body { background: #f7f8fa; }
+      #him{
+        --bg:#f7f8fa; --panel:#fff; --ink:#181a1f; --mut:#6a6f7a; --line:#e6e8ed;
+        --author:#c2410c; --author-bg:#fdf0e8; --review:#0d9488; --review-bg:#e6f5f3;
+        --research:#2563eb; --pass:#15803d; --pass-bg:#e7f5ec; --fixed:#b45309; --fixed-bg:#fdf2df;
+        --warn:#b45309; --gold:#d99000;
+        color:var(--ink); max-width:1080px; margin:0 auto; padding:0 20px 72px;
+        font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+        line-height:1.6;
+      }
+      #him *{box-sizing:border-box}
+      #him .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.86em}
+      #him .backlink{display:inline-block;margin:20px 0 0;color:var(--review);text-decoration:none;font-size:.85rem;font-weight:600}
+      #him .backlink:hover{text-decoration:underline}
+      #him .hero{padding:22px 0 34px;border-bottom:1px solid var(--line)}
+      #him .kicker{font-family:ui-monospace,monospace;font-size:.74rem;letter-spacing:.28em;color:var(--review);font-weight:700;margin-bottom:14px}
+      #him .hero h1{font-size:2.35rem;line-height:1.15;letter-spacing:-.02em;font-weight:800;margin:0 0 16px;max-width:20ch;text-wrap:balance}
+      #him .lede{font-size:1.06rem;color:var(--mut);max-width:64ch;margin:0}
+      #him .lede em{font-style:normal;color:var(--review);font-weight:700}
+      #him .hero-stat{display:flex;gap:38px;margin-top:28px;flex-wrap:wrap}
+      #him .hero-stat div{display:flex;flex-direction:column}
+      #him .hero-stat b{font-size:2rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+      #him .hero-stat span{font-size:.82rem;color:var(--mut);margin-top:4px}
+      #him .sec{padding:40px 0;border-bottom:1px solid var(--line)}
+      #him .sh{font-size:1.35rem;font-weight:750;letter-spacing:-.01em;margin:0 0 6px}
+      #him .sub{color:var(--mut);margin:0 0 20px;font-size:.95rem}
+      #him .pipe{display:flex;align-items:stretch;gap:6px;flex-wrap:wrap;margin:18px 0 14px}
+      #him .step{flex:1 1 116px;min-width:116px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:12px 12px 13px;display:flex;flex-direction:column;gap:3px}
+      #him .step.hi{border-color:var(--review);box-shadow:0 0 0 2px var(--review-bg)}
+      #him .step .sn{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--mut)}
+      #him .step .st{font-weight:700;font-size:.94rem}
+      #him .step.hi .st{color:var(--review)}
+      #him .step .sd{font-size:.75rem;color:var(--mut);line-height:1.35}
+      #him .sep{align-self:center;color:var(--line);font-weight:700}
+      #him .pipe-note{font-size:.92rem;color:var(--mut);margin:6px 0 0}
+      #him .pipe-note strong{color:var(--ink)}
+      #him .catches{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+      #him .catch{display:block;text-decoration:none;color:inherit;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--fixed);border-radius:10px;padding:14px 15px;transition:transform .1s,box-shadow .12s}
+      #him .catch:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(20,20,25,.08)}
+      #him .catch-find{font-size:.98rem;font-weight:650;margin-bottom:5px}
+      #him .catch-find code{font-family:ui-monospace,monospace;font-size:.86em;background:var(--fixed-bg);color:var(--fixed);padding:1px 6px;border-radius:5px}
+      #him .catch-note{font-size:.85rem;color:var(--mut);line-height:1.5}
+      #him .catch-src{font-size:.76rem;color:var(--review);font-weight:600;margin-top:9px}
+      #him .acards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+      #him .acard{display:block;text-decoration:none;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px;transition:transform .1s,box-shadow .12s,border-color .12s}
+      #him .acard:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(20,20,25,.08);border-color:var(--review)}
+      #him .acard-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
+      #him .acard-date{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--mut)}
+      #him .acard-title{font-weight:700;font-size:.98rem;line-height:1.3;letter-spacing:-.01em}
+      #him .acard-models{margin-top:10px;font-size:.76rem;color:var(--mut)}
+      #him .acard-models .arrow{color:var(--review)}
+      #him .provs{border-bottom:0}
+      #him .prov{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 22px 20px;margin-bottom:20px;scroll-margin-top:20px}
+      #him .prov-h{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:16px}
+      #him .prov-date{font-family:ui-monospace,monospace;font-size:.75rem;color:var(--mut);margin-bottom:6px}
+      #him .stat{padding:1px 8px;border-radius:999px;font-size:.72rem;font-weight:700}
+      #him .stat.stage{background:var(--fixed-bg);color:var(--fixed)}
+      #him .stat.ship{background:var(--pass-bg);color:var(--pass)}
+      #him .prov-h h3{font-size:1.2rem;font-weight:750;letter-spacing:-.01em;margin:0 0 9px}
+      #him .tagrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+      #him .tag{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:1px 9px;font-size:.72rem;color:var(--mut)}
+      #him .lang{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--mut);margin-left:2px}
+      #him .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+      #him .fld{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+      #him .fld .lbl{font-size:.72rem;color:var(--mut);letter-spacing:.02em}
+      #him .fld .val{font-weight:650;font-size:.9rem}
+      #him .val.author{color:var(--author)}
+      #him .val.review{color:var(--review)}
+      #him .badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+      #him .badge{font-size:.76rem;font-weight:700;padding:3px 11px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+      #him .badge.pass{background:var(--pass-bg);color:var(--pass);border-color:transparent}
+      #him .badge.fixed{background:var(--fixed-bg);color:var(--fixed);border-color:transparent}
+      #him .chip{font-size:.74rem;font-weight:600;padding:3px 10px;border-radius:999px}
+      #him .chip.ok{background:var(--review-bg);color:var(--review)}
+      #him .chip.warn{background:var(--fixed-bg);color:var(--fixed)}
+      #him .review-res{font-size:.85rem;color:var(--mut);margin:0 0 16px;padding:8px 12px;background:var(--bg);border-radius:8px}
+      #him .cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:14px}
+      #him .ch{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);font-weight:700;margin:4px 0 8px}
+      #him .src{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px}
+      #him .src li{font-size:.78rem;color:var(--research);word-break:break-all}
+      #him .src .mut{color:var(--mut)}
+      #him .chk{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px}
+      #him .chk li{font-size:.83rem;line-height:1.45}
+      #him .chk li.y{color:var(--ink)}
+      #him .chk li.n{color:var(--mut)}
+      #him .timeline{list-style:none;padding:0;margin:6px 0 0}
+      #him .timeline li{position:relative;padding:0 0 11px 20px;font-size:.83rem;color:var(--mut);border-left:2px solid var(--line);margin-left:4px}
+      #him .timeline li::before{content:"";position:absolute;left:-5px;top:6px;width:8px;height:8px;border-radius:50%;background:var(--review)}
+      #him .timeline li:last-child{padding-bottom:0}
+      #him .him-foot{margin-top:34px;font-size:.8rem;color:var(--mut);text-align:center}
+      #him .him-foot code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--bg);padding:1px 6px;border-radius:5px}
+      #him .him-foot a{color:var(--review);text-decoration:none}
+      @media (max-width:720px){
+        #him .hero h1{font-size:1.8rem}
+        #him .grid3{grid-template-columns:1fr}
+        #him .cols{grid-template-columns:1fr;gap:14px}
+        #him .hero-stat{gap:24px}
+      }
+      @media (prefers-color-scheme:dark){
+        #him{--bg:#111318;--panel:#181b21;--ink:#e9eaee;--mut:#9498a3;--line:#282c34;
+          --author:#fb923c;--author-bg:#2a1a0f;--review:#2dd4bf;--review-bg:#0f2a27;
+          --research:#7ba7ff;--pass:#4ade80;--pass-bg:#122a1a;--fixed:#fbbf24;--fixed-bg:#2a2110;--warn:#fbbf24;}
+      }
+      :root[data-theme="dark"] #him{--bg:#111318;--panel:#181b21;--ink:#e9eaee;--mut:#9498a3;--line:#282c34;
+        --author:#fb923c;--author-bg:#2a1a0f;--review:#2dd4bf;--review-bg:#0f2a27;
+        --research:#7ba7ff;--pass:#4ade80;--pass-bg:#122a1a;--fixed:#fbbf24;--fixed-bg:#2a2110;--warn:#fbbf24;}
+      :root[data-theme="light"] #him{--bg:#f7f8fa;--panel:#fff;--ink:#181a1f;--mut:#6a6f7a;--line:#e6e8ed;
+        --author:#c2410c;--author-bg:#fdf0e8;--review:#0d9488;--review-bg:#e6f5f3;
+        --research:#2563eb;--pass:#15803d;--pass-bg:#e7f5ec;--fixed:#b45309;--fixed-bg:#fdf2df;--warn:#b45309;}
+    </style>
+  </body>
+</html>
