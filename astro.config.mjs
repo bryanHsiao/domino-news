@@ -106,6 +106,16 @@ export default defineConfig({
     expressiveCode({
       themes: ['github-light', 'github-dark'],
       useDarkModeMediaQuery: true,
+      // Shiki has no `lotusscript` grammar, so ```lotusscript blocks fell back
+      // to unhighlighted plain text across every LS article. Alias it to `vb`
+      // (Visual Basic) — LotusScript is Basic-family, so the keyword/string/
+      // comment highlighting lands close. Keeps the ```lotusscript fences the
+      // whole site already uses.
+      shiki: {
+        langAlias: {
+          lotusscript: 'vb',
+        },
+      },
       styleOverrides: {
         borderRadius: '10px',
         borderColor: 'var(--color-border)',
