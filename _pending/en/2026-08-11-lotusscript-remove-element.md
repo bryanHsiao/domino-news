@@ -144,4 +144,4 @@ Same task: SSJS leans on the Vector's ready-made `removeElementAt`, LS rebuilds 
 | **SSJS / XPages** | use `java.util.Vector`'s `removeElementAt(index)` / `removeElement(value)` — it runs on Java, so an ordered container is right there |
 | **LotusScript** | no Vector, no `removeElementAt`; depending on the case use a `List`'s `Erase(tag)` (by key), an array rebuild (by index), or `Evaluate` + `@Replace` (multi-value field) |
 
-The SSJS side — "using `java.util.Vector` directly to work with multi-value fields" — gets its own companion piece (the full Vector API against a multi-value field in XPages). The core contrast is that table: **SSJS borrows Java's container; LS uses its own toolbox.** For how these classes connect, see the [class map](/domino-news/en/map).
+The SSJS side — "using `java.util.Vector` directly to work with multi-value fields" — has its own [companion piece](/domino-news/en/posts/ssjs-vector-multivalue) (the full Vector API against a multi-value field in XPages). The core contrast is that table: **SSJS borrows Java's container; LS uses its own toolbox.** For how these classes connect, see the [class map](/domino-news/en/map).

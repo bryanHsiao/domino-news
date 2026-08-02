@@ -144,4 +144,4 @@ If n > 0 Then ReDim Preserve kept(0 To n - 1) Else Erase kept
 | **SSJS / XPages** | 直接用 `java.util.Vector` 的 `removeElementAt(index)` / `removeElement(value)`——底層是 Java，有現成的有序容器 |
 | **LotusScript** | 沒有 Vector 也沒有 `removeElementAt`；依情境用 `List` 的 `Erase(tag)`（依 key）、陣列重建（依 index）、或 `Evaluate` + `@Replace`（多值欄位） |
 
-SSJS 端「直接用 `java.util.Vector` 操作多值」會另有一篇專講（XPages 裡怎麼把多值欄位接上 Vector 的完整 API）。核心對照就是這張表：**SSJS 借的是 Java 的容器、LS 用的是自己的一套**。想看這些類別彼此怎麼串，可參考站上的[類別地圖](/domino-news/map)。
+SSJS 端「直接用 `java.util.Vector` 操作多值」有[對照的專篇](/domino-news/posts/ssjs-vector-multivalue)（XPages 裡怎麼把多值欄位接上 Vector 的完整 API）。核心對照就是這張表：**SSJS 借的是 Java 的容器、LS 用的是自己的一套**。想看這些類別彼此怎麼串，可參考站上的[類別地圖](/domino-news/map)。
