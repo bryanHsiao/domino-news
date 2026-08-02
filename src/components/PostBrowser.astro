@@ -44,16 +44,13 @@ const clearWord = lang === 'zh-TW' ? '清除篩選' : 'Clear';
 const postsWord = lang === 'zh-TW' ? '篇' : '';
 ---
 
-<div class="post-browser" data-total={total}>
+<div class="post-browser" data-total={total} data-all-label={allLabel}>
   <div class="pb-head">
     <h1>{title}</h1>
     <span class="pb-count">{countLabel}</span>
   </div>
 
   <div class="pb-filters">
-    <button class="pb-chip pb-all is-active" data-tag="__all" data-count={total} type="button">
-      {allLabel}
-    </button>
     {
       groups.map((g) => (
         <div class="pb-group">
@@ -127,7 +124,6 @@ const postsWord = lang === 'zh-TW' ? '篇' : '';
   }
   .pb-chip:hover { filter: brightness(0.95); }
   .pb-chip.is-active { outline: 2px solid var(--color-brand-dark, #0a0a0a); outline-offset: 1px; }
-  .pb-chip.pb-all { align-self: flex-start; background: var(--color-brand-dark, #0a0a0a); color: #fff; font-weight: 700; }
   .pb-n { opacity: 0.6; font-weight: 400; }
   .pb-status {
     display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
@@ -165,7 +161,7 @@ const postsWord = lang === 'zh-TW' ? '篇' : '';
     const clearBtn = root.querySelector('[data-pb-clear]') as HTMLElement | null;
     const emptyEl = root.querySelector('[data-pb-empty]') as HTMLElement | null;
     const total = Number(root.getAttribute('data-total') || cards.length);
-    const allLabel = chips.find((c) => c.dataset.tag === '__all')?.textContent?.trim().split(/\s+/)[0] || 'All';
+    const allLabel = root.getAttribute('data-all-label') || 'All';
 
     function apply(tag: string) {
       const isAll = tag === '__all';
