@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/11.0.1/basic/h_setup_agent_security_steps.html"
 relatedJava: ["Session", "Agent"]
 relatedSsjs: ["session"]
+cover: "/covers/agent-run-as-identity.webp"
+coverStyle: "watercolor"
 ---
 
 Your agent works flawlessly. You run it from your workstation, it walks the view, updates the documents, done. Then you deploy it — as a web agent, or a scheduled agent signed by a service account — and it breaks. `Error 201: Operation is disallowed in this session`, or worse: it runs without error but silently processes zero documents. Nothing in the code changed. What changed is *who the agent is running as*.

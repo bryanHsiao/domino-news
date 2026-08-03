@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/11.0.1/basic/h_setup_agent_security_steps.html"
 relatedJava: ["Session", "Agent"]
 relatedSsjs: ["session"]
+cover: "/covers/agent-run-as-identity.webp"
+coverStyle: "watercolor"
 ---
 
 你的 agent 跑得完美無瑕。你從工作站執行它，它走過 view、更新文件、收工。然後你部署它 —— 成一個 web agent，或一個用服務帳號簽的排程 agent —— 它就壞了。`Error 201: Operation is disallowed in this session`，或者更糟：它沒報錯，卻靜靜地處理了零份文件。程式一個字都沒改。變的是*這個 agent 用誰的身分在跑*。
