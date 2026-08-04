@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/dblookup-cache-64k.webp"
+coverStyle: "low-poly-3d"
 ---
 
 Someone updates a keyword document, reloads the form, and the dropdown still shows the old value — for the rest of their session. Or a keyword list that used to be complete quietly stops a few thousand entries in, and nobody notices until a record can't be found. These aren't random Domino flakiness. They're two documented behaviours of [`@DbLookup`](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_DBLOOKUP_NOTES_DATABASES.html) and [`@DbColumn`](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_DBCOLUMN_NOTES_DATABASES.html), and both hide in parts of the call most formulas ignore: the cache keyword, and the 64KB ceiling.

@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESVIEW_CLASS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/dblookup-cache-64k.webp"
+coverStyle: "low-poly-3d"
 ---
 
 有人改了一份 keyword 文件、重載表單，下拉卻還是顯示舊值 —— 而且是整個 session 都這樣。或者一份本來完整的 keyword 清單長到幾千筆就悄悄停住，沒人注意，直到某筆紀錄找不到。這些不是 Domino 隨機的不穩。它們是 [`@DbLookup`](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_DBLOOKUP_NOTES_DATABASES.html) 與 [`@DbColumn`](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_DBCOLUMN_NOTES_DATABASES.html) 兩個有文件記載的行為，兩個都藏在多數公式忽略的地方：cache 關鍵字，與 64KB 上限。
