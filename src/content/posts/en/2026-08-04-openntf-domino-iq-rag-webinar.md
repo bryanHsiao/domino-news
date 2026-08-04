@@ -15,6 +15,8 @@ sources:
     url: "https://www.openntf.org/blogs/openntf.nsf/"
   - title: "Domino IQ RAG support — HCL Domino Admin Help"
     url: "https://help.hcl-software.com/domino/14.5.1/admin/conf_iq_rag_support.html"
+cover: "/covers/openntf-domino-iq-rag-webinar.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 [OpenNTF](https://www.openntf.org/blogs/openntf.nsf/) posted a webinar worth watching in early August: HCL's Brian Arnold — 32 years on Notes/Domino, with a direct line to the Domino IQ engineers — spent nearly 90 minutes taking Domino IQ's RAG from concept all the way to live applications.

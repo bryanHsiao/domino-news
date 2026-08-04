@@ -15,6 +15,8 @@ sources:
     url: "https://www.openntf.org/blogs/openntf.nsf/"
   - title: "Domino IQ RAG support — HCL Domino Admin Help"
     url: "https://help.hcl-software.com/domino/14.5.1/admin/conf_iq_rag_support.html"
+cover: "/covers/openntf-domino-iq-rag-webinar.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 [OpenNTF](https://www.openntf.org/blogs/openntf.nsf/) 8 月初上架了一場很值得看的 webinar：HCL 的 Brian Arnold（做 Notes/Domino 剛滿 32 年、直接對接 Domino IQ 工程團隊）花了近 90 分鐘，把 Domino IQ 的 RAG 從概念一路示範到實際 app。
