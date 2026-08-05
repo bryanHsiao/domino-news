@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-08-04 · Posts scanned: 108 · Classes catalogued: 97*
+*Generated: 2026-08-05 · Posts scanned: 110 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,8 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [lotusscript-list-datatype](https://bryanhsiao.github.io/domino-news/posts/lotusscript-list-datatype/) | — | — | — |
+| [openntf-domino-iq-rag-webinar](https://bryanhsiao.github.io/domino-news/posts/openntf-domino-iq-rag-webinar/) | — | — | — |
 | [dblookup-cache-64k](https://bryanhsiao.github.io/domino-news/posts/dblookup-cache-64k/) | `NotesView` | — | — |
 | [agent-run-as-identity](https://bryanhsiao.github.io/domino-news/posts/agent-run-as-identity/) | `NotesSession`, `NotesAgent` | `Session`, `Agent` | `session` |
 | [notes-ui-scheduler](https://bryanhsiao.github.io/domino-news/posts/notes-ui-scheduler/) | `NotesUIScheduler`, `NotesUIDocument`, `NotesDateTime` | — | — |
