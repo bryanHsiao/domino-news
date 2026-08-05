@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.0/basic/LSAZ_FORALL_STATEMENT.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/lotusscript-list-datatype.webp"
+coverStyle: "photoreal-3d"
 ---
 
 You need to count documents by category. Or dedup a list of names. Or build a lookup from a code to its label so you can resolve one without hitting a view each time. The Domino reflex is a pair of parallel arrays and a linear scan — `For i = 0 To UBound(keys)`, compare, maybe `Redim Preserve` — or a temporary categorized view you read back. Both work, and both are reinventing something LotusScript has shipped since the beginning and that almost nobody uses: the **List**.

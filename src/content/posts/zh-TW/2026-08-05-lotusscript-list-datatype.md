@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.0/basic/LSAZ_FORALL_STATEMENT.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/lotusscript-list-datatype.webp"
+coverStyle: "photoreal-3d"
 ---
 
 你要依分類數文件。或去重一串名字。或建一個「代碼 → 標籤」的查表、讓你解一個代碼時不用每次都打一個 view。Domino 的直覺是一對平行陣列加一個線性掃描 —— `For i = 0 To UBound(keys)`、比對、可能還 `Redim Preserve` —— 或一個讀回來的臨時分類 view。兩個都能動，而兩個都在重造一個 LotusScript 從一開始就內建、卻幾乎沒人用的東西：**List**。
