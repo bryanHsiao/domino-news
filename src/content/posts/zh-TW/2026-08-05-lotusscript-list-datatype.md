@@ -1,5 +1,5 @@
 ---
-title: "LotusScript 的 List：內建的雜湊表，卻人人用平行陣列重造一遍"
+title: "別再用平行陣列：LotusScript 內建 List 幾行搞定計數、去重、查表"
 description: "你要依分類統計文件、把一串名字去重、或建一張「代碼→標籤」對照表，好不用每次都開 view。Domino 開發者的直覺是兩條平行陣列加線性掃描，或臨時開個 view——但 LotusScript 老早就內建一個鍵值集合、卻幾乎沒人用：List。這篇實測筆記講它的鍵值存取、ForAll + ListTag 走訪、Erase，以及兩個雷：讀取要用 IsElement 守著、tag 大小寫跟著 Option Compare 跑。"
 pubDate: 2026-08-05T07:30:00+08:00
 lang: zh-TW
