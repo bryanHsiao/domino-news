@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EFFECTIVEUSERNAME_PROPERTY.html"
 relatedJava: ["Name"]
 relatedSsjs: ["Name"]
+cover: "/covers/notesname-formats.webp"
+coverStyle: "pencil-sketch"
 ---
 
 You write `If userName = session.EffectiveUserName Then` and it's never true — even though `userName` plainly holds the same person. Or you push a user's name into a document's Readers field and they still can't open the document. These look unrelated, but they're the same bug: a Notes name isn't one string. The same person has three text forms, and in both cases you compared — or stored — the wrong one.

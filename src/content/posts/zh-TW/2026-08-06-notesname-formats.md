@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EFFECTIVEUSERNAME_PROPERTY.html"
 relatedJava: ["Name"]
 relatedSsjs: ["Name"]
+cover: "/covers/notesname-formats.webp"
+coverStyle: "pencil-sketch"
 ---
 
 你寫 `If userName = session.EffectiveUserName Then`，它永遠不成立 —— 即使 `userName` 明明裝著同一個人。或者你把一個使用者的名字塞進文件的 Readers 欄位，他還是打不開那份文件。這兩件看起來無關，其實是同一個 bug：一個 Notes 名字不是單一字串。同一個人有三種文字形式，而這兩個情況裡，你比到、或存到了錯的那一種。
