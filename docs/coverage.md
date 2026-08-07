@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-08-06 · Posts scanned: 111 · Classes catalogued: 97*
+*Generated: 2026-08-07 · Posts scanned: 112 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [java-recycle-memory](https://bryanhsiao.github.io/domino-news/posts/java-recycle-memory/) | — | — | — |
 | [notesname-formats](https://bryanhsiao.github.io/domino-news/posts/notesname-formats/) | `NotesName`, `NotesSession` | `Name` | `Name` |
 | [lotusscript-list-datatype](https://bryanhsiao.github.io/domino-news/posts/lotusscript-list-datatype/) | — | — | — |
 | [openntf-domino-iq-rag-webinar](https://bryanhsiao.github.io/domino-news/posts/openntf-domino-iq-rag-webinar/) | — | — | — |
