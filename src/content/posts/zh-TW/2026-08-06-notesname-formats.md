@@ -1,5 +1,5 @@
 ---
-title: "同一個人，三個名字：為什麼比對 NotesName 會悄悄失敗"
+title: "為什麼同一個 Notes 使用者卻比對失敗？搞懂 NotesName 的三種名稱格式"
 description: "你拿一個名字去比 session.EffectiveUserName，永遠不相等——明明是同一個人。或者你把某個使用者寫進 Readers 欄位，他還是看不到文件。這兩個都是同一個根因：一個 Notes 名字有三種寫法（canonical、abbreviated、common），而你不小心比到、或存到了不同的兩種。這篇筆記講三種格式各是什麼、Notes 內部存的是哪一種，以及為什麼每次比名字前都該先用 NotesName 正規化。"
 pubDate: 2026-08-06T07:30:00+08:00
 lang: zh-TW

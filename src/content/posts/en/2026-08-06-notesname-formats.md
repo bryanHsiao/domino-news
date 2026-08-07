@@ -1,5 +1,5 @@
 ---
-title: "One Person, Three Names: the NotesName Formats That Make Your Comparison Silently Fail"
+title: "Why Does the Same Notes User Fail a Comparison? Understanding NotesName's Three Name Formats"
 description: "You compare a name to session.EffectiveUserName and it's never equal, even though it's obviously the same person. Or you write a user into a Readers field and they still can't see the document. Same root cause: a Notes name has three text forms — canonical, abbreviated, common — and you compared two different ones. A field report on NotesName: what each format is, which one Notes stores internally, and why every name comparison should normalise through NotesName first."
 pubDate: 2026-08-06T07:30:00+08:00
 lang: en

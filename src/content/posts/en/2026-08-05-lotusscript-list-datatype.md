@@ -1,5 +1,5 @@
 ---
-title: "Stop Using Parallel Arrays: LotusScript's Built-In List Does Counting, Dedup, and Lookups in a Few Lines"
+title: "Stop Hand-Rolling Parallel Arrays: LotusScript's List Is the Built-In HashMap for Counting, Dedup, and Lookups"
 description: "You need to count documents by category, dedup a set of names, or build a code-to-label lookup. The Domino reflex is two parallel arrays and a linear scan, or a throwaway view. But LotusScript has had a native keyed collection all along and almost nobody reaches for it: the List. A field report on the built-in associative array — its keyed access, ForAll + ListTag iteration, Erase, and the two gotchas (guarding reads with IsElement, and tag case sensitivity following Option Compare)."
 pubDate: 2026-08-05T07:30:00+08:00
 lang: en
