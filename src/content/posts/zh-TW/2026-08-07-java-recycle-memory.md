@@ -1,5 +1,5 @@
 ---
-title: "recycle():Java 版 Domino API 的手動記憶體管理"
+title: "LotusScript 改寫 Java 後記憶體爆掉？你可能忘了 recycle()"
 description: "同一段邏輯，LotusScript 跑一輩子都沒事，搬到 Java 版的 lotus.domino 卻會在幾萬份文件的迴圈裡把 agent 記憶體吃垮。原因是每個 Java 物件背後都連著一個垃圾回收看不到的後端 handle。這篇拆解機制、四條官方規則、迴圈洩漏樣式與安全寫法、NotesThread 的角色，以及 local 與遠端 session 的差異。"
 pubDate: 2026-08-07T07:30:00+08:00
 lang: zh-TW

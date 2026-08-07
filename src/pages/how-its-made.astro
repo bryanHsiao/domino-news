@@ -79,6 +79,15 @@ const titleChoices = [
     ],
   },
   {
+    slug: 'java-recycle-memory', piece: 'recycle() 記憶體', date: '2026-08-07',
+    candidates: [
+      { t: 'recycle()：Java 版 Domino API 的手動記憶體管理', angle: '概念', verdict: 'rejected', why: 'reference 式——清晰但平、沒鉤子（原標題）' },
+      { t: 'Java 有 GC，Domino 物件卻不歸它管：recycle() 手動記憶體管理', angle: '概念 hook', verdict: 'rejected', why: '點題準（全文 thesis），但沒點名受眾' },
+      { t: '為什麼長時間執行的 Java agent 會吃爆記憶體？recycle() 與手動回收', angle: '問題先行', verdict: 'rejected', why: '痛點清楚，但沒扣住「LS 搬 Java」的真實觸發場景' },
+      { t: 'LotusScript 改寫 Java 後記憶體爆掉？你可能忘了 recycle()', angle: '問題先行 · 受眾特定', verdict: 'picked', why: '使用者提出，贏過上面四個生成候選：點名受眾（LS→Java）+ 確切痛點，與內文框架吻合' },
+    ],
+  },
+  {
     slug: 'notesname-formats', piece: 'NotesName 格式', date: '2026-08-06',
     candidates: [
       { t: '同一個人，三個名字：讓你的比較靜默失敗的 NotesName 格式', angle: '概念', verdict: 'rejected', why: '翻譯腔（「靜默失敗」），中文讀者看不懂在講什麼' },

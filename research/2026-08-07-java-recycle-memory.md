@@ -1,6 +1,6 @@
 ---
 slug: java-recycle-memory
-title: "recycle(): Manual Memory Management in the Java Domino API"
+title: "Rewrote LotusScript in Java and Memory Blew Up? You Forgot recycle()"
 lang: [zh-TW, en]
 pubDate: 2026-08-07
 status: staged                     # staged（_pending）→ shipped（promoted）
@@ -8,9 +8,9 @@ tags: [Java, Performance]
 requester: 使用者 (bryan)          # 誰提出這篇
 author_model: claude-opus-4-8      # 寫作模型
 review_model: claude-sonnet (獨立 reviewer subagent)  # 審查模型（獨立於寫作）
-review_result: "humanizer 45/50；獨立事實查核(Sonnet) ISSUES→已處置（見【獨立審查】）"
+review_result: "humanizer 45/50；獨立事實查核(Sonnet) ISSUES→已處置（見【獨立審查】）；標題優化 loop 補跑（見【標題候選】）"
 created: 2026-08-02
-updated: 2026-08-02
+updated: 2026-08-07
 ---
 
 # 研究軌跡 — java-recycle-memory
@@ -83,8 +83,22 @@ NotebookLM 與官方文件**一致，無矛盾**（機制、四條規則、簽�
 - [x] **獨立事實查核完成**（Sonnet reviewer，與寫作模型分開）——見上方【獨立審查】；
       抓到的問題已處置（引用收斂、規則 2 補例外、來源層級標注）。
 
+## 標題候選
+第一版標題（reference 式）**未過標題優化 loop**（該流程 2026-08-07 才建立）；
+當天補跑，候選如下：
+
+- [汰除] 概念：`recycle()：Java 版 Domino API 的手動記憶體管理` — 原標題。reference 式，清晰但平、沒鉤子。
+- [汰除] 概念 hook：`Java 有 GC，Domino 物件卻不歸它管：recycle() 手動記憶體管理` — 點題準（全文 thesis），但沒點名受眾。
+- [汰除] 問題先行：`為什麼長時間執行的 Java agent 會吃爆記憶體？recycle() 與手動回收` — 痛點清楚，但沒扣住「LS 搬 Java」這個真實觸發場景。
+- [汰除] 好處先行：`recycle()：讓長時間執行的 Java agent 不再漏記憶體` — 簡潔但少了場景。
+- [選定] 問題先行（受眾特定）：`LotusScript 改寫 Java 後記憶體爆掉？你可能忘了 recycle()`
+  — 由使用者提出。直接點名受眾（LS→Java 開發者）+ 確切痛點，且與內文
+  description 框架吻合（「同一段邏輯 LS 跑一輩子沒事、搬 Java 就爆」）。
+  en 鏡像：`Rewrote LotusScript in Java and Memory Blew Up? You Forgot recycle()`。
+
 ## 異動日誌
 - 2026-08-02 建檔、NotebookLM+WebFetch 研究、雙語草稿、sidecar（Opus 4.8）
 - 2026-08-02 進 `_pending`（Path A，pubDate 2026-08-07）
 - 2026-08-02 humanizer-zh-tw 正式 pass（雙語 45/50，Opus 4.8）
 - 2026-08-02 獨立事實查核（Sonnet reviewer）→ 修引用/規則 2/來源標注（Opus 4.8）
+- 2026-08-07 補跑標題優化 loop → 改標題（使用者拍板，LS→Java 痛點版，Opus 4.8）

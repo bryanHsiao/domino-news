@@ -1,5 +1,5 @@
 ---
-title: "recycle(): Manual Memory Management in the Java Domino API"
+title: "Rewrote LotusScript in Java and Memory Blew Up? You Forgot recycle()"
 description: "The same logic runs forever in LotusScript, then blows up the agent's memory the first time you loop it over tens of thousands of documents in Java. The reason is that every Java Domino object is backed by a native handle the garbage collector can't see. A field report on the mechanism, the four official rules, the loop leak pattern and its fix, NotesThread's role, and how local vs remote sessions change the cost."
 pubDate: 2026-08-07T07:30:00+08:00
 lang: en
