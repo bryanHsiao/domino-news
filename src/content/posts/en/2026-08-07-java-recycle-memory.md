@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_COMPILING_AND_RUNNING_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-recycle-memory.webp"
+coverStyle: "collage"
 ---
 
 You rewrite a LotusScript agent that's run for years into Java. The logic is identical: open a view, pull a batch of documents, read fields, compute, write back. In the test database — a few hundred documents — it runs fast and clean. On launch day the same code runs against the production database of fifty thousand documents, and partway through, the agent runs out of memory, the server console starts printing out-of-memory errors, and on a bad day it drags the whole server down with it.

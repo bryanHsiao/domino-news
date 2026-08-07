@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_COMPILING_AND_RUNNING_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-recycle-memory.webp"
+coverStyle: "collage"
 ---
 
 你把一段跑了很多年的 LotusScript agent 改寫成 Java。邏輯一模一樣：開一個 view、抓出一批文件、逐份讀欄位、算一算、寫回去。測試環境幾百份文件，跑得又快又乾淨。上線那天，同一支程式對著五萬份文件的正式資料庫跑——跑到一半，agent 記憶體爆掉，server 主控台開始噴 out of memory，嚴重時整台 server 被拖垮。
