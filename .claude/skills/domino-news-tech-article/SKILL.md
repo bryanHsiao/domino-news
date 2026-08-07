@@ -45,7 +45,7 @@ The output in either case is a bilingual `Tutorial`-tagged post.
 NEW ARTICLE                            SALVAGE
 1. select   → npm run coverage         0. assess  → which attempt is worth saving
 2. research → NotebookLM + WebFetch    2. research → re-confirm facts via NotebookLM
-3. write    → bilingual zh + en        3. rewrite → fix the validation reason
+3. write    → zh + en + 標題優化 loop   3. rewrite → fix the validation reason
 4. validate → npm run build            4. validate → npm run build
 5. ship     → see Step 5 — two paths   5. ship     → see Step 5 — two paths
 6. refresh  → auto (Path A) or manual  6. refresh  → manual + clean _drafts/
@@ -484,6 +484,48 @@ rewrite identifiers, HCL UI labels, or the citation-backed technical
 claims — those are load-bearing and stay verbatim. Target ≥ 45/50;
 if a section scores low, revise that section, don't gut the article.
 
+### 標題優化 — 別出第一版標題 (mandatory)
+
+Added 2026-08 after two shipped titles had to be re-done post-publish:
+the first-draft title was too clever / translationese, and better
+titles only emerged once alternatives were generated and compared.
+The fix is the same "generate candidates → judge → pick" pattern the
+independent-review step already uses — applied to the title.
+
+**Never ship the first title you wrote.** Before finalising
+frontmatter, run this loop:
+
+1. **List 3–5 candidates**, covering at least three angles:
+   - **問題先行** — lead with the reader's symptom as a question:
+     「為什麼同一個 Notes 使用者卻比對失敗?」
+   - **好處先行** — lead with the concrete payoff:
+     「幾行搞定計數、去重、查表」
+   - **概念 hook** — a memorable reframe: 「List 就是內建的 HashMap」
+2. **Score each against four criteria**:
+   - **清晰** — does the reader understand what it's about at a glance?
+   - **好搜** — does it match what a reader would actually type into
+     search? (a cold-arrival reader has no context — the title must
+     stand alone)
+   - **不過度承諾** — same discipline as the TYPE-tag precision rule in
+     CLAUDE.md: don't promise a hands-on tutorial / a benefit the body
+     doesn't deliver. A clever title that oversells is a defect.
+   - **好記** — is there a hook, or is it forgettable?
+3. **Judge, then let the user pick.** Either rank the candidates with
+   the independent reviewer model (the same Sonnet reviewer from the
+   review step), or present the top 2–3 to the user — **the user makes
+   the final call on the title**. Don't self-approve one silently.
+4. **zh decides first, en mirrors the framing** — the en title follows
+   the same angle as the chosen zh title (not a literal translation).
+
+A merged title is fine when two angles each win on a different axis
+(the 8/5 List piece merged a concept hook with a concrete-benefit tail).
+
+**Record the candidates in the sidecar** (`research/<date>-<slug>.md`,
+the 標題候選 section — see `research/README.md`). The `/how-its-made`
+page surfaces real title evolutions from that data, so the losing
+candidates and the reason each was cut are part of the audit trail,
+not throwaway.
+
 ---
 
 ## Step 4 — Frontmatter
@@ -492,8 +534,9 @@ Schema is in `src/content.config.ts`. The full shape:
 
 ```yaml
 ---
-title: "..."                            # Concrete; LS-class-driven posts
-                                        # often "<Class>: <one-line angle>"
+title: "..."                            # NOT your first draft — run the
+                                        # 標題優化 loop in Step 3 first
+                                        # (candidates → 4 criteria → user picks)
 description: "..."                      # 1-2 sentences. Used as og:description
                                         # and shown on the homepage card.
 pubDate: 2026-MM-DDT07:30:00+08:00      # UTC 23:30Z previous day —

@@ -62,7 +62,30 @@ const pipeline = [
   { n: 4, t: '雙語寫作', d: 'zh-TW + en，各自自然行文' },
   { n: 5, t: 'humanizer', d: '去 AI 痕跡，24 特徵 + 5 維評分' },
   { n: 6, t: '獨立審查', d: '不同模型 fact-check，抓錯才過' },
-  { n: 7, t: 'ship', d: '_pending → cron 自動 promote' },
+  { n: 7, t: '標題優化', d: '多角度候選、四準則評分、擇優' },
+  { n: 8, t: 'ship', d: '_pending → cron 自動 promote' },
+  { n: 9, t: '封面生成', d: 'gpt-image-1、12 風格、±3 不撞色' },
+];
+
+// Real title evolution — what "generate candidates, don't ship the first" actually looked like.
+const titleChoices = [
+  {
+    slug: 'lotusscript-list-datatype', piece: 'LotusScript List', date: '2026-08-05',
+    candidates: [
+      { t: 'LotusScript 的 List：內建的雜湊表，卻人人用平行陣列重造一遍', angle: '概念', verdict: 'rejected', why: '太繞、太抽象——讀者一眼看不出好處' },
+      { t: '別再用平行陣列：LotusScript 內建 List 幾行搞定計數、去重、查表', angle: '好處先行', verdict: 'rejected', why: '具體好處清楚，但少了記憶點' },
+      { t: '別再用平行陣列硬刻：LotusScript List 就是內建的 HashMap', angle: '概念 hook', verdict: 'rejected', why: '點題有力，卻丟了「能做什麼」的具體 payoff' },
+      { t: '別再用平行陣列硬刻：LotusScript List 就是內建 HashMap，幾行搞定計數、去重、查表', angle: '合併', verdict: 'picked', why: '前半 hook 點題 + 後半具體好處，兩者都要' },
+    ],
+  },
+  {
+    slug: 'notesname-formats', piece: 'NotesName 格式', date: '2026-08-06',
+    candidates: [
+      { t: '同一個人，三個名字：讓你的比較靜默失敗的 NotesName 格式', angle: '概念', verdict: 'rejected', why: '翻譯腔（「靜默失敗」），中文讀者看不懂在講什麼' },
+      { t: '同一個人，三個名字：為什麼比對 NotesName 會悄悄失敗', angle: '概念 hook', verdict: 'rejected', why: '鉤子好記，但要讀下去才懂，靠搜尋來的讀者接不住' },
+      { t: '為什麼同一個 Notes 使用者卻比對失敗？搞懂 NotesName 的三種名稱格式', angle: '問題先行', verdict: 'picked', why: '直接打在讀者痛點 + 後半明講學到什麼，清晰又好搜' },
+    ],
+  },
 ];
 
 const esc = (s: any) => String(s == null ? '' : s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' } as Record<string, string>)[c]);
@@ -120,13 +143,25 @@ const bodyHtml = `<div id="him">
   </header>
   <section class="sec">
     <h2 class="sh">內容管線</h2>
-    <div class="pipe">${pipeline.map((s, i) => `<div class="step${s.n === 6 ? ' hi' : ''}"><span class="sn">${s.n}</span><span class="st">${esc(s.t)}</span><span class="sd">${esc(s.d)}</span></div>${i < pipeline.length - 1 ? '<span class="sep">→</span>' : ''}`).join('')}</div>
-    <p class="pipe-note">第 6 步是關鍵：審查由<strong>不同於寫作的模型</strong>（Sonnet）重新抓官方文件、逐條 fact-check，<strong>抓到錯才算過</strong>——不是同一個模型自己說 OK。</p>
+    <div class="pipe">${pipeline.map((s, i) => `<div class="step${s.n === 6 || s.n === 7 ? ' hi' : ''}"><span class="sn">${s.n}</span><span class="st">${esc(s.t)}</span><span class="sd">${esc(s.d)}</span></div>${i < pipeline.length - 1 ? '<span class="sep">→</span>' : ''}`).join('')}</div>
+    <p class="pipe-note">第 6 步是關鍵：審查由<strong>不同於寫作的模型</strong>（Sonnet）重新抓官方文件、逐條 fact-check，<strong>抓到錯才算過</strong>——不是同一個模型自己說 OK。第 7 步同理：標題不出第一版，<strong>先列多角度候選再擇優</strong>（下一段是真實案例）。</p>
   </section>
   <section class="sec">
     <h2 class="sh">獨立審查抓到什麼</h2>
     <p class="sub">審查不是演戲。以下都是不同模型在 ship 前實際擋下的問題：</p>
     <div class="catches">${catches.map((c) => `<a class="catch" href="#prov-${esc(c.slug)}"><div class="catch-find">${c.find}</div><div class="catch-note">${esc(c.note)}</div><div class="catch-src">${esc(c.title)} →</div></a>`).join('')}</div>
+  </section>
+  <section class="sec">
+    <h2 class="sh">標題怎麼挑的</h2>
+    <p class="sub">好標題很少一次寫對。每篇 ship 前，標題不出第一版——先列多角度候選（問題先行 / 好處先行 / 概念 hook），按四準則<strong>清晰 · 好搜 · 不過度承諾 · 好記</strong>評分再擇優。下面兩篇是真實的挑選過程：</p>
+    <div class="titles">${titleChoices.map((tc) => `<div class="tgroup">
+      <div class="tgroup-h"><span class="tgroup-piece">${esc(tc.piece)}</span><span class="tgroup-date">${esc(tc.date)}</span></div>
+      <ol class="tlist">${tc.candidates.map((c: any) => `<li class="tcand ${c.verdict}">
+        <div class="tcand-top"><span class="tangle">${esc(c.angle)}</span><span class="tmark ${c.verdict}">${c.verdict === 'picked' ? '✓ 選定' : '汰除'}</span></div>
+        <div class="ttitle">${esc(c.t)}</div>
+        <div class="twhy">${esc(c.why)}</div>
+      </li>`).join('')}</ol>
+    </div>`).join('')}</div>
   </section>
   <section class="sec">
     <h2 class="sh">每篇的研究軌跡</h2>
@@ -197,6 +232,23 @@ const bodyHtml = `<div id="him">
       #him .catch-find code{font-family:ui-monospace,monospace;font-size:.86em;background:var(--fixed-bg);color:var(--fixed);padding:1px 6px;border-radius:5px}
       #him .catch-note{font-size:.85rem;color:var(--mut);line-height:1.5}
       #him .catch-src{font-size:.76rem;color:var(--review);font-weight:600;margin-top:9px}
+      #him .titles{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+      #him .tgroup{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px}
+      #him .tgroup-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:12px}
+      #him .tgroup-piece{font-weight:750;font-size:1rem;letter-spacing:-.01em}
+      #him .tgroup-date{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--mut)}
+      #him .tlist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+      #him .tcand{border:1px solid var(--line);border-radius:9px;padding:9px 11px;background:var(--bg)}
+      #him .tcand.picked{border-color:var(--pass);box-shadow:0 0 0 2px var(--pass-bg)}
+      #him .tcand.rejected{opacity:.7}
+      #him .tcand-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+      #him .tangle{font-size:.66rem;font-weight:700;letter-spacing:.03em;color:var(--mut);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+      #him .tmark{font-size:.7rem;font-weight:700}
+      #him .tmark.picked{color:var(--pass)}
+      #him .tmark.rejected{color:var(--mut)}
+      #him .ttitle{font-size:.9rem;font-weight:600;line-height:1.42;margin-bottom:4px}
+      #him .tcand.picked .ttitle{color:var(--ink)}
+      #him .twhy{font-size:.78rem;color:var(--mut);line-height:1.45}
       #him .acards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
       #him .acard{display:block;text-decoration:none;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px;transition:transform .1s,box-shadow .12s,border-color .12s}
       #him .acard:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(20,20,25,.08);border-color:var(--review)}
@@ -250,6 +302,7 @@ const bodyHtml = `<div id="him">
         #him .hero h1{font-size:1.8rem}
         #him .grid3{grid-template-columns:1fr}
         #him .cols{grid-template-columns:1fr;gap:14px}
+        #him .titles{grid-template-columns:1fr}
         #him .hero-stat{gap:24px}
       }
       @media (prefers-color-scheme:dark){
