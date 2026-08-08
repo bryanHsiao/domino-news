@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_RECYCLE_METHOD_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-dql-dominoquery.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 The site's [DQL trilogy](/domino-news/en/posts/dql-getting-started) covers the query language in depth — the syntax, the pitfalls, the production tuning. But all three run DQL from LotusScript or the `domino` console. Move to Java and the entry point looks different, and it hides a detail a lot of people look for in the wrong place the first time.

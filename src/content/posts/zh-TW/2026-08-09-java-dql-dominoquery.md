@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_RECYCLE_METHOD_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-dql-dominoquery.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 站上的 [DQL 三部曲](/domino-news/posts/dql-getting-started)把查詢語言本身講得很細——語法、踩過的雷、正式環境的調校。但那三篇跑 DQL 的方式，是 LotusScript 或 `domino` console。換到 Java，DQL 的入口長得不一樣，而且藏了一個很多人第一次會找錯地方的細節。
