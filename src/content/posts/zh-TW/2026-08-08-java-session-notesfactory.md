@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_COMPILING_AND_RUNNING_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-session-notesfactory.webp"
+coverStyle: "bw-grain"
 ---
 
 寫 LotusScript 時，`session` 就在那裡。你從來沒建立過它，也不必——它是個全域變數，一開 agent 就能直接 `session.getUserName()`。這份「理所當然」跟著很多人一路帶進 Java，然後在第一支 Java 程式就撞牆：Java 裡**沒有**這個全域。碰任何一份文件之前，你得自己先拿到一個 `Session`。

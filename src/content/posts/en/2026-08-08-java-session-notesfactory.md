@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_COMPILING_AND_RUNNING_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-session-notesfactory.webp"
+coverStyle: "bw-grain"
 ---
 
 In LotusScript, `session` is just there. You never created it and you never had to — it's a global, and the moment an agent starts you can call `session.getUserName()`. That "of course it's there" travels with a lot of people into Java, and then the first Java program walks straight into a wall: Java has **no** such global. Before you touch a single document, you have to obtain a `Session` yourself.
