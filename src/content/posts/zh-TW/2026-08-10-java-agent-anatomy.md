@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_AGENTBASE_CLASS_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-agent-anatomy.webp"
+coverStyle: "ukiyo-e"
 ---
 
 前三篇有個共同的前提：agent 已經在跑。你[會 recycle](/domino-news/posts/java-recycle-memory)、[拿得到 Session](/domino-news/posts/java-session-notesfactory)、[跑得動 DQL](/domino-news/posts/java-dql-dominoquery)——但這些都從「`NotesMain()` 已經被呼叫」那一刻開始。往前一步的問題反而沒人講：一個 Java agent 是怎麼被觸發的？它用**誰的權限**跑？`System.out` 印出去的東西跑到哪裡？出錯了怎麼 debug？

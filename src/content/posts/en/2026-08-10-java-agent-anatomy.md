@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_AGENTBASE_CLASS_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-agent-anatomy.webp"
+coverStyle: "ukiyo-e"
 ---
 
 The first three pieces share an assumption: the agent is already running. You can [recycle](/domino-news/en/posts/java-recycle-memory), you [have a Session](/domino-news/en/posts/java-session-notesfactory), you [run DQL](/domino-news/en/posts/java-dql-dominoquery) — but all of that starts from the moment `NotesMain()` has been called. The step before that is the part nobody covers: how does a Java agent get triggered? Whose rights does it run with? Where does `System.out` go? When it breaks, how do you debug it?
