@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_USING_THE_EVALUATE_STATEMENT.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/lotusscript-remove-element.webp"
+coverStyle: "watercolor"
 ---
 
 In SSJS / XPages, removing one multi-value element probably looks like this: `@Explode` the string into an array, loop backwards, and delete by index with `wordValue.removeElementAt(parseInt(idx))`. Clean, because SSJS runs on Java, `wordValue` is really a `java.util.Vector`, and `removeElementAt` is a method it already has.

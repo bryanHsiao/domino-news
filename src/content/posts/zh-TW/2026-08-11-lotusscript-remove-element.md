@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_USING_THE_EVALUATE_STATEMENT.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/lotusscript-remove-element.webp"
+coverStyle: "watercolor"
 ---
 
 在 SSJS / XPages 裡刪一個多值元素，你大概會這樣寫：`@Explode` 把字串拆成陣列，倒著跑迴圈，`wordValue.removeElementAt(parseInt(idx))` 依 index 一個個刪。乾淨俐落，因為 SSJS 底層是 Java，`wordValue` 其實是個 `java.util.Vector`，`removeElementAt` 是它現成的方法。
