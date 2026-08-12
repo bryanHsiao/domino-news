@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_globals_r.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/ssjs-vector-multivalue.webp"
+coverStyle: "low-poly-3d"
 ---
 
 The previous piece was about [LotusScript having no removeElementAt](/domino-news/en/posts/lotusscript-remove-element) — dropping one multi-value element means rebuilding an array, because LS has no Vector. SSJS is the mirror image: **you have the whole Vector API right there.**

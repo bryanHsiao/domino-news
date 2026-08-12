@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_globals_r.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/ssjs-vector-multivalue.webp"
+coverStyle: "low-poly-3d"
 ---
 
 前一篇講 [LotusScript 沒有 removeElementAt](/domino-news/posts/lotusscript-remove-element)——刪一個多值元素得自己重建陣列，因為 LS 沒有 Vector。SSJS 剛好是它的反面：**你有一整套 Vector API 現成可用**。
