@@ -522,9 +522,14 @@ A merged title is fine when two angles each win on a different axis
 
 **Record the candidates in the sidecar** (`research/<date>-<slug>.md`,
 the 標題候選 section — see `research/README.md`). The `/how-its-made`
-page surfaces real title evolutions from that data, so the losing
-candidates and the reason each was cut are part of the audit trail,
-not throwaway.
+page **auto-parses that section** (`parseTitleChoices` in
+`src/pages/how-its-made.astro`) and renders the evolution automatically —
+so filling the sidecar IS the showcase update. **Never hand-edit the
+how-its-made title list**; every article that records 標題候選 appears
+on its own, in date order. Keep the bullet format the parser expects:
+`- [汰除|選定] <角度>：` `` `<title>` `` `— <reason>` (reason on the same
+line for rejected; picked may put it on the following line before an
+`en 鏡像：` line).
 
 ---
 

@@ -38,8 +38,10 @@ frontmatter（對應投影片那套「誰提出／用什麼模型／何時」的
    inline-link diversity / build / humanizer-zh-tw / 獨立審查。
 4. **標題候選**：ship 前的標題優化留痕——列出考慮過的候選（標角度：
    問題先行 / 好處先行 / 概念 hook）、每個的汰除或選定、以及一句理由。
-   `/how-its-made` 會把這段的真實 before→after 攤出來，所以汰除的候選
-   不是丟掉、是稽核軌跡的一部分。格式：
+   `/how-its-made` **會自動解析這一段**（`parseTitleChoices`）並依日期渲染，
+   所以填好 sidecar 就等於更新了 showcase——**不必、也不該手動去編
+   how-its-made 的清單**。汰除的候選不是丟掉、是稽核軌跡的一部分。
+   格式（解析器認得的樣式，請照著寫）：
 
    ```markdown
    ## 標題候選

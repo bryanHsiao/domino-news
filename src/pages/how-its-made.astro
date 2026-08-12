@@ -28,6 +28,38 @@ function section(txt: string, heading: string) {
   return m ? m[1].trim() : '';
 }
 
+// Auto-render the title showcase from each sidecar's `## 標題候選` section.
+// Every article that ran the title loop fills this in the sidecar (a ship step),
+// so the showcase is a projection of the sidecars — never hand-maintained here.
+function parseTitleChoices(txt: string) {
+  const sec = section(txt, '標題候選');
+  if (!sec) return null;
+  const out: any[] = [];
+  let cur: any = null, reasonDone = false;
+  for (const raw of sec.split('\n')) {
+    const m = raw.match(/^\s*-\s*\[(選定|汰除)\]\s*([^`]*?)[：:]?\s*`([^`]+)`\s*(.*)$/);
+    if (m) {
+      if (cur) out.push(cur);
+      const why0 = m[4].replace(/^[\s—–-]+/, '').trim();
+      cur = { verdict: m[1] === '選定' ? 'picked' : 'rejected', angle: m[2].trim().replace(/[：:]\s*$/, ''), t: m[3].trim(), why: why0 };
+      reasonDone = !!why0;
+    } else if (cur && !reasonDone) {
+      const t = raw.trim();
+      if (/^en\s*鏡像/i.test(t) || t === '') reasonDone = true;
+      else cur.why = (cur.why ? cur.why + ' ' : '') + t.replace(/^[—–-]\s*/, '');
+    }
+  }
+  if (cur) out.push(cur);
+  return out.length ? out : null;
+}
+function pieceFromCandidates(cands: any[]) {
+  const picked = cands.find((c) => c.verdict === 'picked') || cands[0];
+  let t = String(picked ? picked.t : '');
+  const i = t.search(/[：:]/);
+  if (i > 0 && i <= 28) t = t.slice(0, i);
+  return t.length > 34 ? t.slice(0, 32) + '…' : t;
+}
+
 const files = fs.existsSync(RES)
   ? fs.readdirSync(RES).filter((f) => /^\d{4}-\d{2}-\d{2}-.*\.md$/.test(f)).sort()
   : [];
@@ -44,7 +76,9 @@ const posts = files.map((f) => {
   const nbPolluted = /NotebookLM\s*[—-]\s*⚠️/.test(txt);
   const urls = Array.from(new Set(txt.match(/H_[A-Z0-9_]+\.html/g) || []));
   const verdict = /VERDICT：?PASS/.test(txt) ? 'PASS' : (/VERDICT：?ISSUES/.test(txt) ? 'ISSUES' : '');
-  return { fm, checklist, changelog, nbOk, nbPolluted, urls, verdict };
+  const titleChoicesRaw = parseTitleChoices(txt);
+  const fdate = f.slice(0, 10);   // YYYY-MM-DD from the filename — always present
+  return { fm, checklist, changelog, nbOk, nbPolluted, urls, verdict, titleChoicesRaw, fdate };
 });
 
 // Hand-curated highlights — the punchline: what independent review actually caught.
@@ -67,8 +101,10 @@ const pipeline = [
   { n: 9, t: '封面生成', d: 'gpt-image-1、12 風格、±3 不撞色' },
 ];
 
-// Real title evolution — what "generate candidates, don't ship the first" actually looked like.
-const titleChoices = [
+// Pre-sidecar title evolutions: 8/05 + 8/06 shipped before the sidecar convention
+// carried a 標題候選 section, so they're recorded here by hand. FROZEN — every newer
+// article auto-parses from its own sidecar (parseTitleChoices), so this never grows.
+const LEGACY_TITLE_CHOICES = [
   {
     slug: 'lotusscript-list-datatype', piece: 'LotusScript List', date: '2026-08-05',
     candidates: [
@@ -76,15 +112,6 @@ const titleChoices = [
       { t: '別再用平行陣列：LotusScript 內建 List 幾行搞定計數、去重、查表', angle: '好處先行', verdict: 'rejected', why: '具體好處清楚，但少了記憶點' },
       { t: '別再用平行陣列硬刻：LotusScript List 就是內建的 HashMap', angle: '概念 hook', verdict: 'rejected', why: '點題有力，卻丟了「能做什麼」的具體 payoff' },
       { t: '別再用平行陣列硬刻：LotusScript List 就是內建 HashMap，幾行搞定計數、去重、查表', angle: '合併', verdict: 'picked', why: '前半 hook 點題 + 後半具體好處，兩者都要' },
-    ],
-  },
-  {
-    slug: 'java-recycle-memory', piece: 'recycle() 記憶體', date: '2026-08-07',
-    candidates: [
-      { t: 'recycle()：Java 版 Domino API 的手動記憶體管理', angle: '概念', verdict: 'rejected', why: 'reference 式——清晰但平、沒鉤子（原標題）' },
-      { t: 'Java 有 GC，Domino 物件卻不歸它管：recycle() 手動記憶體管理', angle: '概念 hook', verdict: 'rejected', why: '點題準（全文 thesis），但沒點名受眾' },
-      { t: '為什麼長時間執行的 Java agent 會吃爆記憶體？recycle() 與手動回收', angle: '問題先行', verdict: 'rejected', why: '痛點清楚，但沒扣住「LS 搬 Java」的真實觸發場景' },
-      { t: 'LotusScript 改寫 Java 後記憶體爆掉？你可能忘了 recycle()', angle: '問題先行 · 受眾特定', verdict: 'picked', why: '使用者提出，贏過上面四個生成候選：點名受眾（LS→Java）+ 確切痛點，與內文框架吻合' },
     ],
   },
   {
@@ -96,6 +123,13 @@ const titleChoices = [
     ],
   },
 ];
+// Legacy hand-list + everything auto-parsed from sidecars, in date order.
+const titleChoices = [
+  ...LEGACY_TITLE_CHOICES,
+  ...posts.filter((p) => p.titleChoicesRaw).map((p) => ({
+    slug: p.fm.slug, piece: pieceFromCandidates(p.titleChoicesRaw), date: p.fdate, candidates: p.titleChoicesRaw,
+  })),
+].sort((a, b) => String(a.date).localeCompare(String(b.date)));
 
 const esc = (s: any) => String(s == null ? '' : s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' } as Record<string, string>)[c]);
 const verdictBadge = (v: string) => v === 'PASS'
@@ -162,7 +196,7 @@ const bodyHtml = `<div id="him">
   </section>
   <section class="sec">
     <h2 class="sh">標題怎麼挑的</h2>
-    <p class="sub">好標題很少一次寫對。每篇 ship 前，標題不出第一版——先列多角度候選（問題先行 / 好處先行 / 概念 hook），按四準則<strong>清晰 · 好搜 · 不過度承諾 · 好記</strong>評分再擇優。下面兩篇是真實的挑選過程：</p>
+    <p class="sub">好標題很少一次寫對。每篇 ship 前，標題不出第一版——先列多角度候選（問題先行 / 好處先行 / 概念 hook），按四準則<strong>清晰 · 好搜 · 不過度承諾 · 好記</strong>評分再擇優。以下都是真實的挑選過程，直接從每篇的研究軌跡 sidecar 自動攤出來：</p>
     <div class="titles">${titleChoices.map((tc) => `<div class="tgroup">
       <div class="tgroup-h"><span class="tgroup-piece">${esc(tc.piece)}</span><span class="tgroup-date">${esc(tc.date)}</span></div>
       <ol class="tlist">${tc.candidates.map((c: any) => `<li class="tcand ${c.verdict}">
