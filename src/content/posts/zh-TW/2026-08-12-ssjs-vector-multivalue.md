@@ -33,14 +33,14 @@ coverStyle: "low-poly-3d"
 - **多值欄位讀進來就是 Vector**：`getItemValue` 回一個 `java.util.Vector`，不用轉換。
 - **操作**：`addElement` / `removeElement`(依值)/ `removeElementAt`(依 index)/ `insertElementAt` / `setElementAt` / `contains` / `indexOf` / `size` / `isEmpty`——[完整 API](https://docs.oracle.com/javase/8/docs/api/java/util/Vector.html) 都在。
 - **寫回**：`replaceItemValue` 直接接受 `java.util.Vector`——這是把多值寫回文件最可靠的方式。
-- **`removeElementAt` 要倒著跑**：邊刪邊改 index，順著跑會跳號;倒著跑(`i = size()-1; i>=0; i--`)才安全。或用 `java.util.Iterator` 的 `remove()`。
-- **兩個雷**：① 空的多值欄位常常不是 size 0，而是 size 1、裡面一個空字串 `[""]`;② [`getComponent().getValue()`](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_globals_r.html) 的型別依控制而定(inputText 是 String、多選 listBox 是 Vector/Array),操作前先驗型別。
+- **`removeElementAt` 要倒著跑**：邊刪邊改 index，順著跑會跳號；倒著跑(`i = size()-1; i>=0; i--`)才安全。或用 `java.util.Iterator` 的 `remove()`。
+- **兩個雷**：① 空的多值欄位常常不是 size 0，而是 size 1、裡面一個空字串 `[""]`；② [`getComponent().getValue()`](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_globals_r.html) 的型別依控制而定(inputText 是 String、多選 listBox 是 Vector/Array)，操作前先驗型別。
 
 ---
 
 ## 為什麼 SSJS 有、LS 沒有
 
-差別的根源，就是[前一篇](/domino-news/posts/lotusscript-remove-element)反過來講的那件事：**SSJS 跑在 Java 上，LS 不是。** LS 只有自己那套 List/陣列，沒有 Vector、沒有 `removeElementAt`;SSJS 則能直接碰整個 Java 標準函式庫，`java.util.Vector`、`java.util.Iterator`、`java.util.List` 全都能用。同一件「刪一個多值元素」，LS 得重建、SSJS 一個方法搞定。
+差別的根源，就是[前一篇](/domino-news/posts/lotusscript-remove-element)反過來講的那件事：**SSJS 跑在 Java 上，LS 不是。** LS 只有自己那套 List/陣列，沒有 Vector、沒有 `removeElementAt`；SSJS 則能直接碰整個 Java 標準函式庫，`java.util.Vector`、`java.util.Iterator`、`java.util.List` 全都能用。同一件「刪一個多值元素」，LS 得重建、SSJS 一個方法搞定。
 
 ## 讀進來就是 Vector
 
@@ -71,9 +71,9 @@ var roles = doc.getItemValue("UserRoles");   // 回 java.util.Vector
 
 ## removeElementAt 為什麼要倒著跑
 
-這是你截圖裡的關鍵。`removeElementAt(i)` 刪掉一個後，Vector 會動態縮短，**後面的元素全部往前移一格**。所以如果你順著跑 `for (i=0; i<size(); i++)`、刪掉 index 0，原本 index 1 的元素移到 index 0;下一圈 `i=1` 時，你看的是原本的 index 2，把原本的 index 1 跳過了。
+這是你截圖裡的關鍵。`removeElementAt(i)` 刪掉一個後，Vector 會動態縮短，**後面的元素全部往前移一格**。所以如果你順著跑 `for (i=0; i<size(); i++)`、刪掉 index 0，原本 index 1 的元素移到 index 0；下一圈 `i=1` 時，你看的是原本的 index 2，把原本的 index 1 跳過了。
 
-倒著跑就沒這問題:`for (i = vec.size()-1; i >= 0; i--)`——你刪的是尾端、往前移的都是「已經處理過」的元素，不會漏也不會 `ArrayIndexOutOfBounds`。
+倒著跑就沒這問題：`for (i = vec.size()-1; i >= 0; i--)`——你刪的是尾端、往前移的都是「已經處理過」的元素，不會漏也不會 `ArrayIndexOutOfBounds`。
 
 ```javascript
 for (var i = roles.size() - 1; i >= 0; i--) {
@@ -83,11 +83,11 @@ for (var i = roles.size() - 1; i >= 0; i--) {
 }
 ```
 
-另一條路是用 `java.util.Iterator` 的 `remove()`(走訪中安全移除)，或對 `java.util.List` 用 `removeAll(要刪的集合)` 一次刪掉一批。
+另一條路是用 `java.util.Iterator` 的 `remove()`（走訪中安全移除），或對 `java.util.List` 用 `removeAll(要刪的集合)` 一次刪掉一批。
 
 ## 寫回：replaceItemValue 吃 Vector
 
-改完的 Vector 直接丟回 [`replaceItemValue`](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Document.html)——官方定義「replaces all items of the specified name with one new item, which is assigned the specified value」，而它直接接受 `java.util.Vector`,是把多值寫回最可靠的方式:
+改完的 Vector 直接丟回 [`replaceItemValue`](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Document.html)——官方定義「replaces all items of the specified name with one new item, which is assigned the specified value」，而它直接接受 `java.util.Vector`，是把多值寫回最可靠的方式：
 
 ```javascript
 doc.replaceItemValue("UserRoles", roles);
@@ -96,7 +96,7 @@ doc.save(true, false);
 
 ## 兩個一定會踩的雷
 
-- **空多值欄位不是 size 0**：一個新建或清空過的多值欄位，讀回來常常是 **size 1、裡面一個空字串 `[""]`**，不是空的 Vector。直接 `for` 一跑會多處理一筆空白、或寫回一行空值。處理前先判斷:`if (v.size()==1 && v.elementAt(0).equals("")) v.removeElementAt(0);`
+- **空多值欄位不是 size 0**：一個新建或清空過的多值欄位，讀回來常常是 **size 1、裡面一個空字串 `[""]`**，不是空的 Vector。直接 `for` 一跑會多處理一筆空白、或寫回一行空值。處理前先判斷：`if (v.size()==1 && v.elementAt(0).equals("")) v.removeElementAt(0);`
 - **`getComponent().getValue()` 型別不固定**：[`getComponent`](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_globals_r.html) 拿到的是 UI **元件**本身，要再對它 `.getValue()` 取值；而值的型別**依控制而定**——`<xp:inputText>` 回 String，多選的 `<xp:listBox multiple="true">` / `checkBoxGroup` 回 Array 或 Vector。動手前先 `typeof` / `instanceof` 驗過，否則對 String 呼叫 `removeElementAt` 就爆了。
 
 ## 逐行看你那段截圖
@@ -111,7 +111,7 @@ if (DeleteValue != "" && DeleteValue != null) {
 }
 ```
 
-寫得沒問題:先確認值非空，`@Explode` 出要刪的 index，**倒著跑**避免 index 位移，`parseInt` 把字串轉成整數 index 再 `removeElementAt`。唯一要留意的還是上面那兩個雷——`wordValue` 若可能是空欄位或非 Vector，前面補個型別/空值判斷更穩。
+寫得沒問題：先確認值非空，`@Explode` 出要刪的 index，**倒著跑**避免 index 位移，`parseInt` 把字串轉成整數 index 再 `removeElementAt`。唯一要留意的還是上面那兩個雷——`wordValue` 若可能是空欄位或非 Vector，前面補個型別/空值判斷更穩。
 
 ## 同類別在其他語言
 
@@ -121,4 +121,4 @@ if (DeleteValue != "" && DeleteValue != null) {
 | **LotusScript** | 沒有 Vector；依情境重建陣列、或用 `List` 的 `Erase(tag)`——見 [LS 沒有 removeElementAt 那篇](/domino-news/posts/lotusscript-remove-element) |
 | **Java（`lotus.domino`）** | 同樣能用 `java.util.Vector`;`Document.getItemValue()` 在 Java 端一樣回 Vector |
 
-一句話對照:**SSJS 借的是 Java 現成的容器,LS 用的是自己那套**。同一個 `removeElementAt`,在 SSJS 是一行、在 LS 要一個重建迴圈。想看這些類別彼此怎麼串,可參考站上的[類別地圖](/domino-news/map)。
+一句話對照：**SSJS 借的是 Java 現成的容器，LS 用的是自己那套**。同一個 `removeElementAt`，在 SSJS 是一行、在 LS 要一個重建迴圈。想看這些類別彼此怎麼串，可參考站上的[類別地圖](/domino-news/map)。
