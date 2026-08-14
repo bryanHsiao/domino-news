@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_APPENDITEMVALUE_METHOD_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-document-items.webp"
+coverStyle: "paper-craft"
 ---
 
 Reading a field in LotusScript is muscle memory: `values = doc.GetItemValue("Categories")` hands you a Variant array, you `ForAll` over it, done. The same task in the Java `lotus.domino` API looks almost identical on the surface — `doc.getItemValue("Categories")` — but what comes back, how a missing field behaves, and even who owns the memory are all different from LotusScript.

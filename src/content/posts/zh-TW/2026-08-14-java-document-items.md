@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_APPENDITEMVALUE_METHOD_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-document-items.webp"
+coverStyle: "paper-craft"
 ---
 
 LotusScript 裡讀一個欄位，你大概想都不用想：`values = doc.GetItemValue("Categories")`，拿到一個 Variant 陣列，`ForAll` 一圈就完事。同一件事搬到 Java 版的 `lotus.domino` API，表面上呼叫幾乎一樣——`doc.getItemValue("Categories")`——但回來的東西、缺欄位的行為、甚至記憶體的責任歸屬，都跟 LotusScript 不一樣。
