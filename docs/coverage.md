@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-08-13 · Posts scanned: 118 · Classes catalogued: 97*
+*Generated: 2026-08-14 · Posts scanned: 119 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [java-document-items](https://bryanhsiao.github.io/domino-news/posts/java-document-items/) | — | — | — |
 | [domino-1451-fp1](https://bryanhsiao.github.io/domino-news/posts/domino-1451-fp1/) | — | — | — |
 | [ssjs-vector-multivalue](https://bryanhsiao.github.io/domino-news/posts/ssjs-vector-multivalue/) | — | — | — |
 | [lotusscript-remove-element](https://bryanhsiao.github.io/domino-news/posts/lotusscript-remove-element/) | — | — | — |
