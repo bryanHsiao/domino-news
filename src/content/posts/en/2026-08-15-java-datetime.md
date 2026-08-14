@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_TOJAVADATE_METHOD_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-datetime.webp"
+coverStyle: "bw-grain"
 ---
 
 The moment you need to do something with a Notes date in Java — compare it, add days, write it back — you hit something awkward: you can't just use `java.util.Date`. Domino's date in the Java API is a class called [`DateTime`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATETIME_CLASS_JAVA.html), and it lives in a different world from Java's own time types. You go into `DateTime`, do the work, and come back out.

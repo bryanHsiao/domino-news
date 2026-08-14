@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_TOJAVADATE_METHOD_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-datetime.webp"
+coverStyle: "bw-grain"
 ---
 
 在 Java 裡要對一個 Notes 日期做點事——比對、加減天數、存回文件——你會發現一件不太順手的事：你不能直接用 `java.util.Date`。Domino 的日期在 Java API 裡是一個叫 [`DateTime`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATETIME_CLASS_JAVA.html) 的類別，而它跟 Java 自家的時間型別是兩個世界。你得先進到 `DateTime`、做完事、再換回來。
