@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_RECYCLE_METHOD_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-collection-iteration.webp"
+coverStyle: "low-poly-3d"
 ---
 
 LotusScript 裡跑一個文件集合，你大概是這樣寫的：`Set doc = coll.GetFirstDocument()`，然後 `Set doc = coll.GetNextDocument(doc)` 一路跑到底，中間完全不用想記憶體的事。同一段邏輯搬到 Java 版的 `lotus.domino`，迴圈長得幾乎一樣——但如果集合有上萬份文件，這個迴圈會把 agent 的記憶體吃垮。

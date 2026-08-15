@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_RECYCLE_METHOD_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-collection-iteration.webp"
+coverStyle: "low-poly-3d"
 ---
 
 Looping a document collection in LotusScript probably looks like this: `Set doc = coll.GetFirstDocument()`, then `Set doc = coll.GetNextDocument(doc)` to the end, without a single thought about memory. The same logic in the Java `lotus.domino` API looks almost identical — but if the collection holds tens of thousands of documents, that loop exhausts the agent's memory.
