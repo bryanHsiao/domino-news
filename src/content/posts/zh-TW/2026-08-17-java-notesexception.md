@@ -13,6 +13,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_RECYCLE_METHOD_JAVA.html"
   - title: "Document.getItemValue (Java) — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETITEMVALUE_METHOD_JAVA.html"
+cover: "/covers/java-notesexception.webp"
+coverStyle: "watercolor"
 ---
 
 LotusScript 的錯誤處理，你大概很熟：`On Error Goto handler`，出錯跳到標籤，看 `Err`、`Error$`，也許 `Resume Next` 繼續。這套邏輯搬到 Java 完全換了個世界——幾乎每一個 `lotus.domino` 方法都會丟一個 [`NotesException`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESEXCEPTION_CLASS_JAVA.html)，而且它是**受檢例外（checked exception）**：編譯器會逼你要嘛 `catch`、要嘛在方法簽章上 `throws`，躲不掉。

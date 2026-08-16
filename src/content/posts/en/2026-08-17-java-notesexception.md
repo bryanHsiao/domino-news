@@ -13,6 +13,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_RECYCLE_METHOD_JAVA.html"
   - title: "Document.getItemValue (Java) — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETITEMVALUE_METHOD_JAVA.html"
+cover: "/covers/java-notesexception.webp"
+coverStyle: "watercolor"
 ---
 
 You probably know LotusScript error handling well: `On Error Goto handler`, jump to a label on error, read `Err` and `Error$`, maybe `Resume Next` to carry on. That model changes worlds in Java — nearly every `lotus.domino` method throws a [`NotesException`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESEXCEPTION_CLASS_JAVA.html), and it's a **checked exception**: the compiler makes you either `catch` it or declare `throws` on the method. There's no ignoring it.
