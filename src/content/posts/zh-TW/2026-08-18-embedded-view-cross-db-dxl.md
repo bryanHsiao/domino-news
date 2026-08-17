@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLEXPORTER_CLASS.html"
 relatedJava: ["DxlExporter", "DxlImporter"]
 relatedSsjs: ["DxlExporter", "DxlImporter"]
+cover: "/covers/embedded-view-cross-db-dxl.webp"
+coverStyle: "risograph"
 ---
 
 一個 form 上放了一個**跨 DB 的嵌入視圖**（embedded view）——顯示的資料來自另一個資料庫。在開發區跑得好好的，打包交到客戶測試區，一開表單，那個嵌入視圖卻是一句「**VDataRetentionMgmtLog 無法啟動**」，底下還寫著「若再次試著啟動，請按一下此長方形或按空白鍵」。

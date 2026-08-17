@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLEXPORTER_CLASS.html"
 relatedJava: ["DxlExporter", "DxlImporter"]
 relatedSsjs: ["DxlExporter", "DxlImporter"]
+cover: "/covers/embedded-view-cross-db-dxl.webp"
+coverStyle: "risograph"
 ---
 
 A form carried a **cross-database embedded view** — the data it shows lives in another database. It ran fine in dev, then got packaged for the customer's test region, and the first time someone opened the form, the embedded view was just a line reading "**VDataRetentionMgmtLog cannot start**," with "to try again, click this rectangle or press the space bar" underneath.
