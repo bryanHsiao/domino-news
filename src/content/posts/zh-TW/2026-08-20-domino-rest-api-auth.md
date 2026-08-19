@@ -15,6 +15,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/tutorial/walkthrough/lab-01.html"
   - title: "Domino REST API — Functional accounts"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/references/functionalUsers.html"
+cover: "/covers/domino-rest-api-auth.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 [上一篇](/domino-news/posts/domino-rest-api-getting-started)講過，DRAPI 幾乎每個呼叫都要帶一個 token。這一篇就把「怎麼拿、怎麼帶、token 裡到底裝了什麼」講清楚。
