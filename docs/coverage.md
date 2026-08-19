@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-08-19 · Posts scanned: 124 · Classes catalogued: 97*
+*Generated: 2026-08-19 · Posts scanned: 125 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [domino-rest-api-auth](https://bryanhsiao.github.io/domino-news/posts/domino-rest-api-auth/) | — | — | — |
 | [domino-rest-api-getting-started](https://bryanhsiao.github.io/domino-news/posts/domino-rest-api-getting-started/) | — | — | — |
 | [embedded-view-cross-db-dxl](https://bryanhsiao.github.io/domino-news/posts/embedded-view-cross-db-dxl/) | `NotesDXLImporter`, `NotesDXLExporter` | `DxlExporter`, `DxlImporter` | `DxlExporter`, `DxlImporter` |
 | [java-notesexception](https://bryanhsiao.github.io/domino-news/posts/java-notesexception/) | — | — | — |
