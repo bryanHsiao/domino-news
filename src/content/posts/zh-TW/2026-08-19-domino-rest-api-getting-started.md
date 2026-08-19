@@ -14,6 +14,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/tutorial/index.html"
   - title: "Domino REST API — Topic guides"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/topicguides/index.html"
+cover: "/covers/domino-rest-api-getting-started.webp"
+coverStyle: "art-deco"
 ---
 
 你想讓一個現代前端——React、Vue、一支 Python 服務、一條 Power Automate 流程——去讀寫 Domino 裡的資料。傳統上有幾條路：用 XPages 把資料包成網頁、用 DIIOP 讓遠端 Java 走 CORBA 進來、或自己寫一支 LotusScript web agent 手工吐 JSON。三條路都能通，但都得讓**對方來遷就 Domino 的規矩**。

@@ -14,6 +14,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/tutorial/index.html"
   - title: "Domino REST API — Topic guides"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/topicguides/index.html"
+cover: "/covers/domino-rest-api-getting-started.webp"
+coverStyle: "art-deco"
 ---
 
 You want a modern front end — React, Vue, a Python service, a Power Automate flow — to read and write data in Domino. Traditionally there were a few roads: package the data as web pages with XPages, let remote Java in over CORBA with DIIOP, or hand-roll a LotusScript web agent that spits out JSON. All three work, and all three make **the caller meet Domino on its terms**.
