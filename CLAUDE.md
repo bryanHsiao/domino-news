@@ -345,6 +345,22 @@ their release day. Two reasons:
 **Manual trigger** (e.g. to publish today's piece without waiting):
 `gh workflow run publish-pending.yml --ref main`.
 
+**Timing gotcha — commit before the day's cron, or trigger it
+manually.** The promotion cron fires only **once a day** (scheduled
+23:30 UTC, but GitHub Actions routinely runs scheduled jobs late —
+observed ~23:47 UTC ≈ **07:47 Taipei**). It promotes files whose
+filename date ≤ today. So if you stage **today's** article *after*
+that day's cron has already run, it will **not** auto-promote until
+the *next* day's cron — i.e. a day late. Whenever you finish a
+same-day piece after the morning cron window (roughly after ~08:00
+Taipei), run the manual trigger above to publish it that day; don't
+assume "committed today → live today." (Happened 2026-08-19: the DRAPI
+part-1 piece dated 8/19 was committed hours into a long session, after
+that morning's cron had already fired, and sat in `_pending`; a manual
+`gh workflow run publish-pending.yml --ref main` promoted it same-day.
+Future-dated pieces in the same batch — 8/20–8/24 — were unaffected;
+the daily cron promotes those on time.)
+
 **Past- or today-dated articles** (salvage scenarios, urgent
 publishing) can still go straight to `src/content/posts/` + manual
 `deploy.yml` trigger — the cron isn't required for those.
