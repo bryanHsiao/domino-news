@@ -14,6 +14,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/references/usingdominorestapi/index.html"
   - title: "Domino REST API — How-to guides"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/howto/index.html"
+cover: "/covers/domino-rest-api-scope-schema.webp"
+coverStyle: "collage"
 ---
 
 [Part one](/domino-news/en/posts/domino-rest-api-getting-started) said "an NSF isn't automatically exposed as REST," and [part two](/domino-news/en/posts/domino-rest-api-auth)'s JWT carried a `scopes` claim. This part joins the two: how an NSF that only the Notes client could see actually **becomes** a set of REST endpoints — the answer is two things, a **schema** and a **scope**.

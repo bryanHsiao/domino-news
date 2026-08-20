@@ -14,6 +14,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/references/usingdominorestapi/index.html"
   - title: "Domino REST API — How-to guides"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/howto/index.html"
+cover: "/covers/domino-rest-api-scope-schema.webp"
+coverStyle: "collage"
 ---
 
 [第一篇](/domino-news/posts/domino-rest-api-getting-started)說過「一個 NSF 不會自動全部曝露成 REST」，[第二篇](/domino-news/posts/domino-rest-api-auth)的 JWT 裡帶了一個 `scopes` claim。這一篇把這兩件事接起來：一個原本只有 Notes client 看得到的 NSF，到底是**怎麼**變成一組 REST 端點的——答案是兩個東西：**schema** 和 **scope**。
