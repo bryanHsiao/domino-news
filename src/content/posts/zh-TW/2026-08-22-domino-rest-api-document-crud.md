@@ -14,6 +14,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/references/usingdominorestapi/index.html"
   - title: "Domino REST API — Quickstart"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/tutorial/quickstart.html"
+cover: "/covers/domino-rest-api-document-crud.webp"
+coverStyle: "risograph"
 ---
 
 [上一篇](/domino-news/posts/domino-rest-api-scope-schema)把門開好了——schema 決定露什麼、scope 給它一個名字。這一篇做真正的活：用 REST 對 NSF 裡的文件**增刪查改**，而且全程是 JSON。（還沒把 DRAPI 跑起來的話，先照官方 [quickstart](https://opensource.hcltechsw.com/Domino-rest-api/tutorial/quickstart.html) 把環境走一遍。）

@@ -14,6 +14,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/references/usingdominorestapi/index.html"
   - title: "Domino REST API — Quickstart"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/tutorial/quickstart.html"
+cover: "/covers/domino-rest-api-document-crud.webp"
+coverStyle: "risograph"
 ---
 
 [The last part](/domino-news/en/posts/domino-rest-api-scope-schema) opened the door — a schema decides what's exposed, a scope gives it a name. This part does the real work: create, read, update, and delete documents in an NSF over REST, all in JSON. (If you haven't stood DRAPI up yet, walk the official [quickstart](https://opensource.hcltechsw.com/Domino-rest-api/tutorial/quickstart.html) first.)
