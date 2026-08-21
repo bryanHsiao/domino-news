@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-08-20 · Posts scanned: 126 · Classes catalogued: 97*
+*Generated: 2026-08-21 · Posts scanned: 127 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [domino-rest-api-document-crud](https://bryanhsiao.github.io/domino-news/posts/domino-rest-api-document-crud/) | — | — | — |
 | [domino-rest-api-scope-schema](https://bryanhsiao.github.io/domino-news/posts/domino-rest-api-scope-schema/) | — | — | — |
 | [domino-rest-api-auth](https://bryanhsiao.github.io/domino-news/posts/domino-rest-api-auth/) | — | — | — |
 | [domino-rest-api-getting-started](https://bryanhsiao.github.io/domino-news/posts/domino-rest-api-getting-started/) | — | — | — |
