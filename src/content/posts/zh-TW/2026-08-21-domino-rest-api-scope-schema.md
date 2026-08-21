@@ -29,7 +29,7 @@ coverStyle: "collage"
 - **schema 是白名單**：一份決定「這個 NSF 裡哪些 form、view、folder、agent、欄位對外」的定義，用 JSON 描述、存在資料庫的 design 資源裡，在 Admin UI（官方稱 Schema and Scope Management UI）編、也能匯出成 JSON 檔。
 - **scope 是啟用開關**：官方一句話——「Activate the schema by creating a scope (Rest mapping)」。scope 把 schema **活化**成真正可打的 REST mapping。
 - **scope 有名字**，而那個名字，就是上一篇 JWT `scopes` claim 裡認的那個——[兩者是同一個東西](https://opensource.hcltechsw.com/Domino-rest-api/references/usingdominorestapi/index.html)的兩端。
-- **底下 Domino 的安全還在算**：scope 的作用是「specify and limit the resources an API can access… based on the authenticated user's requirements and database access control」——ACL、Readers 欄位一樣管數。
+- **底下 Domino 的安全還在算**：scope 的作用是「specify and limit the resources an API can access… based on the authenticated user's requirements and database access control」——ACL、Readers 欄位一樣算數。
 - **流程**：建 schema → 勾選要開的 form/view/folder/agent/欄位 → 建 scope 活化 → 用 curl/Postman 測。
 
 ---
