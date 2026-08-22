@@ -15,6 +15,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/howto/database/enablingadb.html"
   - title: "Domino REST API — DQL query tutorial"
     url: "https://opensource.hcltechsw.com/domino-keep-tutorials/pages/todo/dataAccess/query.html"
+cover: "/covers/domino-rest-api-query-dql.webp"
+coverStyle: "low-poly-3d"
 ---
 
 [上一篇](/domino-news/posts/domino-rest-api-document-crud)是拿著 `unid` 讀單一份文件。但你多數時候要的不是某一份，而是**符合條件的一批**——所有未完成的 todo、某個區的所有客戶、這個月建立的所有訂單。

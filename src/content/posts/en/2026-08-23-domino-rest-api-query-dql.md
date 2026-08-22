@@ -15,6 +15,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/howto/database/enablingadb.html"
   - title: "Domino REST API — DQL query tutorial"
     url: "https://opensource.hcltechsw.com/domino-keep-tutorials/pages/todo/dataAccess/query.html"
+cover: "/covers/domino-rest-api-query-dql.webp"
+coverStyle: "low-poly-3d"
 ---
 
 [The last part](/domino-news/en/posts/domino-rest-api-document-crud) fetched a single document by `unid`. But most of the time you don't want one document, you want **the batch that matches** — all incomplete todos, every customer in a region, all orders from this month.
