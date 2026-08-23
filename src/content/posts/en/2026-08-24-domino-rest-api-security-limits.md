@@ -15,6 +15,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/references/limitation.html"
   - title: "Domino REST API — Troubleshooting"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/references/troubleshooting.html"
+cover: "/covers/domino-rest-api-security-limits.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 This is the last part of the DRAPI series. The first five are done: [overview](/domino-news/en/posts/domino-rest-api-getting-started), [authentication](/domino-news/en/posts/domino-rest-api-auth), [scope/schema](/domino-news/en/posts/domino-rest-api-scope-schema), [document CRUD](/domino-news/en/posts/domino-rest-api-document-crud), [DQL querying](/domino-news/en/posts/domino-rest-api-query-dql). It all works — but before handing it to real users, a Domino developer usually has two question marks:

@@ -15,6 +15,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/references/limitation.html"
   - title: "Domino REST API — Troubleshooting"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/references/troubleshooting.html"
+cover: "/covers/domino-rest-api-security-limits.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 這是 DRAPI 系列的最後一篇。前五篇你已經走完：[概觀](/domino-news/posts/domino-rest-api-getting-started)、[認證](/domino-news/posts/domino-rest-api-auth)、[scope/schema](/domino-news/posts/domino-rest-api-scope-schema)、[文件 CRUD](/domino-news/posts/domino-rest-api-document-crud)、[DQL 查詢](/domino-news/posts/domino-rest-api-query-dql)。功能都通了，但把它交給真實使用者之前，Domino 開發者心裡通常有兩個問號：
