@@ -633,6 +633,22 @@ from *earlier, unrelated* questions.
 
 ## Recent fixes worth remembering
 
+- **`_pending/` frontmatter is NOT validated by local `npm run build`.**
+  Astro's content collection only reads `src/content/posts/`, so a broken
+  frontmatter YAML in a staged `_pending/` file passes every local build —
+  then fails the **deploy build on GitHub** the moment the cron promotes it
+  into `posts/`, and the post silently never goes live. **Validate a staged
+  file's frontmatter before committing** (parse the YAML block, or briefly
+  copy it into `posts/`, build, and move it back). The specific trap that
+  bit 2026-08-25: a **bare `""` (empty-string literal) inside a
+  double-quoted YAML value** — e.g. `description: "… cache（""／NoCache）…"` —
+  ends the string early ("bad indentation of a mapping entry"). Inside a
+  `"..."` value, write an empty string as `\"\"`, or reword (the fix used
+  「空字串」). The en version of the same post had `\"\"` and built fine; the
+  zh had bare `""` and broke the whole deploy. (This is why a promoted
+  8/25 sat un-deployed: manual promotion worked, but three successive
+  deploys were cancelled/failed, the last on this YAML error — fixed by
+  correcting the frontmatter and re-deploying.)
 - **Timezone in dateLabel** (`src/pages/{,en/}posts/[slug].astro:31`):
   `toLocaleDateString` needs `timeZone: 'Asia/Taipei'` or it renders
   the day in the build host's UTC, off-by-one for `+08:00` posts
