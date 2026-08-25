@@ -1,5 +1,5 @@
 ---
-title: "@DbColumn or @DbLookup? Reading Across Views and Databases in Formula"
+title: "Reading Values Across Views and Databases in Formula: @DbColumn and @DbLookup"
 description: "To read another view or another database from formula, two functions do ninety percent of the work: @DbColumn grabs a whole column (keyword lists, dropdowns), @DbLookup finds a value by key (resolve a code to a label, pull a related field). This piece covers both signatures, the cache keyword (\"\"/NoCache/ReCache), and the rules you must know — the first column must be sorted, equality-only matching, the 64KB cap, and where they can't be used. Part one of the Formula @function series."
 pubDate: 2026-08-25T07:30:00+08:00
 lang: en
