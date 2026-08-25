@@ -351,15 +351,27 @@ manually.** The promotion cron fires only **once a day** (scheduled
 observed ~23:47 UTC ≈ **07:47 Taipei**). It promotes files whose
 filename date ≤ today. So if you stage **today's** article *after*
 that day's cron has already run, it will **not** auto-promote until
-the *next* day's cron — i.e. a day late. Whenever you finish a
-same-day piece after the morning cron window (roughly after ~08:00
-Taipei), run the manual trigger above to publish it that day; don't
-assume "committed today → live today." (Happened 2026-08-19: the DRAPI
-part-1 piece dated 8/19 was committed hours into a long session, after
-that morning's cron had already fired, and sat in `_pending`; a manual
-`gh workflow run publish-pending.yml --ref main` promoted it same-day.
-Future-dated pieces in the same batch — 8/20–8/24 — were unaffected;
-the daily cron promotes those on time.)
+the *next* day's cron — i.e. a day late. **Robust rule: for ANY article whose pubDate is today, just run the
+manual trigger after you commit — don't gamble on the cron.** The daily
+cron fires once, and the authoritative test for "did I make it" is
+whether the commit's **UTC** timestamp beats that day's ~23:46 UTC run —
+NOT the wall-clock. (The sandbox's `TZ=Asia/Taipei date` has repeatedly
+reported a time ~8h off from the real UTC clock, so it can't be trusted
+to judge the window; check `date -u` or the commit's `%cI`, or simply
+trigger manually and skip the guesswork.) Whenever you finish a same-day
+piece, run `gh workflow run publish-pending.yml --ref main`.
+
+Happened twice, same cause both times — the article was committed *after*
+that day's ~23:46 UTC cron had already run, so it sat in `_pending` for a
+day until manually promoted:
+- 2026-08-19 (DRAPI part-1): committed hours into a long session, past
+  the morning cron; manual trigger promoted it same-day.
+- 2026-08-25 (Formula part-1): committed 02:59 UTC (the sandbox clock
+  *said* 02:58 Taipei, but git's UTC timestamp — the real one — was 8/25
+  02:59 UTC, ~3h AFTER the 8/24 23:46 UTC cron), so it missed and needed
+  the manual trigger.
+Future-dated pieces in the same batch are unaffected; the daily cron
+promotes those on time.
 
 **Past- or today-dated articles** (salvage scenarios, urgent
 publishing) can still go straight to `src/content/posts/` + manual
