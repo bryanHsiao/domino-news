@@ -23,7 +23,7 @@ coverStyle: "minimalist-mono"
 - **[`@DbColumn`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_DBCOLUMN_NOTES_DATABASES.html)**：抓一整欄的值回來（做關鍵字清單、下拉選單最常用）。
 - **[`@DbLookup`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_DBLOOKUP_NOTES_DATABASES.html)**：按一個 key 去找、回傳對應的值（把代碼換成標籤、拉一個關聯欄位）。
 
-這是 Formula @function 系列的第一篇，先把這兩個工作馬講清楚。
+這是 Formula @function 系列的第一篇，先把這兩個主力函式講清楚。
 
 ---
 
@@ -95,6 +95,6 @@ coverStyle: "minimalist-mono"
 - **要一整欄**（關鍵字清單、下拉選單、把某欄所有值列出來）→ `@DbColumn`。
 - **拿一個 key 找對應值**（代碼換標籤、拉關聯文件的一個欄位）→ `@DbLookup`。
 
-一句話記：`@DbColumn` 是「倒出一整欄」，`@DbLookup` 是「按 key 對一個」。兩個都記得 view 要有排序欄、都吃 64KB 上限、也都要想清楚 cache 要不要即時。這兩個工作馬顧好，formula 讀跨 view／跨庫資料的需求就解掉大半。
+一句話記：`@DbColumn` 是「倒出一整欄」，`@DbLookup` 是「按 key 對一個」。兩個都記得 view 要有排序欄、都吃 64KB 上限、也都要想清楚 cache 要不要即時。這兩個主力顧好，formula 讀跨 view／跨庫資料的需求就解掉大半。
 
 下一篇進到 formula 意外強大的一面：**把它當成一個函數式的清單語言**——`@Transform`、`@Explode`／`@Implode`、`@Unique`、`@Sort` 怎麼在一行裡處理整串資料。

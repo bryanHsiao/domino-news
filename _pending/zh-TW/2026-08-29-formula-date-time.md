@@ -30,7 +30,7 @@ sources:
 
 ---
 
-## @Adjust：日期加減的工作馬
+## @Adjust：日期加減的主力
 
 要「三十天後」「一個月前」「兩小時後」，都用 `@Adjust`。官方定義：「Adjusts the specified time-date value by the number of years, months, days, hours, minutes, and/or seconds you specify. The amount of adjustment may be positive or negative.」
 
