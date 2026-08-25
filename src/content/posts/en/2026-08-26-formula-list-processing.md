@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXPLODE.html"
   - title: "@Sort — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SORT.html"
+cover: "/covers/formula-list-processing.webp"
+coverStyle: "collage"
 ---
 
 Coming from LotusScript or Java, your first instinct on seeing a list of values (a multi-value field, a list) is to write a loop over it. In formula you'll find something counterintuitive — **there are almost no loops**. Not because it can't, but because it rarely needs to: **one formula already operates on a whole list at once.**

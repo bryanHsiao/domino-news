@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXPLODE.html"
   - title: "@Sort — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_SORT.html"
+cover: "/covers/formula-list-processing.webp"
+coverStyle: "collage"
 ---
 
 從 LotusScript 或 Java 過來的人，看到一串值（一個多值欄位、一個 list）的第一個念頭通常是：寫個迴圈跑一遍。但在 formula 裡，你會發現一件反直覺的事——**幾乎沒有迴圈**。不是它不能，而是它根本不太需要：**一條公式，本來就是對「整串 list」一次作用的。**

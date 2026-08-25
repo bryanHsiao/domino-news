@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_DBLOOKUP_NOTES_DATABASES.html"
   - title: "About formulas that look for values in columns and views — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_ABOUT_FORMULAS_THAT_LOOK_FOR_VALUES_IN_COLUMNS_AND_VIEWS.html"
+cover: "/covers/formula-dblookup-dbcolumn.webp"
+coverStyle: "minimalist-mono"
 ---
 
 在 formula 裡，你常常要讀「別的地方」的資料——另一個 view 的某一欄、另一個資料庫裡的某個值。做這件事，九成的情況就靠兩個函式：

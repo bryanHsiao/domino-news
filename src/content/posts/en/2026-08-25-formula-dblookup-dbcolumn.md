@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_DBLOOKUP_NOTES_DATABASES.html"
   - title: "About formulas that look for values in columns and views — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_ABOUT_FORMULAS_THAT_LOOK_FOR_VALUES_IN_COLUMNS_AND_VIEWS.html"
+cover: "/covers/formula-dblookup-dbcolumn.webp"
+coverStyle: "minimalist-mono"
 ---
 
 In formula you constantly need to read data from "somewhere else" — a column of another view, a value in another database. For that, two functions do ninety percent of the work:
