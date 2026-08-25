@@ -1,6 +1,6 @@
 ---
 title: "@DbColumn 還是 @DbLookup？formula 讀跨 view／庫資料該用哪個"
-description: "在 formula 裡要讀另一個 view 或另一個資料庫的資料，九成的情況就靠兩個函式：@DbColumn 抓一整欄（做關鍵字清單、下拉選單），@DbLookup 按 key 找一個值（把代碼換成標籤、拉一個關聯欄位）。這篇講兩者的語法、cache 關鍵字（""／NoCache／ReCache）、以及那幾個一定要知道的規矩——第一欄要排序、只能相等比對、64KB 上限、還有它們在哪些地方不能用。Formula @function 系列第一篇。"
+description: "在 formula 裡要讀另一個 view 或另一個資料庫的資料，九成的情況就靠兩個函式：@DbColumn 抓一整欄（做關鍵字清單、下拉選單），@DbLookup 按 key 找一個值（把代碼換成標籤、拉一個關聯欄位）。這篇講兩者的語法、cache 關鍵字（空字串／NoCache／ReCache）、以及那幾個一定要知道的規矩——第一欄要排序、只能相等比對、64KB 上限、還有它們在哪些地方不能用。Formula @function 系列第一篇。"
 pubDate: 2026-08-25T07:30:00+08:00
 lang: zh-TW
 slug: formula-dblookup-dbcolumn
