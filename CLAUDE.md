@@ -370,8 +370,24 @@ day until manually promoted:
   *said* 02:58 Taipei, but git's UTC timestamp — the real one — was 8/25
   02:59 UTC, ~3h AFTER the 8/24 23:46 UTC cron), so it missed and needed
   the manual trigger.
-Future-dated pieces in the same batch are unaffected; the daily cron
-promotes those on time.
+- 2026-08-27 (Formula text-functions, staged well in advance): a
+  **different** failure mode — GitHub Actions **skipped the scheduled run
+  entirely** on the night of 8/26. `gh run list --workflow=publish-pending.yml`
+  jumped straight from the 8/25 23:49 UTC run to nothing on 8/26, so the
+  8/27 file that had been correctly staged days earlier just never got
+  promoted. Fixed by a manual trigger the next morning. **Lesson:
+  future-staging is NOT fire-and-forget — GitHub can drop a scheduled cron
+  altogether (not merely run it late), so a perfectly-staged article
+  silently misses its day.** A skipped night isn't self-healing on time
+  either: the next night's cron promotes it, but a day late.
+
+**Because of the skip risk, sanity-check each morning's publish.** For any
+article due "today", after ~08:00 Taipei confirm it actually went live —
+`gh run list --workflow=publish-pending.yml --limit 3` should show a run
+dated the previous ~23:46 UTC; if that run is missing, `gh workflow run
+publish-pending.yml --ref main` immediately. Don't assume a staged file
+promotes itself. (This is how the 8/27 miss was caught — the user noticed
+the article wasn't up.)
 
 **Past- or today-dated articles** (salvage scenarios, urgent
 publishing) can still go straight to `src/content/posts/` + manual
