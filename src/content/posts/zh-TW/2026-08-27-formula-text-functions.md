@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_WORD.html"
   - title: "@ReplaceSubstring — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_REPLACESUBSTRING.html"
+cover: "/covers/formula-text-functions.webp"
+coverStyle: "low-poly-3d"
 ---
 
 在 formula 裡對字串動刀——切一段出來、抓某個字、找了替換——就是幾個 @function 的事。但有一個很多人不知道的重點先講：**`@Left`／`@Right`／`@Middle` 不只吃「字元數」，也吃「分隔字串」。**

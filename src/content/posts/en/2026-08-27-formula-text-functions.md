@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_WORD.html"
   - title: "@ReplaceSubstring — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_REPLACESUBSTRING.html"
+cover: "/covers/formula-text-functions.webp"
+coverStyle: "low-poly-3d"
 ---
 
 Cutting strings in formula — extract a piece, grab a word, find and replace — is a handful of @functions. But one thing many people don't know is worth leading with: **`@Left` / `@Right` / `@Middle` don't just take a character count, they take a delimiter string too.**
