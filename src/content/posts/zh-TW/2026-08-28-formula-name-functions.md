@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_USERNAME.html"
   - title: "@V3UserName — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_V3USERNAME.html"
+cover: "/covers/formula-name-functions.webp"
+coverStyle: "watercolor"
 ---
 
 Notes 名稱有三種長相：**canonical**（`CN=Mary Tsen/OU=Illustration/O=Acme/C=US`，帶標籤的完整式）、**abbreviated**（`Mary Tsen/Illustration/Acme/US`，去掉標籤）、**common**（`Mary Tsen`，只有人名）。站上先前那篇 [NotesName 的三種格式](/domino-news/posts/notesname-formats) 講過**為什麼**這三種會讓比對悄悄失敗；這一篇講在 **formula** 裡怎麼在它們之間互轉、怎麼抽出其中一段。

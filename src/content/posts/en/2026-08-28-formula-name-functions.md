@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_USERNAME.html"
   - title: "@V3UserName — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_V3USERNAME.html"
+cover: "/covers/formula-name-functions.webp"
+coverStyle: "watercolor"
 ---
 
 Notes names come in three shapes: **canonical** (`CN=Mary Tsen/OU=Illustration/O=Acme/C=US`, the full labeled form), **abbreviated** (`Mary Tsen/Illustration/Acme/US`, labels stripped), and **common** (`Mary Tsen`, just the person). The site's earlier [NotesName's three formats](/domino-news/en/posts/notesname-formats) piece covered *why* these three make comparisons silently fail; this part covers how to convert between them and extract a part, in **formula**.
