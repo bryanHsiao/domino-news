@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOW.html"
   - title: "@Modified — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_MODIFIED.html"
+cover: "/covers/formula-date-time.webp"
+coverStyle: "art-deco"
 ---
 
 在 formula 裡做日期運算，沒有什麼龐大的日期函式庫——就是幾個 @function。加減日期用一個、取「現在」用一個、拿文件的建立／修改時間又是一個。這篇把它們串起來，並點出兩個很容易踩的坑。

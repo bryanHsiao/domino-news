@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOW.html"
   - title: "@Modified — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_MODIFIED.html"
+cover: "/covers/formula-date-time.webp"
+coverStyle: "art-deco"
 ---
 
 Date arithmetic in formula isn't a sprawling date library — it's a few @functions. One to add and subtract, one to get "now," another for a document's created/modified time. This part strings them together and flags two easy traps.
