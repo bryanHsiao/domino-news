@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_DO.html"
   - title: "@For — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FOR_FUNCTION.html"
+cover: "/covers/formula-control-flow.webp"
+coverStyle: "pencil-sketch"
 ---
 
 一條簡單的公式就是一個運算式。但真正在用的公式會**分支**（依條件走不同路）、會**存中間值**（算一次、用多次）、偶爾還要**迴圈**。這篇講把公式結構化的幾個工具，以及一個從別的語言過來會覺得反直覺的事實：**在 formula 裡，迴圈其實很少用到。**

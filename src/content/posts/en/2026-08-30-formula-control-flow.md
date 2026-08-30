@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_DO.html"
   - title: "@For — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_FOR_FUNCTION.html"
+cover: "/covers/formula-control-flow.webp"
+coverStyle: "pencil-sketch"
 ---
 
 A simple formula is a single expression. But real formulas **branch** (take different paths by condition), **hold intermediate values** (compute once, use many times), and occasionally **loop**. This part covers the tools for structuring a formula — and one fact that feels counterintuitive coming from other languages: **in formula, you rarely need a loop.**
