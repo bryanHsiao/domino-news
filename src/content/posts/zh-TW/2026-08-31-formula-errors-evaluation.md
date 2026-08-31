@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EVAL.html"
   - title: "Where to use scripts and formulas — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_WHERE_TO_USE_SCRIPTS_AND_FORMULAS.html"
+cover: "/covers/formula-errors-evaluation.webp"
+coverStyle: "photoreal-3d"
 ---
 
 這是 Formula @function 系列的最後一篇。前六篇講 formula **能做什麼**——[讀資料](/domino-news/posts/formula-dblookup-dbcolumn)、[清單處理](/domino-news/posts/formula-list-processing)、[文字](/domino-news/posts/formula-text-functions)、[名稱](/domino-news/posts/formula-name-functions)、[日期](/domino-news/posts/formula-date-time)、[控制流](/domino-news/posts/formula-control-flow)。這一篇講兩件不管你寫什麼都會遇到的事：**公式出錯時怎麼辦**，以及**公式到底在哪裡、什麼時候跑**。

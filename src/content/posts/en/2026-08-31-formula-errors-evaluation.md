@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EVAL.html"
   - title: "Where to use scripts and formulas — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_WHERE_TO_USE_SCRIPTS_AND_FORMULAS.html"
+cover: "/covers/formula-errors-evaluation.webp"
+coverStyle: "photoreal-3d"
 ---
 
 This is the last part of the Formula @function series. The first six covered what formula **can do** — [reading data](/domino-news/en/posts/formula-dblookup-dbcolumn), [list processing](/domino-news/en/posts/formula-list-processing), [text](/domino-news/en/posts/formula-text-functions), [names](/domino-news/en/posts/formula-name-functions), [dates](/domino-news/en/posts/formula-date-time), [control flow](/domino-news/en/posts/formula-control-flow). This part covers two things you hit no matter what you write: **what to do when a formula errors**, and **where and when a formula actually runs**.
