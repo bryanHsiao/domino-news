@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-08-31 · Posts scanned: 136 · Classes catalogued: 97*
+*Generated: 2026-09-01 · Posts scanned: 137 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [formula-for-loop](https://bryanhsiao.github.io/domino-news/posts/formula-for-loop/) | — | — | — |
 | [formula-errors-evaluation](https://bryanhsiao.github.io/domino-news/posts/formula-errors-evaluation/) | — | — | — |
 | [formula-control-flow](https://bryanhsiao.github.io/domino-news/posts/formula-control-flow/) | — | — | — |
 | [formula-date-time](https://bryanhsiao.github.io/domino-news/posts/formula-date-time/) | — | — | — |
