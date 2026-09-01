@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_WHILE_FUNCTION.html"
   - title: "@DoWhile — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_DOWHILE_FUNCTION.html"
+cover: "/covers/formula-for-loop.webp"
+coverStyle: "watercolor"
 ---
 
 The [list-processing part](/domino-news/en/posts/formula-list-processing) showed that most "do the same thing to each value" needs collapse to one line, no loop; the [control-flow part](/domino-news/en/posts/formula-control-flow) said "loops exist but you rarely need them." This part fills in the other half: **when you *do* need a loop, how `@For` works and when it's the right tool.**

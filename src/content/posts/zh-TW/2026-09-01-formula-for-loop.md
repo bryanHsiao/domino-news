@@ -14,6 +14,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_WHILE_FUNCTION.html"
   - title: "@DoWhile — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_DOWHILE_FUNCTION.html"
+cover: "/covers/formula-for-loop.webp"
+coverStyle: "watercolor"
 ---
 
 [清單處理那篇](/domino-news/posts/formula-list-processing)講過，formula 大部分「對每個值做同一件事」的需求，一行就解掉、不必迴圈；[控制流那篇](/domino-news/posts/formula-control-flow)也說了「迴圈存在但少用」。這篇補上另一半：**當你真的需要迴圈的時候，`@For` 怎麼用、什麼情況它才是對的工具。**
