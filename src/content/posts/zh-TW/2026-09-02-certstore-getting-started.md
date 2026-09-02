@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.1/admin/conf_managingservercertificatesandcertificaterequests_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/certstore-getting-started.webp"
+coverStyle: "low-poly-3d"
 ---
 
 一個 Domino 管理員都認得的畫面：某台 web server 的 TLS 憑證半夜到期，網站掛掉，你連進去，發現憑證躺在一個 `keyfile.kyr` 檔裡——那台 server 專屬的 keyring 檔，配一個 `.sth` 密碼隱藏檔，用 `kyrtool` 或更早的 Server Certificate Admin（`certsrv.nsf`）產生。要換一張憑證，得在那台機器上重跑一輪、把新的 kyr 佈署過去、重啟 HTTP task。多台 server 就是把這套動作乘以台數。憑證快到期沒人盯，就等著半夜出事。

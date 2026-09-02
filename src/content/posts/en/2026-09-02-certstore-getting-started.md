@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.1/admin/conf_managingservercertificatesandcertificaterequests_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/certstore-getting-started.webp"
+coverStyle: "low-poly-3d"
 ---
 
 A picture every Domino admin recognizes: a web server's TLS certificate expires at 2 AM, the site goes down, you log in, and the certificate turns out to live in a `keyfile.kyr` — a keyring file specific to that one server, paired with a `.sth` password-stash file, produced by `kyrtool` or, further back, the Server Certificate Admin application (`certsrv.nsf`). To swap a certificate you re-run the whole dance on that box, push the new kyr out, restart the HTTP task. More servers means multiplying that by the server count. No one watching expiries means something breaks in the middle of the night.
