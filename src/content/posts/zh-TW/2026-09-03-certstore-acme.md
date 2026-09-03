@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.1/admin/secu_le_configuring_acme_accounts.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/certstore-acme.webp"
+coverStyle: "minimalist-mono"
 ---
 
 [Part 1](/domino-news/posts/certstore-getting-started) 把憑證從散落的 kyr 檔搬進了 `certstore.nsf`，也走過手動匯入第三方 CA 憑證的流程——複製 CSR、送去 CA、等簽好、貼回來。這比 kyr 時代乾淨，但它還是**手動**的。而 Let's Encrypt 的憑證只有 90 天效期，代表這套複製貼上的動作一年要重演四次、每台對外主機各一輪。忘記換，網站照樣半夜掛掉。

@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.1/admin/secu_le_configuring_acme_accounts.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/certstore-acme.webp"
+coverStyle: "minimalist-mono"
 ---
 
 [Part 1](/domino-news/en/posts/certstore-getting-started) moved certificates out of scattered kyr files and into `certstore.nsf`, and walked the manual third-party CA import — copy the CSR, send it to the CA, wait for the signature, paste it back. That's cleaner than the kyr era, but it's still **manual**. And a Let's Encrypt certificate is only valid for 90 days, which means that copy-and-paste dance repeats four times a year, once per internet-facing host. Forget one, and the site still goes down at 2 AM.
