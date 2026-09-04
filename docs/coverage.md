@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-09-03 · Posts scanned: 139 · Classes catalogued: 97*
+*Generated: 2026-09-04 · Posts scanned: 140 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [certstore-for-developers](https://bryanhsiao.github.io/domino-news/posts/certstore-for-developers/) | — | — | — |
 | [certstore-acme](https://bryanhsiao.github.io/domino-news/posts/certstore-acme/) | — | — | — |
 | [certstore-getting-started](https://bryanhsiao.github.io/domino-news/posts/certstore-getting-started/) | — | — | — |
 | [formula-for-loop](https://bryanhsiao.github.io/domino-news/posts/formula-for-loop/) | — | — | — |
