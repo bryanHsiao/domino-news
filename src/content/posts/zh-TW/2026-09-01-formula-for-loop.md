@@ -14,6 +14,10 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_WHILE_FUNCTION.html"
   - title: "@DoWhile — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_DOWHILE_FUNCTION.html"
+  - title: "Server Tasks - Agent Manager tab（Max LotusScript/Java execution time）— HCL Domino Admin Help"
+    url: "https://help.hcl-software.com/domino/14.5.1/admin/othr_servertasksagentmanagertab_r.html"
+  - title: "Running Web agents（Web agent time-out）— HCL Domino Admin Help"
+    url: "https://help.hcl-software.com/domino/14.5.1/admin/tune_runningwebagents_t.html"
 cover: "/covers/formula-for-loop.webp"
 coverStyle: "watercolor"
 ---
@@ -121,7 +125,14 @@ n := 1;
 
 ## 一個保護：無限迴圈不會卡死 server
 
-最後一個安心的點：就算你的條件寫錯、變成無窮迴圈，也不會把 server 拖垮。官方說明白——**跑迭代的時間一旦超過標準逾時值，formula 引擎會直接中止公式、打斷無限迴圈**。當然，這是保護網、不是讓你偷懶的理由——條件與遞增還是要寫對。
+最後一個安心的點：就算你的條件寫錯、變成無窮迴圈，也不會把 server 拖垮。官方 `@For` 文件的原文是：「The formula engine exits a formula or breaks an infinite loop if the time spent performing the iterations exceeds the standard timeout value allowed for an operation.」——跑迭代的時間一旦超過「該操作的標準逾時值」，formula 引擎就中止公式、打斷無限迴圈。
+
+那個「標準逾時值」是多少、能不能獨立設定？官方這句刻意講得通用，因為它取決於**包住這段公式的操作**——實務上就是外層 agent 的執行時間上限，而那設定在 **Server 文件**（不是 notes.ini）：
+
+- **背景／排程 agent**：Server 文件 → Server Tasks → Agent Manager 分頁的 [`Max LotusScript/Java execution time`](https://help.hcl-software.com/domino/14.5.1/admin/othr_servertasksagentmanagertab_r.html)，預設**日間 10 分鐘／夜間 15 分鐘**；官方寫「If the agent exceeds this maximum, the agent doesn't finish, and the Agent Log records the termination.」——超過就中止、記進 Agent Log。
+- **Web agent**：Server 文件 → Internet Protocols → Domino Web Engine 分頁的 [`Web agent time-out`](https://help.hcl-software.com/domino/14.5.1/admin/tune_runningwebagents_t.html)，單位是秒、預設 **0（不逾時）**。
+
+`AMgr_*` 那組 notes.ini 控的是排程間隔、不是執行時間上限，所以要調得改 Server 文件那個欄位，而不是加 ini。要老實提醒的是：HCL 並沒有逐字把 @For 這句的「standard timeout value」綁到上面那個欄位，但那就是實務上「包住 @For 的操作」會被砍的地方。這終究是保護網、不是讓你偷懶的理由——條件與遞增還是要寫對。
 
 ## 小結
 

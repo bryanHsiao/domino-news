@@ -14,6 +14,10 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_WHILE_FUNCTION.html"
   - title: "@DoWhile — HCL Domino Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_DOWHILE_FUNCTION.html"
+  - title: "Server Tasks - Agent Manager tab (Max LotusScript/Java execution time) — HCL Domino Admin Help"
+    url: "https://help.hcl-software.com/domino/14.5.1/admin/othr_servertasksagentmanagertab_r.html"
+  - title: "Running Web agents (Web agent time-out) — HCL Domino Admin Help"
+    url: "https://help.hcl-software.com/domino/14.5.1/admin/tune_runningwebagents_t.html"
 cover: "/covers/formula-for-loop.webp"
 coverStyle: "watercolor"
 ---
@@ -121,7 +125,14 @@ n := 1;
 
 ## One safety net: an infinite loop won't hang the server
 
-A reassuring last point: even if your condition is wrong and the loop never ends, it won't drag the server down. The docs are explicit — **once the iterations exceed the standard timeout, the formula engine aborts the formula and breaks the infinite loop.** That's a safety net, not an excuse, of course — still write the condition and increment correctly.
+A reassuring last point: even if your condition is wrong and the loop never ends, it won't drag the server down. The exact wording in the `@For` docs is: "The formula engine exits a formula or breaks an infinite loop if the time spent performing the iterations exceeds the standard timeout value allowed for an operation." — once the iterations exceed *the operation's* standard timeout, the formula engine aborts the formula and breaks the loop.
+
+So how long is that "standard timeout," and can you set it? The docs keep the phrasing generic on purpose, because it depends on **the operation wrapping the formula** — in practice, the enclosing agent's execution-time limit, which lives in the **Server document** (not notes.ini):
+
+- **Background / scheduled agents**: Server document → Server Tasks → Agent Manager tab → [`Max LotusScript/Java execution time`](https://help.hcl-software.com/domino/14.5.1/admin/othr_servertasksagentmanagertab_r.html), defaulting to **10 minutes (daytime) / 15 minutes (nighttime)**; the docs state "If the agent exceeds this maximum, the agent doesn't finish, and the Agent Log records the termination."
+- **Web agents**: Server document → Internet Protocols → Domino Web Engine tab → [`Web agent time-out`](https://help.hcl-software.com/domino/14.5.1/admin/tune_runningwebagents_t.html), in seconds, defaulting to **0 (no timeout)**.
+
+The `AMgr_*` notes.ini settings govern scheduling intervals, not the execution-time cap — so you change the Server document field, not an ini. One honest caveat: HCL doesn't verbatim tie the `@For` sentence's "standard timeout value" to that specific field, but that's where the operation wrapping your `@For` actually gets cut off in practice. It's a safety net, not an excuse — still write the condition and increment correctly.
 
 ## Wrap-up
 
