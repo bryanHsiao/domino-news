@@ -18,6 +18,8 @@ sources:
     url: "https://github.com/bryanHsiao/drapi-oidc-keycloak"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/certstore-for-developers.webp"
+coverStyle: "collage"
 ---
 
 [Part 1](/domino-news/posts/certstore-getting-started) 把憑證收進 `certstore.nsf`，[Part 2](/domino-news/posts/certstore-acme) 讓它自動跟 Let's Encrypt 申請與續期。到這裡憑證「在庫裡」了，但開發者會馬上撞到兩個實際問題：

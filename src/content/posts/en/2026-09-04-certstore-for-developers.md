@@ -18,6 +18,8 @@ sources:
     url: "https://github.com/bryanHsiao/drapi-oidc-keycloak"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/certstore-for-developers.webp"
+coverStyle: "collage"
 ---
 
 [Part 1](/domino-news/en/posts/certstore-getting-started) moved certificates into `certstore.nsf`; [Part 2](/domino-news/en/posts/certstore-acme) had it request and renew them automatically from Let's Encrypt. The certificate is now "in the store" — but a developer immediately hits two practical questions:
