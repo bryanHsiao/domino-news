@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-09-04 · Posts scanned: 140 · Classes catalogued: 97*
+*Generated: 2026-09-05 · Posts scanned: 141 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -89,7 +89,7 @@
 | [NotesJSONElement](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONELEMENT_CLASS.html) | JSON | [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/) | 2026-05-24 |
 | [NotesJSONNavigator](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONNAVIGATOR_CLASS.html) | JSON | [notes-query-results-processor](https://bryanhsiao.github.io/domino-news/posts/notes-query-results-processor/), [lotusscript-http-json](https://bryanhsiao.github.io/domino-news/posts/lotusscript-http-json/), [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/), [notes-json-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-json-navigator/) | 2026-04-28 |
 | [NotesJSONObject](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESJSONOBJECT_CLASS.html) | JSON | [notes-json-array-element-object](https://bryanhsiao.github.io/domino-news/posts/notes-json-array-element-object/), [notes-json-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-json-navigator/) | 2026-05-24 |
-| [NotesLLMRequest](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NotesLLMRequest_Class.html) | DominoIQ | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) | 2026-05-23 |
+| [NotesLLMRequest](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NotesLLMRequest_Class.html) | DominoIQ | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/), [domino-iq-timeout-streaming](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-streaming/) | 2026-05-23 |
 | [NotesLLMResponse](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NotesLLMResponse_class.html) | DominoIQ | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) | 2026-05-23 |
 | [NotesLog](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESLOG_CLASS.html) | Session | [notes-log](https://bryanhsiao.github.io/domino-news/posts/notes-log/) | 2026-06-07 |
 | [NotesMIMEEntity](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESMIMEENTITY_CLASS_OVERVIEW.html) | Item | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) | 2026-06-04 |
@@ -169,8 +169,8 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `IDVault` | [notes-id-vault](https://bryanhsiao.github.io/domino-news/posts/notes-id-vault/) |
 | `International` | [notes-international](https://bryanhsiao.github.io/domino-news/posts/notes-international/) |
 | `Item` | [readers-authors-fields](https://bryanhsiao.github.io/domino-news/posts/readers-authors-fields/), [domino-large-summary-field-too-large](https://bryanhsiao.github.io/domino-news/posts/domino-large-summary-field-too-large/) |
-| `LLMReq` | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) |
-| `LLMRes` | [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) |
+| `LLMReq` | [domino-iq-timeout-streaming](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-streaming/), [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) |
+| `LLMRes` | [domino-iq-timeout-streaming](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-streaming/), [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) |
 | `Log` | [notes-log](https://bryanhsiao.github.io/domino-news/posts/notes-log/) |
 | `MIMEEntity` | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) |
 | `MIMEHeader` | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) |
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [domino-iq-timeout-streaming](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-streaming/) | `NotesLLMRequest` | `LLMReq`, `LLMRes` | — |
 | [certstore-for-developers](https://bryanhsiao.github.io/domino-news/posts/certstore-for-developers/) | — | — | — |
 | [certstore-acme](https://bryanhsiao.github.io/domino-news/posts/certstore-acme/) | — | — | — |
 | [certstore-getting-started](https://bryanhsiao.github.io/domino-news/posts/certstore-getting-started/) | — | — | — |
