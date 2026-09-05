@@ -113,4 +113,4 @@ When Domino IQ hits a timeout, don't go looking for the setting that doesn't exi
 
 ## What about Java and SSJS?
 
-Domino IQ's LLM API maps to `LLMReq` / `LLMRes` on the Java side (`LLMReq` has both completion and a streaming completion). SSJS has no counterpart class today. Java streaming likewise uses an event/callback model to get past the same timeout; the details are for a future Java-specific piece.
+Domino IQ's LLM API maps to `LLMReq` / `LLMRes` on the Java side (`LLMReq` has both completion and a streaming completion). SSJS has no native counterpart class, but because XPages' `session` is a `lotus.domino.Session`, it can call the Java API directly. How Java's `completionStream` is written (the callback returns `Continue`/`Stop` to control the stream), and how XPages SSJS references Java to get past the same timeout, are walked through in [the follow-up: the Java + SSJS version](/domino-news/en/posts/domino-iq-timeout-java-ssjs).

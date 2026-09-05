@@ -113,4 +113,4 @@ Domino IQ 撞逾時，先別找那個不存在的 timeout 設定：請求約 5 �
 
 ## 同類別在其他語言
 
-Domino IQ 的 LLM API 在 Java 端對應 `LLMReq` / `LLMRes`（`LLMReq` 一樣有 completion 與 streaming completion）；SSJS 目前沒有對位的類別。Java 版的串流一樣是走事件/回呼模型突破同一個逾時，細節留待日後單獨的 Java 篇。
+Domino IQ 的 LLM API 在 Java 端對應 `LLMReq` / `LLMRes`（`LLMReq` 一樣有 completion 與 streaming completion）；SSJS 沒有對位的原生類別，但因為 XPages 的 `session` 就是 `lotus.domino.Session`，可以直接調用 Java API。Java 的 `completionStream` 怎麼寫（callback 回傳 `Continue`／`Stop` 控制串流），以及 XPages SSJS 怎麼引用 Java 突破同一個逾時，[續篇：Java + SSJS 版](/domino-news/posts/domino-iq-timeout-java-ssjs)專門走一遍。
