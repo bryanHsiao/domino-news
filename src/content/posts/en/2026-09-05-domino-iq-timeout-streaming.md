@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NotesLLMRequest_Class.html"
 relatedJava: ["LLMReq", "LLMRes"]
 relatedSsjs: []
+cover: "/covers/domino-iq-timeout-streaming.webp"
+coverStyle: "pencil-sketch"
 ---
 
 You built a long-document summary feature on Domino IQ: the user clicks a button, a long email thread or a big document goes to the LLM, and a summary comes back. In development you tested with short prompts — instant, no problem.

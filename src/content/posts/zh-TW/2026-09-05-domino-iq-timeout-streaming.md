@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NotesLLMRequest_Class.html"
 relatedJava: ["LLMReq", "LLMRes"]
 relatedSsjs: []
+cover: "/covers/domino-iq-timeout-streaming.webp"
+coverStyle: "pencil-sketch"
 ---
 
 你用 Domino IQ 做了一個長文摘要的功能：使用者按一個按鈕，把一長串郵件 thread 或一份長文件丟給 LLM，回一段摘要。開發時你拿短短的 prompt 測，秒回，沒問題。
