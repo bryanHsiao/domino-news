@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-09-05 · Posts scanned: 141 · Classes catalogued: 97*
+*Generated: 2026-09-06 · Posts scanned: 142 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -169,8 +169,8 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `IDVault` | [notes-id-vault](https://bryanhsiao.github.io/domino-news/posts/notes-id-vault/) |
 | `International` | [notes-international](https://bryanhsiao.github.io/domino-news/posts/notes-international/) |
 | `Item` | [readers-authors-fields](https://bryanhsiao.github.io/domino-news/posts/readers-authors-fields/), [domino-large-summary-field-too-large](https://bryanhsiao.github.io/domino-news/posts/domino-large-summary-field-too-large/) |
-| `LLMReq` | [domino-iq-timeout-streaming](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-streaming/), [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) |
-| `LLMRes` | [domino-iq-timeout-streaming](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-streaming/), [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) |
+| `LLMReq` | [domino-iq-timeout-java-ssjs](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-java-ssjs/), [domino-iq-timeout-streaming](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-streaming/), [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) |
+| `LLMRes` | [domino-iq-timeout-java-ssjs](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-java-ssjs/), [domino-iq-timeout-streaming](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-streaming/), [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) |
 | `Log` | [notes-log](https://bryanhsiao.github.io/domino-news/posts/notes-log/) |
 | `MIMEEntity` | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) |
 | `MIMEHeader` | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) |
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [domino-iq-timeout-java-ssjs](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-java-ssjs/) | — | `LLMReq`, `LLMRes` | — |
 | [domino-iq-timeout-streaming](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-streaming/) | `NotesLLMRequest` | `LLMReq`, `LLMRes` | — |
 | [certstore-for-developers](https://bryanhsiao.github.io/domino-news/posts/certstore-for-developers/) | — | — | — |
 | [certstore-acme](https://bryanhsiao.github.io/domino-news/posts/certstore-acme/) | — | — | — |
