@@ -20,6 +20,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.0/xpageuser/wpd_overview_xpages.html"
 relatedJava: ["LLMReq", "LLMRes"]
 relatedSsjs: []
+cover: "/covers/domino-iq-timeout-java-ssjs.webp"
+coverStyle: "low-poly-3d"
 ---
 
 [昨天那篇](/domino-news/posts/domino-iq-timeout-streaming)講了 LotusScript 怎麼用 `CompletionStream` 突破 Domino IQ 的 5 分鐘逾時。那個逾時是 Domino IQ 這一側的設計，跟你用哪種語言呼叫無關——所以如果你的程式是 **Java**（背景 agent、或一個 bean）或跑在 **XPages** 上（SSJS），你會撞到一模一樣的牆。
