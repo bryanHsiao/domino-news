@@ -84,7 +84,11 @@ Call doc.Save(True, False)
 4. 選取控制項、右鍵開 **File Upload Control Properties** 屬性框。
 5. 在 **Hide** 頁勾選 **"Hide paragraph from Notes® R4.6 or later"**——既然它只在 web 用，順手對 Notes client 隱藏。
 
+![Domino Designer 的「建立 → 嵌入元件 → 檔案上傳控制」選單，對應步驟 3](/domino-news/post-images/domino-file-upload-control-menu.png)
+
 放好之後，Web 使用者在編輯模式下就能打路徑檔名、或按 browse 鈕挑檔上傳；送出後檔案成為這份文件的附件（跟 client 同一個模型）。
+
+![放好後，File Upload Control 在 web 表單上的樣子——「檔案上傳：」標籤配一個「檔案上載」按鈕](/domino-news/post-images/domino-file-upload-control-form.png)
 
 上傳之後要在伺服器端處理（驗證、改名、搬去別的欄位、通知），就掛一個 **WebQuerySave** agent，用跟 client 完全一樣的後端 API——`doc.HasEmbedded`、`doc.GetAttachment(檔名)`、富文本欄位的 `EmbeddedObjects`、`ExtractFile`——處理它。至於怎麼讓使用者把附件**下載**回去，用的是一條 `$File` 的 URL——這條很常用、也常有人記不清楚，下面單獨拆一節講。
 

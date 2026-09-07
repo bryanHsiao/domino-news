@@ -40,9 +40,23 @@ Let's pin the conclusion with a figure first: however many files you pick, they 
 
 ## Multi-file upload (1): the classic-web "one word"
 
-A classic web form's File Upload Control is one file at a time by default. [Jesper Kiaer of nevermind.dk](https://www.nevermind.dk/nevermind/blog.nsf/subject/old-school-domino-web-dev---a-very-simple-way-to-upload-multiple-files-just-one-word) points out a one-word old-school fix: add the HTML5 **`multiple`** attribute to the upload control (the `<input type="file">` it generates), and the picker switches from single to multi-select. He also flags a small Designer quirk — **the attribute renders correctly only when inserted from the Designer menu**; cut-and-pasting the upload control can render it wrong.
+A classic web form's File Upload Control is one file at a time by default. [Jesper Kiaer of nevermind.dk](https://www.nevermind.dk/nevermind/blog.nsf/subject/old-school-domino-web-dev---a-very-simple-way-to-upload-multiple-files-just-one-word) points out a one-word old-school fix: add the HTML5 **`multiple`** attribute and the picker switches from single to multi-select.
 
-`multiple` is pure browser behavior — it lets the user pick several files and submit them together. **But here's the honest part**: whether each of those submitted files actually lands as its own separate `$FILE` attachment on the document is **not something HCL's docs confirm** — the evidence is the author's field claim. So if you're building a production feature on this, test it in your own environment first: upload three files, then check with LotusScript whether `rtitem.EmbeddedObjects` really holds three. The trick is lightweight and worth knowing, but don't treat "each one stores as a `$FILE`" as documented.
+Where exactly? Open the **File Upload Control properties box → the "HTML" (`<HTML>`) tab → the "Other" field** and type `multiple`:
+
+![The File Upload Control properties box, HTML tab, with `multiple` typed into the "Other" attributes field (Traditional Chinese Designer UI)](/domino-news/post-images/domino-multiple-attribute-property.png)
+
+We tested this in Domino Designer for the site. With `multiple` set, the file dialog that opens from the web "Choose File" button lets you pick several at once:
+
+![With `multiple` set, the web form's file dialog can select several files at once](/domino-news/post-images/domino-multiple-attribute-picker.png)
+
+Pick a few, and the button shows "3 files" — multi-select works:
+
+![After selecting, the web picker shows "3 files" next to the button](/domino-news/post-images/domino-multiple-attribute-result.png)
+
+(The author also flags a Designer quirk: **insert the control from the menu to be safe** — cut-and-pasting it can render wrong.)
+
+To be clear: `multiple` is **pure browser HTML5 behavior**, not an official HCL feature for classic web forms — it works, and we verified the multi-select, but it isn't built-in-and-in-the-What's-new the way XPages 14.5.1 is. As for whether each submitted file lands as its own separate `$FILE`, the screenshots verify the *selection* step only; verify the *storage* step in your own environment by counting `rtitem.EmbeddedObjects` (see [LotusScript attachment handling](/domino-news/en/posts/notes-embedded-object)).
 
 ## Multi-file upload (2): XPages got it built-in in 14.5.1
 

@@ -42,9 +42,23 @@ relatedSsjs: []
 
 ## 多檔上傳（一）：傳統 web 的「一個字」
 
-傳統 web form 的 File Upload Control 本來是一次一個檔。[nevermind.dk 的 Jesper Kiaer](https://www.nevermind.dk/nevermind/blog.nsf/subject/old-school-domino-web-dev---a-very-simple-way-to-upload-multiple-files-just-one-word) 指出一個「一個字」就解掉的老派招數：在上傳控制項（也就是它產生的 `<input type="file">`）加上 HTML5 的 **`multiple`** 屬性，選檔器就從單選變成一次可選多個。他也提到一個 Designer 的小雷：**這個屬性要從選單插入才會正確顯示**，在 Designer 裡剪貼上傳控制項有時會渲染不對。
+傳統 web form 的 File Upload Control 本來是一次一個檔。[nevermind.dk 的 Jesper Kiaer](https://www.nevermind.dk/nevermind/blog.nsf/subject/old-school-domino-web-dev---a-very-simple-way-to-upload-multiple-files-just-one-word) 指出一個「一個字」就解掉的老派招數：加上 HTML5 的 **`multiple`** 屬性，選檔器就從單選變成一次可選多個。
 
-`multiple` 是純瀏覽器行為，讓使用者一次挑好幾個檔送出。**但這裡要老實講一件事**：那些一次送出的檔，是不是真的每一個都在文件上各存成一個獨立的 `$FILE` 附件——這一步 **HCL 官方文件沒有明文背書**，目前的證據是作者的實測宣稱。所以如果你要靠這招上正式功能，建議先在自己的環境測一次：上傳三個檔，事後用 LotusScript 檢查 `rtitem.EmbeddedObjects` 是不是真的三個。招數本身很輕巧，值得知道，但別把「它一定各存成 `$FILE`」當成有文件保證的事。
+具體加在哪？打開 **File Upload Control 屬性框 →「HTML 標籤」（`<HTML>`）頁 →「其他」欄**，填入 `multiple`：
+
+![File Upload Control 屬性框的「HTML 標籤」頁，在「其他」欄填入 multiple](/domino-news/post-images/domino-multiple-attribute-property.png)
+
+這招我們在站上的 Domino Designer 實測過。填好 `multiple` 之後，按網頁上的「選擇檔案」開啟的檔案對話框就能一次挑好幾個：
+
+![填了 multiple 之後，web 表單的檔案對話框可以一次選取多個檔](/domino-news/post-images/domino-multiple-attribute-picker.png)
+
+選好送回來，按鈕旁就顯示「3 個檔案」——多選確實生效：
+
+![選完之後，web 選檔器按鈕旁顯示「3 個檔案」](/domino-news/post-images/domino-multiple-attribute-result.png)
+
+（作者也提到一個 Designer 小雷：控制項**從選單插入比較保險**，在 Designer 裡剪貼上傳控制項有時會渲染不對。）
+
+要說清楚的是：`multiple` 是**純瀏覽器的 HTML5 行為**，不是 HCL 為傳統 web form 做的官方功能——它能用、我們也驗了多選這一步，但它不像 XPages 14.5.1 那樣是官方內建、寫進 What's new 的東西。至於送出後每個檔是否各存成一個獨立的 `$FILE`，上面截圖只驗到「選取」這一步；「儲存」那步可用 [LotusScript 處理附件](/domino-news/posts/notes-embedded-object) 那篇的 `rtitem.EmbeddedObjects` 在自己環境數一次確認。
 
 ## 多檔上傳（二）：XPages 到 14.5.1 才內建
 

@@ -84,7 +84,11 @@ The official Designer steps are five:
 4. Select the control, right-click to open the **File Upload Control Properties** box.
 5. On the **Hide** tab, check **"Hide paragraph from Notes® R4.6 or later"** — since it's web-only, hide it from the Notes client while you're there.
 
+![The Domino Designer "Create → Embedded Element → File Upload Control" menu (step 3), shown here in the Traditional Chinese Designer UI](/domino-news/post-images/domino-file-upload-control-menu.png)
+
 Once placed, a Web user in edit mode can type the path and file name or click a browse button to pick a file; on submit the file becomes an attachment on the document (the same model as the client).
+
+![The File Upload Control as it appears on a web form once placed — a label next to a file-upload button](/domino-news/post-images/domino-file-upload-control-form.png)
 
 To process the upload server-side (validate, rename, move to another field, notify), hang a **WebQuerySave** agent on the form and use the exact same backend API as the client — `doc.HasEmbedded`, `doc.GetAttachment(name)`, the rich text field's `EmbeddedObjects`, `ExtractFile`. As for letting users **download** an attachment back, that's a `$File` URL — a commonly needed, commonly misremembered one, so it gets its own section below.
 
