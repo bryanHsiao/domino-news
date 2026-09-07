@@ -72,15 +72,19 @@ Call doc.Save(True, False)
 
 ## 傳統 web 的 Notes form：File Upload Control
 
-把同一張表單搬上瀏覽器，就不能靠「拖進富文本欄位」了——瀏覽器沒有那個互動。Domino 對傳統 web form 提供的是一個**內嵌元素**：[File Upload Control](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_CREATING_A_FILE_UPLOAD_CONTROL_STEPS.html)。在 Designer 裡的步驟很直接：
+把同一張表單搬上瀏覽器，就不能靠「拖進富文本欄位」了——瀏覽器沒有那個互動。Domino 對傳統 web form 提供的是一個**內嵌元素**：[File Upload Control](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_CREATING_A_FILE_UPLOAD_CONTROL_STEPS.html)。
 
-> Choose Create - Embedded Element - File Upload Control.
+**兩個前提（官方明列）**：這個控制項**只在 web 有效、Notes client 不支援**（官方：「The file upload control is not supported in Notes」），而且**伺服器管理員要先設好一個暫存目錄**，否則附件不會隨文件存下來。
 
-幾個要知道的點：
+官方在 Designer 裡的步驟是五步：
 
-- **它是 web 專用的**：官方明講「The file upload control is not supported in Notes」——放了它，在 Notes client 開這張表單不會有作用，它只在瀏覽器上渲染成一個檔案選擇框。
-- **要在編輯模式**：使用者是在「建立表單或以編輯模式開啟文件」時才能附檔——跟 client 一樣，唯讀模式不能上傳。
-- **檔案附到文件上**：送出後，檔案就成為這份文件的附件（跟 client 同一個模型），伺服器端需要有設好的暫存目錄讓附件落地。
+1. 開啟要加上傳控制項的那張表單。
+2. 把游標移到要放上傳框的位置。
+3. **Create - Embedded Element - File Upload Control**——從主選單建立這個內嵌元素。
+4. 選取控制項、右鍵開 **File Upload Control Properties** 屬性框。
+5. 在 **Hide** 頁勾選 **"Hide paragraph from Notes® R4.6 or later"**——既然它只在 web 用，順手對 Notes client 隱藏。
+
+放好之後，Web 使用者在編輯模式下就能打路徑檔名、或按 browse 鈕挑檔上傳；送出後檔案成為這份文件的附件（跟 client 同一個模型）。
 
 上傳之後要在伺服器端處理（驗證、改名、搬去別的欄位、通知），就掛一個 **WebQuerySave** agent，用跟 client 完全一樣的後端 API——`doc.HasEmbedded`、`doc.GetAttachment(檔名)`、富文本欄位的 `EmbeddedObjects`、`ExtractFile`——處理它。至於怎麼讓使用者把附件**下載**回去，用的是一條 `$File` 的 URL——這條很常用、也常有人記不清楚，下面單獨拆一節講。
 

@@ -72,15 +72,19 @@ Call doc.Save(True, False)
 
 ## Classic web form: the File Upload Control
 
-Put that same form in a browser and "drag into a rich text field" is off the table — the browser has no such interaction. What Domino gives a classic web form is an **embedded element**: the [File Upload Control](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_CREATING_A_FILE_UPLOAD_CONTROL_STEPS.html). The Designer step is direct:
+Put that same form in a browser and "drag into a rich text field" is off the table — the browser has no such interaction. What Domino gives a classic web form is an **embedded element**: the [File Upload Control](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_CREATING_A_FILE_UPLOAD_CONTROL_STEPS.html).
 
-> Choose Create - Embedded Element - File Upload Control.
+**Two prerequisites (the docs list them)**: the control is **web-only — not supported in the Notes client** (the docs: "The file upload control is not supported in Notes"), and **the server administrator must configure a temp directory**, or attachments won't save with the document.
 
-A few things to know:
+The official Designer steps are five:
 
-- **It's web-only**: the docs say plainly "The file upload control is not supported in Notes" — put one on the form and it does nothing in the Notes client; it renders as a file-picker only in the browser.
-- **Edit mode required**: users attach a file when they "create a form or open a document in Edit mode" — same as the client, no uploading in read mode.
-- **The file attaches to the document**: on submit the file becomes an attachment on the document (the same model as the client), and the server needs a configured temp directory for the attachment to land in.
+1. Open the form you want to add the upload control to.
+2. Move the cursor to where the upload box should appear.
+3. **Create - Embedded Element - File Upload Control** — create the embedded element from the menu.
+4. Select the control, right-click to open the **File Upload Control Properties** box.
+5. On the **Hide** tab, check **"Hide paragraph from Notes® R4.6 or later"** — since it's web-only, hide it from the Notes client while you're there.
+
+Once placed, a Web user in edit mode can type the path and file name or click a browse button to pick a file; on submit the file becomes an attachment on the document (the same model as the client).
 
 To process the upload server-side (validate, rename, move to another field, notify), hang a **WebQuerySave** agent on the form and use the exact same backend API as the client — `doc.HasEmbedded`, `doc.GetAttachment(name)`, the rich text field's `EmbeddedObjects`, `ExtractFile`. As for letting users **download** an attachment back, that's a `$File` URL — a commonly needed, commonly misremembered one, so it gets its own section below.
 
