@@ -82,7 +82,7 @@ A few things to know:
 - **Edit mode required**: users attach a file when they "create a form or open a document in Edit mode" — same as the client, no uploading in read mode.
 - **The file attaches to the document**: on submit the file becomes an attachment on the document (the same model as the client), and the server needs a configured temp directory for the attachment to land in.
 
-To process the upload server-side (validate, rename, move to another field, notify), hang a **WebQuerySave** agent on the form and use the exact same backend API as the client — `doc.HasEmbedded`, `doc.GetAttachment(name)`, the rich text field's `EmbeddedObjects`, `ExtractFile`. To let users download an attachment back, hand them the `$File/Filename?OpenElement` [URL](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_ABOUT_URL_COMMANDS_FOR_OPENING_IMAGE_FILES_ATTACHMENTS_AND_OLE_OBJECTS.html).
+To process the upload server-side (validate, rename, move to another field, notify), hang a **WebQuerySave** agent on the form and use the exact same backend API as the client — `doc.HasEmbedded`, `doc.GetAttachment(name)`, the rich text field's `EmbeddedObjects`, `ExtractFile`. As for letting users **download** an attachment back, that's a `$File` URL — a commonly needed, commonly misremembered one, so it gets its own section below.
 
 ## XPages: xp:fileUpload with xp:fileDownload
 
@@ -101,6 +101,38 @@ The typical shape is both controls on one XPage, `value` pointing at the same ri
 ```
 
 When the user picks a file and saves the document, `xp:fileUpload` attaches it to the `body` rich text field; `xp:fileDownload` reads the list from that same field, offering download and (with `allowDelete`) removal. Binding both to the *same* field is what makes them the same set of attachments — and it's the easiest thing to wire wrong on the XPages path.
+
+## Getting an attachment back: the $File download URL
+
+Because all three front ends store the same kind of attachment, "how do I download it" also has one common answer: point a [URL](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_ABOUT_URL_COMMANDS_FOR_OPENING_IMAGE_FILES_ATTACHMENTS_AND_OLE_OBJECTS.html) straight at the attachment. The form is:
+
+```
+http://Host/Database/View/Document/$File/Filename?OpenElement
+```
+
+The official example looks like this:
+
+```
+http://www.lotus-10.com/lproducts.nsf/By+Part+Number/SN156/$File/spec.txt?OpenElement
+```
+
+Segment by segment:
+
+- **Host**: the server address (`www.lotus-10.com`).
+- **Database**: the NSF file name or path (`lproducts.nsf`).
+- **View**: a view name, used to locate the document (`By+Part+Number`; spaces in the name become `+` in the URL).
+- **Document**: the key that identifies the document within that view (`SN156` in the example; in practice the document's UNID is also common).
+- **`$File`**: the fixed marker that tells Domino "what I want is an attachment."
+- **Filename**: the attachment's file name (`spec.txt`).
+- **`?OpenElement`**: the command that tells Domino to serve the element.
+
+One important, easily-missed caveat: the docs themselves say this kind of URL "makes it impractical to create these URLs manually" — **hand-typing it is error-prone, so in practice you generate it in code** rather than expecting users to memorize it. How each context gets the URL:
+
+- **XPages**: you don't build it yourself — `xp:fileDownload` generates a download link for each attachment, and the user clicks the file name to download.
+- **Classic web / LotusScript**: build the URL from the document's own data (view + document key/UNID + file name) and drop it into the page or a computed field for the user to click.
+- **Notes client**: double-click the attachment to open or save it — no URL needed; this is for the browser-fetch case.
+
+The same attachment is reachable through this URL no matter which front end uploaded it — because the destination is always an attachment on the same rich text field.
 
 ## The three contexts at a glance
 

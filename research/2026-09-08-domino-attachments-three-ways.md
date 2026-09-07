@@ -90,3 +90,8 @@ relatedJava EmbeddedObject/RichTextItem 為正確 lotus.domino 名。
 ## 異動日誌
 - 2026-09-07 研究 subagent 掃三支柱、雙語草稿（前端對照、後端連 7/07）、diversity、標題 loop、sidecar（Opus 4.8）
 - 2026-09-07 獨立 fact-check subagent → PASS（零必修）；修 zh 贅字（Opus 4.8）
+- 2026-09-07 使用者要求把下載 URL 特別寫清楚 → 抽成獨立一節「取回附件：$File 的下載 URL」，
+  逐段拆解（Host/Database/View/Document/$File/Filename/?OpenElement）+ 官方實例
+  `.../By+Part+Number/SN156/$File/spec.txt?OpenElement` + 逐字「makes it impractical to create these URLs
+  manually」+ 三情境怎麼拿到 URL。內容全釘在 H_ABOUT_URL_COMMANDS_..._OLE_OBJECTS.html（本輪重新 WebFetch
+  確認 segment 拆解與逐字）；UNID 用法以「實務也常見」hedge、未宣稱官方逐字。diversity 仍 25%、build 過（Opus 4.8）

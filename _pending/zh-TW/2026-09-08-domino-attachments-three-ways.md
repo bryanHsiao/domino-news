@@ -82,7 +82,7 @@ Call doc.Save(True, False)
 - **要在編輯模式**：使用者是在「建立表單或以編輯模式開啟文件」時才能附檔——跟 client 一樣，唯讀模式不能上傳。
 - **檔案附到文件上**：送出後，檔案就成為這份文件的附件（跟 client 同一個模型），伺服器端需要有設好的暫存目錄讓附件落地。
 
-上傳之後要在伺服器端處理（驗證、改名、搬去別的欄位、通知），就掛一個 **WebQuerySave** agent，用跟 client 完全一樣的後端 API——`doc.HasEmbedded`、`doc.GetAttachment(檔名)`、富文本欄位的 `EmbeddedObjects`、`ExtractFile`——處理它。要讓使用者把附件下載回去，就給那條 `$File/Filename?OpenElement` 的 [URL](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_ABOUT_URL_COMMANDS_FOR_OPENING_IMAGE_FILES_ATTACHMENTS_AND_OLE_OBJECTS.html)。
+上傳之後要在伺服器端處理（驗證、改名、搬去別的欄位、通知），就掛一個 **WebQuerySave** agent，用跟 client 完全一樣的後端 API——`doc.HasEmbedded`、`doc.GetAttachment(檔名)`、富文本欄位的 `EmbeddedObjects`、`ExtractFile`——處理它。至於怎麼讓使用者把附件**下載**回去，用的是一條 `$File` 的 URL——這條很常用、也常有人記不清楚，下面單獨拆一節講。
 
 ## XPages：xp:fileUpload 搭 xp:fileDownload
 
@@ -101,6 +101,38 @@ XPages 把上傳與下載拆成兩個成對使用的核心控制項，而且—�
 ```
 
 使用者選檔、儲存文件時，`xp:fileUpload` 把檔案附進 `body` 這個富文本欄位；`xp:fileDownload` 則從同一個欄位把清單顯示出來、可下載、（開了 `allowDelete` 時）可刪。上傳與下載綁同一欄位，才會是同一批附件——這是 XPages 這一路最容易接錯的地方。
+
+## 取回附件：$File 的下載 URL
+
+三種前端上傳最後都存成同一種附件，所以「怎麼把它下載回來」也有一條通用答案：直接用一條 [URL](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_ABOUT_URL_COMMANDS_FOR_OPENING_IMAGE_FILES_ATTACHMENTS_AND_OLE_OBJECTS.html) 指到那個附件。格式是：
+
+```
+http://Host/Database/View/Document/$File/Filename?OpenElement
+```
+
+官方的實例長這樣：
+
+```
+http://www.lotus-10.com/lproducts.nsf/By+Part+Number/SN156/$File/spec.txt?OpenElement
+```
+
+一段一段拆：
+
+- **Host**：server 位址（`www.lotus-10.com`）。
+- **Database**：NSF 檔名或路徑（`lproducts.nsf`）。
+- **View**：一個 view 的名字，用來定位文件（`By+Part+Number`；名字裡的空白在 URL 用 `+`）。
+- **Document**：在那個 view 裡指到文件的 key（實例是 `SN156`；實務上也常直接用文件的 UNID）。
+- **`$File`**：固定的標記，告訴 Domino「我要的是附件」。
+- **Filename**：附件的檔名（`spec.txt`）。
+- **`?OpenElement`**：命令，叫 Domino 把這個元素吐出來。
+
+一個很重要、但容易被忽略的提醒：官方自己都說，這種 URL「makes it impractical to create these URLs manually」——**手刻很容易出錯，實務上是用程式組出來**、不是叫使用者去背。三種情境怎麼拿到這條 URL：
+
+- **XPages**：不必自己組——`xp:fileDownload` 會幫每個附件把下載連結產好，使用者點檔名就下載。
+- **傳統 web／LotusScript**：自己用文件的資訊把這條 URL 組出來（view ＋ 文件 key／UNID ＋ 檔名），放進頁面或計算欄位給使用者點。
+- **Notes client**：client 裡雙擊附件就開啟／另存，用不到這條 URL——它是給「用瀏覽器抓」的情境。
+
+同一份附件不管從哪種前端上傳，這條 URL 都抓得到——因為終點都是同一個富文本欄位上的附件。
 
 ## 三種情境一張表
 
