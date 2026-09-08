@@ -21,6 +21,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.0/basic/H_ABOUT_URL_COMMANDS_FOR_OPENING_IMAGE_FILES_ATTACHMENTS_AND_OLE_OBJECTS.html"
 relatedJava: ["EmbeddedObject", "RichTextItem"]
 relatedSsjs: []
+cover: "/covers/domino-attachments-three-ways.webp"
+coverStyle: "photoreal-3d"
 ---
 
 How easy is attaching a file in the Notes client? Open a document, drag the file into a rich text field, let go. Done. So easy you wouldn't call it a "feature."

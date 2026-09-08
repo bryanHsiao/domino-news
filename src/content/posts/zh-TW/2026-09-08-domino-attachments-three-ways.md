@@ -21,6 +21,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.0/basic/H_ABOUT_URL_COMMANDS_FOR_OPENING_IMAGE_FILES_ATTACHMENTS_AND_OLE_OBJECTS.html"
 relatedJava: ["EmbeddedObject", "RichTextItem"]
 relatedSsjs: []
+cover: "/covers/domino-attachments-three-ways.webp"
+coverStyle: "photoreal-3d"
 ---
 
 在 Notes client 附一個檔案有多容易？打開一份文件、把檔案拖進一個富文本欄位，放手，就好了。容易到你不會覺得那是一個「功能」。
