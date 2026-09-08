@@ -18,7 +18,7 @@ relatedJava: []
 relatedSsjs: []
 ---
 
-There's a particularly maddening way for XPages uploads to break: the file upload control **seems to do nothing** — no error on the client, the page is fine, the file just doesn't go up. You check the server console and find a Java exception:
+There's a way XPages uploads break that's easy to blame on the wrong thing: the file upload control **seems to do nothing** — no error on the client, the page is fine, the file just doesn't go up, so it's tempting to blame the control or your own code. But check the server console and the Java exception points straight at the real culprit:
 
 ```
 com.ibm.xsp.http.fileupload.FileUploadBase$IOFileUploadException:
