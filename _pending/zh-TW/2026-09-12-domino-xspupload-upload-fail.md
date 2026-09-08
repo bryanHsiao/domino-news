@@ -1,6 +1,6 @@
 ---
 title: "XPages 檔案上傳失效：xspupload 暫存夾被 Windows cleanmgr 清掉的根源與解法（含 14.0 修復）"
-description: "XPages 的檔案上傳控制項按了沒反應、使用者端沒錯誤、server console 卻報 IOFileUploadException「The system cannot find the path specified」。根源是 Domino 上傳用的暫存夾 xspupload 不見了——常常是 Windows 的磁碟清理 cleanmgr 在 Domino 執行中把它連同 temp 檔一起清掉。這篇把官方 KB 與實務串起來：症狀與根源、為什麼夾會消失、以及從「每晚上下 http」這種 band-aid 到 notes_tempdir、程式化檢查重建、升級 14.0（defect 已修）的幾種解法。"
+description: "XPages 的檔案上傳控制項按了沒反應、使用者端沒錯誤、server console 卻報 IOFileUploadException「The system cannot find the path specified」。根源是 Domino 上傳用的暫存夾 xspupload 不見了——常常是 Windows 的磁碟清理 cleanmgr 在 Domino 執行中把它連同 temp 檔一起清掉。這篇把官方 KB 與實務串起來：症狀與根源、暫存夾為什麼會消失、以及從「每晚上下 http」這種 band-aid 到 notes_tempdir、程式化檢查重建、升級 14.0（defect 已修）的幾種解法。"
 pubDate: 2026-09-12T07:30:00+08:00
 lang: zh-TW
 slug: domino-xspupload-upload-fail
@@ -34,7 +34,7 @@ Processing of multipart/form-data request failed.
 
 - **根源**：XPages 上傳會在 OS 的 Temp 底下用一個暫存夾 **`xspupload`**（路徑像 `…\notesXXXXXX\xspupload`）。這個夾一旦不見，上傳就失敗、console 報 `IOFileUploadException … The system cannot find the path specified`。
 - **這是 defect**：官方 KB0106430 記載，14.0 之前 Domino **不會**在夾被刪後自動重建；**已在 Domino 14.0 修復**（SPR ASHECU5DHW）。
-- **為什麼夾會不見**：常見兇手是 Windows 的**磁碟清理 `cleanmgr.exe`**——它在 Domino 執行中把 Temp 夾清掉，連 `xspupload` 一起（KB0078234）。
+- **暫存夾為什麼會消失**：常見兇手是 Windows 的**磁碟清理 `cleanmgr.exe`**——它在 Domino 執行中把 Temp 夾清掉，連 `xspupload` 一起（KB0078234）。
 - **解法從輕到重**：重啟 HTTP task（重建夾，就是那個「每晚上下 http」）→ 用 `notes_tempdir` 把 temp 指到 cleanmgr 不碰的夾 → 關掉 cleanmgr 排程 → 程式化在啟動時檢查並重建 → 升級到 14.0 一勞永逸。
 
 ---
@@ -51,9 +51,9 @@ C:\Windows\TEMP\notesXXXXXX\xspupload\upload_XXX_XXX.tmp (The system cannot find
 
 官方也點出「應該要有、但沒有」的行為：**Domino 本來應該在夾不存在時自動重建它**，但（14.0 之前）它不會，所以夾一被刪就卡死。KB 的 Workaround 只有一句：「Recreate 'xspupload' folder.」——把夾建回去。這個 defect（SPR ASHECU5DHW）**已在 Release 14.0 修復**：14.0 起 Domino 會在需要時自動重建那個夾。
 
-## 為什麼夾會自己不見：Windows `cleanmgr`
+## 那個暫存夾為什麼會自己消失：Windows `cleanmgr`
 
-那個夾好端端的，為什麼會不見？最常見的兇手是 Windows 內建的磁碟清理工具 **`cleanmgr.exe`**。[KB0078234](https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0078234)（適用 Domino 9.0.x、10.0.x、11.0.x 以上）把因果講死：
+暫存夾好端端的，怎麼會自己消失？最常見的兇手是 Windows 內建的磁碟清理工具 **`cleanmgr.exe`**。[KB0078234](https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0078234)（適用 Domino 9.0.x、10.0.x、11.0.x 以上）把因果講死：
 
 > 「Windows cleanmgr.exe task deleted all the temp files from the Domino temp folder. These include temporary application files as well which will cause all the applications to fail.」
 
