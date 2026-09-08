@@ -23,6 +23,8 @@ relatedSsjs: []
 
 [前一篇](/domino-news/posts/domino-attachments-three-ways)把「怎麼在 web form 放一個 File Upload Control」講完了。功能會動——但畫面通常很陽春：使用者存完檔，Domino 把附件圖示**倒在整頁最下面**一條分隔線底下；進編輯模式，每個附件旁邊還自動長出一排**「標記要刪除的附件」的勾選框**，樣式醜、又擠在你版面外面。
 
+![Domino web form 的陽春預設：一個未美化的紫色「儲存」鈕、檔案上傳輸入框，下面是 Domino 自動長出的「標記要刪除的附件」區——每個附件配一個裸勾選框](/domino-news/post-images/domino-web-attachment-crude-default.png)
+
 一般 web 應用不會就這樣交出去。傳統 Domino web 開發有一整套「把它藏掉、自己重畫」的老手法，這篇把最實用的幾個串起來——包含你可能聽過、但值不太確定的那個 `$V2AttachmentOptions`。
 
 > 註：這題的核心（`$V2AttachmentOptions`、`%%Detach`）多半是社群長年累積的知識、少有現行官方文件，下面會標清楚哪些是官方、哪些是社群共識。

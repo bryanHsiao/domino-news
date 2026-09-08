@@ -23,6 +23,8 @@ relatedSsjs: []
 
 The [previous piece](/domino-news/en/posts/domino-attachments-three-ways) covered "how to put a File Upload Control on a web form." It works — but it usually looks crude: after the user saves, Domino dumps the attachment icons **at the very bottom of the page** under a horizontal rule; enter edit mode and each attachment sprouts a row of **"mark for deletion" checkboxes** that are ugly and sit outside your layout.
 
+![The crude Domino web form default: an unstyled purple "Save" button, a file-upload input, and below it the "mark attachments for deletion" area Domino auto-generates — each attachment with a bare checkbox](/domino-news/post-images/domino-web-attachment-crude-default.png)
+
 A real web app doesn't ship that. Classic Domino web development has a whole set of "hide it, redraw it yourself" techniques, and this piece strings the most useful ones together — including that `$V2AttachmentOptions` field you may have heard of but weren't sure about.
 
 > Note: the core of this topic (`$V2AttachmentOptions`, `%%Detach`) is mostly long-accumulated community knowledge with little current official documentation, so the sections below label what's official versus community consensus.

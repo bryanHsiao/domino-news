@@ -71,7 +71,7 @@ updated: 2026-09-07
 - [x] 雙語 build 通過
 - [x] humanizer-zh-tw 自審（field-report、社群 lore 誠實標）
 - [x] 未重寫系列前篇 / [[notes-embedded-object]]，交叉連結
-- [ ] before 截圖（待與使用者確認檔）
+- [x] before 截圖（使用者提供 `2026-09-07_17-56-28.png` → `domino-web-attachment-crude-default.png`，插進 hook）
 - [x] 標題優化 loop（使用者選搜尋導向）
 - [x] 獨立 fact-check（subagent）→ ISSUES（引用掛錯頁）→ 改寫修正 → PASS
 
