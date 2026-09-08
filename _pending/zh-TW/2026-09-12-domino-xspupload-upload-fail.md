@@ -71,7 +71,7 @@ C:\Windows\TEMP\notesXXXXXX\xspupload\upload_XXX_XXX.tmp (The system cannot find
 
 通常建回去，上傳功能就立刻恢復，**不必重啟 http、不中斷服務**——線上不方便重啟時特別受用。
 
-**② 重啟 HTTP task。** KB0078234 明講：「Restarting the HTTP task will recreate the application when it is loaded again and will workaround the issue.」——重啟 http 也會把夾重建回來。**你們在 R11「每天晚上上下 http」就是這一招**：有效，但會中斷服務、也只是趕在下次 cleanmgr 之前先補回去，治標不治本。
+**② 重啟 HTTP task。** KB0078234 明講：「Restarting the HTTP task will recreate the application when it is loaded again and will workaround the issue.」——重啟 http 也會把夾重建回來。**R11 上常見的「每天晚上把 http 上下重啟一次」硬撐法，就是這一招**：有效，但會中斷服務、也只是趕在下次 cleanmgr 之前先把夾補回去，治標不治本。
 
 **③ 把暫存目錄搬出系統 Temp（`Notes_TempDir`）——斷源頭。** KB0078234 的第二個 workaround：「create a new folder and use the notes_tempdir parameter to point tmp files to that folder.」自己建一個資料夾、在 `Notes.ini` 加上或修改這個參數：
 
