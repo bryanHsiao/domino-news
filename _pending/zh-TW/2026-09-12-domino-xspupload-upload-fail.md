@@ -35,7 +35,7 @@ Processing of multipart/form-data request failed.
 - **根源**：XPages 上傳會在 OS 的 Temp 底下用一個暫存夾 **`xspupload`**（路徑像 `…\notesXXXXXX\xspupload`）。這個夾一旦不見，上傳就失敗、console 報 `IOFileUploadException … The system cannot find the path specified`。
 - **這是 defect**：官方 KB0106430 記載，14.0 之前 Domino **不會**在夾被刪後自動重建；**已在 Domino 14.0 修復**（SPR ASHECU5DHW）。
 - **暫存夾為什麼會消失**：常見兇手是 Windows 的**磁碟清理 `cleanmgr.exe`**——它在 Domino 執行中把 Temp 夾清掉，連 `xspupload` 一起（KB0078234）。
-- **解法從輕到重**：重啟 HTTP task（重建夾，就是那個「每晚上下 http」）→ 用 `notes_tempdir` 把 temp 指到 cleanmgr 不碰的夾 → 關掉 cleanmgr 排程 → 程式化在啟動時檢查並重建 → 升級到 14.0 一勞永逸。
+- **解法**：手動把 `xspupload` 資料夾建回去（立即恢復、不必重啟、不中斷服務）→ 或重啟 HTTP task → 用 `Notes_TempDir` 把暫存搬出系統 Temp 斷源頭 → 停用 cleanmgr 排程 → 程式化在啟動時自癒 → 升級到 14.0 一勞永逸。
 
 ---
 
@@ -59,17 +59,31 @@ C:\Windows\TEMP\notesXXXXXX\xspupload\upload_XXX_XXX.tmp (The system cannot find
 
 也就是說，`cleanmgr` 排程在 **Domino 還在跑**的時候，把 Domino temp 夾裡的東西清掉——**連正在使用中的 `xspupload` 一起清**，於是所有 app 的上傳都斷。console 報的還是同一個 `IOFileUploadException … The system cannot find the path specified`。跟 KB0106430 的錯完全一致，只是這裡點出了「誰刪的」。
 
-## 解法：從「每晚重啟」到根治
+## 解法：從「立即恢復」到根治
 
-同一個病，有好幾種藥，從最粗到最徹底：
+同一個病有好幾種藥，先分「立即恢復」「斷源頭」「根治」三類。
 
-**① 重啟 HTTP task（band-aid）。** KB0078234 明講：「Restarting the HTTP task will recreate the application when it is loaded again and will workaround the issue.」——重啟 http 會把夾重建回來。**你們在 R11「每天晚上上下 http」就是這一招**：它有效、但治標不治本，只是趕在下次 cleanmgr 之前先把夾補回去。
+**① 手動把 `xspupload` 資料夾建回去（不必中斷服務）。** 線上出事、又不能隨便重啟服務時，這是最快的一招——而且正是 KB0106430 那句 Workaround「Recreate 'xspupload' folder.」的實作：
 
-**② 用 `notes_tempdir` 把 temp 搬到 cleanmgr 不碰的地方。** 同一篇 KB 的第二個 workaround：「create a new folder and use the notes_tempdir parameter to point tmp files to that folder.」——自己建一個資料夾、在 notes.ini 設 `notes_tempdir` 指過去，讓 Domino 的暫存檔不要落在 cleanmgr 會掃的系統 Temp 裡。
+- 從 console 錯誤訊息把路徑抓出來（例如 `…\notes74483D\`）。
+- 手動進到那個路徑，看底下有沒有 `xspupload` 資料夾。
+- 沒有，就手動建一個名為 `xspupload` 的資料夾。
 
-**③ 直接關掉 cleanmgr 排程。** 如果不想動 Domino 這邊，KB 也給了：把 Windows server 上那個 `cleanmgr.exe` 排程工作停用即可，源頭不清、夾就不會被刪。
+通常建回去，上傳功能就立刻恢復，**不必重啟 http、不中斷服務**——線上不方便重啟時特別受用。
 
-**④ 程式化自癒：啟動時檢查、不在就重建。** 知道根源之後，其實可以讓 app 自己顧。[社群做法](https://www.dreamjtech.com/5816/)是在 XPages 應用的啟動時機（例如 onStart），檢查那個上傳暫存夾在不在、不在就 `mkdirs` 重建並補上讀寫執行權限：
+**② 重啟 HTTP task。** KB0078234 明講：「Restarting the HTTP task will recreate the application when it is loaded again and will workaround the issue.」——重啟 http 也會把夾重建回來。**你們在 R11「每天晚上上下 http」就是這一招**：有效，但會中斷服務、也只是趕在下次 cleanmgr 之前先補回去，治標不治本。
+
+**③ 把暫存目錄搬出系統 Temp（`Notes_TempDir`）——斷源頭。** KB0078234 的第二個 workaround：「create a new folder and use the notes_tempdir parameter to point tmp files to that folder.」自己建一個資料夾、在 `Notes.ini` 加上或修改這個參數：
+
+```
+Notes_TempDir=C:\DominoTemp
+```
+
+好處是：**自訂路徑不會被 Windows 的系統清理任務掃到**，Domino 的暫存檔就不會被 `cleanmgr` 刪，從源頭避免這件事再發生。（`Notes.ini` 參數大小寫不拘。）
+
+**④ 直接關掉 cleanmgr 排程。** 如果不想動 Domino 這邊，KB 也給了：把 Windows server 上那個 `cleanmgr.exe` 排程工作停用即可，源頭不清、資料夾就不會被刪。
+
+**⑤ 程式化自癒：啟動時檢查、不在就重建。** 知道根源之後，其實可以讓 app 自己顧。[社群做法](https://www.dreamjtech.com/5816/)是在 XPages 應用的啟動時機（例如 onStart），檢查那個上傳暫存夾在不在、不在就 `mkdirs` 重建並補上讀寫執行權限：
 
 ```groovy
 import java.io.File
@@ -86,8 +100,8 @@ if (!tmpDir.exists()) {
 
 概念很直接：**判斷夾存在否、不存在就重建**。要提醒的是，實際的 `xspupload` 路徑是掛在 `NOTES_TEMPDIR`（或系統 %TEMP%）底下的 `notesXXXXXX\xspupload`，上面這段是社群的一種寫法、把重建動作放進應用生命週期——套用前先在你的環境確認它解析到的路徑真的是那個上傳夾。
 
-**⑤ 一勞永逸：升級到 14.0。** 這本來就是個 defect，14.0 起 Domino 會自動重建那個夾（KB0106430）。環境能升，就不必再跟 cleanmgr 玩貓抓老鼠。
+**⑥ 一勞永逸：升級到 14.0。** 這本來就是個 defect，14.0 起 Domino 會自動重建那個夾（KB0106430）。環境能升，就不必再跟 cleanmgr 玩貓抓老鼠。
 
 ## 小結
 
-XPages 上傳「沒反應」十之八九不是控制項壞了，是它需要的暫存夾 `xspupload` 被清掉了——常常是 Windows `cleanmgr` 在 Domino 執行中順手清掉的。判斷順序：先在 console 認那個 `IOFileUploadException … The system cannot find the path specified`，確認是這個病；短期用重啟 http 或程式化重建撐住、中期用 `notes_tempdir` 或停用 cleanmgr 斷源頭、能升級就升到 14.0 根治。這也呼應[系列前面](/domino-news/posts/domino-attachments-three-ways)講 File Upload Control 時那個前提——**伺服器端要有一個好好的暫存目錄**，附件才落得下來；這篇就是那個目錄出事時的完整排查。
+XPages 上傳「沒反應」十之八九不是控制項壞了，是它需要的暫存夾 `xspupload` 被清掉了——常常是 Windows `cleanmgr` 在 Domino 執行中順手清掉的。判斷順序：先在 console 認那個 `IOFileUploadException … The system cannot find the path specified`，確認是這個病；線上不能重啟時，手動把 `xspupload` 資料夾建回去就能立刻恢復；中期用 `Notes_TempDir` 把暫存搬出系統 Temp、或停用 cleanmgr 斷源頭；能升級就升到 14.0 根治。這也呼應[系列前面](/domino-news/posts/domino-attachments-three-ways)講 File Upload Control 時那個前提——**伺服器端要有一個好好的暫存目錄**，附件才落得下來；這篇就是那個目錄出事時的完整排查。

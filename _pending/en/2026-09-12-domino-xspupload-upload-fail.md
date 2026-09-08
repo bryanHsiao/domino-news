@@ -35,7 +35,7 @@ The community hit the same wall on 11.0.1 ([StackOverflow: xpages file upload co
 - **Root cause**: XPages uploads use a temp folder named **`xspupload`** under the OS Temp dir (a path like `…\notesXXXXXX\xspupload`). If that folder goes missing, uploads fail and the console throws `IOFileUploadException … The system cannot find the path specified`.
 - **It's a defect**: per KB0106430, before 14.0 Domino does **not** auto-recreate the folder once it's deleted; it's **fixed in Domino 14.0** (SPR ASHECU5DHW).
 - **Why the folder disappears**: a common culprit is Windows **Disk Cleanup `cleanmgr.exe`**, which deletes the temp files while Domino is running, taking `xspupload` with them (KB0078234).
-- **Fixes, light to heavy**: restart the HTTP task (recreates the folder — that's the "restart HTTP nightly") → point `notes_tempdir` at a folder cleanmgr won't touch → disable the cleanmgr scheduled task → programmatically check-and-recreate on startup → upgrade to 14.0 and be done.
+- **Fixes**: manually recreate the `xspupload` folder (instant, no restart, no downtime) → or restart the HTTP task → point `Notes_TempDir` out of the system Temp to cut the source → disable the cleanmgr scheduled task → self-heal in code on startup → upgrade to 14.0 and be done.
 
 ---
 
@@ -59,17 +59,31 @@ The folder was fine — so why does it vanish? The most common culprit is Window
 
 That is: the `cleanmgr` scheduled task, **while Domino is still running**, clears out the Domino temp folder — **taking the in-use `xspupload` with it** — so every app's uploads break. The console shows the same `IOFileUploadException … The system cannot find the path specified` as KB0106430; this one just names who deleted it.
 
-## Fixes: from "restart nightly" to a real cure
+## Fixes: from "instant recovery" to a real cure
 
-One illness, several medicines, crudest to most thorough:
+One illness, several medicines — grouped as "instant recovery," "cut the source," and "permanent cure."
 
-**1. Restart the HTTP task (band-aid).** KB0078234 says it plainly: "Restarting the HTTP task will recreate the application when it is loaded again and will workaround the issue." — restarting HTTP recreates the folder. **The R11 "cycle HTTP up and down every night" is exactly this**: it works, but it treats the symptom — it just puts the folder back before the next cleanmgr run.
+**1. Manually recreate the `xspupload` folder (no service interruption).** When something breaks in production and you can't just restart the service, this is the fastest move — and it's exactly the implementation of KB0106430's workaround, "Recreate 'xspupload' folder.":
 
-**2. Move temp somewhere cleanmgr won't touch with `notes_tempdir`.** The same KB's second workaround: "create a new folder and use the notes_tempdir parameter to point tmp files to that folder." — make a folder, set `notes_tempdir` in notes.ini to point at it, so Domino's temp files don't sit in the system Temp that cleanmgr sweeps.
+- Read the path out of the console error (e.g. `…\notes74483D\`).
+- Go to that path by hand and check whether an `xspupload` folder is there.
+- If not, manually create a folder named `xspupload`.
 
-**3. Disable the cleanmgr task outright.** If you'd rather not touch the Domino side, the KB offers it too: disable the `cleanmgr.exe` scheduled task on the Windows server. Remove the source and the folder stops being deleted.
+Recreating it usually restores uploads immediately — **no HTTP restart, no service interruption** — which is exactly what you want when you can't restart in production.
 
-**4. Self-heal in code: check on startup, recreate if missing.** Once you know the root cause, the app can look after itself. The [community approach](https://www.dreamjtech.com/5816/) is to check, at the XPages app's startup (e.g. `onStart`), whether the upload temp folder exists and `mkdirs` it (plus read/write/execute permissions) if not:
+**2. Restart the HTTP task.** KB0078234 says it plainly: "Restarting the HTTP task will recreate the application when it is loaded again and will workaround the issue." — restarting HTTP also recreates the folder. **The R11 "cycle HTTP up and down every night" is exactly this**: it works, but it interrupts service and only puts the folder back before the next cleanmgr run — treating the symptom.
+
+**3. Move the temp dir out of the system Temp (`Notes_TempDir`) — cut the source.** KB0078234's second workaround: "create a new folder and use the notes_tempdir parameter to point tmp files to that folder." Make a folder and add or change this parameter in `Notes.ini`:
+
+```
+Notes_TempDir=C:\DominoTemp
+```
+
+The benefit: **a custom path isn't scanned by Windows' system cleanup tasks**, so Domino's temp files don't get deleted by `cleanmgr` — cutting the problem off at the source. (`Notes.ini` parameters are case-insensitive.)
+
+**4. Disable the cleanmgr task outright.** If you'd rather not touch the Domino side, the KB offers it too: disable the `cleanmgr.exe` scheduled task on the Windows server. Remove the source and the folder stops being deleted.
+
+**5. Self-heal in code: check on startup, recreate if missing.** Once you know the root cause, the app can look after itself. The [community approach](https://www.dreamjtech.com/5816/) is to check, at the XPages app's startup (e.g. `onStart`), whether the upload temp folder exists and `mkdirs` it (plus read/write/execute permissions) if not:
 
 ```groovy
 import java.io.File
@@ -86,8 +100,8 @@ if (!tmpDir.exists()) {
 
 The idea is simple: **test whether the folder exists, recreate it if not.** One caveat: the real `xspupload` path lives under `NOTES_TEMPDIR` (or the system %TEMP%) as `notesXXXXXX\xspupload`, and the snippet above is one community way to hang the recreate on the app lifecycle — before adopting it, confirm in your environment that the path it resolves to really is that upload folder.
 
-**5. The permanent cure: upgrade to 14.0.** This was a defect all along, and from 14.0 Domino recreates the folder automatically (KB0106430). If you can upgrade, you stop playing cat-and-mouse with cleanmgr.
+**6. The permanent cure: upgrade to 14.0.** This was a defect all along, and from 14.0 Domino recreates the folder automatically (KB0106430). If you can upgrade, you stop playing cat-and-mouse with cleanmgr.
 
 ## Wrap-up
 
-An XPages upload that "does nothing" is nine times out of ten not a broken control — it's that the `xspupload` temp folder it needs got wiped, often by Windows `cleanmgr` sweeping it up while Domino ran. The order of diagnosis: recognize the `IOFileUploadException … The system cannot find the path specified` in the console to confirm the illness; short term, keep it alive with an HTTP restart or a programmatic recreate; medium term, cut the source with `notes_tempdir` or by disabling cleanmgr; and if you can upgrade, go to 14.0 for the real fix. This is the flip side of a prerequisite the [series opener](/domino-news/en/posts/domino-attachments-three-ways) noted for the File Upload Control — **the server needs a working temp directory** for attachments to land in; this piece is the full troubleshooting for when that directory goes wrong.
+An XPages upload that "does nothing" is nine times out of ten not a broken control — it's that the `xspupload` temp folder it needs got wiped, often by Windows `cleanmgr` sweeping it up while Domino ran. The order of diagnosis: recognize the `IOFileUploadException … The system cannot find the path specified` in the console to confirm the illness; short term, when you can't restart, manually recreate the `xspupload` folder to recover instantly; medium term, cut the source with `Notes_TempDir` or by disabling cleanmgr; and if you can upgrade, go to 14.0 for the real fix. This is the flip side of a prerequisite the [series opener](/domino-news/en/posts/domino-attachments-three-ways) noted for the File Upload Control — **the server needs a working temp directory** for attachments to land in; this piece is the full troubleshooting for when that directory goes wrong.
