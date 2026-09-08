@@ -26,7 +26,7 @@ Processing of multipart/form-data request failed.
 …\notesXXXXXX\xspupload\upload_XXX_XXX.tmp (The system cannot find the path specified)
 ```
 
-The community hit the same wall on 11.0.1 ([StackOverflow: xpages file upload control does nothing in 11.0.1](https://stackoverflow.com/questions/66161300/xpages-file-upload-control-does-nothing-in-11-0-1)). If you met this on R11 and ended up keeping it alive by "cycling HTTP up and down every night" — this piece is about what that actually is, and the fixes that beat a nightly restart.
+The community hit the same wall on 11.0.1 ([StackOverflow: xpages file upload control does nothing in 11.0.1](https://stackoverflow.com/questions/66161300/xpages-file-upload-control-does-nothing-in-11-0-1)). If you've met this and ended up keeping it alive by "cycling HTTP up and down every night" — this piece is about what that actually is, and the fixes that beat a nightly restart.
 
 ---
 
@@ -71,7 +71,7 @@ One illness, several medicines — grouped as "instant recovery," "cut the sourc
 
 Recreating it usually restores uploads immediately — **no HTTP restart, no service interruption** — which is exactly what you want when you can't restart in production.
 
-**2. Restart the HTTP task.** KB0078234 says it plainly: "Restarting the HTTP task will recreate the application when it is loaded again and will workaround the issue." — restarting HTTP also recreates the folder. **The R11 "cycle HTTP up and down every night" is exactly this**: it works, but it interrupts service and only puts the folder back before the next cleanmgr run — treating the symptom.
+**2. Restart the HTTP task.** KB0078234 says it plainly: "Restarting the HTTP task will recreate the application when it is loaded again and will workaround the issue." — restarting HTTP also recreates the folder. **The common "cycle HTTP up and down every night" band-aid is exactly this**: it works, but it interrupts service and only puts the folder back before the next cleanmgr run — treating the symptom.
 
 **3. Move the temp dir out of the system Temp (`Notes_TempDir`) — cut the source.** KB0078234's second workaround: "create a new folder and use the notes_tempdir parameter to point tmp files to that folder." Make a folder and add or change this parameter in `Notes.ini`:
 
