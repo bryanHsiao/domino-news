@@ -62,3 +62,11 @@ SO 無杜撰；notes_tempdir 為真。**非阻擋提醒採納**：`Tutorial` tag
 ## 異動日誌
 - 2026-09-08 Claude Browser 讀 3 KB、WebFetch dreamjtech、雙語草稿、配平 diversity、標題 loop、sidecar（Opus 4.8）
 - 2026-09-08 獨立 fact-check subagent → PASS；採納提醒拿掉 Tutorial tag（Opus 4.8）
+- 2026-09-08 依使用者互動追加/修潤（Opus 4.8）：
+  (1) 加①手動重建 xspupload（不中斷服務，= KB0106430 workaround 實作）+ ③ `Notes_TempDir=C:\DominoTemp` 具體例；
+  (2) 修中文「為什麼夾會自己不見」文法、拿掉團隊第二人稱「你們」；
+  (3) 拿掉 R11 錨定（defect 涵蓋 9.0.x–pre-14.0，非 R11 才發生；保留 SO 的 11.0.1 事實）；
+  (4) 補「cleanmgr 怎麼自己跑」段：Windows `SilentCleanup` 排程（`\Microsoft\Windows\DiskCleanup\SilentCleanup`
+      執行 `cleanmgr.exe /autoclean`、低磁碟空間時自動觸發、以 SYSTEM 靜默跑）+ Storage Sense（Win10 1703+），
+      解釋「同版本有的環境沒事、有的突然爆＝OS 側自動清理變化，非 Domino」。Windows 事實來自 MS 文件（WebSearch 確認
+      SilentCleanup 指令與低空間觸發）；procmon 建議來自 KB0078234。未加新 inline link、diversity 不變。

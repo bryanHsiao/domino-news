@@ -59,6 +59,8 @@ The folder was fine — so why does it vanish? The most common culprit is Window
 
 That is: the `cleanmgr` scheduled task, **while Domino is still running**, clears out the Domino temp folder — **taking the in-use `xspupload` with it** — so every app's uploads break. The console shows the same `IOFileUploadException … The system cannot find the path specified` as KB0106430; this one just names who deleted it.
 
+You might ask: isn't `cleanmgr` something you launch by hand — how does it delete on its own? Because Windows ships a scheduled task called **`SilentCleanup`** (`\Microsoft\Windows\DiskCleanup\SilentCleanup`) that runs `cleanmgr.exe /autoclean` silently as SYSTEM, **triggered automatically when the system drive is low on free space** — nobody clicks anything. Newer Windows (10, version 1703 and later) also adds **Storage Sense** for automatic cleanup. This also explains a common puzzle: **why the same Domino version (the defect goes back to 9.x) is fine on some boxes but suddenly starts failing on others** — what changed is usually not Domino but a move to a newer Windows with more aggressive automatic cleanup, or a disk filling up enough to cross `SilentCleanup`'s low-space threshold, at which point the OS starts deleting the in-use temp folder. To pin down the culprit in your environment, KB0078234 suggests using Process Monitor to catch what deleted the file.
+
 ## Fixes: from "instant recovery" to a real cure
 
 One illness, several medicines — grouped as "instant recovery," "cut the source," and "permanent cure."

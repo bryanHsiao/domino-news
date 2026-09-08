@@ -59,6 +59,8 @@ C:\Windows\TEMP\notesXXXXXX\xspupload\upload_XXX_XXX.tmp (The system cannot find
 
 也就是說，`cleanmgr` 排程在 **Domino 還在跑**的時候，把 Domino temp 夾裡的東西清掉——**連正在使用中的 `xspupload` 一起清**，於是所有 app 的上傳都斷。console 報的還是同一個 `IOFileUploadException … The system cannot find the path specified`。跟 KB0106430 的錯完全一致，只是這裡點出了「誰刪的」。
 
+你可能會問：`cleanmgr` 不是要人手動開的嗎，怎麼會自己刪？因為 Windows 內建一個叫 **`SilentCleanup`** 的排程工作（`\Microsoft\Windows\DiskCleanup\SilentCleanup`），它會以 SYSTEM 身分靜默執行 `cleanmgr.exe /autoclean`，而且**在系統磁碟空間不足時自動觸發**——沒有任何人點。新版 Windows（Windows 10 1703 起）還多了 **Storage Sense** 這套更自動的清理機制。這也解釋了一個常見的困惑：**同一個 Domino 版本（這 defect 早在 9.x 就有），為什麼有的環境一直沒事、有的卻突然開始爆**——變的往往不是 Domino，而是換到較新、自動清理較積極的 Windows，或磁碟變滿踩到 `SilentCleanup` 的低空間門檻，OS 這才開始動手刪那個正在用的暫存夾。要坐實你環境的兇手，KB0078234 建議用 Process Monitor 抓「到底是誰刪了那個檔」。
+
 ## 解法：從「立即恢復」到根治
 
 同一個病有好幾種藥，先分「立即恢復」「斷源頭」「根治」三類。
