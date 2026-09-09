@@ -21,6 +21,8 @@ sources:
     url: "https://www.openntf.org/internal/home.nsf/project.xsp?action=openDocument&name=XPages+Multiple+File+Uploader"
 relatedJava: ["EmbeddedObject", "RichTextItem"]
 relatedSsjs: []
+cover: "/covers/domino-attachments-bulk.webp"
+coverStyle: "watercolor"
 ---
 
 [上一篇](/domino-news/posts/domino-attachments-three-ways)把「在三種情境各附**一個**檔」講完了。真實需求通常再進一步：一次上傳**很多個**檔，以及反過來——把一份文件的附件**一次清光**。這兩件事各有一個近況值得講：XPages 到 14.5.1 才終於把「一次多選」做成內建，而批次刪除其實有一行就搞定的寫法、卻很少人提。

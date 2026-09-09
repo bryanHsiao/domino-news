@@ -21,6 +21,8 @@ sources:
     url: "https://www.openntf.org/internal/home.nsf/project.xsp?action=openDocument&name=XPages+Multiple+File+Uploader"
 relatedJava: ["EmbeddedObject", "RichTextItem"]
 relatedSsjs: []
+cover: "/covers/domino-attachments-bulk.webp"
+coverStyle: "watercolor"
 ---
 
 The [last piece](/domino-news/en/posts/domino-attachments-three-ways) finished "attach **one** file in three contexts." Real needs usually go one step further: upload **many** files at once, and the reverse — clear **all** of a document's attachments in one go. Both have a recent wrinkle worth telling: XPages only got native multi-select in 14.5.1, and batch delete has a one-liner that's rarely mentioned.
