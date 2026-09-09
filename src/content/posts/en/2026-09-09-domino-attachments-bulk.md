@@ -38,7 +38,7 @@ Let's pin the conclusion with a figure first: however many files you pick, they 
 - **Classic web form**: selecting multiple files at once comes from the HTML5 `multiple` attribute — [the blogger's "one word"](https://www.nevermind.dk/nevermind/blog.nsf/subject/old-school-domino-web-dev---a-very-simple-way-to-upload-multiple-files-just-one-word). Add it to the File Upload control and the picker goes from single to multi-select.
 - **XPages**: **native only since Domino 14.5.1** — "[The XPages file upload UI now supports multiple selections by default](https://help.hcl-software.com/domino/14.5.1/admin/wn_xpages_support_for_multiple_file_uploads.html)." Before that, multi-file was the domain of OpenNTF community controls.
 - **Batch delete has a one-liner**: `Call doc.RemoveItem("$FILE")` removes every item named `$FILE` at once — i.e. clears all of a document's attachments; the other route is looping `EmbeddedObjects` and calling `Remove`.
-- **One honest caveat**: whether the classic-web trick stores each of the multiple files as its own separate `$FILE` isn't backed by an official doc — only the author's field claim. If you rely on it, test it in your own environment.
+- **Each multi-selected file stores as its own `$FILE` (verified)**: this classic-web trick is browser behavior, not an official HCL feature, but we tested it — select 3 files and the document holds 3 separate `$FILE` items (screenshot below).
 
 ## Multi-file upload (1): the classic-web "one word"
 
@@ -58,13 +58,19 @@ Pick a few, and the button shows "3 files" — multi-select works:
 
 (The author also flags a Designer quirk: **insert the control from the menu to be safe** — cut-and-pasting it can render wrong.)
 
-To be clear: `multiple` is **pure browser HTML5 behavior**, not an official HCL feature for classic web forms — it works, and we verified the multi-select, but it isn't built-in-and-in-the-What's-new the way XPages 14.5.1 is. As for whether each submitted file lands as its own separate `$FILE`, the screenshots verify the *selection* step only; verify the *storage* step in your own environment by counting `rtitem.EmbeddedObjects` (see [LotusScript attachment handling](/domino-news/en/posts/notes-embedded-object)).
+To be clear: `multiple` is **pure browser HTML5 behavior**, not an official HCL feature for classic web forms — it isn't built-in-and-in-the-What's-new the way XPages 14.5.1 is. But as for whether each submitted file lands as its own separate `$FILE`, we tested it to the end on our own box: select 3 files, submit, save, then open the document's field inspector — there are **three separate `$FILE` fields** (each of data type attachment/file):
+
+![After submitting and saving, the document's field inspector shows three separate $FILE fields, each an attachment (file) — the three multi-selected files each stored as its own $FILE](/domino-news/post-images/domino-multiple-three-files-inspector.png)
+
+So the conclusion is clear: **each file selected via `multiple` is stored by Domino as its own separate `$FILE`**. Reading or deleting them afterward is business as usual (`rtitem.EmbeddedObjects`, `doc.GetAttachment`; see [LotusScript attachment handling](/domino-news/en/posts/notes-embedded-object)).
 
 ## Multi-file upload (2): XPages got it built-in in 14.5.1
 
 The XPages path is more interesting because it has a clear before/after.
 
 **Before 14.5.1**: `xp:fileUpload` took one file at a time. For multi-select you reached for a community control — OpenNTF has carried a few for years, such as Mark Leusink's [XPages Multiple File Uploader](https://www.openntf.org/internal/home.nsf/project.xsp?action=openDocument&name=XPages+Multiple+File+Uploader) (early on using Flash/SWFUpload for multi-file selection and progress bars), and later Julian Buss's HTML5 multi-file upload control. These filled the official gap for a long time.
+
+⚠️ **But Leusink's uses Flash/SWFUpload, and Flash reached end-of-life at the end of 2020 and has been removed from every modern browser** — today it just throws "You need the Flash Player 9.028 or above" and won't run, and Flash can't be reinstalled. So if you're pre-14.5.1 and need multi-file, use **Buss's HTML5 control** (no Flash), not the Flash one — or just use the classic-web `multiple` above.
 
 **Since 14.5.1**: HCL finally built it in. The 14.5.1 What's new says it in one line — "The XPages file upload UI now supports multiple selections by default." Note it's a change to the **default behavior**, not a new property (which is why `xp:fileUpload`'s property list didn't change) — you don't touch your XSP; upgrade and it's there. That page is terse (one sentence plus two screenshots); after multi-selecting, the files attach to the rich text field the control is bound to (the same model as a single file). The screenshots and finer detail are on [that page](https://help.hcl-software.com/domino/14.5.1/admin/wn_xpages_support_for_multiple_file_uploads.html).
 
@@ -81,7 +87,7 @@ Call doc.RemoveItem("$FILE")   ' removes every $FILE at once, clearing the docum
 Call doc.Save(True, False)
 ```
 
-One line, no loop, and no "delete-while-iterating" skip problem. One detail to know: `$FILE` is the attachment body; if the rich text content still holds icon references pointing at attachments, deleting just `$FILE` may leave icons on screen (this is a common community caution, not verbatim official — verify for your case).
+One line, no loop. One detail to know: `$FILE` is the attachment body; if the rich text content still holds icon references pointing at attachments, deleting just `$FILE` may leave icons on screen (this is a common community caution, not verbatim official — verify for your case).
 
 **Route 2: pick and remove (`GetAttachment` + `Remove`).** When you want to do something before deleting (back up first, or delete specific files by name), take this route. Get the attachment with `doc.GetAttachment(name)`, `Remove` it — and [the docs note](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_REMOVE_METHOD_OBJECT.html) "After calling the Remove method, you must call the Save method in NotesDocument to save the change that you made" — save after removing for it to take:
 
@@ -95,8 +101,12 @@ If Not eo Is Nothing Then
 End If
 ```
 
-When you need to **delete several by criteria**, there's a trap to avoid: **removing while iterating `EmbeddedObjects` with `ForAll` is widely considered to skip elements** (you mutate the collection, the cursor jumps). So the safe way to delete many is to **collect the file names first, then `GetAttachment(...).Remove` each**, or just use Route 1's `RemoveItem` to clear them all. That "delete-while-iterating skips" point is community consensus, not verbatim HCL, but enough people have hit it to avoid it by default. As for Formula, there's no clean "batch-delete attachments" @Command — for batch, use the LotusScript above.
+When you need to **delete several by criteria**, besides the per-file `GetAttachment` approach above, you can iterate the rich text field's `EmbeddedObjects` and `Remove` each `EMBED_ATTACHMENT` in the loop — which is exactly what [HCL's official example](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_EXAMPLES_EMBEDDEDOBJECTS_PROPERTY_RTITEM.html) does (Remove and Save inside the loop). `EmbeddedObjects` returns an **array snapshot**, so removing while iterating it is safe.
+
+(To correct a widely-repeated myth: "removing while iterating skips elements" is a rule for **live, mutating collections** — like `NotesDocumentCollection` or `NotesView` — not for `EmbeddedObjects`, which is a snapshot array; HCL's own example iterates-and-removes. An earlier version of this piece wrongly applied that rule here and called it "community consensus" — correcting that.)
+
+To clear **all** at once, Route 1's `RemoveItem("$FILE")` is simplest. As for Formula, there's no clean "batch-delete attachments" @Command — for batch, use the LotusScript above.
 
 ## Wrap-up
 
-"Many at once" has a recent story on both ends in Domino: on upload, classic web uses HTML5 `multiple` (lightweight — just verify the per-file `$FILE` storage yourself), and XPages got **native multi-select by default only in 14.5.1** (OpenNTF before that); on delete, `doc.RemoveItem("$FILE")` clears every attachment in one line, or `EmbeddedObjects` + `Remove` handles them one by one (just don't delete while iterating). For the "one file, three contexts" basics, see the [previous piece](/domino-news/en/posts/domino-attachments-three-ways); for the backend list/extract details, see [LotusScript attachment handling](/domino-news/en/posts/notes-embedded-object).
+"Many at once" has a recent story on both ends in Domino: on upload, classic web uses HTML5 `multiple` (lightweight — and we verified each selected file stores as its own `$FILE`), and XPages got **native multi-select by default only in 14.5.1** (OpenNTF before that); on delete, `doc.RemoveItem("$FILE")` clears every attachment in one line, or iterate `EmbeddedObjects` + `Remove` (a snapshot array — the official example iterates-and-removes). For the "one file, three contexts" basics, see the [previous piece](/domino-news/en/posts/domino-attachments-three-ways); for the backend list/extract details, see [LotusScript attachment handling](/domino-news/en/posts/notes-embedded-object).

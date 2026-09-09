@@ -88,3 +88,13 @@ EmbeddedObjects 迴圈可跑、「邊迭代邊刪」的社群 vs 官方層級、
   （使用者指路 admin What's new）、雙語草稿、自製 SVG 附圖、diversity、sidecar（Opus 4.8）
 - 2026-09-07 獨立 fact-check subagent → ISSUES（引用掛錯頁 + 做法二迴圈自相矛盾）→ 改引 Remove method 頁、
   做法二改 GetAttachment 挑著刪 → 修後 PASS（Opus 4.8）
+- 2026-09-07/08 f3b26d2：加使用者 3 張實測截圖（multiple 在 HTML 屬性「其他」欄、多選對話框、「3 個檔案」），
+  升級 hedge（機制與多選已實測，僅 per-file $FILE 儲存待確認）（Opus 4.8）
+- 2026-09-09 使用者提供**欄位檢視器截圖**（3 檔→3 個獨立 `$FILE`）→ **per-file $FILE 儲存從「待確認/自己驗」升級成
+  「實測確認」**，加該截圖 `domino-multiple-three-files-inspector.png`（TL;DR、body、小結 三處都改）。
+- 2026-09-09 **重大更正（使用者質疑來源）**：原「邊迭代 EmbeddedObjects 邊 Remove 會漏刪＝社群共識」**無可靠來源、
+  且與 HCL 官方範例矛盾**——[官方 EmbeddedObjects 範例](H_EXAMPLES_EMBEDDEDOBJECTS_PROPERTY_RTITEM.html)本身就是
+  「ForAll 迭代、迴圈內逐一 Remove 並 Save」。`EmbeddedObjects` 是**陣列快照**、迭代中移除安全。→ 刪除段改為：迭代
+  EmbeddedObjects 逐一 Remove 是官方寫法、安全；並明白更正「那個『漏刪』通則只對活的集合（NotesDocumentCollection/
+  NotesView）才要小心、不適用快照陣列」，撤下「社群共識」的錯誤歸因。這是本 session 第 3 次「把 folklore 當共識」被使用者
+  抓到（前有 DAS 唯讀、$V2 值），教訓見 [[feedback_no_vague_community_consensus]]。（9/9 已上線 → 直接改 posts、重新 deploy）
