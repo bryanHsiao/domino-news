@@ -92,6 +92,7 @@ EmbeddedObjects 迴圈可跑、「邊迭代邊刪」的社群 vs 官方層級、
   升級 hedge（機制與多選已實測，僅 per-file $FILE 儲存待確認）（Opus 4.8）
 - 2026-09-09 使用者提供**欄位檢視器截圖**（3 檔→3 個獨立 `$FILE`）→ **per-file $FILE 儲存從「待確認/自己驗」升級成
   「實測確認」**，加該截圖 `domino-multiple-three-files-inspector.png`（TL;DR、body、小結 三處都改）。
+- 2026-09-09 **重寫刪除段（使用者兩點回饋）**：(1) 拿掉「之前這裡錯套…特此更正」的自我指涉——讀者沒看過舊版、不知我方修訂過程，文章只該直接講對的事實，改成純讀者向的中性澄清（「邊迭代邊刪會漏」只對活的集合、EmbeddedObjects 快照不受影響）。(2) 重排重點：使用者指出「一次清全部」情境少、**真正常見是「挑著刪」**，且依條件刪參考最少——遂把「依條件刪好幾個」升為主戲，補一段可照跑範例（迭代 `EmbeddedObjects`、`.Type=EMBED_ATTACHMENT` 過濾、依 `.Source` 條件 `Remove`、`removed>0` 才 `Save`，對齊官方 EmbeddedObjects 範例），一行版 `RemoveItem` 退為少見的全清；TL;DR／小結／雙語同步。build 通過。（Opus 4.8）
 - 2026-09-09 **重大更正（使用者質疑來源）**：原「邊迭代 EmbeddedObjects 邊 Remove 會漏刪＝社群共識」**無可靠來源、
   且與 HCL 官方範例矛盾**——[官方 EmbeddedObjects 範例](H_EXAMPLES_EMBEDDEDOBJECTS_PROPERTY_RTITEM.html)本身就是
   「ForAll 迭代、迴圈內逐一 Remove 並 Save」。`EmbeddedObjects` 是**陣列快照**、迭代中移除安全。→ 刪除段改為：迭代

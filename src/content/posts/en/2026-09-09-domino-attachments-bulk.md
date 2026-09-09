@@ -37,7 +37,7 @@ Let's pin the conclusion with a figure first: however many files you pick, they 
 
 - **Classic web form**: selecting multiple files at once comes from the HTML5 `multiple` attribute — [the blogger's "one word"](https://www.nevermind.dk/nevermind/blog.nsf/subject/old-school-domino-web-dev---a-very-simple-way-to-upload-multiple-files-just-one-word). Add it to the File Upload control and the picker goes from single to multi-select.
 - **XPages**: **native only since Domino 14.5.1** — "[The XPages file upload UI now supports multiple selections by default](https://help.hcl-software.com/domino/14.5.1/admin/wn_xpages_support_for_multiple_file_uploads.html)." Before that, multi-file was the domain of OpenNTF community controls.
-- **Batch delete has a one-liner**: `Call doc.RemoveItem("$FILE")` removes every item named `$FILE` at once — i.e. clears all of a document's attachments; the other route is looping `EmbeddedObjects` and calling `Remove`.
+- **Deleting is mostly "pick and remove"**: iterate `EmbeddedObjects` and `Remove` by a condition on `.Source` (the original file name) — this delete-by-criteria case is the least documented and the most common one (runnable example below); to clear everything at once, `Call doc.RemoveItem("$FILE")` does it in one line.
 - **Each multi-selected file stores as its own `$FILE` (verified)**: this classic-web trick is browser behavior, not an official HCL feature, but we tested it — select 3 files and the document holds 3 separate `$FILE` items (screenshot below).
 
 ## Multi-file upload (1): the classic-web "one word"
@@ -76,20 +76,11 @@ The XPages path is more interesting because it has a clear before/after.
 
 So the advice today is simple: **on 14.5.1+, use the built-in multi-select**; only reach back for the OpenNTF community controls if you're on an older release and need multi-file.
 
-## Batch delete: the rarely-mentioned one-liner
+## Deleting: in practice it's "pick and remove," not "clear all"
 
-Upload done — now the reverse: how do you delete **all** of a document's attachments at once? Most tutorials only show removing one; batch is rarely covered. There are two routes.
+Upload done — now the reverse. Most tutorials only show removing one, but in real life clearing **all** of a document's attachments at once is the rare case. What you actually hit daily is **selective delete**: drop only the `.tmp` scratch files, only an old version, keep just the latest, clear anything over some size. And that "delete by criteria" is exactly what's thinly documented — so that's what this piece leans into.
 
-**Route 1: clear in one line (`RemoveItem`).** Attachments live on the document as items named `$FILE`, and [`RemoveItem`'s docs state](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_REMOVEITEM_METHOD.html): "If more than one item has the specified name, all items with this name are deleted." — same-named items go all at once. So:
-
-```lotusscript
-Call doc.RemoveItem("$FILE")   ' removes every $FILE at once, clearing the document's attachments
-Call doc.Save(True, False)
-```
-
-One line, no loop. One detail to know: `$FILE` is the attachment body; if the rich text content still holds icon references pointing at attachments, deleting just `$FILE` may leave icons on screen (this is a common community caution, not verbatim official — verify for your case).
-
-**Route 2: pick and remove (`GetAttachment` + `Remove`).** When you want to do something before deleting (back up first, or delete specific files by name), take this route. Get the attachment with `doc.GetAttachment(name)`, `Remove` it — and [the docs note](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_REMOVE_METHOD_OBJECT.html) "After calling the Remove method, you must call the Save method in NotesDocument to save the change that you made" — save after removing for it to take:
+**Pick one (`GetAttachment` + `Remove`).** If you already know the file name to delete, this is the most direct: `doc.GetAttachment(name)`, then `Remove`. [The docs note](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_REMOVE_METHOD_OBJECT.html) "After calling the Remove method, you must call the Save method in NotesDocument to save the change that you made" — save after removing for it to take:
 
 ```lotusscript
 Dim eo As NotesEmbeddedObject
@@ -101,12 +92,41 @@ If Not eo Is Nothing Then
 End If
 ```
 
-When you need to **delete several by criteria**, besides the per-file `GetAttachment` approach above, you can iterate the rich text field's `EmbeddedObjects` and `Remove` each `EMBED_ATTACHMENT` in the loop — which is exactly what [HCL's official example](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_EXAMPLES_EMBEDDEDOBJECTS_PROPERTY_RTITEM.html) does (Remove and Save inside the loop). `EmbeddedObjects` returns an **array snapshot**, so removing while iterating it is safe.
+**Delete several by criteria (iterate `EmbeddedObjects`).** This is the main event. When you're not deleting a fixed file name but "everything that matches a condition," iterate the rich text field's `EmbeddedObjects`, look at each attachment's `.Source` (its original file name), and `Remove` only the ones that match. The snippet below clears every `.tmp` attachment and keeps the rest — swap the `.Source` test for your own condition (extension, name prefix, or a list you backed up earlier):
 
-(To correct a widely-repeated myth: "removing while iterating skips elements" is a rule for **live, mutating collections** — like `NotesDocumentCollection` or `NotesView` — not for `EmbeddedObjects`, which is a snapshot array; HCL's own example iterates-and-removes. An earlier version of this piece wrongly applied that rule here and called it "community consensus" — correcting that.)
+```lotusscript
+Dim rtitem As NotesRichTextItem
+Dim eo As NotesEmbeddedObject
+Dim removed As Integer
 
-To clear **all** at once, Route 1's `RemoveItem("$FILE")` is simplest. As for Formula, there's no clean "batch-delete attachments" @Command — for batch, use the LotusScript above.
+Set rtitem = doc.GetFirstItem("Body")             ' which rich text field holds the attachments
+If Not rtitem Is Nothing Then
+    ForAll o In rtitem.EmbeddedObjects            ' array snapshot — deleting in the loop is safe
+        Set eo = o
+        If eo.Type = EMBED_ATTACHMENT Then        ' attachments only (skip OLE objects/links)
+            If LCase(Right(eo.Source, 4)) = ".tmp" Then   ' <- your own condition here
+                Call eo.Remove
+                removed = removed + 1
+            End If
+        End If
+    End ForAll
+    If removed > 0 Then Call doc.Save(True, False) ' save only if something changed
+End If
+```
+
+This is exactly what [HCL's official `EmbeddedObjects` example](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_EXAMPLES_EMBEDDEDOBJECTS_PROPERTY_RTITEM.html) does (test, `Remove`, and `Save` in the loop). Don't skip the `.Type = EMBED_ATTACHMENT` filter — the same rich text field can also hold OLE objects or object links, and without the test you'd delete those too.
+
+(One clarification on a common worry: "removing while iterating skips elements" is a rule for **live, mutating collections** — like `NotesDocumentCollection` or `NotesView` — not for `EmbeddedObjects`, which returns a snapshot array, so it's unaffected; delete in the loop with confidence.)
+
+**When you really do want to clear everything: the one-liner (`RemoveItem`).** For the rarer "nuke them all" case: attachments live on the document as items named `$FILE`, and [`RemoveItem`'s docs state](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_REMOVEITEM_METHOD.html) "If more than one item has the specified name, all items with this name are deleted." — same-named items go all at once, so clearing everything needs no loop:
+
+```lotusscript
+Call doc.RemoveItem("$FILE")   ' removes every $FILE at once, clearing the document's attachments
+Call doc.Save(True, False)
+```
+
+One detail: `$FILE` is the attachment body; if the rich text content still holds icon references pointing at attachments, deleting just `$FILE` may leave icons on screen (a common community caution, not verbatim official — verify for your case). As for Formula, there's no clean "batch-delete attachments" @Command — for batch, use the LotusScript above.
 
 ## Wrap-up
 
-"Many at once" has a recent story on both ends in Domino: on upload, classic web uses HTML5 `multiple` (lightweight — and we verified each selected file stores as its own `$FILE`), and XPages got **native multi-select by default only in 14.5.1** (OpenNTF before that); on delete, `doc.RemoveItem("$FILE")` clears every attachment in one line, or iterate `EmbeddedObjects` + `Remove` (a snapshot array — the official example iterates-and-removes). For the "one file, three contexts" basics, see the [previous piece](/domino-news/en/posts/domino-attachments-three-ways); for the backend list/extract details, see [LotusScript attachment handling](/domino-news/en/posts/notes-embedded-object).
+"Many at once" has a recent story on both ends in Domino: on upload, classic web uses HTML5 `multiple` (lightweight — and we verified each selected file stores as its own `$FILE`), and XPages got **native multi-select by default only in 14.5.1** (OpenNTF before that); on delete, the common case is **pick-and-remove** — iterate `EmbeddedObjects` and `Remove` by a `.Source` condition (a snapshot array — the official example iterates-and-removes), with `doc.RemoveItem("$FILE")` as the one-line clear-all for the rarer full wipe. For the "one file, three contexts" basics, see the [previous piece](/domino-news/en/posts/domino-attachments-three-ways); for the backend list/extract details, see [LotusScript attachment handling](/domino-news/en/posts/notes-embedded-object).

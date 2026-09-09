@@ -37,7 +37,7 @@ coverStyle: "watercolor"
 
 - **傳統 web form**：一次選多檔靠 HTML5 的 `multiple` 屬性——就是[那位部落格作者說的「一個字」](https://www.nevermind.dk/nevermind/blog.nsf/subject/old-school-domino-web-dev---a-very-simple-way-to-upload-multiple-files-just-one-word)。加在 File Upload 控制項上，選檔器就從單選變多選。
 - **XPages**：**到 Domino 14.5.1 才官方內建**——「[The XPages file upload UI now supports multiple selections by default](https://help.hcl-software.com/domino/14.5.1/admin/wn_xpages_support_for_multiple_file_uploads.html)」。在那之前，一次多檔一直是 OpenNTF 社群方案的天下。
-- **批次刪除有一行版**：`Call doc.RemoveItem("$FILE")` 一次移除所有同名 `$FILE` item——等於清空整份文件的附件；另一條路是迴圈 `EmbeddedObjects` 逐一 `Remove`。
+- **刪除實務上是「挑著刪」居多**：迭代 `EmbeddedObjects`、依 `.Source`（原始檔名）的條件逐一 `Remove`，這種依條件刪的參考最少、也最常用（附可照跑範例）；真要一次清全部，`Call doc.RemoveItem("$FILE")` 一行搞定。
 - **多選的檔各存成獨立 `$FILE`（實測確認）**：傳統 web 這招雖是瀏覽器行為、非 HCL 官方功能，但我們在站上環境實測——選 3 個檔送出，文件裡就是 3 個獨立的 `$FILE`（附欄位檢視器截圖）。
 
 ---
@@ -78,20 +78,11 @@ XPages 這一路更有意思，因為它有個明確的分界點。
 
 所以現在的建議很簡單：**環境在 14.5.1 以上，用官方內建的多選就好**；還在舊版、又需要多檔，才回頭找 OpenNTF 那幾個社群控制項。
 
-## 批次刪除：很少人提的一行版
+## 刪除：真正常見的是「挑著刪」，不是「全清空」
 
-上傳講完，反過來——怎麼一次刪掉一份文件的**所有**附件？多數教學只教怎麼刪一個，批次很少人著墨。其實有兩條路。
+上傳講完，反過來講刪。多數教學只教怎麼刪一個，但實務上「一次清光一份文件的**全部**附件」其實情境不多——真正天天遇到的是**挑著刪**：只刪 `.tmp` 暫存檔、只刪某個舊版本、只留最新一份、把超過某大小的清掉。偏偏這種「依條件刪」的參考特別少，所以這篇著重講它。
 
-**做法一：一行清空（`RemoveItem`）。** 附件在文件裡是一個個名為 `$FILE` 的 item，而 [`RemoveItem` 官方寫明](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_REMOVEITEM_METHOD.html)：「If more than one item has the specified name, all items with this name are deleted.」——同名的 item 會一次全刪。所以：
-
-```lotusscript
-Call doc.RemoveItem("$FILE")   ' 一次移除所有 $FILE，清空整份文件的附件
-Call doc.Save(True, False)
-```
-
-一行、不必迴圈。要留意一個細節：`$FILE` 是附件本體，富文本內容裡若還有指向附件的圖示參照，純刪 `$FILE` 之後畫面上可能殘留 icon（這點是社群常見提醒、非官方逐字，建議實測確認你的情境）。
-
-**做法二：挑著刪（`GetAttachment` + `Remove`）。** 想在刪之前先做別的事（先抽取備份、或依檔名挑特定幾個刪），就走這條。用 `doc.GetAttachment(檔名)` 取到那個附件、`Remove`，[官方提醒](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_REMOVE_METHOD_OBJECT.html)「After calling the Remove method, you must call the Save method in NotesDocument to save the change that you made」——刪完要 `Save` 才生效：
+**挑單一個（`GetAttachment` + `Remove`）。** 已經知道要刪哪個檔名，最直接：用 `doc.GetAttachment(檔名)` 取到、`Remove`。[官方提醒](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_REMOVE_METHOD_OBJECT.html)「After calling the Remove method, you must call the Save method in NotesDocument to save the change that you made」——刪完要 `Save` 才生效：
 
 ```lotusscript
 Dim eo As NotesEmbeddedObject
@@ -103,12 +94,41 @@ If Not eo Is Nothing Then
 End If
 ```
 
-要**依條件刪好幾個**時，除了上面逐一 `GetAttachment` 的寫法，也可以直接迭代富文本欄位的 `EmbeddedObjects`、在迴圈裡對 `EMBED_ATTACHMENT` 的逐一 `Remove`——這正是 [HCL 官方範例](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_EXAMPLES_EMBEDDEDOBJECTS_PROPERTY_RTITEM.html)的寫法（迴圈裡逐一 `Remove` 並 `Save`）。`EmbeddedObjects` 回的是一個**陣列快照**，所以在迴圈裡移除是安全的。
+**依條件刪好幾個（迭代 `EmbeddedObjects`）。** 這才是主戲。當你不是刪某個定死的檔名、而是「凡是符合某條件的都刪」時，就迭代富文本欄位的 `EmbeddedObjects`，在迴圈裡看每個附件的 `.Source`（附件的原始檔名），符合條件才 `Remove`。下面這段把所有 `.tmp` 結尾的附件清掉、其餘保留——`.Source` 那一行的判斷換成你自己的條件（副檔名、檔名前綴、或先前備份過的清單）即可：
 
-（順帶更正一個常被誤傳的說法：「邊迭代邊刪會漏刪」是對「活的、會即時變動的集合」——像 `NotesDocumentCollection`、`NotesView`——才要留意的通則；`EmbeddedObjects` 回的是**陣列快照**、不屬於這種，官方範例本身就是邊迭代邊 `Remove`。之前這裡把那個通則錯套過來、還冠上「社群共識」，特此更正。）
+```lotusscript
+Dim rtitem As NotesRichTextItem
+Dim eo As NotesEmbeddedObject
+Dim removed As Integer
 
-要一次清**全部**，用做法一的 `RemoveItem("$FILE")` 最省事。至於 Formula，沒有乾淨的「批次刪附件」@Command——要批次，就用上面的 LotusScript。
+Set rtitem = doc.GetFirstItem("Body")             ' 附件掛在哪個富文本欄位
+If Not rtitem Is Nothing Then
+    ForAll o In rtitem.EmbeddedObjects            ' 陣列快照，迴圈裡刪是安全的
+        Set eo = o
+        If eo.Type = EMBED_ATTACHMENT Then        ' 只處理附件（略過 OLE 物件／連結）
+            If LCase(Right(eo.Source, 4)) = ".tmp" Then   ' ← 換成你自己的條件
+                Call eo.Remove
+                removed = removed + 1
+            End If
+        End If
+    End ForAll
+    If removed > 0 Then Call doc.Save(True, False) ' 有動到才存
+End If
+```
+
+這正是 [HCL 官方 `EmbeddedObjects` 範例](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_EXAMPLES_EMBEDDEDOBJECTS_PROPERTY_RTITEM.html)的寫法（迴圈裡逐一判斷、`Remove`、最後 `Save`）。`.Type = EMBED_ATTACHMENT` 這道過濾別省——同一個富文本欄位裡也可能躺著 OLE 物件或物件連結，不加判斷會連那些一起刪到。
+
+（順帶澄清一個常聽到的顧慮：「邊迭代邊刪會漏掉元素」——那是對**活的、會即時變動的集合**（像 `NotesDocumentCollection`、`NotesView`）才要小心的通則；`EmbeddedObjects` 回的是**陣列快照**，不受這個影響，可以放心在迴圈裡刪。）
+
+**真要一次清全部：一行版（`RemoveItem`）。** 少數情況確實想把附件全砍光。附件在文件裡是一個個名為 `$FILE` 的 item，而 [`RemoveItem` 官方寫明](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_REMOVEITEM_METHOD.html)「If more than one item has the specified name, all items with this name are deleted.」——同名 item 一次全刪，所以清空全部不必迴圈：
+
+```lotusscript
+Call doc.RemoveItem("$FILE")   ' 一次移除所有 $FILE，清空整份文件的附件
+Call doc.Save(True, False)
+```
+
+一個細節：`$FILE` 是附件本體，富文本內容裡若還有指向附件的圖示參照，純刪 `$FILE` 之後畫面上可能殘留 icon（這點是社群常見提醒、非官方逐字，建議實測確認你的情境）。至於 Formula，沒有乾淨的「批次刪附件」@Command——要批次，就用上面的 LotusScript。
 
 ## 小結
 
-「一次很多個」在 Domino 兩頭都有近況：上傳端，傳統 web 用 HTML5 `multiple`（輕巧、而且多檔各存獨立 `$FILE` 已實測確認）、XPages 到 **14.5.1 才官方預設支援多選**（之前靠 OpenNTF）；刪除端，`doc.RemoveItem("$FILE")` 一行清空整份文件的附件，或迭代 `EmbeddedObjects` 逐一 `Remove`（陣列快照，官方範例就是邊迭代邊刪）。想回到「一次一個檔、三種情境」的基礎，見[上一篇](/domino-news/posts/domino-attachments-three-ways)；附件的後端撈取／抽取細節，見 [LotusScript 處理附件](/domino-news/posts/notes-embedded-object)。
+「一次很多個」在 Domino 兩頭都有近況：上傳端，傳統 web 用 HTML5 `multiple`（輕巧、而且多檔各存獨立 `$FILE` 已實測確認）、XPages 到 **14.5.1 才官方預設支援多選**（之前靠 OpenNTF）；刪除端，真正常用的是**挑著刪**——迭代 `EmbeddedObjects`、看 `.Source` 依條件 `Remove`（陣列快照，官方範例就是邊迭代邊刪），少數要全清才用 `doc.RemoveItem("$FILE")` 一行清空。想回到「一次一個檔、三種情境」的基礎，見[上一篇](/domino-news/posts/domino-attachments-three-ways)；附件的後端撈取／抽取細節，見 [LotusScript 處理附件](/domino-news/posts/notes-embedded-object)。
