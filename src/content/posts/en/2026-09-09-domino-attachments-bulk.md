@@ -27,9 +27,9 @@ coverStyle: "watercolor"
 
 The [last piece](/domino-news/en/posts/domino-attachments-three-ways) finished "attach **one** file in three contexts." Real needs usually go one step further: upload **many** files at once, and the reverse — delete attachments, which in practice means picking the ones that match a condition, not wiping them all. Both have a wrinkle worth telling: XPages only got native multi-select in 14.5.1, and "delete by criteria" is the common case yet the thinly-documented one.
 
-Let's pin the conclusion with a figure first: however many files you pick, they all land in the same rich text field of the same document as multiple `$FILE` attachments — which is also why "clear them all" can be done in one shot.
+Let's pin the conclusion with a figure first: however many files you pick, they all land in the same rich text field of the same document as multiple `$FILE` attachments — and that structure is what you later read, pick from, and delete by.
 
-![Multiple selected files all land in one Body rich text field on the document as multiple $FILE attachments; doc.RemoveItem("$FILE") removes all $FILE items at once, clearing every attachment on the document](/domino-news/post-images/domino-multi-file-attachments-en.svg)
+![Multiple selected files all land in one Body rich text field on the document as multiple $FILE attachments; to delete, iterate EmbeddedObjects and Remove by criteria, or doc.RemoveItem("$FILE") to clear them all at once](/domino-news/post-images/domino-multi-file-attachments-en.svg)
 
 ---
 

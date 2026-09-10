@@ -27,9 +27,9 @@ coverStyle: "watercolor"
 
 [上一篇](/domino-news/posts/domino-attachments-three-ways)把「在三種情境各附**一個**檔」講完了。真實需求通常再進一步：一次上傳**很多個**檔，以及反過來——刪附件，而實務上刪多半是**挑符合條件的刪**，不是全砍光。這兩件事各有一個近況值得講：XPages 到 14.5.1 才終於把「一次多選」做成內建，而「依條件挑著刪」明明最常遇到、參考卻最少。
 
-先把結論用一張圖收好：不管一次選幾個檔，它們最後都落進同一份文件的同一個富文本欄位，成為多個 `$FILE` 附件——所以「清空」也可以一次對付。
+先把結論用一張圖收好：不管一次選幾個檔，它們最後都落進同一份文件的同一個富文本欄位，成為多個 `$FILE` 附件——後面要撈、要挑著刪，靠的都是這個結構。
 
-![多選的檔案全部落進文件同一個 Body 富文本欄位，成為多個 $FILE 附件；doc.RemoveItem("$FILE") 一次移除所有同名 $FILE、把整份文件的附件清空](/domino-news/post-images/domino-multi-file-attachments.svg)
+![多選的檔案全部落進文件同一個 Body 富文本欄位，成為多個 $FILE 附件；刪除時可迭代 EmbeddedObjects 依條件挑著刪，或用 doc.RemoveItem("$FILE") 一次全清](/domino-news/post-images/domino-multi-file-attachments.svg)
 
 ---
 
