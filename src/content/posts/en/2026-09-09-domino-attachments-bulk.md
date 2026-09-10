@@ -1,6 +1,6 @@
 ---
-title: "Multi-File Upload and Batch Delete in Domino: Classic Web, XPages 14.5.1, and Clearing Attachments in One Line"
-description: "The last piece covered attaching one file three ways; this one goes to 'many at once': a classic web form uses the HTML5 multiple attribute to select several files, XPages only got native multi-select by default in 14.5.1 (before that it was OpenNTF community controls), and the rarely-covered batch delete — doc.RemoveItem(\"$FILE\") clears every attachment on a document in one line. With a figure showing how the selected files land in one rich text field."
+title: "Multi-File Upload and Selective Attachment Delete in Domino: Classic Web and XPages 14.5.1"
+description: "The last piece covered attaching one file three ways; this one goes to 'many at once': a classic web form uses the HTML5 multiple attribute to select several files, XPages only got native multi-select by default in 14.5.1 (before that it was OpenNTF community controls), and the case you actually hit most but is thinly documented — deleting attachments by criteria: iterate EmbeddedObjects and Remove by a condition on .Source (with a runnable example). With a figure showing how the selected files land in one rich text field."
 pubDate: 2026-09-09T07:30:00+08:00
 lang: en
 slug: domino-attachments-bulk
@@ -25,7 +25,7 @@ cover: "/covers/domino-attachments-bulk.webp"
 coverStyle: "watercolor"
 ---
 
-The [last piece](/domino-news/en/posts/domino-attachments-three-ways) finished "attach **one** file in three contexts." Real needs usually go one step further: upload **many** files at once, and the reverse — clear **all** of a document's attachments in one go. Both have a recent wrinkle worth telling: XPages only got native multi-select in 14.5.1, and batch delete has a one-liner that's rarely mentioned.
+The [last piece](/domino-news/en/posts/domino-attachments-three-ways) finished "attach **one** file in three contexts." Real needs usually go one step further: upload **many** files at once, and the reverse — delete attachments, which in practice means picking the ones that match a condition, not wiping them all. Both have a wrinkle worth telling: XPages only got native multi-select in 14.5.1, and "delete by criteria" is the common case yet the thinly-documented one.
 
 Let's pin the conclusion with a figure first: however many files you pick, they all land in the same rich text field of the same document as multiple `$FILE` attachments — which is also why "clear them all" can be done in one shot.
 

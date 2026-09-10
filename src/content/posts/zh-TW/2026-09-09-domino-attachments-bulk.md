@@ -1,6 +1,6 @@
 ---
-title: "Domino 多檔上傳與批次刪除：傳統 web、XPages 14.5.1、一行清空附件"
-description: "上一篇講怎麼在三種情境各附一個檔；這篇進到「一次很多個」：傳統 web form 靠 HTML5 的 multiple 屬性一次選多檔、XPages 到 14.5.1 才終於預設支援多選（在那之前是 OpenNTF 社群方案的天下），以及很少人著墨的批次刪除——doc.RemoveItem(\"$FILE\") 一行清掉整份文件的所有附件。附一張圖說明多選的檔怎麼落到同一個富文本欄位。"
+title: "Domino 多檔上傳與依條件刪附件：傳統 web、XPages 14.5.1"
+description: "上一篇講怎麼在三種情境各附一個檔；這篇進到「一次很多個」：傳統 web form 靠 HTML5 的 multiple 屬性一次選多檔、XPages 到 14.5.1 才終於預設支援多選（在那之前是 OpenNTF 社群方案的天下），以及實務上最常遇到、參考卻最少的「依條件挑著刪」——迭代 EmbeddedObjects、依 .Source 檔名條件逐一 Remove（附可照跑範例）。附一張圖說明多選的檔怎麼落到同一個富文本欄位。"
 pubDate: 2026-09-09T07:30:00+08:00
 lang: zh-TW
 slug: domino-attachments-bulk
@@ -25,7 +25,7 @@ cover: "/covers/domino-attachments-bulk.webp"
 coverStyle: "watercolor"
 ---
 
-[上一篇](/domino-news/posts/domino-attachments-three-ways)把「在三種情境各附**一個**檔」講完了。真實需求通常再進一步：一次上傳**很多個**檔，以及反過來——把一份文件的附件**一次清光**。這兩件事各有一個近況值得講：XPages 到 14.5.1 才終於把「一次多選」做成內建，而批次刪除其實有一行就搞定的寫法、卻很少人提。
+[上一篇](/domino-news/posts/domino-attachments-three-ways)把「在三種情境各附**一個**檔」講完了。真實需求通常再進一步：一次上傳**很多個**檔，以及反過來——刪附件，而實務上刪多半是**挑符合條件的刪**，不是全砍光。這兩件事各有一個近況值得講：XPages 到 14.5.1 才終於把「一次多選」做成內建，而「依條件挑著刪」明明最常遇到、參考卻最少。
 
 先把結論用一張圖收好：不管一次選幾個檔，它們最後都落進同一份文件的同一個富文本欄位，成為多個 `$FILE` 附件——所以「清空」也可以一次對付。
 
