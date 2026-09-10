@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-09-09 · Posts scanned: 144 · Classes catalogued: 97*
+*Generated: 2026-09-10 · Posts scanned: 145 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [domino-attachments-rest-drapi-das](https://bryanhsiao.github.io/domino-news/posts/domino-attachments-rest-drapi-das/) | — | — | — |
 | [domino-attachments-bulk](https://bryanhsiao.github.io/domino-news/posts/domino-attachments-bulk/) | `NotesDocument`, `NotesEmbeddedObject` | `EmbeddedObject`, `RichTextItem` | — |
 | [domino-attachments-three-ways](https://bryanhsiao.github.io/domino-news/posts/domino-attachments-three-ways/) | — | `EmbeddedObject`, `RichTextItem` | — |
 | [domino-iq-timeout-java-ssjs](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-java-ssjs/) | — | `LLMReq`, `LLMRes` | — |
