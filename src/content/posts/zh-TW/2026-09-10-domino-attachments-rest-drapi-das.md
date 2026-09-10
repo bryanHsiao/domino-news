@@ -9,6 +9,8 @@ tags:
   - "DevOps"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-attachments-rest-drapi-das.webp"
+coverStyle: "collage"
 ---
 
 前幾篇講的都是**使用者**從一個 UI 把檔案附上去——client 的富文本欄位、web 的 File Upload Control、XPages 的 `xp:fileUpload`。但還有一整類需求是**程式**要用 REST 把附件拋進拋出：一個外部系統來把檔案抓走、一支 SPA 前端把檔上傳到某份文件、一條整合流程把舊附件刪掉。

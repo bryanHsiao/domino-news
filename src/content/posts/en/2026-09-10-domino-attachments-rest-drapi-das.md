@@ -9,6 +9,8 @@ tags:
   - "DevOps"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-attachments-rest-drapi-das.webp"
+coverStyle: "collage"
 ---
 
 The earlier pieces were all about a **user** attaching a file from a UI — the client's rich text field, the web File Upload Control, XPages' `xp:fileUpload`. But there's a whole other class of need where a **program** moves attachments over REST: an external system fetching files, a SPA front end uploading a file to a document, an integration deleting old attachments.
