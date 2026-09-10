@@ -118,6 +118,15 @@ This is exactly what [HCL's official `EmbeddedObjects` example](https://help.hcl
 
 (One clarification on a common worry: "removing while iterating skips elements" is a rule for **live, mutating collections** — like `NotesDocumentCollection` or `NotesView` — not for `EmbeddedObjects`, which returns a snapshot array, so it's unaffected; delete in the loop with confidence.)
 
+**⚠️ But decide first: where does this code run?** The back-end loop above has an easily-missed premise — `Remove` + `Save` **hits the back-end document directly and commits right away**, whether or not someone has that document open and is editing it. And selective delete tends to happen exactly in the interactive case — a user looking at their own attachments, deciding which to drop — so all three failure modes are in play: the user hits **Cancel**, thinks nothing changed, but the attachment is already gone from disk (no undo); the user hits **Save** and collides with your back-end `Save` into a **save conflict**; and once removed, it's unrecoverable. This is really why a clean "selective delete" recipe is scarce — the hard part isn't the loop, it's the **timing**.
+
+So split it by context:
+
+- **A batch/scheduled context where nobody has the document open** — this is where the back-end loop above belongs. Run it in a scheduled agent, `doc.Lock` first to avoid racing replication or another agent, and `ExtractFile` to back up before `Remove` (there's no rollback — the backup isn't optional).
+- **A user editing, who should pick what to delete themselves** — don't reach behind them with a back-end agent; take the path that **commits on their save**: on classic web that's the `%%Detach` checkbox covered in [the piece on web attachment UI](/domino-news/en/posts/domino-web-attachment-ui) (tick it, delete happens when they save — clean); on XPages, use the official attachment control's delete through the data source's save lifecycle, not a back-end `doc.Save` behind them.
+
+As for XPages doing the **checkbox-multi-select "delete the selected several at once"** experience — the built-in `xp:fileDownload` only gives you one `[x]` per row; there's no native multi-select batch delete. That takes building yourself, and building it to respect the save boundary — worth its own piece (in the works).
+
 **When you really do want to clear everything: the one-liner (`RemoveItem`).** For the rarer "nuke them all" case: attachments live on the document as items named `$FILE`, and [`RemoveItem`'s docs state](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_REMOVEITEM_METHOD.html) "If more than one item has the specified name, all items with this name are deleted." — same-named items go all at once, so clearing everything needs no loop:
 
 ```lotusscript

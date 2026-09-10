@@ -120,6 +120,15 @@ End If
 
 （順帶澄清一個常聽到的顧慮：「邊迭代邊刪會漏掉元素」——那是對**活的、會即時變動的集合**（像 `NotesDocumentCollection`、`NotesView`）才要小心的通則；`EmbeddedObjects` 回的是**陣列快照**，不受這個影響，可以放心在迴圈裡刪。）
 
+**⚠️ 但先想清楚：這段要在「哪裡」跑。** 上面這個後端迴圈有個容易漏掉的前提——`Remove` + `Save` 是**對後端文件直接動刀、而且立刻落地**，不管有沒有人正開著這份文件在編輯。而挑著刪偏偏最常發生在「使用者正盯著自己的附件、決定丟哪幾個」的互動情境，於是三種壞法都可能踩到：使用者按**取消**，他以為什麼都沒動、但附件已經從磁碟消失（沒有 undo）；使用者按**存檔**，跟你後端這次 `Save` 撞成**存檔衝突**；而且一旦刪了就救不回。這其實也是「挑著刪」乾淨解法特別少的原因——難的不是那個迴圈，是**時機**。
+
+所以要分場景：
+
+- **沒人開著文件的批次／排程場景**——這才是上面那段後端迴圈的正確歸宿。放進排程 agent 跑，先 `doc.Lock` 避免跟複寫／其他 agent 搶，`ExtractFile` 備份後再 `Remove`（沒有 rollback，備份不是可選、是必要）。
+- **使用者正在編輯、要讓他自己挑著刪**——別用後端 agent 從背後改，走「**跟著他存檔那一刻才生效**」的路：傳統 web 就是[另一篇談 web 附件 UI](/domino-news/posts/domino-web-attachment-ui) 講的 `%%Detach` 勾選框（勾了、按存檔才刪，乾淨俐落）；XPages 則走官方附件控制項的刪除、經資料來源的存檔生命週期，不要在背後 `doc.Save`。
+
+至於「XPages 要做成**勾選框多選、一次刪掉選中那幾個**」那種批次體驗——官方 `xp:fileDownload` 只給你一列一個 [x]，沒有現成的多選批次刪。那得自己做、還要做到尊重存檔邊界，值得單獨一篇專講（整理中）。
+
 **真要一次清全部：一行版（`RemoveItem`）。** 少數情況確實想把附件全砍光。附件在文件裡是一個個名為 `$FILE` 的 item，而 [`RemoveItem` 官方寫明](https://help.hcl-software.com/dom_designer/14.5.0/basic/H_REMOVEITEM_METHOD.html)「If more than one item has the specified name, all items with this name are deleted.」——同名 item 一次全刪，所以清空全部不必迴圈：
 
 ```lotusscript
