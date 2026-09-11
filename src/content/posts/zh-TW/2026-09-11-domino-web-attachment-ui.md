@@ -19,6 +19,8 @@ sources:
     url: "http://dominopower.com/article/how-to-hide-attachments-in-hide-whens/"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-web-attachment-ui.webp"
+coverStyle: "pencil-sketch"
 ---
 
 [前一篇](/domino-news/posts/domino-attachments-three-ways)把「怎麼在 web form 放一個 File Upload Control」講完了。功能會動——但畫面通常很陽春：使用者存完檔，Domino 把附件圖示**倒在整頁最下面**一條分隔線底下；進編輯模式，每個附件旁邊還自動長出一排**「標記要刪除的附件」的勾選框**，樣式醜、又擠在你版面外面。

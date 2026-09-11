@@ -19,6 +19,8 @@ sources:
     url: "http://dominopower.com/article/how-to-hide-attachments-in-hide-whens/"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-web-attachment-ui.webp"
+coverStyle: "pencil-sketch"
 ---
 
 The [previous piece](/domino-news/en/posts/domino-attachments-three-ways) covered "how to put a File Upload Control on a web form." It works — but it usually looks crude: after the user saves, Domino dumps the attachment icons **at the very bottom of the page** under a horizontal rule; enter edit mode and each attachment sprouts a row of **"mark for deletion" checkboxes** that are ugly and sit outside your layout.
