@@ -92,6 +92,8 @@ Built as a minimal XPage, this runs on a test database (Domino 12.0.2). Here's t
 
 ![The XPages multi-select attachment delete in action: a custom "Choose file" upload button at top; an attachment list of three rows, two struck through and greyed with their buttons reading "Undo" (marked for deletion), one normal with a blue filename and a red-outlined "Delete" button; a dark green "Save changes" button at the bottom right](/domino-news/post-images/xpages-attachment-multi-delete-demo.png)
 
+The full source of this minimal XPage is on GitHub (Apache-2.0): [bryanHsiao/domino-xpages-multi-attachment-delete](https://github.com/bryanHsiao/domino-xpages-multi-attachment-delete) — clone it and drop it into a test database.
+
 ## Two limitations to know
 
 - **Same-name files can't be told apart**: `removeAttachment` matches by **filename**, so it can't delete just one of two identically-named attachments on the same document — an inherent limit of a name-based API, independent of version; you'd have to fall back to internal identity. ([APAR LO68855](https://www.ibm.com/support/pages/apar/LO68855) recorded similar behavior in the native control years ago — deleting one same-name file removed both — but that was reported against 8.5.3 and may have been fixed since; I haven't re-tested on 12.0.2. The name-based limit above holds regardless.) Duplicate names are uncommon in practice, but worth knowing up front.

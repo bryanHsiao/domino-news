@@ -92,6 +92,8 @@ doc.save();   // 新上傳 + 刪除，同一次落地
 
 ![XPages 多選附件刪除的實作畫面：上方自訂「選擇檔案」上傳鈕；中間附件清單三列，其中兩列被劃掉變灰、右側按鈕顯示「復原」（已標記待刪），一列正常顯示藍色檔名與紅框「刪除」鈕；右下角深綠色「儲存變更」鈕](/domino-news/post-images/xpages-attachment-multi-delete-demo.png)
 
+這個最小 XPage 的完整原始碼放在開源 repo（Apache-2.0）：[bryanHsiao/domino-xpages-multi-attachment-delete](https://github.com/bryanHsiao/domino-xpages-multi-attachment-delete)，可以直接抓下來貼進你的測試庫試跑。
+
 ## 兩個要知道的限制
 
 - **同名檔分不出來**：`removeAttachment` 是靠**檔名**認的，所以「同一份文件有兩個同名附件」時，沒辦法只刪其中一個——這是 name-based API 的先天限制、跟版本無關，遇到就得改用內部識別去處理。（[APAR LO68855](https://www.ibm.com/support/pages/apar/LO68855) 早年也記過原生控制項的類似狀況：刪一個同名檔會兩個一起刪；不過那是對 8.5.3 回報的、後續版本可能已修，我沒在 12.0.2 再測——但上面那個先天限制不受影響。）實務上附件同名機率低，但值得先知道。

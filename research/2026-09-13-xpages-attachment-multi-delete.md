@@ -76,7 +76,7 @@ updated: 2026-09-11
 - [ ] 雙語 build 驗證（_pending 不被本地 build 讀 → 暫拷 posts/ build 再移回）
 - [x] humanizer-zh-tw 自審（實證語氣、無罐頭結論；保留有據的第一人稱實測）
 - [x] 獨立 fact-check subagent → **PASS**（5 源全驗、無 404）；2 個微調已修：(1) `allowDelete` doc 只寫「Allows users to delete attached files or not」，不背書「一次刪一個」→ 改為「實際跑起來每列一個、一次刪一個」（觀察，非 doc 主張）；(2) LO68855 是 8.5.3 回報、後續可能已修 → 同名檔限制改成主打 `removeAttachment` name-based 先天限制（與版本無關），APAR 只當歷史前例並註明未在 12.0.2 再測。
-- [ ] 開源 repo（`domino-xpages-multi-attachment-delete`, Apache-2.0）建好 → 回填雙語下載連結
+- [x] 開源 repo 建好、push 上線 → https://github.com/bryanHsiao/domino-xpages-multi-attachment-delete （Apache-2.0；mdTest.xsp + README + LICENSE + screenshot）；雙語文章已回填「下載原始碼」inline 連結（GitHub URL，diversity 仍過：6 相異 URL 各 1 次）
 
 ## 異動日誌
 
