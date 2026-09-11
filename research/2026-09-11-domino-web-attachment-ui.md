@@ -79,3 +79,9 @@ updated: 2026-09-07
 - 2026-09-07 研究 subagent（傳統 web 附件 UI）、確認 $V2AttachmentOptions（修正值為 0/1）、雙語草稿、
   diversity、sidecar（Opus 4.8）
 - 2026-09-07 派獨立 fact-check subagent（執行中）（Opus 4.8）
+- 2026-09-11 **加收尾「after」實圖（使用者實環境做的）**：使用者在自己的 Domino（ffh/doc.nsf「檔案上傳:」表單）上，
+  照本文手法（`$V2AttachmentOptions="0"` 藏預設、pass-thru HTML + `@AttachmentNames` 自畫下載清單、`%%Detach`），
+  另加少量 CSS/前端 JS 把 UX 做好（隱藏 `%%Detach` checkbox 改用「刪除/復原」鈕標記、多檔以 chip 呈現、自訂上傳鈕與
+  儲存鈕、900px 欄寬），做出美化後成品。收尾採用「示範刪除操作中」那張（兩列劃掉變灰+「復原」、兩列正常）放在小結前，
+  與開頭 crude-default 形成 before→after。圖 `public/post-images/domino-web-attachment-beautified.png`（雙語共用）。
+  圖說已誠實標註「下載清單/$V2/%%Detach 是本文手法，另加了一點 CSS 與少量 JS」，不誇稱本文貼的公式即產出此完整 UI。（Opus 4.8）

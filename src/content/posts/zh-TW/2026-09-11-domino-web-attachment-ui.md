@@ -110,6 +110,10 @@ files := @AttachmentNames;
 
 最後順帶一個：Domino 自動生的 web 動作列、預設儲存機制通常也醜。傳統做法是**不用**內建那套，改自己放一個 Pass-Thru HTML 的 `<input type="submit">`（或用 JavaScript `document.forms[0].submit()`）當儲存鈕、套自己的樣式。這比較是通用的傳統 web 手法、沒有單一權威出處，但跟上面藏附件、自畫清單是同一套思路：**把 Domino 自動生的東西關掉，改用你控制得了的 HTML。**
 
+把上面幾步套到一個真實的 web form 上，成品大致長這樣——開頭那坨頁尾附件與裸勾選框不見了，換成自己的上傳區、附件清單與刪除、還有自訂的儲存鈕（這是實際跑在 Domino web 上的畫面；下載清單、`$V2AttachmentOptions`、`%%Detach` 是本文講的手法，另外加了一點 CSS 與少量前端 JS 把上傳與刪除的操作再美化）：
+
+![美化後的 Domino web 附件 UI（示範刪除操作中）：上方虛線框的上傳區有自訂「選擇檔案」鈕與已選檔案標籤；中間有框的附件清單裡，兩列被劃掉且變灰、按鈕變成「復原」（已標記待刪、但存檔前都可反悔），另兩列正常顯示藍色下載連結配「刪除」鈕；右下角是自訂的綠色「儲存」鈕——取代了開頭那個陽春預設](/domino-news/post-images/domino-web-attachment-beautified.png)
+
 ## 小結
 
 傳統 Domino web 的附件 UI 醜，是因為 Domino 自動幫你渲染了一坨你控制不了的東西。三步把它接管過來：`$V2AttachmentOptions="0"`（文字零、只藏不擋）藏掉預設 → Pass-Thru HTML 配 `@AttachmentNames`（檔名記得 `@URLEncode`）自己畫下載清單 → 用 `%%Detach` 自訂勾選框、或 WebQuerySave + `Remove` 自訂刪除。這些多半是社群長年累積的眉角、少有現行官方文件，但在維護老 Domino web 應用時天天用得到。想回到「怎麼放上傳控制項」的基礎，見[三種上傳法](/domino-news/posts/domino-attachments-three-ways)；多檔與批次刪除見[這篇](/domino-news/posts/domino-attachments-bulk)。
