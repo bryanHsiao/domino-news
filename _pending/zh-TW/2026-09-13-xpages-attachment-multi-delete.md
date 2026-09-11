@@ -23,7 +23,7 @@ relatedJava: ["EmbeddedObject", "RichTextItem"]
 relatedSsjs: []
 ---
 
-一份 XPages 文件上掛了好幾個附件，你想砍掉其中幾個。這在傳統 Notes 用戶端點一點就好，但在 XPages web 上，官方的 [File Download 控制項](https://help.hcl-software.com/dom_designer/12.0.0/xpageuser/wpd_controls_pref_allowdelete.html)（`allowDelete="true"`）只給你「一列一個、一次刪一個」，沒有「勾選多個、一次刪」的原生做法。翻過 OpenNTF 和社群，多檔上傳的控制項一堆、附件唯讀清單也有，但「勾選多個附件一次刪」幾乎找不到現成的；連我手上一張做得相當完整的生產 XPages 表單（自訂上傳鈕、自畫下載表格），清單裡也還是沒有多選批次刪。
+一份 XPages 文件上掛了好幾個附件，你想砍掉其中幾個。這在傳統 Notes 用戶端點一點就好，但在 XPages web 上，官方的 [File Download 控制項](https://help.hcl-software.com/dom_designer/12.0.0/xpageuser/wpd_controls_pref_allowdelete.html)即使開了 `allowDelete="true"`，實際跑起來也是**每列一個刪除連結、一次刪一個**，沒有「勾選多個、一次刪」的原生做法。翻過 OpenNTF 和社群，多檔上傳的控制項一堆、附件唯讀清單也有，但「勾選多個附件一次刪」幾乎找不到現成的；連我手上一張做得相當完整的生產 XPages 表單（自訂上傳鈕、自畫下載表格），清單裡也還是沒有多選批次刪。
 
 這篇就把這塊補起來——而且用對的方式補：**保住 XPages 原生刪除「存檔才生效」的好性質，只把缺的「多選」加上去。** 這也是附件系列的收尾，前面談過[多檔上傳與依條件刪（LotusScript）](/domino-news/posts/domino-attachments-bulk)和[傳統 web 用 `%%Detach` 勾選框刪除](/domino-news/posts/domino-web-attachment-ui)，這篇換 XPages。
 
@@ -94,7 +94,7 @@ doc.save();   // 新上傳 + 刪除，同一次落地
 
 ## 兩個要知道的限制
 
-- **同名檔刪不乾淨**：`removeAttachment` 是靠**檔名**認的。[APAR LO68855](https://www.ibm.com/support/pages/apar/LO68855) 指出原生控制項在「同一份文件有兩個同名附件」時，刪一個會**兩個一起被刪**；我們這套一樣按檔名，所以遇到同名附件要另外用內部識別去處理。實務上附件同名機率低，但值得先知道。
+- **同名檔分不出來**：`removeAttachment` 是靠**檔名**認的，所以「同一份文件有兩個同名附件」時，沒辦法只刪其中一個——這是 name-based API 的先天限制、跟版本無關，遇到就得改用內部識別去處理。（[APAR LO68855](https://www.ibm.com/support/pages/apar/LO68855) 早年也記過原生控制項的類似狀況：刪一個同名檔會兩個一起刪；不過那是對 8.5.3 回報的、後續版本可能已修，我沒在 12.0.2 再測——但上面那個先天限制不受影響。）實務上附件同名機率低，但值得先知道。
 - **沒有 undo**：一旦「儲存」把 `removeAttachment` 落地，附件就真的沒了（只能靠複本／備份救）。所以「標記 → 存檔前都可反悔」這個設計不只是好看，是實實在在給使用者一道後悔的機會。
 
 ## 小結
