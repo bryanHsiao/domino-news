@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-09-11 · Posts scanned: 146 · Classes catalogued: 97*
+*Generated: 2026-09-12 · Posts scanned: 147 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [domino-xspupload-upload-fail](https://bryanhsiao.github.io/domino-news/posts/domino-xspupload-upload-fail/) | — | — | — |
 | [domino-web-attachment-ui](https://bryanhsiao.github.io/domino-news/posts/domino-web-attachment-ui/) | — | — | — |
 | [domino-attachments-rest-drapi-das](https://bryanhsiao.github.io/domino-news/posts/domino-attachments-rest-drapi-das/) | — | — | — |
 | [domino-attachments-bulk](https://bryanhsiao.github.io/domino-news/posts/domino-attachments-bulk/) | `NotesDocument`, `NotesEmbeddedObject` | `EmbeddedObject`, `RichTextItem` | — |
