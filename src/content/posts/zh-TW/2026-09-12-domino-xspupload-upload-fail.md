@@ -16,6 +16,8 @@ sources:
     url: "https://www.dreamjtech.com/5816/"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-xspupload-upload-fail.webp"
+coverStyle: "risograph"
 ---
 
 有一種 XPages 上傳的壞法很容易讓人怪錯地方：檔案上傳控制項按了**像沒反應**——使用者端沒跳錯、頁面也沒事，就是檔案沒上去，很容易以為是控制項或程式寫壞了。但你只要翻一下 server console，那行 Java 例外其實把兇手指得很清楚：

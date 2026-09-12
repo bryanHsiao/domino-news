@@ -16,6 +16,8 @@ sources:
     url: "https://www.dreamjtech.com/5816/"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-xspupload-upload-fail.webp"
+coverStyle: "risograph"
 ---
 
 There's a way XPages uploads break that's easy to blame on the wrong thing: the file upload control **seems to do nothing** — no error on the client, the page is fine, the file just doesn't go up, so it's tempting to blame the control or your own code. But check the server console and the Java exception points straight at the real culprit:
