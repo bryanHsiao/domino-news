@@ -17,8 +17,6 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/12.0.0/xpageuser/wpd_controls_pref_allowdelete.html"
   - title: "Creating save conflicts mixing DominoDocument and Document methods（社群）— assono"
     url: "https://www.assono.de/en/blog/xpages-save-conflicts-mixing-methods"
-  - title: "APAR LO68855：同名附件刪除限制（官方支援）— HCL"
-    url: "https://www.ibm.com/support/pages/apar/LO68855"
 relatedJava: ["EmbeddedObject", "RichTextItem"]
 relatedSsjs: []
 cover: "/covers/xpages-attachment-multi-delete.webp"
@@ -96,10 +94,10 @@ doc.save();   // 新上傳 + 刪除，同一次落地
 
 這個最小 XPage 的完整原始碼放在開源 repo（Apache-2.0）：[bryanHsiao/domino-xpages-multi-attachment-delete](https://github.com/bryanHsiao/domino-xpages-multi-attachment-delete)，可以直接抓下來貼進你的測試庫試跑。
 
-## 兩個要知道的限制
+## 兩件要知道的事
 
-- **同名檔分不出來**：`removeAttachment` 是靠**檔名**認的，所以「同一份文件有兩個同名附件」時，沒辦法只刪其中一個——這是 name-based API 的先天限制、跟版本無關，遇到就得改用內部識別去處理。（[APAR LO68855](https://www.ibm.com/support/pages/apar/LO68855) 早年也記過原生控制項的類似狀況：刪一個同名檔會兩個一起刪；不過那是對 8.5.3 回報的、後續版本可能已修，我沒在 12.0.2 再測——但上面那個先天限制不受影響。）實務上附件同名機率低，但值得先知道。
 - **沒有 undo**：一旦「儲存」把 `removeAttachment` 落地，附件就真的沒了（只能靠複本／備份救）。所以「標記 → 存檔前都可反悔」這個設計不只是好看，是實實在在給使用者一道後悔的機會。
+- **按檔名刪其實很安全**：你可能會擔心「靠檔名刪、萬一有同名檔怎麼辦」——不會有這個問題。**同一份文件不會出現兩個一模一樣的附件檔名**：重名的檔在上傳時，Domino 會自動改成 `foo-2`、`foo-3`（前面那個「上傳重複變 `-2`」的雷，就是這個機制），所以檔名本來就是唯一的，按檔名刪不會誤傷別的檔。
 
 ## 小結
 

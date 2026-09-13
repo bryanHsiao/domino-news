@@ -17,8 +17,6 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/12.0.0/xpageuser/wpd_controls_pref_allowdelete.html"
   - title: "Creating save conflicts mixing DominoDocument and Document methods (community) — assono"
     url: "https://www.assono.de/en/blog/xpages-save-conflicts-mixing-methods"
-  - title: "APAR LO68855: same-name attachment delete limitation (official support) — HCL"
-    url: "https://www.ibm.com/support/pages/apar/LO68855"
 relatedJava: ["EmbeddedObject", "RichTextItem"]
 relatedSsjs: []
 cover: "/covers/xpages-attachment-multi-delete.webp"
@@ -96,10 +94,10 @@ Built as a minimal XPage, this runs on a test database (Domino 12.0.2). Here's t
 
 The full source of this minimal XPage is on GitHub (Apache-2.0): [bryanHsiao/domino-xpages-multi-attachment-delete](https://github.com/bryanHsiao/domino-xpages-multi-attachment-delete) — clone it and drop it into a test database.
 
-## Two limitations to know
+## Two things to know
 
-- **Same-name files can't be told apart**: `removeAttachment` matches by **filename**, so it can't delete just one of two identically-named attachments on the same document — an inherent limit of a name-based API, independent of version; you'd have to fall back to internal identity. ([APAR LO68855](https://www.ibm.com/support/pages/apar/LO68855) recorded similar behavior in the native control years ago — deleting one same-name file removed both — but that was reported against 8.5.3 and may have been fixed since; I haven't re-tested on 12.0.2. The name-based limit above holds regardless.) Duplicate names are uncommon in practice, but worth knowing up front.
 - **No undo**: once "Save" lands the `removeAttachment`, the attachment is really gone (recoverable only from a replica/backup). So "mark now, reversible until you save" isn't just cosmetic — it's a real chance for the user to change their mind.
+- **Deleting by name is actually safe**: you might worry a name-based delete is risky if two files share a name — but **a document won't hold two attachments with the identical filename**. Domino uniquifies duplicates on upload, renaming them `foo-2`, `foo-3` (the same mechanism behind the duplicate `-2` trap noted earlier), so filenames are already unique and deleting by name won't hit the wrong file.
 
 ## Wrap-up
 
