@@ -21,6 +21,8 @@ sources:
     url: "https://www.ibm.com/support/pages/apar/LO68855"
 relatedJava: ["EmbeddedObject", "RichTextItem"]
 relatedSsjs: []
+cover: "/covers/xpages-attachment-multi-delete.webp"
+coverStyle: "ukiyo-e"
 ---
 
 An XPages document holds several attachments and you want to drop a few of them. In the classic Notes client that's a couple of clicks, but on the XPages web the official [File Download control](https://help.hcl-software.com/dom_designer/12.0.0/xpageuser/wpd_controls_pref_allowdelete.html), even with `allowDelete="true"`, in practice gives you one delete link per row — one file at a time — with no native "check several, delete together." Search OpenNTF and the community and you'll find plenty of multi-file *upload* controls and read-only attachment lists, but a "select several attachments and delete them at once" is almost nowhere to be found. Even a fairly complete production XPages form I have on hand (custom upload button, hand-built download table) still has no multi-select batch delete in its list.

@@ -21,6 +21,8 @@ sources:
     url: "https://www.ibm.com/support/pages/apar/LO68855"
 relatedJava: ["EmbeddedObject", "RichTextItem"]
 relatedSsjs: []
+cover: "/covers/xpages-attachment-multi-delete.webp"
+coverStyle: "ukiyo-e"
 ---
 
 一份 XPages 文件上掛了好幾個附件，你想砍掉其中幾個。這在傳統 Notes 用戶端點一點就好，但在 XPages web 上，官方的 [File Download 控制項](https://help.hcl-software.com/dom_designer/12.0.0/xpageuser/wpd_controls_pref_allowdelete.html)即使開了 `allowDelete="true"`，實際跑起來也是**每列一個刪除連結、一次刪一個**，沒有「勾選多個、一次刪」的原生做法。翻過 OpenNTF 和社群，多檔上傳的控制項一堆、附件唯讀清單也有，但「勾選多個附件一次刪」幾乎找不到現成的；連我手上一張做得相當完整的生產 XPages 表單（自訂上傳鈕、自畫下載表格），清單裡也還是沒有多選批次刪。
