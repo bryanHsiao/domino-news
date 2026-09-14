@@ -37,7 +37,7 @@ relatedSsjs: ["document"]
 這句「代表位置」是關鍵。NoteID 快、在 LotusScript 裡用 `db.GetDocumentByID(noteid)` 一取就到，適合「我現在就要在這個庫、這個 session 裡快速回到這份文件」。但它有兩個致命點：
 
 - **換 replica 就變**：A 伺服器的某文件 NoteID，拿到 B 伺服器的 replica 去 `GetDocumentByID`，指到的多半是**別份文件**（或不存在）。
-- **可能被重用**：文件刪掉後，那個位置的編號可能被之後的新文件拿去用。
+- **可能被重用**：文件刪掉後，那個位置的編號可能被之後的新文件拿去用（這是 Domino 的一般行為，非該頁明載）。
 
 所以 **NoteID 千萬別存起來、也別跨庫用**。它是「一次性的本地把手」，不是身分證。
 
@@ -49,7 +49,7 @@ relatedSsjs: ["document"]
 
 **兩個要小心的雷**（都在官方 UniversalID 頁）：`UniversalID` 是**可寫**的，但——
 
-- **改一份既有文件的 UNID，等於把它變成一份新文件**（「Modifying the UNID of an existing document transforms it into a new document」）。
+- **改一份既有文件的 UNID，等於把它變成一份新文件**（官方原文：「If you modify the UNID of an existing document, it becomes a new document.」）。
 - **想存一份跟現有文件同 UNID 的文件，會噴 `lsERR_NOTES_ERROR`（4000）**。
 
 換句話說，UNID 可寫不代表你該去改它；除非你很清楚在做「建立 replica 關係」這種事，否則別碰。另外提醒：在 Notes 用戶端**複製貼上**一份文件，貼出來的是**新 UNID**（不是同一份），這也是很多人以為「複製後還是同一份」卻對不上的原因。

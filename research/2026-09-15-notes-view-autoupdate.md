@@ -7,7 +7,7 @@ status: staged（_pending，cron 9/15 promote）
 tags: [Domino Designer, LotusScript, Performance]
 requester: 使用者 (bryan，補 9/15 空檔；coverage 確認無 AutoUpdate 效能專篇，僅 notes-view-navigator 提過)
 author_model: claude-opus-4-8
-review_model: (官方 doc 逐字錨定；WebFetch 第一手)
+review_model: general-purpose (獨立 fact-check subagent) → PASS（全乾淨、每句官方逐字、code pattern 正確、無 404）
 created: 2026-09-14
 updated: 2026-09-14
 ---

@@ -37,7 +37,7 @@ The [official definition](https://help.hcl-software.com/dom_designer/12.0.0/basi
 That word "location" is the crux. The NoteID is fast — in LotusScript `db.GetDocumentByID(noteid)` gets you there instantly — and it's fine for "I want to jump back to this document right now, in this database, this session." But it has two fatal traits:
 
 - **It changes across replicas**: take a document's NoteID from server A, run `GetDocumentByID` against the replica on server B, and you'll most likely land on a **different document** (or none).
-- **It can be reused**: after a document is deleted, that slot's number may be handed to a later new document.
+- **It can be reused**: after a document is deleted, that slot's number may be handed to a later new document (general Domino behavior, not stated on that page).
 
 So **never store a NoteID, and never use it across databases**. It's a throwaway local handle, not an identity card.
 
@@ -49,7 +49,7 @@ This is what you store when you want to "remember a document": it's recognized a
 
 **Two traps** (both on the official UniversalID page): `UniversalID` is **read-write**, but —
 
-- **Change an existing document's UNID and you turn it into a new document** ("Modifying the UNID of an existing document transforms it into a new document").
+- **Change an existing document's UNID and you turn it into a new document** (the docs: "If you modify the UNID of an existing document, it becomes a new document.").
 - **Try to save a document with the same UNID as an existing one and you get `lsERR_NOTES_ERROR` (4000)**.
 
 In other words, writable doesn't mean you should touch it. Unless you're deliberately building a replica relationship, leave it alone. One more: **copy-pasting** a document in the Notes client produces a **new UNID** (not the same document) — which is why people who assume "it's still the same document after copying" find their references don't line up.

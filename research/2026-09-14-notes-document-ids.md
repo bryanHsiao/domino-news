@@ -7,7 +7,7 @@ status: published（9/14 當日直發 posts/，Path B）
 tags: [Domino Designer, LotusScript, Formula]
 requester: 使用者 (bryan，補 9/14 空檔；coverage 選題確認 UNID/NoteID 無專篇)
 author_model: claude-opus-4-8
-review_model: (內容全為官方 doc 逐字錨定；WebFetch 第一手)
+review_model: general-purpose (獨立 fact-check subagent) → PASS；2 微調已修：(1) 「改 UNID→新文件」原本引號內是 WebFetch 摘要的 paraphrase 非逐字 → 改用官方原文「If you modify the UNID of an existing document, it becomes a new document.」；(2) NoteID 刪後可重用 = Domino 通則非該頁明載 → 加註記，守「別假託官方」
 created: 2026-09-14
 updated: 2026-09-14
 ---
