@@ -19,6 +19,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/11.0.1/basic/H_GETDOCUMENTBYUNID_METHOD.html"
 relatedJava: ["Document"]
 relatedSsjs: ["document"]
+cover: "/covers/notes-document-ids.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 When you need to "point at a particular document" in code or a link, Domino hands you several IDs: `NoteID`, `UniversalID`, and in Formula there's `@DocumentUniqueID`. They're all hex strings and look alike, so it's tempting to grab whichever — and then, on some replica or after a copy-paste, you suddenly reach the wrong document, or none. The differences are big. Here they are.

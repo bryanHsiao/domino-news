@@ -19,6 +19,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/11.0.1/basic/H_GETDOCUMENTBYUNID_METHOD.html"
 relatedJava: ["Document"]
 relatedSsjs: ["document"]
+cover: "/covers/notes-document-ids.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 你要在程式或連結裡「指涉某一份文件」，Domino 給你好幾個 ID 可抓：`NoteID`、`UniversalID`，Formula 裡還有 `@DocumentUniqueID`。它們都是一串十六進位、長得很像，於是很容易隨手抓一個就用——然後在某個 replica、某次複製貼上之後，突然抓到錯的文件、或抓不到。差別其實很大，這篇一次講清楚。
