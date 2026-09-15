@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/12.0.2/basic/H_NOTESVIEW_CLASS.html"
 relatedJava: ["View"]
 relatedSsjs: ["view"]
+cover: "/covers/notes-view-autoupdate.webp"
+coverStyle: "bw-grain"
 ---
 
 You write an agent that walks a view with `GetFirstDocument` / `GetNextDocument`, changing a field on each document and saving. With a few documents it's fine; at scale it gets **slower and slower**, and every so often throws a baffling error: **"Entry not found in index."** Your logic looks correct — so what gives?

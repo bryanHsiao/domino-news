@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/12.0.2/basic/H_NOTESVIEW_CLASS.html"
 relatedJava: ["View"]
 relatedSsjs: ["view"]
+cover: "/covers/notes-view-autoupdate.webp"
+coverStyle: "bw-grain"
 ---
 
 寫一個 agent，`GetFirstDocument` / `GetNextDocument` 跑過一個 view、對每份文件改個欄位再存。文件不多時沒事；量一大，就發現它**越跑越慢**，甚至偶爾拋一個看起來莫名其妙的錯：**「Entry not found in index」**。你檢查邏輯沒問題，怎麼會這樣？
