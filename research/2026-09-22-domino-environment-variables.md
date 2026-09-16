@@ -7,7 +7,7 @@ status: staged（_pending）
 tags: [Domino Designer, LotusScript, Formula]
 requester: 使用者 (bryan，9/17–9/22 六篇批次；候選 6)
 author_model: claude-opus-4-8
-review_model: (待批次 fact-check #4–6)
+review_model: general-purpose (獨立 fact-check subagent) → PASS（@SetEnvironment/$ 前綴/isSystem/code sample 皆正確）；兩處 quote-fidelity 修：SetEnvironmentVar 改回準確語意（加「已含 $ 則不加」例外、去假逐字）、en「local notes.ini file」去引號改述。
 created: 2026-09-16
 updated: 2026-09-16
 ---

@@ -7,7 +7,7 @@ status: staged（_pending）
 tags: [Notes Client, Security]
 requester: 使用者 (bryan，9/17–9/22 六篇批次；候選 4；security)
 author_model: claude-opus-4-8
-review_model: (待批次 fact-check #4–6)
+review_model: general-purpose (獨立 fact-check subagent) → PASS；ESA 觸發那句原本引號內是改寫 → 改用官方逐字「If the active content attempts an action that is not enabled for the signer, or if the signer is not listed in the ECL...」。（-Default-/-No Signature- 描述正確、框為一般說明非官方引用，保留。）
 created: 2026-09-16
 updated: 2026-09-16
 ---

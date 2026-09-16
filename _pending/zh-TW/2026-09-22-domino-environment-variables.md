@@ -47,7 +47,7 @@ relatedSsjs: ["session"]
 第二個坑是 `$`。Domino 用「名字有沒有 `$` 開頭」來區分兩種變數：**user 環境變數**（`$name`）與 **system 環境變數**（`name`，就是 notes.ini 裡那些原生設定）。而各介面**預設會替你加 `$`**：
 
 - **Formula**：`@SetEnvironment("Foo"; "bar")` 實際上會在 notes.ini 存成 `$Foo=bar`——[官方](https://help.hcl-software.com/dom_designer/11.0.1/basic/H_SETENVIRONMENT.html)明說它「prepends a dollar sign（`$`）to the variable name」。用 `@Environment("Foo")` 讀時同樣走 `$Foo`，對得上。
-- **LotusScript**：[`SetEnvironmentVar`](https://help.hcl-software.com/dom_designer/10.0.1/basic/H_SETENVIRONMENTVAR_METHOD.html) 「prepends a dollar sign（`$`）to the variable name **if the third parameter is false or omitted**」；`GetEnvironmentValue`／`GetEnvironmentString` 也是「prepend a `$` if the second parameter is false or omitted, and do not prepend a `$` if the second parameter is true」。
+- **LotusScript**：[`SetEnvironmentVar`](https://help.hcl-software.com/dom_designer/10.0.1/basic/H_SETENVIRONMENTVAR_METHOD.html) 會在名字前加 `$`——**除非你把第三參數 `isSystem` 設 True，或名字本來就以 `$` 開頭**；`GetEnvironmentValue`／`GetEnvironmentString` 官方寫「prepend a `$` if the second parameter is false or omitted, and do not prepend a `$` if the second parameter is true」。
 
 ```lotusscript
 Dim s As New NotesSession

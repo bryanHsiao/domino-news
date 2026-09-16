@@ -44,7 +44,7 @@ ECL 是**工作站層級**的安全機制。[官方](https://help.hcl-software.c
 
 當一段 active content 想做某件事，Notes 會查你的 ECL：**這個 signer 在不在清單裡?被授權做這個動作嗎?** 只要有一項不符合，就跳警告。[官方](https://help.hcl-software.com/domino/12.0.0/admin/conf_theexecutioncontrollist_t.html)：
 
-> ESA occurs when 「the signer is not listed in the ECL, or if the signer of the code is listed but attempts an action that is not enabled.」
+> 「If the active content attempts an action that is not enabled for the signer, or if the signer is not listed in the ECL, Notes generates an Execution Security Alert (ESA).」
 
 而且警告會告訴你**是誰、想做什麼、卡在哪個設定**：
 

@@ -44,7 +44,7 @@ In other words, anything that "runs on your machine" is governed by the ECL — 
 
 When a piece of active content tries to do something, Notes checks your ECL: **is this signer on the list? is it granted this action?** If either fails, the alert fires. The [docs](https://help.hcl-software.com/domino/12.0.0/admin/conf_theexecutioncontrollist_t.html):
 
-> an ESA occurs when "the signer is not listed in the ECL, or if the signer of the code is listed but attempts an action that is not enabled."
+> "If the active content attempts an action that is not enabled for the signer, or if the signer is not listed in the ECL, Notes generates an Execution Security Alert (ESA)."
 
 And it tells you **who, what, and which setting**:
 

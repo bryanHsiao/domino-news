@@ -33,7 +33,7 @@ You want to stash a small setting from Formula or LotusScript — a last-used va
 
 Break the biggest misconception first: these "environment variables" **aren't stored in a database, and aren't one value everyone shares** — they're written into the **`notes.ini` of the machine running the code**.
 
-The [docs](https://help.hcl-software.com/dom_designer/11.0.1/basic/H_SETENVIRONMENT.html): `@SetEnvironment` "sets an environment variable stored in the **user's notes.ini file** (Windows / UNIX) or Notes Preferences file (Macintosh)." LotusScript is the same — the [docs](https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_GETENVIRONMENTSTRING_METHOD.html): `getEnvironmentValue`, `getEnvironmentString`, and `setEnvironmentVar` read/write environment variables "stored in the **local notes.ini file**."
+The [docs](https://help.hcl-software.com/dom_designer/11.0.1/basic/H_SETENVIRONMENT.html): `@SetEnvironment` "sets an environment variable stored in the **user's notes.ini file** (Windows / UNIX) or Notes Preferences file (Macintosh)." LotusScript is the same — per the [docs](https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_GETENVIRONMENTSTRING_METHOD.html), `getEnvironmentValue`, `getEnvironmentString`, and `setEnvironmentVar` read/write environment variables stored in the **local notes.ini** (the current user's notes.ini, or Notes Preferences file).
 
 That word "local" is the point:
 
@@ -47,7 +47,7 @@ So it **doesn't cross machines, doesn't replicate, isn't shared.** "I set an env
 The second trap is `$`. Domino uses "does the name start with `$`" to tell apart two kinds: **user environment variables** (`$name`) and **system environment variables** (`name` — the native settings in notes.ini). And each interface **prepends `$` for you by default**:
 
 - **Formula**: `@SetEnvironment("Foo"; "bar")` actually stores `$Foo=bar` in notes.ini — the [docs](https://help.hcl-software.com/dom_designer/11.0.1/basic/H_SETENVIRONMENT.html) say it "prepends a dollar sign (`$`) to the variable name." `@Environment("Foo")` reads `$Foo` too, so they line up.
-- **LotusScript**: [`SetEnvironmentVar`](https://help.hcl-software.com/dom_designer/10.0.1/basic/H_SETENVIRONMENTVAR_METHOD.html) "prepends a dollar sign (`$`) to the variable name **if the third parameter is false or omitted**"; `GetEnvironmentValue` / `GetEnvironmentString` likewise "prepend a `$` if the second parameter is false or omitted, and do not prepend a `$` if the second parameter is true."
+- **LotusScript**: [`SetEnvironmentVar`](https://help.hcl-software.com/dom_designer/10.0.1/basic/H_SETENVIRONMENTVAR_METHOD.html) prepends `$` to the name **unless you set the third parameter `isSystem` to True, or the name already starts with `$`**; `GetEnvironmentValue` / `GetEnvironmentString` per the docs "prepend a `$` if the second parameter is false or omitted, and do not prepend a `$` if the second parameter is true."
 
 ```lotusscript
 Dim s As New NotesSession

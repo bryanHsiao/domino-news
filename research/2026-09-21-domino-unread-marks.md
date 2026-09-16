@@ -7,7 +7,7 @@ status: staged（_pending）
 tags: [Domino Designer, LotusScript]
 requester: 使用者 (bryan，9/17–9/22 六篇批次；候選 5；developer 坑)
 author_model: claude-opus-4-8
-review_model: (待批次 fact-check #4–6)
+review_model: general-purpose (獨立 fact-check subagent) → PASS（每人一份/不複寫/MarkRead 逐字皆對、code 正確）；trap 3 屬性名稱精確化為「Don't maintain unread marks」（Advanced 頁）。
 created: 2026-09-16
 updated: 2026-09-16
 ---

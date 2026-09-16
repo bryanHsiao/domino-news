@@ -73,7 +73,7 @@ The docs also caution that enabling it on **high-activity, non-mail** databases 
 
 ## Trap 3: the database may not maintain unread at all
 
-One more: you try to change unread and nothing sticks — because the database's properties are set to **not maintain unread marks** (an option in Database properties). For performance, some databases turn unread off. If your design relies on unread, first confirm the database actually maintains it.
+One more: you try to change unread and nothing sticks — because the database has **"Don't maintain unread marks"** checked (the Advanced tab of Database properties). For performance, some databases turn unread off. If your design relies on unread, first confirm the database actually maintains it.
 
 ## Wrap-up
 
