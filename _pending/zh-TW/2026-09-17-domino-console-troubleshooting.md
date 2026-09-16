@@ -36,7 +36,7 @@ relatedSsjs: []
 
 排錯的第一步幾乎都是它。[官方](https://help.hcl-software.com/domino/12.0.0/admin/admn_showtasks_r.html)：`Show Tasks` 顯示「the server name, the Domino program directory path, and the status of the active server tasks」，而且「**Idle tasks are indicated**」——閒置的會標出來。
 
-所以你一眼能看到：HTTP、Router、Indexer、Agent Manager… 這些 task 在不在、現在在忙什麼、還是 idle。**某個 task 卡住**時，它常會停在某個奇怪的狀態不動；某個功能不通時，先看它對應的 task 是不是根本沒起來（例如 web 不通先看有沒有 `HTTP Server`）。想聚焦看某一個，用 `show tasks only <task>`。
+所以你一眼能看到：HTTP、Router、Indexer、Agent Manager… 這些 task 在不在、現在在忙什麼、還是 idle。**某個 task 卡住**時，它常會停在某個奇怪的狀態不動；某個功能不通時，先看它對應的 task 是不是根本沒起來（例如 web 不通先看有沒有 `HTTP Server`）——在 `show tasks` 的輸出裡掃到你要的那個 task、看它的狀態就好。
 
 ## 看整體健康：`show server`
 

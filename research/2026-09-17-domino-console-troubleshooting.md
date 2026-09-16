@@ -7,7 +7,7 @@ status: staged（_pending）
 tags: [Domino Server, Admin]
 requester: 使用者 (bryan，9/17–9/22 六篇批次；候選 1，admin/維運方向)
 author_model: claude-opus-4-8
-review_model: (待批次 fact-check)
+review_model: general-purpose (獨立 fact-check subagent，與 9/18/9/19 併) → ISSUES（1）→ 修：`show tasks only <task>` 是我杜撰的語法（Show Tasks 官方頁不吃參數），已移除、改成「在 show tasks 輸出裡掃到那個 task」。其餘全 verbatim PASS。
 created: 2026-09-16
 updated: 2026-09-16
 ---

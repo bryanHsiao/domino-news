@@ -36,7 +36,7 @@ Something's off with the server — a feature suddenly stopped working, a task l
 
 Almost every troubleshooting session starts here. The [docs](https://help.hcl-software.com/domino/12.0.0/admin/admn_showtasks_r.html): `Show Tasks` displays "the server name, the Domino program directory path, and the status of the active server tasks," and "**Idle tasks are indicated**."
 
-So at a glance you see whether HTTP, Router, Indexer, Agent Manager and the rest are present, what each is busy with, or idle. When **a task is stuck**, it often sits frozen in some odd state; when a feature is down, first check whether its task even came up (web down? look for `HTTP Server` first). To focus on one, `show tasks only <task>`.
+So at a glance you see whether HTTP, Router, Indexer, Agent Manager and the rest are present, what each is busy with, or idle. When **a task is stuck**, it often sits frozen in some odd state; when a feature is down, first check whether its task even came up (web down? look for `HTTP Server` first) — just scan the `show tasks` output for the task you care about and read its status.
 
 ## Overall health: `show server`
 
