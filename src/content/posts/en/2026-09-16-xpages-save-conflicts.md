@@ -18,6 +18,8 @@ sources:
 relatedJava: []
 relatedSsjs: []
 draft: true
+cover: "/covers/xpages-save-conflicts.webp"
+coverStyle: "collage"
 ---
 
 You hit Save and up pops "Document has been saved by another user - Save created a new document as a response to that modified document." You pause: **you're the only one touching this document** — no colleague, no second tab — so how did "another user" save it? Open the database and sure enough, there's an extra conflict document. And it only fires **now and then**, which makes it the worst kind to chase.

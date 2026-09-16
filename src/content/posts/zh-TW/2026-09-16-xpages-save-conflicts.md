@@ -18,6 +18,8 @@ sources:
 relatedJava: []
 relatedSsjs: []
 draft: true
+cover: "/covers/xpages-save-conflicts.webp"
+coverStyle: "collage"
 ---
 
 存檔按下去，畫面跳出「Document has been saved by another user - Save created a new document as a response to that modified document」。你愣了一下：**這份文件根本只有你在動**，沒有同事、沒有另一個分頁，怎麼會「被別人存檔」？打開資料庫一看，還真的多出一份 conflict（衝突）文件。而且它**偶爾才發作**，最難查。
