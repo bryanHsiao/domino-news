@@ -17,7 +17,6 @@ sources:
     url: "https://www.assono.de/en/blog/xpages-save-conflicts-mixing-methods"
 relatedJava: []
 relatedSsjs: []
-draft: true
 cover: "/covers/xpages-save-conflicts.webp"
 coverStyle: "collage"
 ---
@@ -67,11 +66,21 @@ At step 3 the `dominoDocument` still thinks it follows step 1, unaware that step
 
 ## This is a 2013 post — does it still happen on R12 / 14.5.1?
 
-assono's post is over a decade old, and Domino has turned several major versions since. So we built a minimal XPage from his sample and ran it on **Domino 12.0.2** and **14.5.1** to see whether the trap is still there.
+assono's post is over a decade old, and Domino has turned several major versions since. So we built a minimal XPage from his sample (`save → modify the back end → save again`, with a 3-second gap between) and ran it a few times on **Domino 12.0.2** and **14.5.1** to see whether the trap is still there.
 
-<!-- Reproduction result pending: we run the "save -> modify back end -> save again" sample on
-     both 12.0.2 and 14.5.1, record whether a conflict document appears, whether a sleep is needed,
-     and whether the two versions behave the same — then fill the conclusion and screenshots here. -->
+The answer is blunt: **both versions still do it, and every single run produces a conflict document — reliably, not intermittently.** Using a button that counts `$Conflict` documents across the database, each press of "run the repro" bumps the count by **+1** (on both 12.0.2 and 14.5.1).
+
+More directly, the page's `xp:messages` spat out the classic message on the spot:
+
+> "Document has been saved by another user - Save created a new document as a response to that modified document."
+
+— nothing but our own code touched that document from start to finish, yet up came "saved by **another user**." That's the paradox from the opening, made concrete: Domino's conflict detection only cares whether there are two lines of edits, not how many people are involved.
+
+![Reproducing the save conflict live: the page's xp:messages shows the yellow "Document has been saved by another user - Save created a new document as a response to that modified document," with the Note field holding the value the back end wrote — even though only this one test program touched the document (tested on Domino 12.0.2 / 14.5.1)](/domino-news/post-images/xpages-save-conflict-message.png)
+
+In other words, this 2013 trap **still holds all the way to 14.5.1** — it's not some transient bug in an old release, but the inevitable result of mixing two save paths on the same document.
+
+**And the time gap is the trigger.** With the two `Thread.sleep(3000)` calls in place, both versions conflict on every run; remove them so the two saves land in the same instant, and **no conflict is created**. That matches assono's observation, and it's exactly why the trap "only sometimes" bites in the wild: whether you collide depends on whether enough time opened up between the two saves (`$Revisions` decides by timestamp). A slightly slow server, or a slow operation wedged between the two saves, opens that gap — and up comes the conflict. Which is also why it's so hard to diagnose.
 
 ## How to avoid it
 

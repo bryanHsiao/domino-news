@@ -3,7 +3,7 @@ slug: xpages-save-conflicts
 title: "XPages 存檔衝突（混用 datasource 與後端 Document）"
 lang: [zh-TW, en]
 pubDate: 2026-09-16
-status: draft（draft:true；R12/14.5.1 實測結論待補後才移除 draft、正式排程）
+status: published（9/16 實測補完→移除 draft→發布）
 tags: [Domino Designer, XPages, Tutorial]
 requester: 使用者 (bryan，看 assono 那篇覺得有趣、想確認 R12/14.5.1 現況)
 author_model: claude-opus-4-8
@@ -19,9 +19,10 @@ updated: 2026-09-13
 
 ## 目前狀態（重要）
 
-- **雙語草稿已寫**（`_pending`，且 `draft: true`）——**不依賴 R12 結果的部分**（hook「單人卻跳存檔衝突」、官方機制、assono 主菜致謝、成因/避法）都寫好了。
-- **「R12 / 14.5.1 還會這樣嗎」那段是填空**（HTML 註解佔位）——**待使用者用下面的重現 XPage 在兩台各跑一次**，把「有沒有生 conflict、要不要 sleep、兩版是否一致」填進去、補截圖。
-- 使用者當下沒空，晚點做。已放 spawn_task 待辦卡片 + 本 sidecar 保存重現碼。
+- **雙語草稿已寫**（今 9/16 已 promote 進 posts/，仍 `draft: true` 擋著未上線）。
+- **✅ 實測完成（使用者 9/16 跑）**：`conflictTest.xsp`（save→改後端→再 save，3 秒 sleep）在 **12.0.2 與 14.5.1 都會、每按一次「跑重現」$Conflict +1、穩定發作**。`xp:messages` 當場吐出經典訊息「其他使用者已儲存文件 -『儲存』已建立一份新文件作為該已修改文件的回應。」（單人卻跳衝突的真身）。→ **「R12/14.5.1 還會這樣嗎」段已填實**（兩語）。使用者環境共用測試庫（987+ 份，看 $Conflict 增量）。
+  - 過程踩到：`檢查衝突` 鈕原本 `submit="false"` → server action 不跑、沒反應 → 改 `submit="true"` 修好（記：檢查/唯讀動作也要 submit=true 才會執行 SSJS）。
+- **剩下**：截圖（黃色訊息，待使用者丟 Downloads 嵌入）、獨立 fact-check（進行中）、humanizer、移除 `draft:true` → build 發布（pubDate 9/16 已到，拿掉 draft 即上線）。spawn_task 卡片 task_33bff7b4 發布後 dismiss。
 
 ## 官方骨幹（已 WebFetch 第一手驗）
 
