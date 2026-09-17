@@ -16,6 +16,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/whatsnew/v1.1.7.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-rest-api-v1-1-8-release.webp"
+coverStyle: "art-deco"
 ---
 
 [Domino REST API（DRAPI）1.1.8](https://opensource.hcltechsw.com/Domino-rest-api/whatsnew/v1.1.8.html) 在 2026-09-14 發布。這版新東西不少，但真正該先看的，是**幾個會影響現有整合的行為改變**——升上去之前沒注意，原本好好的呼叫可能就回不一樣、或直接壞掉。這篇先把「會咬人的」挑出來，再講新端點、實驗性功能與修正。

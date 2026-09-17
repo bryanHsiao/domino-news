@@ -16,6 +16,8 @@ sources:
     url: "https://opensource.hcltechsw.com/Domino-rest-api/whatsnew/v1.1.7.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-rest-api-v1-1-8-release.webp"
+coverStyle: "art-deco"
 ---
 
 [Domino REST API (DRAPI) 1.1.8](https://opensource.hcltechsw.com/Domino-rest-api/whatsnew/v1.1.8.html) shipped on 2026-09-14. There's plenty new, but the items to read first are the **behavior changes that affect existing integrations** — miss them before you upgrade and a call that used to work can come back different, or break outright. This piece pulls out the ones that bite first, then covers the new endpoints, the experimental features, and the fixes.
