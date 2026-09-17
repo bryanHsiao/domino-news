@@ -1,7 +1,7 @@
 ---
 title: "Domino REST API 1.1.8: A Few Behavior Changes That Bite, Plus CalDAV/CardDAV Arriving (Experimental)"
 description: "DRAPI 1.1.8 (2026-09-14) is out. Beyond new endpoints and features, it slips in a few behavior changes worth knowing first — richTextAs now defaults to HTML output, POST v1/query/qrp/json now requires a forms array, GET pim-v1/calendar/profile was renamed to calendarprofile, and calendar entry create/update now require date/timezone/duration. New on the feature side: PIM endpoints for mail attachment lists and calendar profiles, experimental CalDAV/CardDAV/DXL Extension APIs (off by default), PIM reading mail from a cluster member when the primary is down, and fixes for Keycloak/OIDC key rotation. Here's what matters."
-pubDate: 2026-09-23T07:30:00+08:00
+pubDate: 2026-09-18T07:30:00+08:00
 lang: en
 slug: domino-rest-api-v1-1-8-release
 tags:

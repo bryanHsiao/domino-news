@@ -1,7 +1,7 @@
 ---
 title: "Domino REST API 1.1.8：幾個會咬人的行為改變，加上 CalDAV／CardDAV 實驗性登場"
 description: "DRAPI 1.1.8（2026-09-14）出了。這版除了新端點與功能，還藏了幾個你該先知道的行為改變——richTextAs 的預設輸出改成 HTML、POST v1/query/qrp/json 現在強制要 forms 陣列、GET pim-v1/calendar/profile 改名成 calendarprofile、行事曆項目建立/更新現在必須帶 date/timezone/duration。新東西這邊：撈 mail 附件清單與 calendar profile 的 PIM 端點、實驗性的 CalDAV／CardDAV／DXL Extension API（預設關）、PIM 在 primary 不可用時改讀 cluster member，還有 Keycloak／OIDC 金鑰輪替的修正。挑重點講。"
-pubDate: 2026-09-23T07:30:00+08:00
+pubDate: 2026-09-18T07:30:00+08:00
 lang: zh-TW
 slug: domino-rest-api-v1-1-8-release
 tags:

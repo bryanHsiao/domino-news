@@ -2,8 +2,8 @@
 slug: domino-rest-api-v1-1-8-release
 title: "DRAPI 1.1.8 發布重點"
 lang: [zh-TW, en]
-pubDate: 2026-09-23
-status: staged（_pending）
+pubDate: 2026-09-18
+status: published（9/18 當日直發 posts/，Path B；release 算新聞、盡早發）
 tags: [Domino REST API, Release Notes]
 requester: 使用者 (bryan，指定寫 DRAPI 1.1.8 whatsnew；entitlement 篇順延)
 author_model: claude-opus-4-8
