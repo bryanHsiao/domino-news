@@ -7,7 +7,7 @@ status: published（9/18 當日直發 posts/，Path B；release 算新聞、盡�
 tags: [Domino REST API, Release Notes]
 requester: 使用者 (bryan，指定寫 DRAPI 1.1.8 whatsnew；entitlement 篇順延)
 author_model: claude-opus-4-8
-review_model: (待 fact-check)
+review_model: general-purpose (獨立 fact-check subagent) → PASS（全項對照官方 whatsnew、無杜撰、四個行為改變分類正確、端點/參數拼字全對、release date 2026-09-14 對）。修：attachmentnames 拿掉「metadata」（頁面只寫 protocol URLs + embedded file discovery）、setup-v1/dxl「受限→無法存取(inaccessible)」、CalDAV/CardDAV 補官方註記「僅以 Mozilla Thunderbird 測試過」。pubDate 改 01:00+08（真實時間是台北凌晨、07:30 還在未來，盡早發需已過時間）。
 created: 2026-09-18
 updated: 2026-09-18
 ---

@@ -1,7 +1,7 @@
 ---
 title: "Domino REST API 1.1.8：幾個會咬人的行為改變，加上 CalDAV／CardDAV 實驗性登場"
 description: "DRAPI 1.1.8（2026-09-14）出了。這版除了新端點與功能，還藏了幾個你該先知道的行為改變——richTextAs 的預設輸出改成 HTML、POST v1/query/qrp/json 現在強制要 forms 陣列、GET pim-v1/calendar/profile 改名成 calendarprofile、行事曆項目建立/更新現在必須帶 date/timezone/duration。新東西這邊：撈 mail 附件清單與 calendar profile 的 PIM 端點、實驗性的 CalDAV／CardDAV／DXL Extension API（預設關）、PIM 在 primary 不可用時改讀 cluster member，還有 Keycloak／OIDC 金鑰輪替的修正。挑重點講。"
-pubDate: 2026-09-18T07:30:00+08:00
+pubDate: 2026-09-18T01:00:00+08:00
 lang: zh-TW
 slug: domino-rest-api-v1-1-8-release
 tags:
@@ -43,11 +43,11 @@ coverStyle: "art-deco"
 
 ## 新端點與功能
 
-- **`GET pim-v1/attachmentnames/{unid}`**：從 mail 文件撈附件清單，支援 protocol URL、metadata 與內嵌檔案探索。
+- **`GET pim-v1/attachmentnames/{unid}`**：從 mail 文件撈附件清單，支援 protocol URL 與內嵌檔案探索。
 - **`POST`／`PATCH pim-v1/calendarprofile`**：建立/更新登入使用者的行事曆 profile；`PATCH` 可只改個別設定。
-- **CalDAV／CardDAV／DXL Extension API（實驗性、預設關）**：這版把三組 API 以**實驗性功能**引入——CalDAV／CardDAV 是標準化的行事曆／通訊錄協定，DXL Extension 則走 Domino 的 DXL。預設停用，想試要自己開；正式用途前留意「experimental」定位。
+- **CalDAV／CardDAV／DXL Extension API（實驗性、預設關）**：這版把三組 API 以**實驗性功能**引入——CalDAV／CardDAV 是標準化的行事曆／通訊錄協定，DXL Extension 則走 Domino 的 DXL。預設停用，想試要自己開；正式用途前留意「experimental」定位——官方也註明 CalDAV／CardDAV **目前僅以 Mozilla Thunderbird 測試過**，別預設它跟所有用戶端都相容。
 - **`GET v1/lists/{name}` 加 `computeTotalCount`**（預設 `true`）：可控制要不要算總筆數；分類視圖的 `key` 參數與 `scope=documents` 也改進了。
-- 其他：`GET v1/info` 多回 server 的 canonical name；`nsfPath` 跨平台統一用正斜線；表單欄位撈取變快；`GET setup-v1/dxl` 會略過損毀/受限元素以提升可靠度；`POST v1/query` 改善對 view 索引裡 soft-deleted 文件的處理。
+- 其他：`GET v1/info` 多回 server 的 canonical name；`nsfPath` 跨平台統一用正斜線；表單欄位撈取變快；`GET setup-v1/dxl` 會略過損毀/無法存取的元素以提升可靠度；`POST v1/query` 改善對 view 索引裡 soft-deleted 文件的處理。
 
 ## 韌性與 Admin UI
 

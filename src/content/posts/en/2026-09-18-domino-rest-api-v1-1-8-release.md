@@ -1,7 +1,7 @@
 ---
 title: "Domino REST API 1.1.8: A Few Behavior Changes That Bite, Plus CalDAV/CardDAV Arriving (Experimental)"
 description: "DRAPI 1.1.8 (2026-09-14) is out. Beyond new endpoints and features, it slips in a few behavior changes worth knowing first — richTextAs now defaults to HTML output, POST v1/query/qrp/json now requires a forms array, GET pim-v1/calendar/profile was renamed to calendarprofile, and calendar entry create/update now require date/timezone/duration. New on the feature side: PIM endpoints for mail attachment lists and calendar profiles, experimental CalDAV/CardDAV/DXL Extension APIs (off by default), PIM reading mail from a cluster member when the primary is down, and fixes for Keycloak/OIDC key rotation. Here's what matters."
-pubDate: 2026-09-18T07:30:00+08:00
+pubDate: 2026-09-18T01:00:00+08:00
 lang: en
 slug: domino-rest-api-v1-1-8-release
 tags:
@@ -43,11 +43,11 @@ None of these are new features — they're **changes to existing behavior**, and
 
 ## New endpoints and features
 
-- **`GET pim-v1/attachmentnames/{unid}`**: retrieves the attachment list from a mail document, with support for protocol URLs, metadata, and embedded-file discovery.
+- **`GET pim-v1/attachmentnames/{unid}`**: retrieves the attachment list from a mail document, with support for protocol URLs and embedded-file discovery.
 - **`POST`/`PATCH pim-v1/calendarprofile`**: create/update the authenticated user's calendar profile; `PATCH` updates individual settings.
-- **CalDAV/CardDAV/DXL Extension APIs (experimental, off by default)**: this release introduces the three as **experimental** — CalDAV/CardDAV are the standards-based calendar/contacts protocols, DXL Extension goes through Domino's DXL. Disabled by default; enable to try them, and mind the "experimental" status before production use.
+- **CalDAV/CardDAV/DXL Extension APIs (experimental, off by default)**: this release introduces the three as **experimental** — CalDAV/CardDAV are the standards-based calendar/contacts protocols, DXL Extension goes through Domino's DXL. Disabled by default; enable to try them, and mind the "experimental" status before production use — HCL also notes CalDAV/CardDAV have so far been **tested only with Mozilla Thunderbird**, so don't assume every client works.
 - **`GET v1/lists/{name}` gains `computeTotalCount`** (defaults to `true`): control whether the total count is computed; the `key` parameter and `scope=documents` for categorized views also improved.
-- Also: `GET v1/info` now returns the server's canonical name; `nsfPath` is standardized to forward slashes cross-platform; form-field retrieval is faster; `GET setup-v1/dxl` is more reliable by skipping corrupted/restricted elements; `POST v1/query` handles soft-deleted documents in view indexes better.
+- Also: `GET v1/info` now returns the server's canonical name; `nsfPath` is standardized to forward slashes cross-platform; form-field retrieval is faster; `GET setup-v1/dxl` is more reliable by skipping corrupted or inaccessible elements; `POST v1/query` handles soft-deleted documents in view indexes better.
 
 ## Resilience and Admin UI
 
