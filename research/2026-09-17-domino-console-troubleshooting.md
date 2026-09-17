@@ -38,3 +38,9 @@ updated: 2026-09-16
 ## 異動日誌
 
 - 2026-09-16 WebFetch 驗 show tasks/tell/dbcache、雙語按場景組織、sidecar；stage _pending 排 9/17（Opus 4.8）
+- 2026-09-17 **上線後使用者回饋補強 + 更正**：使用者問 `res task http` vs `tell http q`+`load http` 差異、要補「看 thread」、常用 `res ser`。查官方：
+  - **更正**：原文把 `tell http restart` 當「重啟 HTTP task」是錯的——[Web Server Tell doc](https://help.hcl-software.com/domino/14.5.0/admin/admn_webservertellcommands_r.html) 明寫它是「Refreshes the Web server with changes made to settings...」＝**重載設定**，非完整重啟 task。
+  - **補 `restart task <task>`**（[官方](https://help.hcl-software.com/domino/11.0.1/admin/admn_restarttask_r.html)「shuts down and then restarts a specified server task」）＝一個**原子指令**、自己處理「等關乾淨再啟動」的順序 → 顧問建議「以 res task http 為主」的好處＝比手動 quit+load 兩步安全、不會 race。
+  - **補 `restart server`（res ser）**（[官方](https://help.hcl-software.com/domino/11.0.1/admin/admn_restartserver_r.html)「stops the Domino server and then restarts it after a brief delay」）＝重啟整台所有 task、非 OS 重開機。
+  - **補「看 thread」**：`tell http show thread state`（列 HTTP 各 worker thread 在跑哪個 URL、抓卡在同一請求數分鐘的 hung thread；Web Server Tell 現行頁未列、屬長年通用診斷指令，未假託該頁）＋ NSD（全 thread call stack）。
+  - TL;DR/小結/description/sources 同步；tell 段改寫為「三種重啟寫法的差別 + tell http restart≠重啟」。雙語。已重新 deploy（Path 直改 posts/）。（Opus 4.8）
