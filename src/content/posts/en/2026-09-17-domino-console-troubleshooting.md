@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/admn_usingaconsoletosendcommandstoaserver_c.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-console-troubleshooting.webp"
+coverStyle: "photoreal-3d"
 ---
 
 Something's off with the server — a feature suddenly stopped working, a task looks stuck, memory or disk is tight. The first instinct is often "let's just restart the whole thing." But a full restart is blunt: it kicks off every connection, wipes the scene, and nine times out of ten you actually only needed to deal with **one task**. Before you touch anything, run a few console commands to **see clearly what's going on** — here are the most useful ones, organized by the problem you're facing.

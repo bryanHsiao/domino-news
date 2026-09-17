@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/admn_usingaconsoletosendcommandstoaserver_c.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-console-troubleshooting.webp"
+coverStyle: "photoreal-3d"
 ---
 
 伺服器怪怪的——某個功能突然不通、某個 task 好像卡住、記憶體或磁碟吃緊。第一反應常常是「重啟整台看看」。但重啟太粗魯：它會踢掉所有連線、蓋掉現場，而且十之八九，你其實只要處理**其中一個 task**。動手之前，先在 console 敲幾個指令**把狀況看清楚**——這篇把最常用的排錯指令按「你遇到什麼問題」整理。
