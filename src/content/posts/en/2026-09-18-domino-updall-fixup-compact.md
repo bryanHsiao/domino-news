@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/admn_running_the_database_maintenance_tool_from_a_program_document_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-updall-fixup-compact.webp"
+coverStyle: "bw-grain"
 ---
 
 When a database acts up, the most common mistake is **grabbing the wrong tool**: run `fixup` because a view is stale, `fixup` because the file keeps growing, `compact` because it won't open — and spend an hour getting nowhere. `updall`, `fixup`, and `compact` treat **different illnesses**; knowing "which symptom calls for which" saves far more time than trial and error.

@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/admn_running_the_database_maintenance_tool_from_a_program_document_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-updall-fixup-compact.webp"
+coverStyle: "bw-grain"
 ---
 
 資料庫出狀況，最常見的是**拿錯工具**：view 顯示過期就想 `fixup`、檔案越來越肥就 `fixup`、開不起來就 `compact`——然後跑了半天沒解決。`updall`、`fixup`、`compact` 是三個**治不同病**的維護指令，搞清楚「什麼症狀跑哪個」，比亂試省時間得多。
