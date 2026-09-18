@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.0/admin/conf_add_dom_iq_config_remote_mode.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-iq-rag-remote-mode.webp"
+coverStyle: "risograph"
 ---
 
 > 📚 This is an update to the [Domino IQ RAG deep-dive](/domino-news/en/posts/domino-iq-rag). For the full RAG setup on Domino IQ — the two-phase embedding/vector-DB config, the RAG fields on the Command document, `updall` vectorization, ACL/Readers security — read that piece first. This one is narrow: it covers the single change in **14.5.1 FP1 that loosened the local-only restriction**.

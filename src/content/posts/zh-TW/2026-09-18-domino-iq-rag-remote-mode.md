@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.0/admin/conf_add_dom_iq_config_remote_mode.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-iq-rag-remote-mode.webp"
+coverStyle: "risograph"
 ---
 
 > 📚 這篇是 [Domino IQ RAG 深入篇](/domino-news/posts/domino-iq-rag)的一則更新。要看 RAG 在 Domino IQ 的完整設定（embedding／vector DB 兩段設定、Command document 的 RAG 欄位、`updall` 向量化、ACL／Readers 安全性），先讀那篇；這裡只聚焦 **14.5.1 FP1 放寬 local-only 限制**這一個轉變。
