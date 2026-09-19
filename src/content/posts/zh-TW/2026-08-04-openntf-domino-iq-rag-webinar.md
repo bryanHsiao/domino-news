@@ -77,7 +77,7 @@ Brian 一開場就聲明有些畫面是開發版、細節會變，但概念會�
 - **Notes client 側邊面板**：在 client 裡**任何地方**（不必待在那個資料庫、甚至不必改 app 設計）叫出 Domino IQ 問 RAG、做摘要或翻譯。
 - **MCP server**：`model context protocol` 內建進 Domino IQ，讓 AI 不只回答、還能執行動作（開工單、寄信、改文件狀態）。Brian 說**約 12 個月內**會看到，未必落在 Domino 2027，但在路上。至於 AI agent——**今天就能做**，用一支 Domino agent（JavaScript / Java / LotusScript 都行）接 Domino IQ 的回應去執行動作即可。
 
-硬體面順帶一提：本機 LLM 目前仍需 **Nvidia GPU**（非 Nvidia、ARM／Raspberry Pi 都在路上）；不想買 GPU 也可接第三方 LLM（OpenAI / Gemini），但要付 token 費——GPU 是一次性、token 是每月，Brian 花不少篇幅講這筆帳。想跑本機、又不知道挑哪個模型，Brian 自己用、也最喜歡的是 **Hugging Face 上的 Llama 3.3 8B instruct（Q5）**——不過他也提醒，純翻譯需求有更專門的模型。
+硬體面順帶一提：本機 LLM 目前仍需 **Nvidia GPU**（非 Nvidia、ARM／Raspberry Pi 都在路上）；不想買 GPU 也可接第三方 LLM（OpenAI / Gemini），但要付 token 費——GPU 是一次性、token 是每月，Brian 花不少篇幅講這筆帳。（把模型接到遠端這件事，Domino 14.5.1 FP1 起連 RAG 也支援了——LLM／embedding 可遠端、向量庫仍留本機，細節見 [14.5.1 FP1 總覽](/domino-news/posts/domino-1451-fp1)。）想跑本機、又不知道挑哪個模型，Brian 自己用、也最喜歡的是 **Hugging Face 上的 Llama 3.3 8B instruct（Q5）**——不過他也提醒，純翻譯需求有更專門的模型。
 
 ---
 

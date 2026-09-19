@@ -38,7 +38,7 @@ coverStyle: "art-deco"
 
 ## 跟一般 RAG 比，三件事不一樣
 
-**1. 向量庫永遠留在本機**：14.5.1 GA 時 RAG 支援「**只**在 Domino IQ server 設成 Local mode 時可用」，整條龍（含 LLM 推論）都在你 server 上跑。**14.5.1 FP1 起放寬成 Local／Remote 兩種模式都支援**，但官方明訂「向量資料庫一律 host 在本機 Domino IQ server 上」——連 Remote mode 也一樣。所以不論哪種模式，向量索引與其上的 ACL／Readers 權限過濾都不出你的機器，怕資料外流的金融／法務／醫療場景仍守得住（Remote mode 只把模型推論搬到遠端 OpenAI-相容端點）。FP1 這個轉變另見[續篇：RAG 不再只能 Local mode](/domino-news/posts/domino-iq-rag-remote-mode)。
+**1. 向量庫永遠留在本機**：14.5.1 GA 時 RAG 支援「**只**在 Domino IQ server 設成 Local mode 時可用」，整條龍（含 LLM 推論）都在你 server 上跑。**14.5.1 FP1 起放寬成 Local／Remote 兩種模式都支援**，但官方明訂「向量資料庫一律 host 在本機 Domino IQ server 上」——連 Remote mode 也一樣。所以不論哪種模式，向量索引與其上的 ACL／Readers 權限過濾都不出你的機器，怕資料外流的金融／法務／醫療場景仍守得住（Remote mode 只把模型推論搬到遠端 OpenAI-相容端點）。FP1 這個轉變詳見 [14.5.1 FP1 總覽](/domino-news/posts/domino-1451-fp1)。
 
 **2. 原生繼承 NSF 的 ACL 與 Readers field**：當一個 DB 被 enable 成 RAG source，LLM command 處理請求時「會用認證 session 中的 Notes DN 同時套用 ACL 跟文件 Readers field」。也就是 — A 使用者問問題時，向量搜尋只會打到 A 看得到的文件，B 的 Readers 限制文件不會被當 context 漏給 A。這個整合一般 RAG pipeline 要做到很費工。
 

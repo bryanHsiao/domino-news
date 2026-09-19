@@ -2,26 +2,31 @@
 slug: domino-iq-rag-remote-mode
 title: "Domino IQ RAG 在 14.5.1 FP1 支援 Remote mode"
 lang: [zh-TW, en]
-pubDate: 2026-09-18
-status: published（9/18 同日 Path B 直發 posts/；與 5/5 domino-iq-rag 的 retrofit 更正同批上線，避免 forward-link dangle）
-tags: [Domino IQ, AI, Release Notes]
-requester: 使用者 (bryan，貼 conf_iq_rag_support.html 問「適合寫文章嗎」→ 評估後定案：不重寫介紹，只寫 FP1 remote-mode 這個新角度 + 修 5/5 過時 claim)
+pubDate: 2026-09-23
+status: staged（原 9/18 Path B 誤發 posts/ → 2026-09-19 發現與 8/13 撞頭條，重寫定位 + git mv 回 _pending 排 2026-09-23）
+tags: [Domino IQ, AI, Domino Server]
+requester: 使用者 (bryan，貼 conf_iq_rag_support.html 問「適合寫文章嗎」→ 評估後我誤判「全新」，實際 8/13 已寫過；改走「純設定/憑證信任 deep-dive」切角承接 8/13)
 author_model: claude-opus-4-8
-review_model: general-purpose（獨立 fact-check subagent）→ PASS。全部 verbatim 引用對得上官方、GA vs FP1 歸因正確、對照表無誇大 remote 範圍、certstore 側有據、未冠 FP1 日期、未捏造 embedding 遠端欄位名。修 1 nit：en/zh「實作提醒」原把輕度改寫的 LLM 描述用引號框成像逐字 → 改成明確 paraphrase、拿掉誤導引號（呼應 feedback_no_vague_community_consensus）。另 fact-check 指出可選：guard model 也能遠端、prereq 未列——刻意略（窄篇、不誇大）。
+review_model: general-purpose（獨立 fact-check subagent，對「原 remote-mode 版」）→ PASS。全部 verbatim 引用對得上官方、GA vs FP1 歸因正確、certstore 側有據、未冠 FP1 日期、未捏造 embedding 遠端欄位名。修 1 nit：en/zh「實作提醒」原把輕度改寫的 LLM 描述用引號框成像逐字 → 改成明確 paraphrase（呼應 feedback_no_vague_community_consensus）。重寫成「設定 deep-dive」版後保留同樣的 verbatim 引用，未新增未驗證主張。
 created: 2026-09-18
-updated: 2026-09-18
+updated: 2026-09-19
 ---
 
 # 研究軌跡 — domino-iq-rag-remote-mode
 
-release-note/update 型。承 [[domino-iq-rag]]（5/5 深入篇，同一份 conf_iq_rag_support.html 是它 source #1）。
-本篇只聚焦 **14.5.1 FP1 把 RAG 從 local-only 放寬成 Local+Remote** 這一個轉變，不重覆 RAG 介紹（避免撞題/saturated-source）。
+## 重大修正（2026-09-19）：與 8/13 撞頭條 → 重寫定位 + 改期
 
-## 為什麼不重寫、只寫 FP1 角度
+- **原始誤判**：使用者貼 conf_iq_rag_support.html 問「適合寫嗎」，我 coverage 只 glob 檔名 `*iq*`/`*rag*`，判定「FP1 remote-mode 是全新、站上沒有」並這樣回報 → **錯**。
+- **實際**：`domino-1451-fp1`（2026-08-13 FP1 總覽）**頭條就是「RAG 能接遠端模型」**，且引同一份官方頁。slug 不含 iq/rag 所以被漏。使用者自己翻出來的。教訓另立 [[feedback_coverage_check_not_filename_glob]]。
+- **處置（使用者選 Option 2）**：不撤文，但**重寫定位**——從「FP1 改了什麼(remote-mode)」改成「**遠端端點怎麼設 + 憑證信任**」的純設定 deep-dive，把 what-changed 讓給 8/13、明確承接它。核心價值＝**certstore.nsf 信任根 vs DRAPI 走的 JVM truststore**（8/13 沒寫）。
+- **改期**：原 9/18 Path B 誤發（且當天已 3 篇太擠）→ git mv 回 `_pending` 排 **2026-09-23**（空日）。cover（risograph）已 backfill、slug 不變故沿用。
+- **連動修正**：5/5 的前向連結原指本篇（會 404 到 9/23）→ 改指 8/13（已上線）。webinar 筆記（8/4）補一條 → 8/13 的交叉連（雙向補齊）。
 
-- 5/5 domino-iq-rag 已把 conf_iq_rag_support.html 整頁走過（RAG 概念、local 執行、ACL/Readers、prereq、dominoiq.nsf 兩段設定、Command doc RAG 欄位、updall 向量化、disable 流程）。再寫介紹＝重複。
-- 但該頁在 GA 之後新增 FP1 段落，**直接推翻 5/5 列為「三大差異」之一的「Local mode is mandatory」**。→ 這是真・新內容 + 順手修舊文錯誤。
-- 使用者原框「類似 Hybrid Search」是類比、非官方用詞；已在評估回覆與文中校正為官方定位「RAG（餵 AI command 的語意檢索）」，不包裝成「Domino 出了 Hybrid Search」。
+## 定位（重寫後）
+
+純設定/憑證 deep-dive。承 [[domino-1451-fp1]]（what-changed）+ [[domino-iq-rag]]（本機管線深入）。
+只講：Remote-mode 設定文件（HTTPS-only／API Key／Status）、**certstore 信任那一關 + certstore≠JVM truststore**、
+一個 embedding 遠端欄位未逐字驗證的 caveat。不重講 RAG 介紹、不重講 FP1 改了什麼（避免撞 8/13/5-5）。
 
 ## NotebookLM 決策（研究流程偏離，已向使用者揭露）
 
