@@ -10,8 +10,8 @@ tags:
 sources:
   - title: "What's new in Domino REST API v1.1.8 — HCL (official)"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/whatsnew/v1.1.8.html"
-  - title: "Domino REST API docs home — HCL (official)"
-    url: "https://opensource.hcltechsw.com/Domino-rest-api/"
+  - title: "DXL Extension API reference — HCL (official)"
+    url: "https://opensource.hcltechsw.com/Domino-rest-api/references/dxl/index.html"
   - title: "What's new in Domino REST API v1.1.7 (previous release) — HCL (official)"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/whatsnew/v1.1.7.html"
 relatedJava: []
@@ -32,7 +32,12 @@ coverStyle: "low-poly-3d"
 
 ## Experimental arrivals: CalDAV/CardDAV/DXL Extension APIs
 
-The most notable addition is the three APIs introduced as **experimental** features (disabled by default; enable to try them): **CalDAV/CardDAV** are the standards-based calendar/contacts protocols, and **DXL Extension** goes through Domino's DXL. Mind the "experimental" status before production use — HCL also notes CalDAV/CardDAV have so far been **tested only with Mozilla Thunderbird**, so don't assume every client works.
+The headline additions are three APIs introduced as **experimental** features. They're quite different things:
+
+- **CalDAV/CardDAV**: the standards-based calendar/contacts protocols, letting standard clients connect to Domino's calendars and contacts directly. HCL notes they've so far been **tested only with Mozilla Thunderbird**, so don't assume every client works.
+- **DXL Extension API**: this one is about **design management**. DXL (Domino XML) is, in HCL's words, "a set of APIs for retrieving and manipulating a database's design" — it represents Domino design elements (forms, views, agents, and so on) as XML. The new API [lets you access and modify those design elements programmatically over REST](https://opensource.hcltechsw.com/Domino-rest-api/references/dxl/index.html): export design as DXL, or apply DXL back to a database. That's different from this release's improved **read-only** `GET setup-v1/dxl` (a plain export that now skips corrupted elements) — the DXL Extension is a fuller design-management surface.
+
+All three are **off by default and not supported for production**; to enable one you drop a JSON file in `keepconfig.d` setting the relevant `active` flag (e.g. `dxl`) to `true` and restart DRAPI. Mind that status before you rely on any of them.
 
 ## Other new endpoints and features
 

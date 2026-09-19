@@ -10,8 +10,8 @@ tags:
 sources:
   - title: "What's new in Domino REST API v1.1.8 — HCL（官方）"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/whatsnew/v1.1.8.html"
-  - title: "Domino REST API 文件首頁 — HCL（官方）"
-    url: "https://opensource.hcltechsw.com/Domino-rest-api/"
+  - title: "DXL Extension API 參考 — HCL（官方）"
+    url: "https://opensource.hcltechsw.com/Domino-rest-api/references/dxl/index.html"
   - title: "What's new in Domino REST API v1.1.7（前一版）— HCL（官方）"
     url: "https://opensource.hcltechsw.com/Domino-rest-api/whatsnew/v1.1.7.html"
 relatedJava: []
@@ -32,7 +32,12 @@ coverStyle: "low-poly-3d"
 
 ## 實驗性登場：CalDAV／CardDAV／DXL Extension API
 
-這版最受矚目的是把三組 API 以**實驗性功能**引入（預設停用，想試要自己開）：**CalDAV／CardDAV** 是標準化的行事曆／通訊錄協定，**DXL Extension** 則走 Domino 的 DXL。正式用途前留意「experimental」定位——官方也註明 CalDAV／CardDAV **目前僅以 Mozilla Thunderbird 測試過**，別預設它跟所有用戶端都相容。
+這版最受矚目的是把三組 API 以**實驗性功能**引入。三組性質不同：
+
+- **CalDAV／CardDAV**：標準化的行事曆／通訊錄協定，讓標準用戶端直接連 Domino 的行事曆與通訊錄。官方註明**目前僅以 Mozilla Thunderbird 測試過**，別預設它跟所有用戶端都相容。
+- **DXL Extension API**：這組是拿來**管「設計」（design）的**。DXL（Domino XML）官方定義是「一組用來取回與操作資料庫設計的 API」——把 Domino 的設計元素（表單、視圖、agent 等）表示成 XML。這組新 API 就是[讓你透過 REST 程式化地存取、修改這些設計元素](https://opensource.hcltechsw.com/Domino-rest-api/references/dxl/index.html)：把設計匯出成 DXL、或把 DXL 套回資料庫。它跟這版順手改進的**唯讀** `GET setup-v1/dxl`（單純匯出、且會略過壞掉的元素）不同——那個只是匯出，DXL Extension 是更完整的設計管理面。
+
+三組都標「experimental」、**預設關閉、未支援 production**；要開得在 `keepconfig.d` 放一個 JSON、把對應的 `active`（如 `dxl`）設 `true` 再重啟 DRAPI。正式用途前務必留意這個定位。
 
 ## 其他新端點與功能
 
