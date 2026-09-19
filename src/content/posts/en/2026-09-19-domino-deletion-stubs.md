@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/12.0.0/admin/tune_deletinginactivedocuments_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-deletion-stubs.webp"
+coverStyle: "watercolor"
 ---
 
 You delete a document and a few days later it's back; or the thing you deleted is still there on a colleague's copy, and one replication brings it right back. This isn't a haunting — it's how Domino's **delete mechanism** actually works. Once you understand deletion stubs and the purge interval, this "document resurrection" stops being mysterious.

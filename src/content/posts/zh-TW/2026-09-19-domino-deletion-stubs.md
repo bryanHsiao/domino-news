@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/12.0.0/admin/tune_deletinginactivedocuments_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-deletion-stubs.webp"
+coverStyle: "watercolor"
 ---
 
 你刪掉一份文件，過幾天它又自己回來了；或你這邊刪掉的東西，同事那邊還在，一複寫就又冒出來。這不是鬧鬼——是 Domino **刪除的機制**本來就這樣運作。搞懂 deletion stub（刪除殘根）和 purge interval，這種「文件復活」就不再神祕。
