@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/conf_administrationecls_c.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-ecl-security-alert.webp"
+coverStyle: "pencil-sketch"
 ---
 
 跑一個 agent、開一封帶按鈕的信、或按下某個 hotspot，Notes 突然跳出一個 **Execution Security Alert**：「某某簽署的程式碼想做某件事，要允許嗎?」很多人反射地按「允許」就過去了，也有人被它煩到不行。這個警告不是壞事——是 **ECL（Execution Control List，執行控制清單）**在守你的工作站。搞懂它，你就知道為什麼跳、該不該允許、以及開發時怎麼避免它一直跳。

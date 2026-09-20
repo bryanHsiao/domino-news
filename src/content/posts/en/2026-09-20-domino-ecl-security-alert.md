@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/conf_administrationecls_c.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-ecl-security-alert.webp"
+coverStyle: "pencil-sketch"
 ---
 
 You run an agent, open a mail with a button, or click a hotspot, and Notes suddenly pops an **Execution Security Alert**: "code signed by so-and-so wants to do X — allow it?" Plenty of people reflexively hit "allow" and move on; others find it maddening. The warning isn't a bad thing — it's the **ECL (Execution Control List)** guarding your workstation. Understand it and you'll know why it fires, whether to allow it, and how to stop it from firing constantly during development.
