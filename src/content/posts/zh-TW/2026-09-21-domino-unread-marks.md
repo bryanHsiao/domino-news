@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_MARKUNREAD_DOCUMENT.html"
 relatedJava: ["Document"]
 relatedSsjs: ["document"]
+cover: "/covers/domino-unread-marks.webp"
+coverStyle: "paper-craft"
 ---
 
 文件在 view 裡變粗體、旁邊一顆星號（`*`）——這個「未讀標記」看起來像文件上的一個屬性，於是很多人以為「把它設成已讀」就跟改個欄位一樣。其實不是。未讀標記是 Domino 少數**「每個使用者各自一份」**的東西，而且它預設**不隨複寫同步**。搞不清楚這兩點，用程式動它、或排查「未讀為什麼對不上」時就會鬼打牆。

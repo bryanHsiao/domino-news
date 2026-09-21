@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_MARKUNREAD_DOCUMENT.html"
 relatedJava: ["Document"]
 relatedSsjs: ["document"]
+cover: "/covers/domino-unread-marks.webp"
+coverStyle: "paper-craft"
 ---
 
 A document goes bold in a view, with a star (`*`) beside it — this "unread mark" looks like a property of the document, so people assume "setting it to read" is like changing a field. It isn't. Unread marks are one of the few things in Domino kept **per user**, and by default they **don't replicate**. Miss those two facts and you'll go in circles both driving them from code and diagnosing "why is unread out of sync."
