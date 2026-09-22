@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.1/admin/whats_new_in_1451FP1.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-iq-rag-remote-mode.webp"
+coverStyle: "risograph"
 ---
 
 > 📚 這篇承接兩篇：[14.5.1 FP1 總覽](/domino-news/posts/domino-1451-fp1)宣布了「RAG 多了 Remote 模式」這個轉變、[Domino IQ RAG 深入篇](/domino-news/posts/domino-iq-rag)講這條管線在 server 裡怎麼運作。這裡只補一件它們沒細講的事：**實際怎麼把遠端端點接起來**，尤其憑證信任那一關。

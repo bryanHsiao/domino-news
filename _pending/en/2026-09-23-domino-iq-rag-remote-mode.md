@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.1/admin/whats_new_in_1451FP1.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-iq-rag-remote-mode.webp"
+coverStyle: "risograph"
 ---
 
 > 📚 This piece builds on two others: the [14.5.1 FP1 roundup](/domino-news/en/posts/domino-1451-fp1) announced that RAG gained a Remote mode, and the [Domino IQ RAG deep-dive](/domino-news/en/posts/domino-iq-rag) covers how the pipeline runs inside the server. Here I only fill in what neither spelled out: **how you actually wire up the remote endpoint** — especially the certificate-trust step.
