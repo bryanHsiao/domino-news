@@ -19,6 +19,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_USING_ENVIRONMENT_VARIABLES.html"
 relatedJava: ["Session"]
 relatedSsjs: ["session"]
+cover: "/covers/domino-environment-variables.webp"
+coverStyle: "risograph"
 ---
 
 You want to stash a small setting from Formula or LotusScript — a last-used value, a counter, a toggle. There's a pile of look-alikes to reach for: `@SetEnvironment`, `@Environment`, `Environment()`, `session.SetEnvironmentVar`, `session.GetEnvironmentString`… all called "environment variables." But **where they write, whether they cross machines, and whether they need a `$`** matters — get it wrong and you'll "store it but can't read it back," or assume "set it once and everyone sees it."

@@ -19,6 +19,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_USING_ENVIRONMENT_VARIABLES.html"
 relatedJava: ["Session"]
 relatedSsjs: ["session"]
+cover: "/covers/domino-environment-variables.webp"
+coverStyle: "risograph"
 ---
 
 你想從 Formula 或 LotusScript 記一個小設定——上次用的值、一個計數、某個開關。手邊有一堆長得像的東西：`@SetEnvironment`、`@Environment`、`Environment()`、`session.SetEnvironmentVar`、`session.GetEnvironmentString`……名字都叫「環境變數」。但它們**寫到哪去、跨不跨機、要不要加 `$`**，搞錯就會「明明存了卻讀不到」，或誤以為「設一次大家都看得到」。
