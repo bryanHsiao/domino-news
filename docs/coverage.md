@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-09-23 · Posts scanned: 159 · Classes catalogued: 97*
+*Generated: 2026-09-24 · Posts scanned: 160 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [domino-admin-server-identity](https://bryanhsiao.github.io/domino-news/posts/domino-admin-server-identity/) | — | — | — |
 | [domino-iq-rag-remote-mode](https://bryanhsiao.github.io/domino-news/posts/domino-iq-rag-remote-mode/) | — | — | — |
 | [domino-environment-variables](https://bryanhsiao.github.io/domino-news/posts/domino-environment-variables/) | `NotesSession` | `Session` | `session` |
 | [domino-unread-marks](https://bryanhsiao.github.io/domino-news/posts/domino-unread-marks/) | `NotesDocument` | `Document` | `document` |
