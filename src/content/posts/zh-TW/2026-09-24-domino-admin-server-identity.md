@@ -18,6 +18,8 @@ sources:
     url: "https://dpastov.blogspot.com/2023/11/configuring-entitlement-tracking-in.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-admin-server-identity.webp"
+coverStyle: "art-deco"
 ---
 
 先講一個真實現象。一台 additional server（Domino 12.0.2 的 lab 機）冷啟動後，console.log 每 5 秒洗一次版：

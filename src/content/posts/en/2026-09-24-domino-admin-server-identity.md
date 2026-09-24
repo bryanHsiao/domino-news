@@ -18,6 +18,8 @@ sources:
     url: "https://dpastov.blogspot.com/2023/11/configuring-entitlement-tracking-in.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-admin-server-identity.webp"
+coverStyle: "art-deco"
 ---
 
 Start with a real symptom. An additional server (a Domino 12.0.2 lab box) cold-boots and floods console.log every 5 seconds:
