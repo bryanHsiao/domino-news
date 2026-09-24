@@ -48,14 +48,14 @@ Adler 開場就丟出一個上週實測的客戶案例：**16,000 users、專業
 
 具體代價：一個停在舊 ODS（例如 ODS 20）的 `names.nsf`，在 14.5.1 FP1 client 上光這一個檔就是**至少 60 秒**的啟動時間，而 `names.nsf` 是每次 client 啟動都要讀的。
 
-好消息是 **ODS 55 從 12.0.2 起是預設、也是自動的**：升級 client 會把 data 目錄裡的資料庫自動轉到 ODS 55，並取代過去那些用 notes.ini 控制的舊參數（server 端不會自動轉、14/14.5/14.5.1 行為不變）。要付的是一次性成本：第一次開檔會做 copy-style compact + 完整 view rebuild，要留約「最大本機 NSF 兩倍」的磁碟空間，而且**升級後第一次啟動是最慢的一次，先跟使用者講**。
+好消息是**自 12.0.2 起，升級 Notes client 會自動把 data 目錄裡的本機資料庫升到最新 ODS（55）**，並取代過去那些用 notes.ini 控制的舊參數（server 端不會自動轉、14/14.5/14.5.1 行為不變）。這裡要說清楚一個區別：以上是 client 對「既有本機 DB」的自動升級；而「新建 DB 的預設 create ODS」是另一回事——官方表上新建的預設其實仍是 ODS 52，要直接建在 55 得靠 `Create_R12_Databases=1`（站上 [ODS 版本演進、什麼時候會升](/domino-news/posts/domino-ods-versions) 有完整拆解）。要付的是一次性成本：第一次開檔會做 copy-style compact + 完整 view rebuild，要留約「最大本機 NSF 兩倍」的磁碟空間，而且**升級後第一次啟動是最慢的一次，先跟使用者講**。
 
 於是 notes.ini 裡那堆 ODS 老參數該清一清（他給了一張 verdict 表）：
 
 - `CREATE_R8/R85/R9/R10_DATABASES` → **移除**（會把新建/compact 後的 db 釘在 55 以下）
 - `NSF_UpdateODS=1` / `NSF_AlwaysUpdateODS=1` → **移除**（12.0.2 起被自動升級取代或已是預設）
 - `NSF_AlwaysUpdateODS=0` → **移除**（它會擋掉自動升級，除非你是刻意暫時這樣）
-- `CREATE_R12_DATABASES=1` → 留著無妨（12.0.2+ 不需要，但寫明白、也避免舊的 `CREATE_R*` 贏過它）
+- `CREATE_R12_DATABASES=1` → 留著（要讓新建 DB 直接落在 ODS 55 就靠它；也讓設定明確、避免舊的 `CREATE_R*` 贏過它）
 
 他的一句話：移除參數，也要移除那個會把參數再推回去的 policy。（這一整包都是 14.5.1 FP1 的脈絡，版本層面可對照 [FP1 總覽](/domino-news/posts/domino-1451-fp1)。）
 
@@ -116,4 +116,4 @@ Adler 把整場濃縮成一張可照做的清單：
 
 完整內容（含每一段的操作細節與 Defender 的 PowerShell 範例）在 [panagenda 的 MakeNotesFaster 頁面](https://www.panagenda.com/webinars/makenotesfaster1/)隨選觀看，[簡報 PDF](https://www.panagenda.com/download/webinar/20260915_EN_HCL_Webinar_Slides_MakeNotesFaster.pdf) 也可下載。panagenda 這個系列還有下一場（簡報末頁預告 2026-10-20）。
 
-[^ods]: ODS（On Disk Structure，磁碟結構）是 NSF/NTF 資料庫檔案的實體格式版本——決定檔案在磁碟上怎麼組織，跟裡面的文件內容無關。每個 Notes/Domino 版本原生使用某個 ODS 版本；12.0.2 起預設且上限是 ODS 55。
+[^ods]: ODS（On Disk Structure，磁碟結構）是 NSF/NTF 資料庫檔案的實體格式版本——決定檔案在磁碟上怎麼組織，跟裡面的文件內容無關。每個 Notes/Domino 版本原生使用某個 ODS 版本；ODS 55 是目前最高的版本。

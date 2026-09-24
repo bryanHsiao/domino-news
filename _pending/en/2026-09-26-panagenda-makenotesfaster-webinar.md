@@ -48,14 +48,14 @@ This was the most worth-recording stretch. **ODS (On Disk Structure)** is the ph
 
 The concrete cost: a `names.nsf` left at an old ODS (say ODS 20) on a 14.5.1 FP1 client is **at least 60 seconds** of startup for that one file alone, and `names.nsf` is read at every single client start.
 
-The good news is that **ODS 55 is the default, and automatic, since 12.0.2**: upgrading the client converts the databases in its data directory to ODS 55 and supersedes the old notes.ini settings that used to control this (servers never auto-upgrade; behavior is unchanged in 14, 14.5, and 14.5.1). You pay a one-time cost: a copy-style compact plus a full view rebuild at first open, roughly twice the largest local NSF in free disk, and **the first start after the upgrade is the slowest one the user will see — warn them**.
+The good news is that **since 12.0.2, upgrading the Notes client auto-upgrades the local databases in its data directory to the latest ODS (55)** and supersedes the old notes.ini settings that used to control this (servers never auto-upgrade; behavior is unchanged in 14, 14.5, and 14.5.1). One distinction worth drawing: that's the client upgrading *existing* local databases; the *default create ODS for new databases* is a separate matter — per HCL's table it's still ODS 52, and `Create_R12_Databases=1` is what creates new databases at 55 (the site's [ODS versions piece](/domino-news/en/posts/domino-ods-versions) breaks this down in full). You pay a one-time cost: a copy-style compact plus a full view rebuild at first open, roughly twice the largest local NSF in free disk, and **the first start after the upgrade is the slowest one the user will see — warn them**.
 
 So the old ODS parameters in notes.ini deserve a cleanup (he gave a verdict table):
 
 - `CREATE_R8/R85/R9/R10_DATABASES` → **remove** (each pins new and compacted databases below 55)
 - `NSF_UpdateODS=1` / `NSF_AlwaysUpdateODS=1` → **remove** (superseded by the automatic upgrade, or already the default since 12.0.2)
 - `NSF_AlwaysUpdateODS=0` → **remove** (it blocks the automatic upgrade — keep only as a deliberate, temporary decision)
-- `CREATE_R12_DATABASES=1` → fine to keep (not required on 12.0.2+, but explicit, and it stops an older `CREATE_R*` entry from winning)
+- `CREATE_R12_DATABASES=1` → keep (it's what creates new databases at ODS 55; also keeps the config explicit and stops an older `CREATE_R*` entry from winning)
 
 His line: remove the parameter, and remove the policy that re-pushes it. (The whole session targets [14.5.1 FP1](/domino-news/en/posts/domino-1451-fp1).)
 
@@ -116,4 +116,4 @@ Adler condenses the whole session into an actionable list:
 
 The full session (with the per-topic detail and the PowerShell examples for Defender) is on-demand at [panagenda's MakeNotesFaster page](https://www.panagenda.com/webinars/makenotesfaster1/), and the [slides PDF](https://www.panagenda.com/download/webinar/20260915_EN_HCL_Webinar_Slides_MakeNotesFaster.pdf) is downloadable too. The series has a next session (the closing slide previews 2026-10-20).
 
-[^ods]: ODS (On Disk Structure) is the physical format version of an NSF/NTF database file — how the file is organized on disk, independent of the documents inside it. Each Notes/Domino release works with a particular ODS natively; ODS 55 is the default and maximum since 12.0.2.
+[^ods]: ODS (On Disk Structure) is the physical format version of an NSF/NTF database file — how the file is organized on disk, independent of the documents inside it. Each Notes/Domino release works with a particular ODS natively; ODS 55 is the latest (maximum) version to date.

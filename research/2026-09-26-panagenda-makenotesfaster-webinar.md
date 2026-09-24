@@ -33,9 +33,16 @@ Community/recap 型（比照 [[openntf-domino-iq-rag-webinar]] 的做法）。
 
 挑管理者最有用：真實數字（16k users / cold 2+min…）、ODS（每開檔轉、names.nsf 60s、ODS55 since 12.0.2、notes.ini 參數 verdict 表）、檔案系統（別放網路碟、一 replica ID 一份）、cache.ndk 迷思、AV 排除三陷阱、週一清單。略過 IF TIME 的次要頁（cluster stack、location doc 細節、plugin cleanup）或只一句帶過。
 
+## ODS 預設矛盾 → 查官方後修正（2026-09-26，使用者要我連 6/21 ODS 篇時發現）
+
+- panagenda slide 說「ODS 55 是 12.0.2 起的預設、新建也建在 55、Create_R12 不需要」；站上 [[domino-ods-versions]]（6/21）說「新建預設仍 52、要 55 需 Create_R12」。**兩篇打架**。
+- 查官方 [inst_dominoondiskstructure_t.html](https://help.hcl-software.com/domino/14.5.0/admin/inst_dominoondiskstructure_t.html) 逐字：「a new database created in Domino 12 uses ODS 52」、要 55「if you use Create_R12_Databases=1」；client 自動升級「Starting with Notes 12.0.2, upgrading a Notes client upgrades databases in the data directory to the latest ODS format」。
+- **結論：6/21 那篇對、panagenda slide 不精確。** 真相＝「client 升級會把**既有本機 DB** 自動升到最新(55)」對；「**新建**預設就是 55」錯（官方：新建仍 52、要 55 靠 Create_R12）。
+- **修 recap 6 處**（zh/en）：body「55 是預設」→「client 自動升既有 DB 到最新」+ 補「新建預設仍 52、需 Create_R12」精確區別 + 交叉連 6/21；footnote 去「12.0.2 起預設」→「目前最高版本」；CREATE_R12 表格列去「12.0.2+ 不需要」→「要新建落在 55 就靠它」。fact-check 抓不到此矛盾（它 ground truth 是 slides、slides 本身就這樣寫）——是「連站上舊文」的交叉核對抓到的，呼應 [[feedback_no_vague_community_consensus]]。
+
 ## 交叉連
 
-- 內部：[[domino-1451-fp1]]（14.5.1 FP1 版本脈絡）、[[domino-unread-marks]]（重複 replica 造成未讀漂移）。
+- 內部：[[domino-ods-versions]]（ODS 版本演進/create ODS 規則，ODS 段交叉連）、[[domino-1451-fp1]]（14.5.1 FP1 版本脈絡）、[[domino-unread-marks]]（重複 replica 造成未讀漂移）。
 - 外部（link diversity 3 相異）：panagenda webinar 頁 / slides PDF / HCL 14.5.1 FP1 whatsnew。
 
 ## 查證 checklist
