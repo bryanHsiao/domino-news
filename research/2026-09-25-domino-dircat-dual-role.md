@@ -59,3 +59,4 @@ updated: 2026-09-25
 ## 異動日誌
 
 - 2026-09-25 使用者提題→校正框架為「雙重身份」；WebFetch 驗 directory catalog 2 頁 + 沿用 entitlement；雙語成稿（本業為主、第二身份 hook、交叉連 9/24）；temp-build；sidecar；stage _pending 排 9/25。（Opus 4.8）
+- 2026-09-25（上線後）使用者指出「授權稽核能不能獨立關掉」是重點沒寫到→補一段〈能不能只關掉稽核那半？〉。查證：官方 entitlement 頁**無 disable 設定**（逐字確認「offered as is」）；`DISABLE_ENTITLEMENT_TRACKING=1` 是社群解（dpastov、非官方）且針對**收集層**、LDAT05 冷啟動實測擋不住聚合；真正分離靠**角色**（聚合只在 domain admin server）→ 別當 domain admin 即可，交叉連 [[domino-admin-server-identity]]。KB0091142 查過但是另一個 12.0.0 defect（LocalDomainServers 只一台報錯、12.0.1 修）、不採。直改 posts/（已上線）重 deploy。（Opus 4.8）

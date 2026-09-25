@@ -69,6 +69,16 @@ The trouble is that both jobs **share one auto-starting dircat**:
 - Worse, entitlement aggregation is **tied to the domain administration server identity**. Once a box is wrongly promoted to domain admin (say, someone changed `names.nsf`'s Administration Server while setting up CertMgr), dircat's second identity fires — walking the server list in `names.nsf` to aggregate entitlement data across the domain, throwing an error every 5 seconds on whatever it can't reach. The full cause-and-fix is in [the Domino admin-server identity piece](/domino-news/en/posts/domino-admin-server-identity).
 - **How to tell which job it's doing**: read `console.log`. "Entitlement Tracking Aggregator processing directory CN=…!!`entitlementtrack.ncf`" is the second identity (entitlement aggregation); ordinary directory-catalog build/update messages are the day job.
 
+## Can you turn off just the audit half?
+
+Since both identities ride one task, the natural next question is: **can you disable just the entitlement-audit half and keep the directory-catalog day job?** Honestly — **there's no clean, official switch**.
+
+- **No documented disable setting**: the [official entitlement tracking page](https://help.hcl-software.com/domino/14.0.0/admin/admn_entitlementtracking.html) says nothing about turning it off, and notes that the database and collection are "offered as is."
+- **`DISABLE_ENTITLEMENT_TRACKING=1` is a community setting, and it targets the wrong layer**: this notes.ini setting that circulates online isn't in HCL's docs, and it addresses the **local collection** layer (each server building its own `entitlementtrack.ncf`), not the aggregation layer. In practice, adding it on an aggregating server and cold-starting still leaves dircat aggregating — it doesn't stop the audit half.
+- **What actually separates them is the role, not a switch**: aggregation runs only on the **domain administration server**. So to make a server's dircat **do directory catalog only and never touch entitlement aggregation**, keep it from being the domain admin (hand `names.nsf`'s Administration Server back to the real domain admin server) — which is exactly the fix in [the Domino admin-server identity piece](/domino-news/en/posts/domino-admin-server-identity). Conversely, on the domain admin server itself, there's no verified, supported way to keep the directory catalog but drop entitlement aggregation.
+
+In one line: the audit half is **bound to the domain-admin role**, not toggled off by some `XXX=off` switch. To keep a server out of entitlement aggregation, keep it from being the domain admin.
+
 ## Wrap-up
 
 dircat is a task with a misleading name: it says "Directory Cataloger," and its day job really is building the directory catalog — condensed for clients, extended for servers. But since Domino 12 it carries a second identity the name never mentions: licensing-compliance entitlement aggregation. Know that, and the next time you see dircat "connecting to every server in the domain" on an additional server, you won't assume the directory is broken — that's its second job running, and what to check is whether this box was accidentally made the domain administration server.

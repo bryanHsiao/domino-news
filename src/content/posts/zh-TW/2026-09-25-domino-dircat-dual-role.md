@@ -69,6 +69,16 @@ condensed 的壓縮很誇張：官方舉例，一個「more than 350,000 users a
 - 更會咬人的是：entitlement 聚合**綁 domain administration server 身份**。某台一旦被誤推成 domain admin（例如設 CertMgr 時動了 `names.nsf` 的管理伺服器），dircat 的第二身份就會啟動、照著 `names.nsf` 的 server 清單遍歷全 domain 做 entitlement 聚合、連不到就每 5 秒噴 error。這條完整的因果與解法，在 [Domino admin server 身份那篇](/domino-news/posts/domino-admin-server-identity)講過。
 - **怎麼分辨它在做哪件事**：看 `console.log`。出現「Entitlement Tracking Aggregator processing directory CN=…!!`entitlementtrack.ncf`」就是第二身份（entitlement 聚合）；一般 directory catalog 的 build／update 訊息才是本業。
 
+## 能不能只關掉稽核那半？
+
+既然兩個身份綁在一支 task 上，常見的下一個問題是：**能不能只關掉 entitlement 稽核那半、留著 directory catalog 本業？** 老實說——**沒有乾淨的官方開關**。
+
+- **官方沒有 disable 設定**：[官方 entitlement tracking 頁](https://help.hcl-software.com/domino/14.0.0/admin/admn_entitlementtracking.html)通篇沒提怎麼關，還註明這套資料庫與收集「offered as is」。
+- **`DISABLE_ENTITLEMENT_TRACKING=1` 是社群解、而且打錯層**：網路上流傳的這個 notes.ini 設定不在官方文件裡；而且它針對的是**本地收集層**（每台建自己的 `entitlementtrack.ncf`），不是聚合層。實測上，在一台會做聚合的 server 冷啟動加了它，dircat 照樣聚合——擋不住稽核那半。
+- **真正能分開的是「角色」，不是開關**：聚合只在 **domain administration server** 上跑。所以要讓一台 server 的 dircat **只做 directory catalog、不碰 entitlement 聚合**，做法是**別讓它當 domain admin**（把 `names.nsf` 的管理伺服器交還真正的 domain admin server）——這正是 [Domino admin server 身份那篇](/domino-news/posts/domino-admin-server-identity)的解法。反過來，在 domain admin server 本機，目前沒有已驗證、受支援的方式能「留著通訊錄目錄、只砍掉 entitlement 聚合」。
+
+一句話：稽核那半是**綁在 domain admin 角色上**、不是靠某個「`XXX=`關」的開關獨立關掉的。要哪台不做稽核聚合，就別讓它當 domain admin。
+
 ## 小結
 
 dircat 是個名字會誤導的 task：名字說「目錄編目（Directory Cataloger）」，本業也確實是建通訊錄目錄——condensed 給 client、extended 給 server。但從 Domino 12 起，它多了一個名字沒提的隱藏身份：授權合規的 entitlement 聚合。知道這件事，下次在一台 additional server 上看到 dircat 在「連全 domain 每台機器」，就不會誤以為是通訊錄壞了——那是它的第二份差在跑，而該查的是這台是不是被誤設成了 domain administration server。
