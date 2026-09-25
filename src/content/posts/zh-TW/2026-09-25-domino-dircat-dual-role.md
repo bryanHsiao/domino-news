@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.0.0/admin/admn_entitlementtracking.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-dircat-dual-role.webp"
+coverStyle: "bw-grain"
 ---
 
 在 `show tasks` 裡看到 `dircat`（Directory Cataloger），多數人第一個念頭是「喔，通訊錄目錄那個」——把公司內多個 Domino Directory 聚合成一份好查的目錄。沒錯，那是它的**本業**。但從 Domino 12 起，這支 task 悄悄多了一份跟通訊錄八竿子打不著的工作：**把各 server 的 entitlement 資料聚合起來，做授權合規稽核**。一支 task、兩個完全不相干的身份——而第二個身份，正是為什麼一台不該多管閒事的 server，會突然開始「連全 domain 每台機器」。

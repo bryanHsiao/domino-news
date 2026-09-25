@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.0.0/admin/admn_entitlementtracking.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-dircat-dual-role.webp"
+coverStyle: "bw-grain"
 ---
 
 See `dircat` (Directory Cataloger) in `show tasks` and your first thought is probably "oh, the directory catalog thing" — aggregating the company's several Domino Directories into one directory that's easy to look names up in. Right, that's its **day job**. But since Domino 12, this task quietly picked up a second one with nothing to do with directories: **aggregating each server's entitlement data for licensing-compliance auditing**. One task, two unrelated identities — and the second one is exactly why a server that shouldn't be minding everyone else's business suddenly starts "connecting to every server in the domain."
