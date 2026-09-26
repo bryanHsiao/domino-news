@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.1/admin/whats_new_in_1451FP1.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/panagenda-makenotesfaster-webinar.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 panagenda 上架了一場很值得看的 webinar：[MakeNotesFaster](https://www.panagenda.com/webinars/makenotesfaster1/)，由 Head of Solution Consulting **Christoph Adler**（與 Senior Solution Architect Marc Thomas）主講，主題是 Windows 上 HCL Notes 14.5.1 FP1 客戶端的效能。整場的定調很直接：「Notes 慢」很少是無解的 Notes 問題，通常收斂成兩個決定——**跑哪個版本、以及怎麼設定它**。範圍鎖在 Notes Standard client 的本機設定（不含 Domino server 調校、Nomad、macOS、應用程式設計）。這篇把對管理者最有用的幾點記下來。

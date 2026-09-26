@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.1/admin/whats_new_in_1451FP1.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/panagenda-makenotesfaster-webinar.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 panagenda posted a webinar worth watching: [MakeNotesFaster](https://www.panagenda.com/webinars/makenotesfaster1/), presented by Head of Solution Consulting **Christoph Adler** (with Senior Solution Architect Marc Thomas), on HCL Notes 14.5.1 FP1 client performance on Windows. The framing is blunt: "Notes is slow" is rarely an unavoidable Notes problem — it usually comes down to two decisions, **which version you run and how you configure it**. Scope is the Notes Standard client's local configuration (not Domino server tuning, Nomad, macOS, or app design). Here are the points most useful to administrators.
