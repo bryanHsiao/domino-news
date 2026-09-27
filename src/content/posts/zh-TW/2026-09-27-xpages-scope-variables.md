@@ -17,6 +17,8 @@ sources:
     url: "https://www.intec.co.uk/scoped-variables-implicit-variables-repeat-controls/"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-scope-variables.webp"
+coverStyle: "watercolor"
 ---
 
 你為了讓一份文件「撐過一次 partial refresh」，把 `database.getDocumentByUNID(...)` 拿到的 `NotesDocument` 塞進 `viewScope`。當下沒事，點幾下之後，頁面突然噴 `java.io.NotSerializableException`——或者更難查的：你在某個 scope 設的值，下次點按鈕就不見了。

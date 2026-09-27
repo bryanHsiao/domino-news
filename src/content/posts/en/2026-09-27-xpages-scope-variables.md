@@ -17,6 +17,8 @@ sources:
     url: "https://www.intec.co.uk/scoped-variables-implicit-variables-repeat-controls/"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-scope-variables.webp"
+coverStyle: "watercolor"
 ---
 
 To make a document "survive one partial refresh," you drop the `NotesDocument` from `database.getDocumentByUNID(...)` into `viewScope`. It works at first. A few clicks later the page throws `java.io.NotSerializableException` — or, harder to track down: a value you set in some scope is just gone on the next button click.
