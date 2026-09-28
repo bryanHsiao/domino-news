@@ -17,6 +17,8 @@ sources:
     url: "https://ds_infolib.hcltechsw.com/ldd/xpagesforum.nsf/xpTopicThread.xsp?documentId=4F3973ED6E5B8B338525792E00731534"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-sessionassigner.webp"
+coverStyle: "art-deco"
 ---
 
 一個對設定 DB 沒有寫入權的使用者，在你的 XPage 上按了按鈕，文件竟然存進去了——因為那段程式是用 `sessionAsSigner` 跑的，不是用他本人的身分。

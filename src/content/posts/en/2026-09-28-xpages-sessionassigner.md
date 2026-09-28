@@ -17,6 +17,8 @@ sources:
     url: "https://ds_infolib.hcltechsw.com/ldd/xpagesforum.nsf/xpTopicThread.xsp?documentId=4F3973ED6E5B8B338525792E00731534"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-sessionassigner.webp"
+coverStyle: "art-deco"
 ---
 
 A user with no write access to a config DB clicks a button on your XPage, and the document saves anyway — because that code ran as `sessionAsSigner`, not as them.
