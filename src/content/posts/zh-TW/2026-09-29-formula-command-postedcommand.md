@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_COMMAND.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/formula-command-postedcommand.webp"
+coverStyle: "ukiyo-e"
 ---
 
 你在按鈕公式裡想「先把欄位算好、再叫 UI 執行一個動作」，寫下來卻發現:動作先跑了、你的算式後跑，順序整個顛倒。或者你把一個 `@PostedCommand` 放在公式最上面，它偏偏最後才動。

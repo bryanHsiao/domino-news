@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_COMMAND.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/formula-command-postedcommand.webp"
+coverStyle: "ukiyo-e"
 ---
 
 You want to "compute the fields first, then have the UI do an action," so you write it in that order — and the action runs first, your computation second. Or you put a `@PostedCommand` at the very top of the formula and it insists on running last.
