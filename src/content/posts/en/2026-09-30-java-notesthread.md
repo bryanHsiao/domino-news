@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.0.0/basic/H_NOTESFACTORY_CLASS_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-notesthread.webp"
+coverStyle: "low-poly-3d"
 ---
 
 You want a background thread in Java to run some code that makes Domino local calls — so you `new Thread(...)` it, and it can't get the Notes runtime; the first `lotus.domino` call blows up.
