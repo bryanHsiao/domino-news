@@ -58,6 +58,22 @@ admin/troubleshooting「已知問題 + workaround」型。
 - fact-check：獨立 subagent 查「`\`＝Domino 分類欄子分類分隔符（含 computed column）」對官方 HCL 文件 → **VERIFIED**。Domino Designer help「Examples: Generating category names」逐字「A backslash ( \ ) after a main entry denotes the subcategory name」（`Bedroom\Beds` 等例；且另半頁正是 `@Month`/`@If` 的 computed 分類欄，證實 computed 值也拆層）；最多 32 層（Sorting documents in views）。**load-bearing 但書：拆層只在欄位設為「分類(Categorized)」時發生**，同值放「排序」欄會原樣顯示 `ABC\File`——已把這句補進雙語措辭。分隔符固定為 `\`、不可設定。XPages 專屬 doc 無逐字，故 XPages 面向以「view index 帶層、XPages 控制項呈現」自述、未硬掛引用。
   - 來源：https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_GENERATING_CATEGORY_NAMES_EX.html 、 https://help.hcl-software.com/dom_designer/10.0.1/basic/H_ABOUT_SORTING_DOCUMENTS_IN_VIEWS.html
 
+## 交叉連結 KB0102042（同家族的 @PickList 變體）
+
+使用者提供 KB0102042、問「感覺也蠻像的，若相關可跟剛剛那篇做連結」。用內建瀏覽器逐字讀取後判定：**同一家族、不同介面**，值得連（非另開一篇，使用者要的是「連結」）。
+
+- **KB0102042 逐字要點**（[HCL 客戶支援](https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0102042)，公開 Defect Article，2y ago）：
+  - Applies to：HCL Domino Designer 12.0.2（64/32-bit）。
+  - 症狀：用 `@PickList`（formula）/ `NotesUIWorkspace.PicklistCollection`（LotusScript）對「3 個 categorized 欄 + 子分類」的視圖選文件 →「It will display the topmost layer of documents in sub-categories, other documents are not showing.」
+  - Workaround 逐字：「Set parameter **EnableExtendedFindByKey=0** in **client** Notes.ini file」+ 重啟；成因「A new functionality was added in Notes 12.0.2 ... an **advanced form of NIF lookup** by default ... caused this regression issue.」
+  - Resolved：「HCL Domino Designer v12.0.2 **FP1**」。
+  - 頁面自列姊妹 KB：KB0102043、KB0101979（+ related list 有 embedded view 變體）。
+- **對照本篇 KB0102504**：介面 XPages(ReadEntries refind) vs Notes client `@PickList`(NIF lookup)；參數 `DISABLE_REFIND_IN_READENTRIES=1`(server) vs `EnableExtendedFindByKey=0`(client)；修 FP3/14.0 vs FP1；SPR# MNIACMGKUV(PJONB7GRUL) vs 未列 SPR。→ **同「12.0.2 改 view lookup 引入 regression」家族、但不同 SPR/介面/參數/修復版本**。
+- 動作：把 KB0102042 折進「這個 workaround 不保證通用」那節（升級成官方家族地圖，FoCul Nomad 保留為「同參數無效」的社群例）；frontmatter 加來源；description + wrap-up 收束家族點。雙語 temp-build 通過（332 pages）。
+- 措辭守則：**明講「同家族、不同 SPR」，不宣稱兩者是同一段 code / 同一 SPR**（避免過度宣稱，呼應 [[feedback_no_vague_community_consensus]]）。
+- fact-check（家族框架過度宣稱查核）：獨立 subagent → **FAIR**（框架不過度宣稱、KB0102042 事實正確，並被第三方 brandlrainer.info 佐證 embedded-view 姊妹變體同 `EnableExtendedFindByKey=0`/FP1；該 cluster 至少三個不同 SPR＝MNIACMGKUV/PJONB7GRUL、KB0102042 未列、embedded 的 PSHECLULWM，反證非同一 code）。唯一要軟化：段中「一個 12.0.2 改動而引入」的**單數**措辭會讀成單一 root cause → 已改複數（「一連串改動、各自 SPR」＋以 FP1 vs FP3 佐證非同次改動）。base 文「修 PJONB7GRUL **時**引入」方向正確、無 inversion。
+- 未跑 NotebookLM：與初版同理，官方 KB 逐字（瀏覽器讀）為第一手，無對應 regression-KB notebook。
+
 ## 異動日誌
 
 - 2026-10-06 初版誤建於 KB0113007/&count（使用者按太快給錯）→ 使用者更正、真實來源 KB0102504。git mv 改名 + 整篇重寫，改引公開 KB0102504（瀏覽器逐字）；標題自決；temp-build；重新 stage 排 10/06。（Opus 4.8）

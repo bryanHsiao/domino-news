@@ -1,6 +1,6 @@
 ---
 title: "XPages 多欄位分類、下一欄還是分類時文件不顯示——12.0.2 的 regression 與 DISABLE_REFIND_IN_READENTRIES"
-description: "一個 XPages 視圖分類在多個欄位上，你套上篩選、而下一欄還是分類時，畫面只出現分類、底下的文件卻不見了——12.0.2 才這樣，12.0.1 是正常的。這是 HCL 官方認的 regression（KB0102504 / SPR# MNIACMGKUV），是 12.0.2 修另一個 bug（SPR# PJONB7GRUL）時引入的。暫解是在伺服端 notes.ini 加 DISABLE_REFIND_IN_READENTRIES=1，正解是升到 12.0.2 FP3 或 14.0。這篇講症狀、為什麼會這樣、暫解與正解，以及一個「同參數卻沒用」的相似變體要注意。"
+description: "一個 XPages 視圖分類在多個欄位上，你套上篩選、而下一欄還是分類時，畫面只出現分類、底下的文件卻不見了——12.0.2 才這樣，12.0.1 是正常的。這是 HCL 官方認的 regression（KB0102504 / SPR# MNIACMGKUV），是 12.0.2 修另一個 bug（SPR# PJONB7GRUL）時引入的。暫解是在伺服端 notes.ini 加 DISABLE_REFIND_IN_READENTRIES=1，正解是升到 12.0.2 FP3 或 14.0。這篇講症狀、為什麼會這樣、暫解與正解，以及 12.0.2 一整組同家族的分類視圖 regression（像官方 KB0102042 的 @PickList 變體，參數與修復版本都不同）該怎麼對症下參數。"
 pubDate: 2026-10-06T07:30:00+08:00
 lang: zh-TW
 slug: xpages-multi-column-category-document
@@ -10,6 +10,8 @@ tags:
 sources:
   - title: "XPages: Unable to get document when filtering a multi-column category and the next column is a category（KB0102504）— HCL Customer Support（官方）"
     url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0102504"
+  - title: "When using Picklist dialog in a view with categories and subcategories, topmost layer only showing（KB0102042，同家族、@PickList 變體、EnableExtendedFindByKey=0）— HCL Customer Support（官方）"
+    url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0102042"
   - title: "URL commands for opening servers, databases, and views（?ReadViewEntries）— HCL Domino Designer（官方）"
     url: "https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_ABOUT_URL_COMMANDS_FOR_OPENING_SERVERS_DATABASES_AND_VIEWS.html"
   - title: "Categorised view problem in Domino Nomad Web 1.07（相似變體、同參數無效）— FoCul"
@@ -75,10 +77,16 @@ DISABLE_REFIND_IN_READENTRIES=1
 
 **但這是 stopgap。** KB0102504 的 Resolved version 是 **12.0.2 FP3** 與 **14.0**;能排 fixpack/升版就升,別讓 `DISABLE_*`(關掉某個內部行為)這種參數在 notes.ini 常住——它同時也把當初修 PJONB7GRUL 想要的行為關掉了。升好之後記得移除這行。
 
-## 這個 workaround 不保證通用
+## 這個 workaround 不保證通用:12.0.2 有一「家族」的分類視圖 regression
 
-同一個參數不是萬用鑰匙。分類視圖在 12.0.2 前後有**不只一個**相似的讀取問題:KB0102504 這個 XPages 情境,`DISABLE_REFIND_IN_READENTRIES=1` 有效、修於 FP3/14.0;但 [FoCul](https://www.focul.net/categorised-view-problem-in-domino-nomad-web-1-07/) 記錄的 **Nomad Web 1.07** 分類視圖「空類別」問題,同一個參數卻**「did not work」**。所以順序永遠是:**先對症(是不是「分類套分類、文件不顯示」、哪個介面、哪個版本),再決定加不加這個參數**;加了沒用,多半是踩到另一個變體,不是參數寫錯。
+同一個參數不是萬用鑰匙。12.0.2 其實有**一整組**「分類/子分類底下的文件顯示不出來」的 regression,各自打在不同介面、各有各的參數與修復版本——重點是**對到你自己那個介面**。
+
+最好的官方對照是 [KB0102042](https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0102042):在 Notes client 用 **`@PickList`** 或 **`NotesUIWorkspace.PicklistCollection`** 對一個有分類與子分類的視圖選文件時,**只顯示最上層、子分類底下的文件不出現**。官方講的成因是「a new functionality was added in Notes 12.0.2 ... an advanced form of NIF lookup」——跟本篇同屬「12.0.2 一連串改動 view/NIF 查找行為、各自引入 regression」這一群(彼此是**不同的 SPR、不是同一段修正**;光是修復版本一個 FP1、一個 FP3 就說明不是同一次改動),但它是**不同介面**:暫解是 client 端 `notes.ini` 的 **`EnableExtendedFindByKey=0`**(不是本篇的 `DISABLE_REFIND_IN_READENTRIES=1`),修於 **12.0.2 FP1**(不是本篇的 FP3/14.0)。KB0102042 自己也指向更多姊妹案例(KB0102043、KB0101979、embedded view 變體),可見這是一「家族」而非單一 bug。
+
+社群端則有相似、但**這個參數無效**的變體:[FoCul](https://www.focul.net/categorised-view-problem-in-domino-nomad-web-1-07/) 記錄的 **Nomad Web 1.07** 分類視圖「空類別」問題,`DISABLE_REFIND_IN_READENTRIES=1` 在那個情境**「did not work」**。
+
+所以順序永遠是:**先對症(哪個介面——XPages?`@PickList` 對話框?Nomad?embedded view?哪個版本?),再挑對應的參數與 KB**;參數加了沒用,通常是踩到家族裡的另一個變體,不是參數寫錯。
 
 ## 小結
 
-XPages 多層分類、篩選後下一欄仍是分類時文件不顯示,是 12.0.2 修 SPR# PJONB7GRUL 引入的 regression(SPR# MNIACMGKUV,KB0102504)。伺服端 `notes.ini` 加 `DISABLE_REFIND_IN_READENTRIES=1` 是暫解、把 ReadEntries 的 refind 關掉;正解是升到 12.0.2 FP3 或 14.0、再把參數移掉。並記得:同名參數在其他相似變體(如 Nomad Web 那個)未必有效——先對症、再下參數。
+XPages 多層分類、篩選後下一欄仍是分類時文件不顯示,是 12.0.2 修 SPR# PJONB7GRUL 引入的 regression(SPR# MNIACMGKUV,KB0102504)。伺服端 `notes.ini` 加 `DISABLE_REFIND_IN_READENTRIES=1` 是暫解、把 ReadEntries 的 refind 關掉;正解是升到 12.0.2 FP3 或 14.0、再把參數移掉。並記得:12.0.2 有一整組這種分類視圖 regression(如 `@PickList` 的 KB0102042,介面、參數與修復版本都不同)——先對症、再挑對應的參數與 KB。

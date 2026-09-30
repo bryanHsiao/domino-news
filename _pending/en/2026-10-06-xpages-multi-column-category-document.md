@@ -1,6 +1,6 @@
 ---
 title: "XPages: Documents Don't Show When a Multi-Column Category's Next Column Is Also a Category — the 12.0.2 Regression"
-description: "An XPages view categorized on multiple columns: you apply a filter, and where the next column is still a category, the screen shows the category but the documents under it disappear — in 12.0.2, though 12.0.1 works. It's an HCL-acknowledged regression (KB0102504 / SPR# MNIACMGKUV), introduced when 12.0.2 fixed another bug (SPR# PJONB7GRUL). The workaround is DISABLE_REFIND_IN_READENTRIES=1 in the server notes.ini; the real fix is 12.0.2 FP3 or 14.0. This covers the symptom, why it happens, the workaround and fix, and a look-alike variant where the same setting does nothing."
+description: "An XPages view categorized on multiple columns: you apply a filter, and where the next column is still a category, the screen shows the category but the documents under it disappear — in 12.0.2, though 12.0.1 works. It's an HCL-acknowledged regression (KB0102504 / SPR# MNIACMGKUV), introduced when 12.0.2 fixed another bug (SPR# PJONB7GRUL). The workaround is DISABLE_REFIND_IN_READENTRIES=1 in the server notes.ini; the real fix is 12.0.2 FP3 or 14.0. This covers the symptom, why it happens, the workaround and fix, and the wider family of 12.0.2 sub-category-display regressions (like the @PickList variant in KB0102042, which needs a different parameter and fix version) so you can match the right one."
 pubDate: 2026-10-06T07:30:00+08:00
 lang: en
 slug: xpages-multi-column-category-document
@@ -10,6 +10,8 @@ tags:
 sources:
   - title: "XPages: Unable to get document when filtering a multi-column category and the next column is a category (KB0102504) — HCL Customer Support (official)"
     url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0102504"
+  - title: "When using Picklist dialog in a view with categories and subcategories, topmost layer only showing (KB0102042 — same family, @PickList variant, EnableExtendedFindByKey=0) — HCL Customer Support (official)"
+    url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0102042"
   - title: "URL commands for opening servers, databases, and views (?ReadViewEntries) — HCL Domino Designer (official)"
     url: "https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_ABOUT_URL_COMMANDS_FOR_OPENING_SERVERS_DATABASES_AND_VIEWS.html"
   - title: "Categorised view problem in Domino Nomad Web 1.07 (a similar variant, same setting didn't help) — FoCul"
@@ -75,10 +77,16 @@ HCL states it will "restore the normal behavior before the fix" — turning off 
 
 **But it's a stopgap.** KB0102504's Resolved version is **12.0.2 FP3** and **14.0**; schedule the fixpack or upgrade when you can, and don't leave a `DISABLE_*` "turn off an internal behavior" setting living in notes.ini — it also turns off the behavior the PJONB7GRUL fix was after. Once upgraded, remove the line.
 
-## The workaround isn't universal
+## The workaround isn't universal: 12.0.2 has a *family* of categorized-view regressions
 
-The same setting isn't a master key. Categorized-view reads have **more than one** look-alike problem around 12.0.2: for the XPages scenario in KB0102504, `DISABLE_REFIND_IN_READENTRIES=1` works and it's fixed in FP3/14.0; but the **Nomad Web 1.07** categorized-view "empty categories" problem [FoCul documented](https://www.focul.net/categorised-view-problem-in-domino-nomad-web-1-07/) had the same setting "did not work." So the order is always: **diagnose first (is it "category within a category, document missing," which interface, which version?), then decide whether to add the setting**. If you add it and nothing changes, you've likely hit a different variant, not mistyped the setting.
+The same setting isn't a master key. 12.0.2 actually carries a **whole set** of "documents under a sub-category don't show" regressions, each hitting a different interface, each with its own parameter and fix version — the point is to **match the one to your interface**.
+
+The best official comparison is [KB0102042](https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0102042): in the Notes client, using **`@PickList`** or **`NotesUIWorkspace.PicklistCollection`** to pick documents from a view with categories and sub-categories **shows only the topmost layer — documents under the sub-categories don't appear**. HCL's stated cause is that "a new functionality was added in Notes 12.0.2 ... an advanced form of NIF lookup" — the same family as this post (separate 12.0.2 view/NIF-lookup regressions, each its own SPR rather than one shared fix — the fix versions alone, one FP1 and one FP3, show they aren't a single change), but a **different interface**: the workaround is `EnableExtendedFindByKey=0` in the **client** `notes.ini` (not this post's `DISABLE_REFIND_IN_READENTRIES=1`), and it's fixed in **12.0.2 FP1** (not this post's FP3/14.0). KB0102042 itself also points to sibling cases (KB0102043, KB0101979, embedded-view variants), so this is a *family*, not a single bug.
+
+On the community side there's a look-alike where *this* setting doesn't help: the **Nomad Web 1.07** categorized-view "empty categories" problem [FoCul documented](https://www.focul.net/categorised-view-problem-in-domino-nomad-web-1-07/) had `DISABLE_REFIND_IN_READENTRIES=1` "did not work."
+
+So the order is always: **diagnose first (which interface — XPages? a `@PickList` dialog? Nomad? an embedded view? which version?), then pick the matching parameter and KB**. If you add a setting and nothing changes, you've likely hit a different variant in the family, not mistyped the parameter.
 
 ## Wrap-up
 
-XPages documents not showing when a multi-column category's next column is also a category is a 12.0.2 regression (SPR# MNIACMGKUV, KB0102504) introduced by the SPR# PJONB7GRUL fix. `DISABLE_REFIND_IN_READENTRIES=1` in the server `notes.ini` is a stopgap that turns off the ReadEntries refind; the real fix is 12.0.2 FP3 or 14.0, after which you remove the setting. And remember: the same-named setting won't necessarily help other look-alikes (like the Nomad Web one) — diagnose first, then set the parameter.
+XPages documents not showing when a multi-column category's next column is also a category is a 12.0.2 regression (SPR# MNIACMGKUV, KB0102504) introduced by the SPR# PJONB7GRUL fix. `DISABLE_REFIND_IN_READENTRIES=1` in the server `notes.ini` is a stopgap that turns off the ReadEntries refind; the real fix is 12.0.2 FP3 or 14.0, after which you remove the setting. And remember: 12.0.2 carries a whole family of these categorized-view regressions (like the `@PickList` one in KB0102042, with a different interface, parameter, and fix version) — diagnose first, then pick the matching parameter and KB.
