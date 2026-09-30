@@ -1,0 +1,68 @@
+---
+title: "XPages: Documents Don't Show When a Multi-Column Category's Next Column Is Also a Category — the 12.0.2 Regression"
+description: "An XPages view categorized on multiple columns: you apply a filter, and where the next column is still a category, the screen shows the category but the documents under it disappear — in 12.0.2, though 12.0.1 works. It's an HCL-acknowledged regression (KB0102504 / SPR# MNIACMGKUV), introduced when 12.0.2 fixed another bug (SPR# PJONB7GRUL). The workaround is DISABLE_REFIND_IN_READENTRIES=1 in the server notes.ini; the real fix is 12.0.2 FP3 or 14.0. This covers the symptom, why it happens, the workaround and fix, and a look-alike variant where the same setting does nothing."
+pubDate: 2026-10-06T07:30:00+08:00
+lang: en
+slug: xpages-multi-column-category-document
+tags:
+  - "XPages"
+  - "Admin"
+sources:
+  - title: "XPages: Unable to get document when filtering a multi-column category and the next column is a category (KB0102504) — HCL Customer Support (official)"
+    url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0102504"
+  - title: "URL commands for opening servers, databases, and views (?ReadViewEntries) — HCL Domino Designer (official)"
+    url: "https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_ABOUT_URL_COMMANDS_FOR_OPENING_SERVERS_DATABASES_AND_VIEWS.html"
+  - title: "Categorised view problem in Domino Nomad Web 1.07 (a similar variant, same setting didn't help) — FoCul"
+    url: "https://www.focul.net/categorised-view-problem-in-domino-nomad-web-1-07/"
+relatedJava: []
+relatedSsjs: []
+---
+
+You have an XPages view categorized on **multiple columns**. You apply a filter, and where the filtered-to **next column is still a category** (not yet the document level) — the screen shows the category name, but the **documents under it are gone**. The same design works on **12.0.1**; move to **12.0.2** and it breaks.
+
+This isn't a bug in your code — it's an HCL-acknowledged regression. There's a notes.ini workaround, but it's the kind that "turns off an internal behavior," so it's worth knowing what it turns off and what the real fix is before you let it live in notes.ini.
+
+---
+
+## TL;DR
+
+- **Symptom** (official [KB0102504](https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0102504)): with an XPages view categorized on multiple columns, when a filter lands where **the next column is also a category**, **"12.0.2 shows the category but not the document"** — the category appears, the document doesn't; **12.0.1 works**.
+- **Cause**: a **regression** — HCL's words, "a regression caused by another issue (**SPR# PJONB7GRUL**) that was fixed in 12.0.2"; the regression itself is **SPR# MNIACMGKUV**.
+- **Workaround**: add `DISABLE_REFIND_IN_READENTRIES=1` to the **server** `notes.ini` (restart) — HCL says it will "restore the normal behavior before the fix."
+- **Real fix**: upgrade to **12.0.2 FP3** or **14.0** (HCL's Resolved version). Remove the setting after upgrading.
+- **Caveat**: the setting **isn't guaranteed for every look-alike** — [FoCul](https://www.focul.net/categorised-view-problem-in-domino-nomad-web-1-07/) tested it on a Nomad Web 1.07 categorized-view problem and it "did not work." Confirm your symptom and version first.
+
+## The symptom: category within category, and the document vanishes
+
+KB0102504 describes the scenario concretely: in the same view, both documents show with no filters; filter by `field1b` and `field2b`;
+
+- **12.0.1**: shows the category and the document correctly.
+- **12.0.2**: **shows the category but not the document**.
+
+The key condition is "**the next column is also a category**" — i.e. your view is **multi-level categorized**, and after filtering you're sitting on a category level that has *another* category below it. That "category within a category" nesting is exactly where the 12.0.2 regression lands.
+
+## Why: fix one bug, add a refind
+
+An XPages view builds its display by reading **view entries** underneath (the same view-entry read mechanism as classic web's [`?ReadViewEntries`](https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_ABOUT_URL_COMMANDS_FOR_OPENING_SERVERS_DATABASES_AND_VIEWS.html)). A categorized view's entries include both **category rows** and **document rows**, so positioning under nested categories is already fiddly.
+
+When HCL fixed another bug in 12.0.2 (SPR# PJONB7GRUL), the `ReadEntries` read path gained a "**refind**" (re-position) step. It's harmless in the general case, but under "category within a category, reaching down to the document" it drops the document — becoming a new regression (SPR# MNIACMGKUV). The setting name is literal: `DISABLE_REFIND_IN_READENTRIES` **turns off that refind in ReadEntries**, back to the behavior before the step was added.
+
+## Workaround and real fix
+
+**Workaround** — add to the **server** `notes.ini` (then restart Domino):
+
+```
+DISABLE_REFIND_IN_READENTRIES=1
+```
+
+HCL states it will "restore the normal behavior before the fix" — turning off the refind that drops the document, back to the pre-PJONB7GRUL behavior.
+
+**But it's a stopgap.** KB0102504's Resolved version is **12.0.2 FP3** and **14.0**; schedule the fixpack or upgrade when you can, and don't leave a `DISABLE_*` "turn off an internal behavior" setting living in notes.ini — it also turns off the behavior the PJONB7GRUL fix was after. Once upgraded, remove the line.
+
+## The workaround isn't universal
+
+The same setting isn't a master key. Categorized-view reads have **more than one** look-alike problem around 12.0.2: for the XPages scenario in KB0102504, `DISABLE_REFIND_IN_READENTRIES=1` works and it's fixed in FP3/14.0; but the **Nomad Web 1.07** categorized-view "empty categories" problem [FoCul documented](https://www.focul.net/categorised-view-problem-in-domino-nomad-web-1-07/) had the same setting "did not work." So the order is always: **diagnose first (is it "category within a category, document missing," which interface, which version?), then decide whether to add the setting**. If you add it and nothing changes, you've likely hit a different variant, not mistyped the setting.
+
+## Wrap-up
+
+XPages documents not showing when a multi-column category's next column is also a category is a 12.0.2 regression (SPR# MNIACMGKUV, KB0102504) introduced by the SPR# PJONB7GRUL fix. `DISABLE_REFIND_IN_READENTRIES=1` in the server `notes.ini` is a stopgap that turns off the ReadEntries refind; the real fix is 12.0.2 FP3 or 14.0, after which you remove the setting. And remember: the same-named setting won't necessarily help other look-alikes (like the Nomad Web one) — diagnose first, then set the parameter.
