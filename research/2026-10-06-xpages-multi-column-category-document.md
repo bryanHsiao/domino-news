@@ -46,9 +46,19 @@ admin/troubleshooting「已知問題 + workaround」型。
 - [x] DISABLE_REFIND_IN_READENTRIES=1＝伺服端 notes.ini+重啟、stopgap（正解升 FP3/14.0）
 - [x] TYPE 留白；tags XPages + Admin
 - [x] inline-link diversity：3 相異外部（KB0102504 / URL commands / FoCul）
-- [x] 雙語 temp-build（改寫後）
-- [ ] fact-check（跑中）
+- [x] 雙語 temp-build（改寫後 + 真實案例補寫後）
+- [x] fact-check：初版 PASS（KB0102504 逐字）＋補寫段 VERIFIED（`\` 子分類分隔符對官方 Designer help）
+
+## 真實案例補寫（`\` 子分類分隔符）
+
+使用者提供同事實際遇到的 XPages 附件問題（兩張截圖：view 直欄公式 `DocNo + "\\" + FieldCode`、XPages 單一分類 filter `FormNumber + "\\File"`；DB 放上 R12/12.0.2 後同一分類永遠只看到第一筆檔案、刪掉才冒下一筆；使用者當時請他把 `\\` 拿掉就正常）。判定與 KB0102504 高度吻合：`\` 是 Domino 分類欄的**子分類分隔符**，`DocNo + "\\" + FieldCode` 不是平字串而是**兩層分類**，正好造出「下一欄仍是分類」的觸發條件；「拿掉 `\\`＝去巢狀化」與 `DISABLE_REFIND_IN_READENTRIES=1`（關 refind）殊途同歸，正解仍是 12.0.2 FP3 / 14.0。
+
+- 動作：zh 與 en 各加一節（zh「實務上怎麼冒出來:一個 \ 就把視圖做成巢狀分類」/ en「How it shows up in practice: one \ turns a view into nested categories」），插在「為什麼/Why」與「暫解/Workaround」之間。含實用檢查：踩到症狀卻沒想做多層分類時，回頭看分類欄公式有沒有不小心的 `\`。
+- 未新增 inline link（維持原 3 相異外部 URL 的多樣性）；未動 frontmatter。temp-build 雙語通過（332 pages）。
+- fact-check：獨立 subagent 查「`\`＝Domino 分類欄子分類分隔符（含 computed column）」對官方 HCL 文件 → **VERIFIED**。Domino Designer help「Examples: Generating category names」逐字「A backslash ( \ ) after a main entry denotes the subcategory name」（`Bedroom\Beds` 等例；且另半頁正是 `@Month`/`@If` 的 computed 分類欄，證實 computed 值也拆層）；最多 32 層（Sorting documents in views）。**load-bearing 但書：拆層只在欄位設為「分類(Categorized)」時發生**，同值放「排序」欄會原樣顯示 `ABC\File`——已把這句補進雙語措辭。分隔符固定為 `\`、不可設定。XPages 專屬 doc 無逐字，故 XPages 面向以「view index 帶層、XPages 控制項呈現」自述、未硬掛引用。
+  - 來源：https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_GENERATING_CATEGORY_NAMES_EX.html 、 https://help.hcl-software.com/dom_designer/10.0.1/basic/H_ABOUT_SORTING_DOCUMENTS_IN_VIEWS.html
 
 ## 異動日誌
 
 - 2026-10-06 初版誤建於 KB0113007/&count（使用者按太快給錯）→ 使用者更正、真實來源 KB0102504。git mv 改名 + 整篇重寫，改引公開 KB0102504（瀏覽器逐字）；標題自決；temp-build；重新 stage 排 10/06。（Opus 4.8）
+- 2026-10-06 補「真實案例：`\` 子分類分隔符」一節（雙語），呼應使用者同事的 XPages 附件案例；temp-build 通過。（Opus 4.8）

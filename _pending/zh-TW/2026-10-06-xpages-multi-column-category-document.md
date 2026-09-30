@@ -47,6 +47,22 @@ XPages 的視圖底層,是靠讀取**視圖項目(view entries)**來組畫面的
 
 HCL 在 12.0.2 修另一個 bug(SPR# PJONB7GRUL)時,`ReadEntries` 的讀取流程多了一個「**refind(重新定位)**」步驟。這步在一般情況沒事,但在「分類套分類、要往下取文件」時把文件漏掉了——於是成了新的 regression(SPR# MNIACMGKUV)。`DISABLE_REFIND_IN_READENTRIES` 這個參數的名字就是字面意思:**把 ReadEntries 裡那個 refind 關掉**,回到加它之前的行為。
 
+## 實務上怎麼冒出來:一個 `\` 就把視圖做成巢狀分類
+
+這個 bug 常常是「不小心」踩到的,因為很多人不知道一件事:**在一個設為「分類(Categorized)」的欄位裡,值中的 `\`(反斜線)是 Domino 的「子分類分隔符」**——官方文件寫得很直白,「A backslash ( \ ) after a main entry denotes the subcategory name」。(同樣的值放在只是「排序」而非「分類」的欄位,會原樣顯示成 `ABC\File`;一旦欄位設為分類,就被拆成層。)所以一個看起來只是把兩個欄位串起來的欄位公式——
+
+```
+DocNo + "\\" + FieldCode
+```
+
+——**不會**產生一個平的字串 `ABC\File`,而是讓 Notes 把它拆成**兩層分類**:`DocNo`(第一層)→ `FieldCode`(第二層,例如 `File`、`AssetReport`)。視圖就這樣從「單欄分類」變成了「巢狀分類」,正好落在這個 bug 的觸發條件上。
+
+一個真實案例:有人把每個附件各存成一份文件、都用單號當 key,再用一個分類視圖(欄位公式就是上面那個 `DocNo + "\\" + FieldCode`)呈現,XPages 的 category filter 下 `FormNumber + "\\File"`——也就是**篩進 `ABC\File` 這個巢狀分類**。把 DB 放到 **R12(12.0.2)** 後,同一個分類底下**永遠只看得到第一筆檔案,刪掉才冒出下一筆**——正是前面說的 refind 定位症狀。
+
+**當時的解法是把 `\\` 拿掉**(不要用它去製造第二層分類),視圖回到單層、觸發條件消失,就正常了。這其實就是「**去巢狀化**」這條 workaround——跟 `DISABLE_REFIND_IN_READENTRIES=1`(關掉 refind)殊途同歸,正解一樣是升到 12.0.2 FP3 / 14.0。
+
+**一個很實用的檢查**:如果你並沒有想做多層分類、卻踩到這個症狀,先回頭看分類欄公式裡有沒有一個不小心的 `\`——它可能正在幫你把視圖悄悄做成巢狀分類。
+
 ## 暫解與正解
 
 **暫解**——在**伺服端** `notes.ini` 加(然後重啟 Domino):

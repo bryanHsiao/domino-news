@@ -47,6 +47,22 @@ An XPages view builds its display by reading **view entries** underneath (the sa
 
 When HCL fixed another bug in 12.0.2 (SPR# PJONB7GRUL), the `ReadEntries` read path gained a "**refind**" (re-position) step. It's harmless in the general case, but under "category within a category, reaching down to the document" it drops the document — becoming a new regression (SPR# MNIACMGKUV). The setting name is literal: `DISABLE_REFIND_IN_READENTRIES` **turns off that refind in ReadEntries**, back to the behavior before the step was added.
 
+## How it shows up in practice: one `\` turns a view into nested categories
+
+This bug is often hit *by accident*, because many people don't know one thing: **in a column flagged "Categorized", a `\` (backslash) in the value is Domino's sub-category separator** — the docs put it plainly, "A backslash ( \ ) after a main entry denotes the subcategory name." (Put the same value in a merely *sorted* column and it displays as the literal text `ABC\File`; flag that column Categorized and the identical value splits into levels.) So a column formula that looks like it just concatenates two fields —
+
+```
+DocNo + "\\" + FieldCode
+```
+
+— does **not** produce a flat string `ABC\File`; Notes splits it into **two category levels**: `DocNo` (level 1) → `FieldCode` (level 2, e.g. `File`, `AssetReport`). The view has quietly gone from "single categorized column" to "nested categories" — landing right on this bug's trigger condition.
+
+A real case: someone stored each attachment as its own document keyed by the record number, displayed them through a categorized view (column formula exactly the `DocNo + "\\" + FieldCode` above), and set the XPages category filter to `FormNumber + "\\File"` — i.e. **filtering into the `ABC\File` nested category**. After the DB moved to **R12 (12.0.2)**, only the **first** file under a category ever showed; delete it and the next appeared — exactly the refind positioning symptom above.
+
+**The fix in that case was to drop the `\\`** (stop using it to create a second category level); the view went back to a single level, the trigger condition was gone, and it worked. That's the "**de-nest**" workaround — the same destination as `DISABLE_REFIND_IN_READENTRIES=1` (disable the refind) by a different road, with the real fix still being 12.0.2 FP3 / 14.0.
+
+**A useful check**: if you didn't intend a multi-level category but hit this symptom, look back at the categorized column formula for a stray `\` — it may be quietly turning your view into nested categories.
+
 ## Workaround and real fix
 
 **Workaround** — add to the **server** `notes.ini` (then restart Domino):
