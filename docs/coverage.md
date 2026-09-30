@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-09-29 · Posts scanned: 165 · Classes catalogued: 97*
+*Generated: 2026-09-30 · Posts scanned: 166 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [java-notesthread](https://bryanhsiao.github.io/domino-news/posts/java-notesthread/) | — | — | — |
 | [formula-command-postedcommand](https://bryanhsiao.github.io/domino-news/posts/formula-command-postedcommand/) | — | — | — |
 | [xpages-sessionassigner](https://bryanhsiao.github.io/domino-news/posts/xpages-sessionassigner/) | — | — | — |
 | [xpages-scope-variables](https://bryanhsiao.github.io/domino-news/posts/xpages-scope-variables/) | — | — | — |
