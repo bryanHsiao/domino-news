@@ -17,6 +17,8 @@ sources:
     url: "http://intec.co.uk/understanding-partial-execution-part-three-jsf-lifecycle/"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-partial-refresh-execution.webp"
+coverStyle: "collage"
 ---
 
 你在 XPages 頁上按一個按鈕,只想更新一小塊——結果一個跟這動作**毫不相干**的欄位,驗證器跳出來把你擋下。或者你明明只做了 partial refresh、只回傳一小塊 HTML,server 的 CPU 卻像整頁都重算了一遍。

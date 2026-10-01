@@ -17,6 +17,8 @@ sources:
     url: "http://intec.co.uk/understanding-partial-execution-part-three-jsf-lifecycle/"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-partial-refresh-execution.webp"
+coverStyle: "collage"
 ---
 
 You click a button on an XPage to update one small area — and a validator on a **completely unrelated** field pops up and blocks you. Or you do a partial refresh that returns one small chunk of HTML, yet the server's CPU acts like it recomputed the whole page.
