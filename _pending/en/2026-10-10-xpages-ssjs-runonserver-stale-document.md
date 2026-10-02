@@ -121,6 +121,8 @@ var nextSigner = beDoc.getItemValueString("NextSigner");
 
 This clears both of the article's headaches at once: **no wrestling with the save, and no stale handle**. But it comes with one **hard requirement** HCL states outright: the called agent must have "**Run as Web user**" selected on its Security tab, or the in-memory document context won't work correctly (that checkbox in the screenshot is exactly this one). The server's Security document must also permit agents/XPages to "sign to run on behalf of the invoker" for the pattern to run at all.
 
+![Domino Designer agent Security tab with the "Run as Web user" checkbox highlighted — required for the runWithDocumentContext / in-memory document context pattern](/domino-news/post-images/xpages-agent-run-as-web-user.png)
+
 How to choose: need to support very old versions, or the agent is unrelated to the on-screen document (a pure server-side RPC) → temp doc / `runOnServer`; want to drop both the save and the stale handle, and you can set the agent to run as web user → `runWithDocumentContext` is cleanest.
 
 ## A few practical notes
@@ -129,6 +131,13 @@ How to choose: need to support very old versions, or the agent is unrelated to t
 - **Check the return value**: `runOnServer` runs synchronously — it blocks until the agent finishes, which is why you can read the results as soon as it returns; a return of `0` is what tells you the agent ran and succeeded, so gate your read on that.
 - **When a temp doc is still the right call**: when you **don't want to touch or save** the real document (e.g. a pure server-side RPC via the agent, unrelated to the on-screen document), a throwaway temp doc is cleaner — just give it a cleanup mechanism.
 - **Make `recycle` a habit**: for backend objects you `createDocument`/`getDocumentByID` yourself in XPages SSJS, recycle them when done — it helps the long-running HTTP process's memory.
+
+## What about LotusScript and Java?
+
+This piece is SSJS-first, so — as usual — here's the cross-language view; the pattern is really the same across all three:
+
+- **LotusScript (Notes client)**: where it all started. The stale handle is the same: `Set doc = Nothing` to release, `Set doc = db.GetDocumentByID(noteid)` to re-fetch; `RunWithDocumentContext(doc, noteid)` (8.5.2+) exists in LotusScript too, and the agent reads it the same way with `Set doc = session.DocumentContext`; the "contextDocument" equivalent is `uidoc.Document` (the backend doc of the open form). Two client-only differences: (1) **"Run as Web user" is a web-agent setting** — on the Notes client the agent runs as the current Notes user, so that checkbox doesn't apply; (2) to see an agent's changes in the open UI, `uidoc.Reload` does **not** pick up modifications made "outside the current editing session" (by an agent or another user) — HCL says the document must be "closed and reopened" ([Reload docs](https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_RELOAD_METHOD.html)) — so a backend `GetDocumentByID` re-fetch is the reliable way.
+- **Java**: XPages SSJS is the Java Domino API underneath — `Agent.runOnServer(noteid)`, `runWithDocumentContext(doc, noteid)`, `AgentContext.getDocumentContext()` are the same set; the SSJS in this piece maps almost one-to-one to Java.
 
 ## Wrap-up
 

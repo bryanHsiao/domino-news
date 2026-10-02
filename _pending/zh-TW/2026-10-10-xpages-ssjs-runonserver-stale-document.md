@@ -121,6 +121,8 @@ var nextSigner = beDoc.getItemValueString("NextSigner");
 
 這一條把本文的兩個麻煩一次解掉：**不用為了存檔傷腦筋、也不用處理 stale handle**。但它有一個**硬性前提**——官方明講：被呼叫的 agent 必須在 Security 分頁勾「**以 Web 使用者身分執行（Run as Web user）**」，否則這個 in-memory 文件 context 不會正確運作（你截圖裡那個勾選，就是它）。另外，伺服器端的 Security 文件也要允許 agent／XPages「以呼叫者身分執行（sign agents or XPages to run on behalf of the invoker）」，這個模式才跑得起來。
 
+![Domino Designer 代理程式「安全性」分頁，紅框處是「以 Web 使用者身分執行」勾選——runWithDocumentContext／in-memory 文件 context 模式要求勾選它](/domino-news/post-images/xpages-agent-run-as-web-user.png)
+
 要怎麼選：要相容很舊的版本、或 agent 跟畫面文件無關（純伺服器端 RPC）→ 用暫存文件／`runOnServer`；想一次省掉存檔與 stale handle、又能把 agent 設成 run-as-web-user → `runWithDocumentContext` 最乾淨。
 
 ## 幾個實務注意
@@ -129,6 +131,13 @@ var nextSigner = beDoc.getItemValueString("NextSigner");
 - **用回傳值判成功**：`runOnServer` 是同步的——它會**擋住**、直到 agent 跑完才回來，所以你可以在它一回傳就讀結果；回 `0` 才代表跑完且成功，確認成功再讀。
 - **什麼時候還是該用暫存文件**：當你**不想動到、也不想存檔**那份正式文件時（例如純粹借 agent 做一次伺服器端 RPC、跟畫面文件無關），一份丟完即焚的暫存文件反而更乾淨——記得給它清理機制。
 - **`recycle` 當習慣**：XPages SSJS 裡自己 `createDocument`／`getDocumentByID` 拿到的 backend 物件，用完 `recycle`，對長時間運作的 HTTP 行程的記憶體有幫助。
+
+## 其他語言：LotusScript 與 Java
+
+這篇以 XPages SSJS 為主，照慣例補一下其他角度——這個模式三種語言其實相通：
+
+- **LotusScript（Notes client）**：最早就是從這裡來的。stale handle 一樣：`Set doc = Nothing` 釋放、`Set doc = db.GetDocumentByID(noteid)` 重抓；`RunWithDocumentContext(doc, noteid)`（8.5.2+）在 LotusScript 也有，agent 端一樣 `Set doc = session.DocumentContext`；「contextDocument」的對應是 `uidoc.Document`（開著表單的 backend 文件）。兩個 client 專屬差別：① **「以 Web 使用者身分執行」是 web agent 的設定**——在 Notes client，agent 以目前的 Notes 使用者身分跑，不吃這個勾選；② 想在開著的 UI 上看 agent 改後的值，`uidoc.Reload` **看不到**「編輯 session 之外」（被 agent／別人）的改動，官方說要「關掉再重開」才會出現（[Reload 官方](https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_RELOAD_METHOD.html)），所以程式裡還是走 backend `GetDocumentByID` 重抓最可靠。
+- **Java**：XPages SSJS 底層就是 Java Domino API——`Agent.runOnServer(noteid)`、`runWithDocumentContext(doc, noteid)`、`AgentContext.getDocumentContext()` 是同一組；本文的 SSJS 寫法幾乎可以一比一換成 Java。
 
 ## 小結
 

@@ -68,6 +68,16 @@ grep runOnServer/contextDocument/recycle/getDocument：相關的有 notes-agent(
 - 動作：新增 runWithDocumentContext 一節 + contextDocument 段加身分 caveat + TL;DR/描述/wrap 收束；frontmatter 加 wiki + Web agents 兩官方源（diversity 升到 5 URL 各 20%）。雙語 temp-build 通過。
 - 這塊聚焦 fact-check → **FAIR、零錯誤、無必改**：runWithDocumentContext 行為/簽名/8.5.2/run-as-web-user 硬性要求全對官方 wiki 逐字；runOnServer 路徑「條件式」分寸正確（有 if guard、未宣稱一定要）；伺服器設定名「Sign agents or XPages to run on behalf of the invoker」確認為 Security 分頁 Programmability Restrictions 真實欄位；兩路徑未混談。採 optional 補強：加「effective user 決定 ACL 存取、但能做哪些**操作**仍看 signer」另一半（避免讀者誤解 run-as-web-user 改變可執行操作）。
 
+## 補強二：截圖 + 跨語言指引節（使用者觸發）
+
+- **截圖**：使用者給 agent「安全性」分頁（「以 Web 使用者身分執行」勾選）截圖 → 複製到 `public/post-images/xpages-agent-run-as-web-user.png`，插在 runWithDocumentContext 節「你截圖那個勾選」處（雙語）。慣例：內文圖放 `public/post-images/`、引 `/domino-news/post-images/<name>.png`。
+- **跨語言節**：使用者點出「LS 技術文結尾都帶 SSJS/Java 對照，這篇 SSJS 也該補其他角度」→ 加「其他語言：LotusScript 與 Java」短節（照「不深入、點到」慣例）：
+  - LotusScript：stale 解法同（Set Nothing + GetDocumentByID）；`RunWithDocumentContext(doc, noteid)` LS 也有（8.5.2+，agent 端 `session.DocumentContext`）；contextDocument 對應 `uidoc.Document`。兩 client 專屬差別：①「以 Web 使用者身分執行」是 web agent 設定、client 不吃（agent 以當前 Notes 使用者跑）；② `uidoc.Reload` 看不到「編輯 session 外」（agent/他人）的改動、官方說要關閉重開（[Reload 官方](https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_RELOAD_METHOD.html) 逐字 WebFetch 確認）→ 仍走 backend GetDocumentByID 重抓。
+  - Java：同組 API（runOnServer/runWithDocumentContext/getDocumentContext），SSJS 幾乎一比一對應。
+  - relatedJava/relatedSsjs 仍 []（非單一 class，跨語言以「節」呈現、非 frontmatter class 名）。
+  - diversity 升到 6 URL 各 ~17%；雙語 temp-build（含圖）通過。
+  - 這節聚焦 fact-check → **FAIR、零錯誤、無必改**：LS `RunWithDocumentContext(doc,noteid) As Integer`（8.5.2+，8.5.1 無此法）+ agent 端 `session.DocumentContext` 確認；`uidoc.Document`＝開啟文件的 backend NotesDocument 確認；`uidoc.Reload` caveat 逐字對官方；run-as-web-user 僅 web、client 以當前 Notes 使用者跑的框架正確（未誤導 client 要勾）；Java `runOnServer`/`runWithDocumentContext(doc,noteid)`/`AgentContext.getDocumentContext()` 皆存在。側記（無需改）：官方提醒勿對 `uidoc.Document` 取得的 doc 直接 `.Save`（文中未叫讀者這樣做）；Java `runWithDocumentContext` 回 void（文中未斷言 Java 回傳型別）。
+
 ## 異動日誌
 
 - 2026-10-10 新建。官方 method 文件 + 使用者第一手 SSJS 截圖；NotebookLM 不可用（62 天舊 state + overlay）已 fallback 並告知；不引 xred；深連 java-recycle-memory；排 10/10 Path A。（Opus 4.8）
