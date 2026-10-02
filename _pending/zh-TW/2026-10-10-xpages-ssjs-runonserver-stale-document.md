@@ -104,6 +104,8 @@ if (agent.runOnServer(noteid) == 0) {
 
 `getDocument(true)` 的 `true` 是 `applyChanges`：官方的意思是「把對 data store 的改動套用進去」——也就是先把使用者在畫面上剛改、還沒存的值灌進 backend 文件，你再 `save`、再傳給 agent，agent 才看得到最新輸入。
 
+這裡要特別分清楚 `getDocument()` 和 `getDocument(true)`，很容易踩：**不帶參數的 `document1.getDocument()`（＝`applyChanges` 預設 `false`）回的是 data source 目前持有的那份 backend 文件，不含還沒同步進去的畫面輸入**；要把控制項上的現值同步進文件、agent 才看得到，就得用 `getDocument(true)`。所以這個情境用 `true` 是刻意的。反過來，如果你只想單獨拿某個畫面欄位的值，也可以不經過文件、直接 `getComponent("xx").getValue()` 讀控制項——很多人就是用「`getDocument()` 抓後端、`getComponent().getValue()` 抓畫面」這組分工，把兩者切得清清楚楚。
+
 **好處**：省掉建暫存文件、省掉事後清理那些孤兒文件。**但要記住一條沒變的規則**：agent 回寫之後，data source 手上那份 backend 文件**還是舊的**——`getDocument(true)` 再呼叫一次也不會幫你從磁碟拉新值（`applyChanges` 是把**你的**改動推進去，不是把 **agent 的**改動拉回來）。要顯示新結果，一樣是 `getDocumentByID` 重抓、或把新值塞回 data source 後做一次 refresh。
 
 還有一個**身分**的細節容易忽略：從 XPages 叫的 agent，**預設是以 signer（簽署者）身分跑**；effective user 是 signer 還是登入的 web 使用者，決定它的 **ACL 存取權**（但它**能做哪些操作**〔受限／不受限方法〕仍由 signer 決定，這兩件事是分開的）（[官方 Web agents 說明](https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_LOTUSSCRIPT_AND_JAVA_AGENTS_WEB.html)：勾「以 Web 使用者身分執行」就以瀏覽器登入身分跑，否則以 signer）。所以如果那份文件有 **Readers 欄位**、或 ACL 會擋住 signer，agent 以 signer 身分就**讀不到你剛存的值**——這時要在 agent 的 Security 分頁勾「**以 Web 使用者身分執行**」，讓它以登入使用者的身分去讀。

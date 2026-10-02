@@ -78,6 +78,13 @@ grep runOnServer/contextDocument/recycle/getDocument：相關的有 notes-agent(
   - diversity 升到 6 URL 各 ~17%；雙語 temp-build（含圖）通過。
   - 這節聚焦 fact-check → **FAIR、零錯誤、無必改**：LS `RunWithDocumentContext(doc,noteid) As Integer`（8.5.2+，8.5.1 無此法）+ agent 端 `session.DocumentContext` 確認；`uidoc.Document`＝開啟文件的 backend NotesDocument 確認；`uidoc.Reload` caveat 逐字對官方；run-as-web-user 僅 web、client 以當前 Notes 使用者跑的框架正確（未誤導 client 要勾）；Java `runOnServer`/`runWithDocumentContext(doc,noteid)`/`AgentContext.getDocumentContext()` 皆存在。側記（無需改）：官方提醒勿對 `uidoc.Document` 取得的 doc 直接 `.Save`（文中未叫讀者這樣做）；Java `runWithDocumentContext` 回 void（文中未斷言 Java 回傳型別）。
 
+## 補強三：getDocument() vs getDocument(true) 語意澄清（使用者觸發）
+
+使用者指出「`getDocument(true)` 印象中是抓畫面欄位值、不是後端存的；我們常只用 `getDocument()`，抓畫面用 `getComponent("x").getValue()`」。查證：**使用者正確**。
+- `getDocument()`／`getDocument(false)`（預設）：回 data source 目前持有的 backend 文件，**不含**還沒同步的畫面輸入（官方 help「false 不套用」；JavaDoc「Return the wrapped Document」）。
+- `getDocument(true)`：先把控制項現值**同步回文件**再回傳（官方「true applies any changes made to the data store」；佐證「forces the data source to synchronize edited values from the XPage controls back into the document」）。
+- 文章原用 `getDocument(true)` 是**對的**（要把使用者輸入傳給 agent），但沒把 `()` vs `(true)` 講清楚 → 已在 contextDocument 節補精確澄清 + 使用者的「getDocument() 抓後端、getComponent().getValue() 抓畫面」分工做法（雙語）。三方確認（官方 help + JavaDoc + 社群佐證 + 使用者專業），未另跑 agent fact-check。
+
 ## 異動日誌
 
 - 2026-10-10 新建。官方 method 文件 + 使用者第一手 SSJS 截圖；NotebookLM 不可用（62 天舊 state + overlay）已 fallback 並告知；不引 xred；深連 java-recycle-memory；排 10/10 Path A。（Opus 4.8）
