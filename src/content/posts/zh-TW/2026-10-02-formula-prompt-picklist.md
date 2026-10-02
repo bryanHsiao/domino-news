@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_COMMAND.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/formula-prompt-picklist.webp"
+coverStyle: "paper-craft"
 ---
 
 你想讓一個按鈕跳出「確定要刪除嗎?」讓使用者按 Yes/No,或彈一個清單讓他從一個 view 裡挑一筆客戶資料——在 Formula 裡,這兩件事分別是 `@Prompt` 和 `@PickList`。

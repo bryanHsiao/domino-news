@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_COMMAND.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/formula-prompt-picklist.webp"
+coverStyle: "paper-craft"
 ---
 
 You want a button to pop "Are you sure you want to delete?" for a Yes/No, or a list to let the user pick one customer record from a view — in Formula those are `@Prompt` and `@PickList`.
