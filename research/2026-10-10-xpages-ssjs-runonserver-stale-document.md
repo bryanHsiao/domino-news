@@ -78,12 +78,14 @@ grep runOnServer/contextDocument/recycle/getDocument：相關的有 notes-agent(
   - diversity 升到 6 URL 各 ~17%；雙語 temp-build（含圖）通過。
   - 這節聚焦 fact-check → **FAIR、零錯誤、無必改**：LS `RunWithDocumentContext(doc,noteid) As Integer`（8.5.2+，8.5.1 無此法）+ agent 端 `session.DocumentContext` 確認；`uidoc.Document`＝開啟文件的 backend NotesDocument 確認；`uidoc.Reload` caveat 逐字對官方；run-as-web-user 僅 web、client 以當前 Notes 使用者跑的框架正確（未誤導 client 要勾）；Java `runOnServer`/`runWithDocumentContext(doc,noteid)`/`AgentContext.getDocumentContext()` 皆存在。側記（無需改）：官方提醒勿對 `uidoc.Document` 取得的 doc 直接 `.Save`（文中未叫讀者這樣做）；Java `runWithDocumentContext` 回 void（文中未斷言 Java 回傳型別）。
 
-## 補強三：getDocument() vs getDocument(true) 語意澄清（使用者觸發）
+## 補強三 → 修正：getDocument(true) 是過度使用，範例改用 save()（使用者兩次觸發）
 
-使用者指出「`getDocument(true)` 印象中是抓畫面欄位值、不是後端存的；我們常只用 `getDocument()`，抓畫面用 `getComponent("x").getValue()`」。查證：**使用者正確**。
-- `getDocument()`／`getDocument(false)`（預設）：回 data source 目前持有的 backend 文件，**不含**還沒同步的畫面輸入（官方 help「false 不套用」；JavaDoc「Return the wrapped Document」）。
-- `getDocument(true)`：先把控制項現值**同步回文件**再回傳（官方「true applies any changes made to the data store」；佐證「forces the data source to synchronize edited values from the XPage controls back into the document」）。
-- 文章原用 `getDocument(true)` 是**對的**（要把使用者輸入傳給 agent），但沒把 `()` vs `(true)` 講清楚 → 已在 contextDocument 節補精確澄清 + 使用者的「getDocument() 抓後端、getComponent().getValue() 抓畫面」分工做法（雙語）。三方確認（官方 help + JavaDoc + 社群佐證 + 使用者專業），未另跑 agent fact-check。
+第一次：使用者指出「`getDocument(true)` 印象中抓畫面值、不是後端存的；我們常只用 `getDocument()` + `getComponent().getValue()` 抓畫面」。我先補了 `()` vs `(true)` 的澄清。
+第二次（關鍵）：使用者說「這個想單獨寫一篇」＋「再確認你的情境真的需要 `(true)` 嗎?」。**重新確認後：我的情境其實不需要 `(true)`。**
+- **生命週期**：XPages JSF 送出時，**Update Model Values（phase 4）在按鈕 SSJS（Invoke Application, phase 5）之前**就把 bound 畫面值寫進 data source 的文件了。所以一般送出事件裡，`document1.getDocument()` 本來就已帶畫面現值，`(true)` 多半多餘。（`immediate=true` 跳過 Update Model Values 的才兩樣，走 `getComponent().getValue()`。）
+- **最乾淨的存檔路徑**＝`document1.save()`（data source 的 save 會 flush 畫面值進文件）→ 傳 NoteID，完全繞過 `getDocument(true)` 爭議。
+- 處置：① 把 `()` vs `(true)` 的深入說明**整段拿掉**（使用者要單獨寫一篇，之後雙向連結，文中留一句 deferral 指向）；② 範例改乾淨——存檔路徑用 `document1.save()` + `getDocument().getNoteID()`；runWithDocumentContext 用 `document1.getDocument()`（送出事件已含畫面值）；③ 「好處」段與 wrap-up 不再掛 `getDocument(true)`。
+- 教訓：被社群/原文帶著用 `getDocument(true)` 當「取畫面值」的慣用寫法，但在「按鈕事件 + document1.save()」情境其實非必要；使用者的實務（getDocument() + getComponent 分工 / 或直接 save()）更準。這題本身夠料、確實值得使用者單獨成篇。
 
 ## 異動日誌
 

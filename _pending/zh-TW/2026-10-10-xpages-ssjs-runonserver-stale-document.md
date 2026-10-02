@@ -35,7 +35,7 @@ XPages 裡有個很常見的模式：你需要一段在**伺服器端**跑的邏
 - **模式**：建暫存文件填參數 → `save`（agent 從磁碟抓，一定要先存）→ `agent.runOnServer(noteid)` → agent 用 `ParameterDocID` 拿到那份文件、處理、回寫、再 `save` → 呼叫端讀結果。
 - **陷阱**：呼叫端手上的文件物件是**載入當下的快照**。agent 在另一條執行把磁碟上的 note 存檔後，你那個物件**不會自動同步**，讀 item 還是舊值。
 - **解法**：`recycle()` 掉舊物件、再 `database.getDocumentByID(noteid)` 從磁碟**重抓**一份新的，才看得到 agent 寫的值。
-- **更乾淨的替代**：不想建暫存文件，就用表單已經綁好的 document data source——`document1.getDocument(true)` 取得套用了畫面改動的 backend 文件，存檔後把它的 note id 傳給 agent。省掉建暫存文件與事後清理。**但讀結果時同一條規則照舊**：agent 寫完後那份 cached backend 文件也是舊的，一樣要重抓。
+- **更乾淨的替代**：不想建暫存文件，就用表單已經綁好的 document data source——`document1.save()` 存檔後把它的 note id 傳給 agent。省掉建暫存文件與事後清理。**但讀結果時同一條規則照舊**：agent 寫完後那份 cached backend 文件也是舊的，一樣要重抓。
 - **最乾淨**：`agent.runWithDocumentContext(doc)`（8.5.2+）把 in-memory 文件（**存不存檔都行**）直接傳給 agent 的 `DocumentContext`；agent 就地改、控制權回來後**直接讀得到新值、連重抓都免**。硬性前提：被呼叫 agent 要在 Security 分頁勾「**以 Web 使用者身分執行（Run as Web user）**」。
 - `runOnServer` 回傳 `0` 代表成功，確認成功再去讀結果。
 
@@ -88,13 +88,12 @@ if (agent.runOnServer(noteid) == 0) {
 
 上面那套要**另外建一份暫存文件**，用完還得清掉（不然資料庫裡會堆一堆只為了呼叫 agent 而生的孤兒文件——很多人因此還得在文件上加個 `CreatorDelete` 之類的標記、再寫一支清理 agent）。
 
-如果你的按鈕本來就在一張**綁了 document data source 的 XPage** 上，其實不必另起爐灶——直接拿表單正在編輯的那份文件當信箱就好。XPages 的 data source 是一個 `NotesXspDocument`（預設變數名 `document1`、`document2`…，你也可能把它命名成 `contextDocument`），用 `getDocument(applyChanges)` 就能取出它內層的 `lotus.domino.Document`（[官方](https://help.hcl-software.com/dom_designer/9.0.1/reference/r_wpdr_xsp_xspdocument_getdocument_r.html)、[DominoDocument JavaDoc](https://public.dhe.ibm.com/software/dw/lotus/Domino-Designer/JavaDocs/DesignerAPIs/com/ibm/xsp/model/domino/wrapped/DominoDocument.html)）：
+如果你的按鈕本來就在一張**綁了 document data source 的 XPage** 上，其實不必另起爐灶——直接拿表單正在編輯的那份文件當信箱就好。XPages 的 data source 是一個 `NotesXspDocument`（預設變數名 `document1`、`document2`…，你也可能把它命名成 `contextDocument`），用它的 `save()` 存檔、再 `getDocument()` 取出內層的 `lotus.domino.Document`（[官方](https://help.hcl-software.com/dom_designer/9.0.1/reference/r_wpdr_xsp_xspdocument_getdocument_r.html)、[DominoDocument JavaDoc](https://public.dhe.ibm.com/software/dw/lotus/Domino-Designer/JavaDocs/DesignerAPIs/com/ibm/xsp/model/domino/wrapped/DominoDocument.html)），就能把這份文件交給 agent：
 
 ```javascript
 // 用表單的 data source，不另建暫存文件
-var beDoc = document1.getDocument(true);   // true=把畫面上的改動套進 backend 文件
-beDoc.save();                              // 存檔，agent 才抓得到這些值
-var noteid = beDoc.getNoteID();
+document1.save();                          // 存 data source（送出事件裡，畫面現值早已寫進它的文件）
+var noteid = document1.getDocument().getNoteID();
 if (agent.runOnServer(noteid) == 0) {
     // 讀結果：一樣要重抓，別再信手上這份
     var fresh = database.getDocumentByID(noteid);
@@ -102,20 +101,18 @@ if (agent.runOnServer(noteid) == 0) {
 }
 ```
 
-`getDocument(true)` 的 `true` 是 `applyChanges`：官方的意思是「把對 data store 的改動套用進去」——也就是先把使用者在畫面上剛改、還沒存的值灌進 backend 文件，你再 `save`、再傳給 agent，agent 才看得到最新輸入。
+這裡刻意用 `document1.save()`：一般的送出事件裡，XPages 的 Update Model Values 階段早在按鈕 SSJS 之前就把畫面現值寫進 data source 的文件了，所以不必多做什麼。（`getDocument()` 和 `getDocument(true)` 的差別、以及什麼時候才真的需要用 `(true)` 去強制把畫面值同步進文件，是另一個獨立題目，之後會單獨寫一篇、再回頭互連。）
 
-這裡要特別分清楚 `getDocument()` 和 `getDocument(true)`，很容易踩：**不帶參數的 `document1.getDocument()`（＝`applyChanges` 預設 `false`）回的是 data source 目前持有的那份 backend 文件，不含還沒同步進去的畫面輸入**；要把控制項上的現值同步進文件、agent 才看得到，就得用 `getDocument(true)`。所以這個情境用 `true` 是刻意的。反過來，如果你只想單獨拿某個畫面欄位的值，也可以不經過文件、直接 `getComponent("xx").getValue()` 讀控制項——很多人就是用「`getDocument()` 抓後端、`getComponent().getValue()` 抓畫面」這組分工，把兩者切得清清楚楚。
-
-**好處**：省掉建暫存文件、省掉事後清理那些孤兒文件。**但要記住一條沒變的規則**：agent 回寫之後，data source 手上那份 backend 文件**還是舊的**——`getDocument(true)` 再呼叫一次也不會幫你從磁碟拉新值（`applyChanges` 是把**你的**改動推進去，不是把 **agent 的**改動拉回來）。要顯示新結果，一樣是 `getDocumentByID` 重抓、或把新值塞回 data source 後做一次 refresh。
+**好處**：省掉建暫存文件、省掉事後清理那些孤兒文件。**但要記住一條沒變的規則**：agent 回寫之後，data source 手上那份 backend 文件**還是舊的**——它不會自己從磁碟把 agent 的改動同步回來。要顯示新結果，一樣是 `getDocumentByID` 重抓、或把新值塞回 data source 後做一次 refresh。
 
 還有一個**身分**的細節容易忽略：從 XPages 叫的 agent，**預設是以 signer（簽署者）身分跑**；effective user 是 signer 還是登入的 web 使用者，決定它的 **ACL 存取權**（但它**能做哪些操作**〔受限／不受限方法〕仍由 signer 決定，這兩件事是分開的）（[官方 Web agents 說明](https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_LOTUSSCRIPT_AND_JAVA_AGENTS_WEB.html)：勾「以 Web 使用者身分執行」就以瀏覽器登入身分跑，否則以 signer）。所以如果那份文件有 **Readers 欄位**、或 ACL 會擋住 signer，agent 以 signer 身分就**讀不到你剛存的值**——這時要在 agent 的 Security 分頁勾「**以 Web 使用者身分執行**」，讓它以登入使用者的身分去讀。
 
 ## 最乾淨：runWithDocumentContext——連存檔和重抓都免
 
-前面兩條（暫存文件、`getDocument(true)`）都還要 `save` + 事後 `getDocumentByID` 重抓。其實 8.5.2 之後有更直接的做法 `agent.runWithDocumentContext(doc)`：它把一份 **in-memory 文件（存檔或未存檔都可以）**傳進被呼叫 agent 的 `DocumentContext`——agent 端用 `session.DocumentContext`（LotusScript）／`getDocumentContext()`（Java）拿到它、就地處理、回寫；**控制權回到 XPage 時，你直接從同一份文件讀得到 agent 改過的值，不必再 `getDocumentByID` 重抓**（[官方 wiki](https://ds-infolib.hcltechsw.com/ldd/ddwiki.nsf/dx/XPages_and_Calling_Agents_Using_an_In-Memory_Document) 逐字：「when control returns to the XPage the updated values can be read from the document」）。
+前面兩條（暫存文件、contextDocument）都還要 `save` + 事後 `getDocumentByID` 重抓。其實 8.5.2 之後有更直接的做法 `agent.runWithDocumentContext(doc)`：它把一份 **in-memory 文件（存檔或未存檔都可以）**傳進被呼叫 agent 的 `DocumentContext`——agent 端用 `session.DocumentContext`（LotusScript）／`getDocumentContext()`（Java）拿到它、就地處理、回寫；**控制權回到 XPage 時，你直接從同一份文件讀得到 agent 改過的值，不必再 `getDocumentByID` 重抓**（[官方 wiki](https://ds-infolib.hcltechsw.com/ldd/ddwiki.nsf/dx/XPages_and_Calling_Agents_Using_an_In-Memory_Document) 逐字：「when control returns to the XPage the updated values can be read from the document」）。
 
 ```javascript
-var beDoc = document1.getDocument(true);   // 或任何一份 in-memory 文件，不必先 save
+var beDoc = document1.getDocument();       // 表單的 backend 文件（送出事件裡已含畫面現值）；也可以是任何一份 in-memory 文件，不必先 save
 agent.runWithDocumentContext(beDoc);        // 傳進 agent 的 DocumentContext
 // 回來後直接讀 beDoc，不用重抓
 var nextSigner = beDoc.getItemValueString("NextSigner");
@@ -143,4 +140,4 @@ var nextSigner = beDoc.getItemValueString("NextSigner");
 
 ## 小結
 
-`runOnServer` 之後讀到舊值，不是 agent 沒存檔，是你讀的是 in-memory 的舊快照：呼叫端的文件物件在載入當下就定型，agent 在磁碟上的改動不會同步回來。標準解法是 `recycle()` 舊的、`getDocumentByID()` 重抓新的。而如果只是為了呼叫 agent 而建暫存文件，多半可以改用表單的 document data source（`document1.getDocument(true)`）當信箱、省掉建檔與清理——只是「讀結果要重抓」這條規則，不管用暫存文件還是 contextDocument，都一樣適用。想一次擺脫「存檔 + 重抓」這兩件事，就用 `runWithDocumentContext` 把 in-memory 文件直接傳進 agent 的 `DocumentContext`、回來即讀——前提是把那支 agent 設成「以 Web 使用者身分執行」。
+`runOnServer` 之後讀到舊值，不是 agent 沒存檔，是你讀的是 in-memory 的舊快照：呼叫端的文件物件在載入當下就定型，agent 在磁碟上的改動不會同步回來。標準解法是 `recycle()` 舊的、`getDocumentByID()` 重抓新的。而如果只是為了呼叫 agent 而建暫存文件，多半可以改用表單的 document data source（`document1.save()` 後傳 note id）當信箱、省掉建檔與清理——只是「讀結果要重抓」這條規則，不管用暫存文件還是 contextDocument，都一樣適用。想一次擺脫「存檔 + 重抓」這兩件事，就用 `runWithDocumentContext` 把 in-memory 文件直接傳進 agent 的 `DocumentContext`、回來即讀——前提是把那支 agent 設成「以 Web 使用者身分執行」。
