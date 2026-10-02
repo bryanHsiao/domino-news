@@ -77,6 +77,8 @@ if (agent.runOnServer(noteid) == 0) {
 }
 ```
 
+![三步驟示意：save 之後記憶體 tmpdoc 與磁碟 note 都是舊值；runOnServer 後 agent 把磁碟改成新值、記憶體 tmpdoc 仍是舊值（stale）；recycle() 丟掉舊物件、再 getDocumentByID 重抓，記憶體才拿到新值](/domino-news/post-images/xpages-runonserver-recycle.svg)
+
 兩個動作缺一不可：
 
 - **`recycle()` 掉舊物件**：釋放它握住的內部 handle（在 XPages／Java 這層，backend 物件背後是 C handle，不會被 JVM 自動回收，養成 `recycle` 的習慣對記憶體也好——這點另有[專篇](/domino-news/posts/java-recycle-memory/)）。

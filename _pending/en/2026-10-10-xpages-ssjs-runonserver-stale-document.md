@@ -77,6 +77,8 @@ if (agent.runOnServer(noteid) == 0) {
 }
 ```
 
+![Three steps: after save the in-memory tmpdoc and the on-disk note are both the old value; after runOnServer the agent writes the new value to disk but the in-memory tmpdoc is still stale; recycle() the stale object and getDocumentByID re-fetches so memory finally holds the new value](/domino-news/post-images/xpages-runonserver-recycle-en.svg)
+
 Both steps matter:
 
 - **`recycle()` the stale object**: release the internal handle it holds (at the XPages/Java layer a backend object wraps a C handle that the JVM won't free for you, so making `recycle` a habit helps your memory too — there's a [dedicated piece](/domino-news/en/posts/java-recycle-memory/) on that).
