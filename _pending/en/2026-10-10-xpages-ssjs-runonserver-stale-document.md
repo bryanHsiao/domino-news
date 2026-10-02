@@ -1,6 +1,6 @@
 ---
 title: "After runOnServer in XPages the Document Is Still Stale — the Fix, and Using the contextDocument Instead of a Temp Doc"
-description: "A common XPages SSJS pattern: create a temp document, fill in parameters, save, call agent.runOnServer(noteid), and the agent writes results back to that document on the server. Then you read it back — and get the values from before the agent ran. It's not a bug: the document object you're holding is an in-memory snapshot taken at load time, and the agent saved the note on disk in a separate execution, so your object never syncs. The fix is to recycle the stale object and getDocumentByID a fresh one. This covers the pattern, why you read stale values, the standard fix, and a cleaner approach: use the form's own document data source (the contextDocument) as the parameter carrier and skip creating and cleaning up a temp doc."
+description: "A common XPages SSJS pattern: create a temp document, fill in parameters, save, call agent.runOnServer(noteid), and the agent writes results back to that document on the server. Then you read it back — and get the values from before the agent ran. It's not a bug: the document object you're holding is an in-memory snapshot taken at load time, and the agent saved the note on disk in a separate execution, so your object never syncs. The fix is to recycle the stale object and getDocumentByID a fresh one. This covers the pattern, why you read stale values, the standard fix, using the form's own document data source (the contextDocument) instead of a temp doc, and the cleanest option — runWithDocumentContext, which passes an in-memory document to the agent and skips both the save and the re-fetch (at the cost of requiring the agent to Run as Web user)."
 pubDate: 2026-10-10T07:30:00+08:00
 lang: en
 slug: xpages-ssjs-runonserver-stale-document
@@ -14,6 +14,10 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/9.0.1/reference/r_wpdr_xsp_xspdocument_getdocument_r.html"
   - title: "DominoDocument (the Java class behind NotesXspDocument; getDocument(boolean applyChanges) returns the inner Document) — HCL/IBM JavaDocs (official)"
     url: "https://public.dhe.ibm.com/software/dw/lotus/Domino-Designer/JavaDocs/DesignerAPIs/com/ibm/xsp/model/domino/wrapped/DominoDocument.html"
+  - title: "XPages and Calling Agents Using an In-Memory Document (runWithDocumentContext, 8.5.2+, the agent must have Run as Web user selected) — HCL Domino App Dev wiki (official)"
+    url: "https://ds-infolib.hcltechsw.com/ldd/ddwiki.nsf/dx/XPages_and_Calling_Agents_Using_an_In-Memory_Document"
+  - title: "Web agents (Run as web user = the browser login becomes the effective user; otherwise the agent runs with the signer's rights) — HCL Domino Designer (official)"
+    url: "https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_LOTUSSCRIPT_AND_JAVA_AGENTS_WEB.html"
 relatedJava: []
 relatedSsjs: []
 ---
@@ -32,6 +36,7 @@ It's not a bug — it's the nature of the document object you're holding: **it's
 - **The trap**: the document object the caller is holding is a **snapshot from load time**. After the agent saves the note on disk in a separate execution, your object **doesn't auto-sync**, so reading its items returns the old values.
 - **The fix**: `recycle()` the stale object, then `database.getDocumentByID(noteid)` to **reload** a fresh copy from disk — only then do you see the agent's values.
 - **A cleaner alternative**: instead of a temp doc, use the document data source the form is already bound to — `document1.getDocument(true)` gives you the backend document with the on-screen edits applied; save it and pass its note id to the agent. No temp doc to create or clean up. **But the same read-back rule still applies**: after the agent writes, that cached backend document is stale too, so re-fetch it.
+- **The cleanest**: `agent.runWithDocumentContext(doc)` (8.5.2+) passes an in-memory document (**saved or not**) straight into the agent's `DocumentContext`; the agent updates it in place, and when control returns **you read the new values directly — no re-fetch**. The hard requirement: the called agent must have "**Run as Web user**" selected on its Security tab.
 - `runOnServer` returns `0` on success — confirm that before reading results.
 
 ## The pattern: a document as the agent's "parameter mailbox"
@@ -101,6 +106,23 @@ The `true` in `getDocument(true)` is `applyChanges`: officially it "applies any 
 
 **The benefit**: no temp document to create, and no orphans to clean up. **But keep one rule in mind that hasn't changed**: after the agent writes back, the backend document the data source is holding is **still stale** — calling `getDocument(true)` again won't pull fresh values from disk (`applyChanges` pushes **your** edits in, it doesn't pull **the agent's** edits back). To show the new results, you still `getDocumentByID` to re-fetch, or push the new values back into the data source and refresh.
 
+There's also an **identity** detail that's easy to miss: an agent invoked from XPages **runs as the signer by default**, and whether the effective user is the signer or the logged-in web user decides its **ACL access** (what it's *allowed to do* — restricted vs unrestricted operations — is still governed by the signer; the two are separate) ([official Web agents docs](https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_LOTUSSCRIPT_AND_JAVA_AGENTS_WEB.html): check "Run as web user" and it runs under the browser login, otherwise under the signer). So if the document has **Readers fields**, or an ACL that would block the signer, the agent-as-signer **won't read the values you just saved** — then you need "**Run as Web user**" on the agent's Security tab so it reads as the authenticated user.
+
+## Cleanest: runWithDocumentContext — no save, no re-fetch
+
+Both options above (temp doc, `getDocument(true)`) still need a `save` plus a `getDocumentByID` re-fetch afterward. Since 8.5.2 there's a more direct call, `agent.runWithDocumentContext(doc)`: it passes an **in-memory document (saved or unsaved)** straight into the called agent's `DocumentContext` — the agent picks it up with `session.DocumentContext` (LotusScript) / `getDocumentContext()` (Java), processes it, and writes back; **when control returns to the XPage you read the agent's new values from that same document directly, no `getDocumentByID` needed** ([official wiki](https://ds-infolib.hcltechsw.com/ldd/ddwiki.nsf/dx/XPages_and_Calling_Agents_Using_an_In-Memory_Document), verbatim: "when control returns to the XPage the updated values can be read from the document").
+
+```javascript
+var beDoc = document1.getDocument(true);   // or any in-memory doc — no save needed
+agent.runWithDocumentContext(beDoc);        // passed into the agent's DocumentContext
+// read beDoc directly on return, no re-fetch
+var nextSigner = beDoc.getItemValueString("NextSigner");
+```
+
+This clears both of the article's headaches at once: **no wrestling with the save, and no stale handle**. But it comes with one **hard requirement** HCL states outright: the called agent must have "**Run as Web user**" selected on its Security tab, or the in-memory document context won't work correctly (that checkbox in the screenshot is exactly this one). The server's Security document must also permit agents/XPages to "sign to run on behalf of the invoker" for the pattern to run at all.
+
+How to choose: need to support very old versions, or the agent is unrelated to the on-screen document (a pure server-side RPC) → temp doc / `runOnServer`; want to drop both the save and the stale handle, and you can set the agent to run as web user → `runWithDocumentContext` is cleanest.
+
 ## A few practical notes
 
 - **Always `save` before the call**: the agent reads disk, so an unsaved doc isn't found (and a new document only gets a stable note id once saved).
@@ -110,4 +132,4 @@ The `true` in `getDocument(true)` is `applyChanges`: officially it "applies any 
 
 ## Wrap-up
 
-Reading stale values after `runOnServer` isn't the agent failing to save — you're reading the old in-memory snapshot: the caller's document object is fixed at load time, and the agent's on-disk changes don't sync back. The standard fix is `recycle()` the stale one and `getDocumentByID()` a fresh one. And if you're creating a temp document only to call an agent, you can usually use the form's document data source (`document1.getDocument(true)`) as the mailbox instead and skip the creation and cleanup — just remember the "re-fetch to read results" rule applies the same whether you use a temp doc or the contextDocument.
+Reading stale values after `runOnServer` isn't the agent failing to save — you're reading the old in-memory snapshot: the caller's document object is fixed at load time, and the agent's on-disk changes don't sync back. The standard fix is `recycle()` the stale one and `getDocumentByID()` a fresh one. And if you're creating a temp document only to call an agent, you can usually use the form's document data source (`document1.getDocument(true)`) as the mailbox instead and skip the creation and cleanup — just remember the "re-fetch to read results" rule applies the same whether you use a temp doc or the contextDocument. And to drop both the save and the re-fetch at once, use `runWithDocumentContext` to pass the in-memory document straight into the agent's `DocumentContext` and read it back on return — provided you set that agent to Run as Web user.

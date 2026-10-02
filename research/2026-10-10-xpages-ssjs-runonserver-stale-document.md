@@ -58,6 +58,16 @@ grep runOnServer/contextDocument/recycle/getDocument：相關的有 notes-agent(
 - [x] humanizer 自審 ~45/50（field-report；code block 為正當結構）
 - [x] fact-check（獨立 subagent）→ **FAIR、零錯誤、無必改項**。三官方源逐字確認：runOnServer 0=success/noteID→ParameterDocID；getDocument(applyChanges) 回內層 NotesDocument、true 套用改動；**DominoDocument JavaDoc 確證 getDocument(true) 只「apply changes to the wrapped document」、不存檔 → 我寫的 explicit save() 必要、非冗餘**；stale 機制、contextDocument caveat(e)、save-before(b) 全對。兩 optional hedge：synchronicity 雖未文件化但文中未宣稱「文件說」、只用 0-gate（合法）；「快照」措辭已框成物件性質。採一項：補「runOnServer 同步/blocks 到 agent 完成」一句（行為框架），讓「回來即讀」邏輯完整。
 
+## 補強：run-as-web-user + runWithDocumentContext（使用者問題觸發）
+
+使用者指出「印象中用 contextDocument 要搭配 agent 勾『以 Web 使用者身分執行』才取得到值」，問要不要驗證。查官方：
+- **核心主張被官方 wiki 逐字確認**：HCL App Dev wiki「XPages and Calling Agents Using an In-Memory Document」明寫「Domino Server-based Agent code must run in an Agent with 'Run as Web user' selected on the Security tab」。→ 使用者記憶正確、**官方文件就夠、不需實測**（LDAT05 可選做 toggle 失敗模式確認，未必要）。
+- 查證過程還挖到**正解** `agent.runWithDocumentContext(doc)`（8.5.2+）：傳 in-memory 文件（存/未存皆可）給 agent 的 `DocumentContext`，agent 就地改、回 XPage 直接讀新值、**免 getDocumentByID 重抓**（官方 wiki 逐字）。一次解掉本文「存檔 + stale handle」兩個麻煩，代價＝run-as-web-user。
+- 「Run as web user」＝web 登入身分當 **effective user**（決定 ACL 存取），否則以 **signer** 跑；能做哪些**操作**仍看 signer（[Web agents 官方](https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_LOTUSSCRIPT_AND_JAVA_AGENTS_WEB.html)）。
+- 措辭分寸：**runWithDocumentContext 寫成「硬性要求 run-as-web-user」（官方）**；**runOnServer+getDocumentByID 路徑寫成「條件式」**（取決於文件有無 Readers／ACL 擋 signer），不過度宣稱「一定要」。+ 伺服器 Security 要允許「sign to run on behalf of the invoker」。
+- 動作：新增 runWithDocumentContext 一節 + contextDocument 段加身分 caveat + TL;DR/描述/wrap 收束；frontmatter 加 wiki + Web agents 兩官方源（diversity 升到 5 URL 各 20%）。雙語 temp-build 通過。
+- 這塊聚焦 fact-check → **FAIR、零錯誤、無必改**：runWithDocumentContext 行為/簽名/8.5.2/run-as-web-user 硬性要求全對官方 wiki 逐字；runOnServer 路徑「條件式」分寸正確（有 if guard、未宣稱一定要）；伺服器設定名「Sign agents or XPages to run on behalf of the invoker」確認為 Security 分頁 Programmability Restrictions 真實欄位；兩路徑未混談。採 optional 補強：加「effective user 決定 ACL 存取、但能做哪些**操作**仍看 signer」另一半（避免讀者誤解 run-as-web-user 改變可執行操作）。
+
 ## 異動日誌
 
 - 2026-10-10 新建。官方 method 文件 + 使用者第一手 SSJS 截圖；NotebookLM 不可用（62 天舊 state + overlay）已 fallback 並告知；不引 xred；深連 java-recycle-memory；排 10/10 Path A。（Opus 4.8）
