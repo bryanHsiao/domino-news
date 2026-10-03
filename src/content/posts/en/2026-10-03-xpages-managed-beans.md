@@ -17,6 +17,8 @@ sources:
     url: "https://www.tutorialspoint.com/jsf/jsf_managed_beans.htm"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-managed-beans.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 You put logic in an SSJS script library as glue, and at first it flows. Then it grows and gets awkward: no real types, hard to unit-test, and stashing things in `viewScope` / `sessionScope` means worrying about [serialization](/domino-news/en/posts/xpages-scope-variables).

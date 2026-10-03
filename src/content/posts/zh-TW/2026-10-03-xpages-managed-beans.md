@@ -17,6 +17,8 @@ sources:
     url: "https://www.tutorialspoint.com/jsf/jsf_managed_beans.htm"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-managed-beans.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 你把邏輯寫在 SSJS 的 script library 裡當膠水,一開始很順。但邏輯一多就開始難搞:沒有真正的型別、很難單元測試、把東西塞進 `viewScope`／`sessionScope` 還得擔心[序列化](/domino-news/posts/xpages-scope-variables)。
