@@ -103,7 +103,7 @@ if (agent.runOnServer(noteid) == 0) {
 }
 ```
 
-`document1.save()` is deliberate here: in a normal submit event, XPages' Update Model Values phase has already written the on-screen values into the data source's document before the button SSJS runs, so there's nothing extra to do. (The difference between `getDocument()` and `getDocument(true)` — and when you actually need `(true)` to force the on-screen values into the document — is a topic of its own that deserves its own piece; I'll cross-link it later.)
+`document1.save()` is deliberate here: in a normal submit event, XPages' Update Model Values phase has already written the on-screen values into the data source's document before the button SSJS runs, so there's nothing extra to do. (The difference between `getDocument()` and `getDocument(true)` — and when you actually need `(true)` — is a topic of its own, covered in [what the true in getDocument(true) actually does](/domino-news/en/posts/xpages-getdocument-applychanges/).)
 
 **The benefit**: no temp document to create, and no orphans to clean up. **But keep one rule in mind that hasn't changed**: after the agent writes back, the backend document the data source is holding is **still stale** — it won't sync the agent's on-disk changes back on its own. To show the new results, you still `getDocumentByID` to re-fetch, or push the new values back into the data source and refresh.
 

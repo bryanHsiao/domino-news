@@ -103,7 +103,7 @@ if (agent.runOnServer(noteid) == 0) {
 }
 ```
 
-這裡刻意用 `document1.save()`：一般的送出事件裡，XPages 的 Update Model Values 階段早在按鈕 SSJS 之前就把畫面現值寫進 data source 的文件了，所以不必多做什麼。（`getDocument()` 和 `getDocument(true)` 的差別、以及什麼時候才真的需要用 `(true)` 去強制把畫面值同步進文件，是另一個獨立題目，之後會單獨寫一篇、再回頭互連。）
+這裡刻意用 `document1.save()`：一般的送出事件裡，XPages 的 Update Model Values 階段早在按鈕 SSJS 之前就把畫面現值寫進 data source 的文件了，所以不必多做什麼。（`getDocument()` 和 `getDocument(true)` 的差別、以及什麼時候才真的需要用 `(true)`，是另一個獨立題目，見 [document1.getDocument(true) 的 true 到底在做什麼](/domino-news/posts/xpages-getdocument-applychanges/)。）
 
 **好處**：省掉建暫存文件、省掉事後清理那些孤兒文件。**但要記住一條沒變的規則**：agent 回寫之後，data source 手上那份 backend 文件**還是舊的**——它不會自己從磁碟把 agent 的改動同步回來。要顯示新結果，一樣是 `getDocumentByID` 重抓、或把新值塞回 data source 後做一次 refresh。
 
