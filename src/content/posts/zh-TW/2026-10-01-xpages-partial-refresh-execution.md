@@ -51,6 +51,8 @@ XPages 每次提交,元件樹會依序走過六個階段([JSF lifecycle 詳解�
 
 看懂這條就懂了那個「不相干欄位擋我」的 bug:預設整頁都進第 3 階段,所以別的欄位的 validator 也會跑。
 
+![XPages 一次提交的 JSF 六階段:依序跑 Restore View → Apply Request Values → Process Validations → Update Model Values → Invoke Application → Render Response;你的 SSJS 在第 5 階、驗證失敗直接跳第 6;partial execution(execId)只讓 execId 內的元件跑這一輪,partial refresh(refreshId)是 client 端決定回傳哪塊 HTML,兩者獨立](/domino-news/post-images/xpages-jsf-lifecycle-partial.svg)
+
 ## partial refresh:只是 client 端少傳一點
 
 `partial refresh` 由事件處理器的 `refreshMode="partial"` + `refreshId` 控制。官方 [refreshMode](https://help.hcl-software.com/dom_designer/11.0.0/xpage_user_guide/builds/wpd_controls_pref_refreshmode.html) 的定義:

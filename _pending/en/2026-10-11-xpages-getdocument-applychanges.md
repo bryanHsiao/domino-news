@@ -65,6 +65,8 @@ The key is that **4 runs before 5**: by the time your button event (phase 5) run
 
 One exception to remember: an `immediate="true"` event (some cancel buttons, certain partial actions) **skips Update Model Values** — so the new on-screen values never reach the data source, and neither `getDocument()` nor `getDocument(true)` has them; you read them with `getComponent("xx").getValue()` straight from the control.
 
+![JSF phase 4 Update Model Values (control values written into the data source) runs before phase 5 Invoke Application (your button SSJS), so when SSJS runs the on-screen values are already in the data source and document1.getDocument() carries them — making (true) mostly redundant; an immediate=true event skips phase 4, so use getComponent().getValue() instead](/domino-news/post-images/xpages-lifecycle-umv-datasource-en.svg)
+
 ## When you genuinely need true
 
 Since a normal submit's `getDocument()` is already enough, `true` earns its keep when **you've changed the data source in SSJS and then operate directly on the backend document**:

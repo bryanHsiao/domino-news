@@ -65,6 +65,8 @@ XPages 的 document data source 是一個 [`NotesXspDocument`](https://www.ibm.c
 
 一個例外要記得：如果觸發的是 `immediate="true"` 的事件（例如某些取消鈕、partial 動作），它會**跳過 Update Model Values**——這時畫面上的新值根本沒進 data source，`getDocument()` 或 `getDocument(true)` 都拿不到，要靠 `getComponent("xx").getValue()` 直接讀控制項。
 
+![JSF 第 4 階 Update Model Values(把控制項的值寫進 data source)在第 5 階 Invoke Application(你的按鈕 SSJS)之前,所以 SSJS 跑時畫面值早已在 data source,document1.getDocument() 就帶著現值、(true) 多半多餘;immediate=true 會跳過第 4 階、要改用 getComponent().getValue()](/domino-news/post-images/xpages-lifecycle-umv-datasource.svg)
+
 ## 什麼時候真的需要 true
 
 既然一般送出事件 `getDocument()` 就夠，那 `true` 的真正用武之地是：**你自己在 SSJS 裡動了 data source、又要直接對 backend 文件做事**。

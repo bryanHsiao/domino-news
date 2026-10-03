@@ -51,6 +51,8 @@ Every XPages submit walks the component tree through six phases (see [Intec's JS
 
 Read that and the "unrelated field blocks me" bug is obvious: by default the whole page enters phase 3, so other fields' validators run too.
 
+![The six JSF phases on one XPages submit, in order; your SSJS runs in phase 5, and a validation failure jumps straight to phase 6; partial execution (execId) only runs the components inside execId, while partial refresh (refreshId) is the client-side choice of which HTML chunk comes back — the two are independent](/domino-news/post-images/xpages-jsf-lifecycle-partial-en.svg)
+
 ## partial refresh: just less HTML from the client
 
 `partial refresh` is the event handler's `refreshMode="partial"` + `refreshId`. HCL's [refreshMode](https://help.hcl-software.com/dom_designer/11.0.0/xpage_user_guide/builds/wpd_controls_pref_refreshmode.html) definition:

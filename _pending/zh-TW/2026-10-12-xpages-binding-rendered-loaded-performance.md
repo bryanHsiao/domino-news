@@ -42,6 +42,8 @@ XPages 建在 JSF 上，一次提交依序跑六個階段：Restore View → App
 
 所以同一段 `#{javascript:...}`，一次按鈕點擊下來可能被評估五、六遍。如果裡面只是個字串拼接，無所謂；如果裡面有 `@DbLookup`、`@DbColumn`、開 view、跑迴圈，那就是「一次點擊、重複做了好幾次重活」。效能問題的根，常常就在這裡。
 
+![一次提交跑整輪 JSF 六階段:#{}(compute dynamically)的 value binding 在多個階段被讀就重算、一次提交加起來好幾遍;${}(compute on page load)只在載入時算一次、之後都是靜態值;rendered=false 的控制項還在 component tree、各階段仍被處理,loaded=false 根本不建進 tree、全程跳過](/domino-news/post-images/xpages-binding-evaluation-performance.svg)
+
 ## `#{}` vs `${}`：每次重算 vs 載入算一次
 
 這兩個符號是 XPages 最常被搞混、但也最有效能槓桿的地方（[官方 Value binding](https://help.hcl-software.com/dom_designer/14.0.0/xpageuser/wpd_controls_pref_value.html)）：

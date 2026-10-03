@@ -42,6 +42,8 @@ XPages is built on JSF, and a submit runs six phases in order: Restore View → 
 
 So the same `#{javascript:...}` can be evaluated five or six times for a single button click. If it's a string concatenation, no harm; if it's an `@DbLookup`, a `@DbColumn`, opening a view, or a loop, that's "one click, the same heavy work done several times." The root of a performance problem is often right here.
 
+![One submit runs the whole JSF lifecycle: a #{} (compute dynamically) value binding re-evaluates at multiple phases, several runs per submit; a ${} (compute on page load) binding runs once at load and then stays a static value; a rendered=false control is still built into the component tree and processed each phase, while a loaded=false control is never built into the tree and is skipped entirely](/domino-news/post-images/xpages-binding-evaluation-performance-en.svg)
+
 ## `#{}` vs `${}`: re-computed every time vs computed once at load
 
 These two symbols are the most-confused — and highest-leverage — spot in XPages ([official Value binding](https://help.hcl-software.com/dom_designer/14.0.0/xpageuser/wpd_controls_pref_value.html)):

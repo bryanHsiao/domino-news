@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="The six JSF phases on one XPages submit, in order: Restore View, Apply Request Values, Process Validations, Update Model Values, Invoke Application, Render Response. Your SSJS action runs in phase 5, Invoke Application. If validation fails the lifecycle jumps straight to phase 6, Render Response, skipping 4 and 5. partial execution (execId) only runs the components inside execId; partial refresh (refreshId) is a client-side choice of which HTML chunk comes back, independent of the server lifecycle.">
+  <defs>
+    <marker id="aTeal" markerWidth="9" markerHeight="9" refX="6.5" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#0f766e"/></marker>
+    <marker id="aRed" markerWidth="9" markerHeight="9" refX="6.5" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#c0392b"/></marker>
+  </defs>
+
+  <rect x="0" y="0" width="960" height="420" rx="14" fill="#f7f7f4" stroke="#e2e2dc" stroke-width="1.5"/>
+  <text x="480" y="36" text-anchor="middle" font-size="16.5" font-weight="700" fill="#1a1a1a">The six JSF phases on one XPages submit</text>
+
+  <path d="M405 108 C 405 66, 855 66, 855 108" fill="none" stroke="#c0392b" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#aRed)"/>
+  <text x="630" y="60" text-anchor="middle" font-size="11.5" font-weight="700" fill="#c0392b">validation fails → jump straight to 6, skipping 4 &amp; 5</text>
+
+  <g>
+    <rect x="39" y="108" width="132" height="74" rx="9" fill="#ffffff" stroke="#c9c9c1" stroke-width="1.4"/>
+    <text x="105" y="132" text-anchor="middle" font-size="14" font-weight="700" fill="#0f766e">①</text>
+    <text x="105" y="152" text-anchor="middle" font-size="11.5" fill="#2b2b2b">Restore</text>
+    <text x="105" y="167" text-anchor="middle" font-size="11.5" fill="#2b2b2b">View</text>
+
+    <rect x="189" y="108" width="132" height="74" rx="9" fill="#ffffff" stroke="#c9c9c1" stroke-width="1.4"/>
+    <text x="255" y="132" text-anchor="middle" font-size="14" font-weight="700" fill="#0f766e">②</text>
+    <text x="255" y="152" text-anchor="middle" font-size="11.5" fill="#2b2b2b">Apply Request</text>
+    <text x="255" y="167" text-anchor="middle" font-size="11.5" fill="#2b2b2b">Values</text>
+
+    <rect x="339" y="108" width="132" height="74" rx="9" fill="#fff9f2" stroke="#e8c9a0" stroke-width="1.4"/>
+    <text x="405" y="132" text-anchor="middle" font-size="14" font-weight="700" fill="#0f766e">③</text>
+    <text x="405" y="152" text-anchor="middle" font-size="11.5" fill="#2b2b2b">Process</text>
+    <text x="405" y="167" text-anchor="middle" font-size="11.5" fill="#2b2b2b">Validations</text>
+
+    <rect x="489" y="108" width="132" height="74" rx="9" fill="#ffffff" stroke="#c9c9c1" stroke-width="1.4"/>
+    <text x="555" y="132" text-anchor="middle" font-size="14" font-weight="700" fill="#0f766e">④</text>
+    <text x="555" y="152" text-anchor="middle" font-size="11.5" fill="#2b2b2b">Update Model</text>
+    <text x="555" y="167" text-anchor="middle" font-size="11.5" fill="#2b2b2b">Values</text>
+
+    <rect x="639" y="108" width="132" height="74" rx="9" fill="#eef4f3" stroke="#0f766e" stroke-width="1.8"/>
+    <text x="705" y="132" text-anchor="middle" font-size="14" font-weight="700" fill="#0f766e">⑤</text>
+    <text x="705" y="152" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0f766e">Invoke</text>
+    <text x="705" y="167" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0f766e">Application</text>
+
+    <rect x="789" y="108" width="132" height="74" rx="9" fill="#ffffff" stroke="#c9c9c1" stroke-width="1.4"/>
+    <text x="855" y="132" text-anchor="middle" font-size="14" font-weight="700" fill="#0f766e">⑥</text>
+    <text x="855" y="152" text-anchor="middle" font-size="11.5" fill="#2b2b2b">Render</text>
+    <text x="855" y="167" text-anchor="middle" font-size="11.5" fill="#2b2b2b">Response</text>
+  </g>
+
+  <g stroke="#0f766e" stroke-width="2" fill="none">
+    <path d="M171 145 H187" marker-end="url(#aTeal)"/>
+    <path d="M321 145 H337" marker-end="url(#aTeal)"/>
+    <path d="M471 145 H487" marker-end="url(#aTeal)"/>
+    <path d="M621 145 H637" marker-end="url(#aTeal)"/>
+    <path d="M771 145 H787" marker-end="url(#aTeal)"/>
+  </g>
+
+  <line x1="705" y1="210" x2="705" y2="184" stroke="#0f766e" stroke-width="1.6" marker-end="url(#aTeal)"/>
+  <text x="705" y="226" text-anchor="middle" font-size="12" font-weight="700" fill="#0f766e">your SSJS action runs here</text>
+
+  <rect x="24" y="258" width="912" height="140" rx="10" fill="#f0f5f4" stroke="#cfe0dc" stroke-width="1.3"/>
+  <text x="44" y="286" font-size="13.5" font-weight="700" fill="#1a1a1a">Two independent "partial" knobs</text>
+  <text x="44" y="314" font-size="11.5" fill="#2b2b2b"><tspan font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" fill="#0f766e" font-weight="700">partial execution</tspan> (<tspan font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">execMode</tspan> / <tspan font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">execId</tspan>) = <tspan font-weight="700">server side</tspan>: only the components in execId run the lifecycle above.</text>
+  <text x="44" y="340" font-size="11.5" fill="#2b2b2b"><tspan font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" fill="#0f766e" font-weight="700">partial refresh</tspan> (<tspan font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">refreshMode</tspan> / <tspan font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">refreshId</tspan>) = <tspan font-weight="700">client side</tspan>: it only picks which HTML chunk returns, independent of that lifecycle.</text>
+  <text x="44" y="372" font-size="11.5" fill="#a33">Only partial refresh still runs all six phases for the whole page on the server. To cut server work, use partial execution.</text>
+</svg>
