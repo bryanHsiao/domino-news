@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-10-03 · Posts scanned: 169 · Classes catalogued: 97*
+*Generated: 2026-10-04 · Posts scanned: 170 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [java-dxl-exporter-importer](https://bryanhsiao.github.io/domino-news/posts/java-dxl-exporter-importer/) | — | — | — |
 | [xpages-managed-beans](https://bryanhsiao.github.io/domino-news/posts/xpages-managed-beans/) | — | — | — |
 | [formula-prompt-picklist](https://bryanhsiao.github.io/domino-news/posts/formula-prompt-picklist/) | — | — | — |
 | [xpages-partial-refresh-execution](https://bryanhsiao.github.io/domino-news/posts/xpages-partial-refresh-execution/) | — | — | — |
