@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/10.0.1/basic/H_CREATEDXLEXPORTER_METHOD_SESSION_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-dxl-exporter-importer.webp"
+coverStyle: "risograph"
 ---
 
 You need to move a set of design elements from a test DB to production, or snapshot a batch of documents as XML to diff, back up, or feed another system — **DXL (Domino XML) is the XML representation of Domino data and design**, and in Java the two workhorses for going in and out are `DxlExporter` and `DxlImporter`.

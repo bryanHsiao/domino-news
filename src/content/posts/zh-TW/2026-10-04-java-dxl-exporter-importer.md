@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/10.0.1/basic/H_CREATEDXLEXPORTER_METHOD_SESSION_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/java-dxl-exporter-importer.webp"
+coverStyle: "risograph"
 ---
 
 你要把一批設計元素從測試庫搬到正式庫,或把一堆文件快照成 XML 好做 diff、備份、餵給別的系統——**DXL(Domino XML)就是 Domino 資料與設計的 XML 表示法**,而在 Java 裡,進出 DXL 的兩個主力是 `DxlExporter` 與 `DxlImporter`。
