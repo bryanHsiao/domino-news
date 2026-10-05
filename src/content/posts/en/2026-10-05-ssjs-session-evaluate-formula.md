@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/12.0.0/xpageuser/wpd_scripts_server.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/ssjs-session-evaluate-formula.webp"
+coverStyle: "minimalist-mono"
 ---
 
 You already have a piece of Formula logic — an `@DbLookup`, an `@Name` call to format a name — and in XPages you'd rather not rewrite the whole thing in SSJS. `session.evaluate()` is for exactly that: **run a Formula string straight from SSJS and get the result back.**

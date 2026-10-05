@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/12.0.0/xpageuser/wpd_scripts_server.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/ssjs-session-evaluate-formula.webp"
+coverStyle: "minimalist-mono"
 ---
 
 你手上已經有一段 Formula 邏輯——一個查表的 `@DbLookup`、一段把名字格式化的 `@Name`——在 XPages 裡不想整段用 SSJS 重寫。`session.evaluate()` 就是拿來做這件事的:**從 SSJS 直接跑一段 Formula 字串,把結果拿回來**。
