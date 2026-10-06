@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-10-05 · Posts scanned: 171 · Classes catalogued: 97*
+*Generated: 2026-10-06 · Posts scanned: 172 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [xpages-multi-column-category-document](https://bryanhsiao.github.io/domino-news/posts/xpages-multi-column-category-document/) | — | — | — |
 | [ssjs-session-evaluate-formula](https://bryanhsiao.github.io/domino-news/posts/ssjs-session-evaluate-formula/) | — | — | — |
 | [java-dxl-exporter-importer](https://bryanhsiao.github.io/domino-news/posts/java-dxl-exporter-importer/) | — | — | — |
 | [xpages-managed-beans](https://bryanhsiao.github.io/domino-news/posts/xpages-managed-beans/) | — | — | — |
