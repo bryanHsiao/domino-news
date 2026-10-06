@@ -53,13 +53,15 @@ HCL 在 12.0.2 修另一個 bug(SPR# PJONB7GRUL)時,`ReadEntries` 的讀取流�
 
 ## 實務上怎麼冒出來:一個 `\` 就把視圖做成巢狀分類
 
-這個 bug 常常是「不小心」踩到的,因為很多人不知道一件事:**在一個設為「分類(Categorized)」的欄位裡,值中的 `\`(反斜線)是 Domino 的「子分類分隔符」**——官方文件寫得很直白,「A backslash ( \ ) after a main entry denotes the subcategory name」。(同樣的值放在只是「排序」而非「分類」的欄位,會原樣顯示成 `ABC\File`;一旦欄位設為分類,就被拆成層。)所以一個看起來只是把兩個欄位串起來的欄位公式——
+這個 bug 常常是「不小心」踩到的——不是因為那條規則冷門。**在一個設為「分類(Categorized)」的欄位裡,值中的 `\`(反斜線)是 Domino 的「子分類分隔符」**,這是用 Notes 夠深的人都知道的事,官方文件也寫得很直白:「A backslash ( \ ) after a main entry denotes the subcategory name」。真正讓人中招的,是串欄位公式時一時沒把這條想起來。(同樣的值放在只是「排序」而非「分類」的欄位,會原樣顯示成 `ABC\File`;一旦欄位設為分類,就被拆成層。)所以一個看起來只是把兩個欄位串起來的欄位公式——
 
 ```
 DocNo + "\\" + FieldCode
 ```
 
 ——**不會**產生一個平的字串 `ABC\File`,而是讓 Notes 把它拆成**兩層分類**:`DocNo`(第一層)→ `FieldCode`(第二層,例如 `File`、`AssetReport`)。視圖就這樣從「單欄分類」變成了「巢狀分類」,正好落在這個 bug 的觸發條件上。
+
+![同一個值 ABC\File:放在只是「排序」的欄位,原樣顯示成一個字串、不拆層;放在設為「分類(Categorized)」的欄位,值裡的 \ 被當成子分類分隔符,拆成兩層分類(第一層 ABC、第二層 File),文件掛在第二層底下——下一欄若也是分類,正是 KB0102504 的觸發條件](/domino-news/post-images/domino-backslash-subcategory.svg)
 
 一個真實案例:有人把每個附件各存成一份文件、都用單號當 key,再用一個分類視圖(欄位公式就是上面那個 `DocNo + "\\" + FieldCode`)呈現,XPages 的 category filter 下 `FormNumber + "\\File"`——也就是**篩進 `ABC\File` 這個巢狀分類**。把 DB 放到 **R12(12.0.2)** 後,同一個分類底下**永遠只看得到第一筆檔案,刪掉才冒出下一筆**——正是前面說的 refind 定位症狀。
 
@@ -91,4 +93,8 @@ DISABLE_REFIND_IN_READENTRIES=1
 
 ## 小結
 
-XPages 多層分類、篩選後下一欄仍是分類時文件不顯示,是 12.0.2 修 SPR# PJONB7GRUL 引入的 regression(SPR# MNIACMGKUV,KB0102504)。伺服端 `notes.ini` 加 `DISABLE_REFIND_IN_READENTRIES=1` 是暫解、把 ReadEntries 的 refind 關掉;正解是升到 12.0.2 FP3 或 14.0、再把參數移掉。並記得:12.0.2 有一整組這種分類視圖 regression(如 `@PickList` 的 KB0102042,介面、參數與修復版本都不同)——先對症、再挑對應的參數與 KB。
+- **症狀**:XPages 多層分類、篩選後下一欄仍是分類時,只顯示分類、文件不見——12.0.1 正常,12.0.2 才這樣。
+- **成因**:12.0.2 修 SPR# PJONB7GRUL 時引入的 regression(SPR# MNIACMGKUV、KB0102504)。
+- **暫解**:伺服端 `notes.ini` 加 `DISABLE_REFIND_IN_READENTRIES=1`,把 ReadEntries 的 refind 關掉。
+- **正解**:升到 12.0.2 FP3 或 14.0,升好後把參數移掉。
+- **別忘了**:12.0.2 有一整組這種分類視圖 regression(如 `@PickList` 的 KB0102042,介面、參數、修復版本都不同)——**先對症、再挑對應的參數與 KB**。

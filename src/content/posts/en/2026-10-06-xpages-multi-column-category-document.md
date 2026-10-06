@@ -53,13 +53,15 @@ When HCL fixed another bug in 12.0.2 (SPR# PJONB7GRUL), the `ReadEntries` read p
 
 ## How it shows up in practice: one `\` turns a view into nested categories
 
-This bug is often hit *by accident*, because many people don't know one thing: **in a column flagged "Categorized", a `\` (backslash) in the value is Domino's sub-category separator** — the docs put it plainly, "A backslash ( \ ) after a main entry denotes the subcategory name." (Put the same value in a merely *sorted* column and it displays as the literal text `ABC\File`; flag that column Categorized and the identical value splits into levels.) So a column formula that looks like it just concatenates two fields —
+This bug is often hit *by accident* — not because the rule is obscure. **In a column flagged "Categorized", a `\` (backslash) in the value is Domino's sub-category separator**; any seasoned Notes developer knows this, and the docs put it plainly: "A backslash ( \ ) after a main entry denotes the subcategory name." What actually trips people up is forgetting it while stringing a column formula together. (Put the same value in a merely *sorted* column and it displays as the literal text `ABC\File`; flag that column Categorized and the identical value splits into levels.) So a column formula that looks like it just concatenates two fields —
 
 ```
 DocNo + "\\" + FieldCode
 ```
 
 — does **not** produce a flat string `ABC\File`; Notes splits it into **two category levels**: `DocNo` (level 1) → `FieldCode` (level 2, e.g. `File`, `AssetReport`). The view has quietly gone from "single categorized column" to "nested categories" — landing right on this bug's trigger condition.
+
+![The same value ABC\File: in a merely sorted column it shows as one literal string, not split; in a column flagged Categorized the backslash in the value is the sub-category separator and splits it into two levels (level 1 ABC, level 2 File) with documents under the second — and if the next column is also a category, that's exactly KB0102504's trigger](/domino-news/post-images/domino-backslash-subcategory-en.svg)
 
 A real case: someone stored each attachment as its own document keyed by the record number, displayed them through a categorized view (column formula exactly the `DocNo + "\\" + FieldCode` above), and set the XPages category filter to `FormNumber + "\\File"` — i.e. **filtering into the `ABC\File` nested category**. After the DB moved to **R12 (12.0.2)**, only the **first** file under a category ever showed; delete it and the next appeared — exactly the refind positioning symptom above.
 
@@ -91,4 +93,8 @@ So the order is always: **diagnose first (which interface — XPages? a `@PickLi
 
 ## Wrap-up
 
-XPages documents not showing when a multi-column category's next column is also a category is a 12.0.2 regression (SPR# MNIACMGKUV, KB0102504) introduced by the SPR# PJONB7GRUL fix. `DISABLE_REFIND_IN_READENTRIES=1` in the server `notes.ini` is a stopgap that turns off the ReadEntries refind; the real fix is 12.0.2 FP3 or 14.0, after which you remove the setting. And remember: 12.0.2 carries a whole family of these categorized-view regressions (like the `@PickList` one in KB0102042, with a different interface, parameter, and fix version) — diagnose first, then pick the matching parameter and KB.
+- **Symptom**: with a view categorized on multiple columns, when a filter lands where the next column is also a category, the category shows but the document doesn't — fine on 12.0.1, broken on 12.0.2.
+- **Cause**: a regression introduced when 12.0.2 fixed SPR# PJONB7GRUL (SPR# MNIACMGKUV, KB0102504).
+- **Stopgap**: `DISABLE_REFIND_IN_READENTRIES=1` in the server `notes.ini`, which turns off the ReadEntries refind.
+- **Real fix**: upgrade to 12.0.2 FP3 or 14.0, then remove the setting.
+- **Don't forget**: 12.0.2 carries a whole family of these categorized-view regressions (like the `@PickList` one in KB0102042 — different interface, parameter, and fix version) — **diagnose first, then pick the matching parameter and KB**.
