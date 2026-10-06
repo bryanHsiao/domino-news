@@ -18,6 +18,8 @@ sources:
     url: "https://www.focul.net/categorised-view-problem-in-domino-nomad-web-1-07/"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-multi-column-category-document.webp"
+coverStyle: "photoreal-3d"
 ---
 
 You have an XPages view categorized on **multiple columns**. You apply a filter, and where the filtered-to **next column is still a category** (not yet the document level) — the screen shows the category name, but the **documents under it are gone**. The same design works on **12.0.1**; move to **12.0.2** and it breaks.

@@ -18,6 +18,8 @@ sources:
     url: "https://www.focul.net/categorised-view-problem-in-domino-nomad-web-1-07/"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-multi-column-category-document.webp"
+coverStyle: "photoreal-3d"
 ---
 
 你有一個 XPages 視圖,分類(categorize)在**多個欄位**上。你套上篩選,而篩到的**下一欄仍然是分類**(還沒到文件那層)時——畫面只出現分類名稱,**底下的文件卻不見了**。同一份設計在 **12.0.1** 是好的,升到 **12.0.2** 就這樣。
