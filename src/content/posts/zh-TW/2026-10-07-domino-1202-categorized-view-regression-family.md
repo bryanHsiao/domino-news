@@ -19,6 +19,8 @@ sources:
     url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0101979"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-1202-categorized-view-regression-family.webp"
+coverStyle: "watercolor"
 ---
 
 升到 12.0.2 之後，你的一個多層分類視圖開始少東西：分類、子分類的標題都在，但**某層底下的文件只剩最上面那一筆、其它都不見了**。同一份設計在 12.0.1 是好的。

@@ -19,6 +19,8 @@ sources:
     url: "https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0101979"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-1202-categorized-view-regression-family.webp"
+coverStyle: "watercolor"
 ---
 
 After you upgrade to 12.0.2, one of your multi-level categorized views starts losing rows: the category and sub-category headers are all there, but **under one level only the top document survives — the rest are gone**. The same design worked on 12.0.1.
