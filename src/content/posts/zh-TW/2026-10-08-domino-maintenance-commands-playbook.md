@@ -19,6 +19,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.0.0/admin/admn_fixupoptions_r.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-maintenance-commands-playbook.webp"
+coverStyle: "art-deco"
 ---
 
 你要對一個 NSF 做維護，上網抓了一串 `load compact ...` 貼進 console。看起來有跑，但你未必知道：同一個 `compact`，下 `-b` 還是 `-B` 差很多——一個保留 `DBIID`、一個把 `DBIID` 換掉，而換掉 `DBIID` 會讓你跟認證備份工具之間的那條備份鏈斷掉。再加上有沒有開 transaction logging（交易日誌），該下的參數整組不一樣。

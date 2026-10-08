@@ -19,6 +19,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.0.0/admin/admn_fixupoptions_r.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-maintenance-commands-playbook.webp"
+coverStyle: "art-deco"
 ---
 
 You need to maintain an NSF, so you grab a `load compact ...` string off the web and paste it into the console. It seems to run — but you may not realize that the same `compact`, run with `-b` versus `-B`, differs a lot: one keeps the `DBIID`, the other reassigns it — and a reassigned `DBIID` breaks the chain between the database and your certified backup tool. Add whether transaction logging is on, and the whole set of options you should be using changes.
