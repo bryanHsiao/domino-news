@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/11.0.1/basic/H_ABOUT_URL_COMMANDS_FOR_OPENING_SERVERS_DATABASES_AND_VIEWS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-linux-path-case-sensitivity.webp"
+coverStyle: "minimalist-mono"
 ---
 
 You move a Domino application from Windows to Linux. A URL that was fine on Windows — say `/ffh/doc.nsf/...`, where the folder on disk is actually `FFH` (uppercase) — starts acting up: sometimes it returns `File does not exist` (HTTP 404), sometimes it works.

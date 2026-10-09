@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/11.0.1/basic/H_ABOUT_URL_COMMANDS_FOR_OPENING_SERVERS_DATABASES_AND_VIEWS.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-linux-path-case-sensitivity.webp"
+coverStyle: "minimalist-mono"
 ---
 
 你把一個 Domino 應用從 Windows 搬到 Linux。在 Windows 上好好的一支 URL——比方 `/ffh/doc.nsf/...`，實體資料夾其實叫 `FFH`（大寫）——搬過來之後開始鬧脾氣：有時候回 `File does not exist`（HTTP 404），有時候又正常。
