@@ -20,6 +20,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_LOTUSSCRIPT_AND_JAVA_AGENTS_WEB.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-ssjs-runonserver-stale-document.webp"
+coverStyle: "ukiyo-e"
 ---
 
 XPages 裡有個很常見的模式：你需要一段在**伺服器端**跑的邏輯——打 Oracle／SQL、用簽署者身分做事、或純粹吃資源的批次——於是你寫一支後端 agent，從 SSJS 用 `agent.runOnServer(noteid)` 叫它。你先建一個暫存文件、把參數填進去、`save`，把它的 note id 傳給 agent；agent 在伺服器端處理完，把結果回寫進那份文件、再存檔。

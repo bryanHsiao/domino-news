@@ -20,6 +20,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_LOTUSSCRIPT_AND_JAVA_AGENTS_WEB.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-ssjs-runonserver-stale-document.webp"
+coverStyle: "ukiyo-e"
 ---
 
 There's a common XPages pattern: you need some logic to run **on the server** — talk to Oracle/SQL, act with the signer's rights, or just crunch something heavy — so you write a backend agent and call it from SSJS with `agent.runOnServer(noteid)`. You create a temp document, fill in the parameters, `save` it, and pass its note id to the agent; the agent processes server-side, writes the results back into that document, and saves it.
