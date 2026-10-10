@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-10-09 · Posts scanned: 175 · Classes catalogued: 97*
+*Generated: 2026-10-10 · Posts scanned: 176 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -121,7 +121,7 @@
 | [NotesStream](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSTREAM_CLASS.html) | Session File Operations | [notes-stream](https://bryanhsiao.github.io/domino-news/posts/notes-stream/), [lotusscript-view-to-excel](https://bryanhsiao.github.io/domino-news/posts/lotusscript-view-to-excel/), [notes-stream-encoding](https://bryanhsiao.github.io/domino-news/posts/notes-stream-encoding/) | 2026-05-02 |
 | [NotesTimer](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESTIMER_CLASS.html) | Session | [notes-timer](https://bryanhsiao.github.io/domino-news/posts/notes-timer/) | 2026-06-28 |
 | [NotesUIDatabase](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIDATABASE_CLASS.html) | UI | [notes-ui-database](https://bryanhsiao.github.io/domino-news/posts/notes-ui-database/) | 2026-07-28 |
-| [NotesUIDocument](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIDOCUMENT_CLASS.html) | UI | [notes-ui-workspace-document](https://bryanhsiao.github.io/domino-news/posts/notes-ui-workspace-document/), [notes-ui-scheduler](https://bryanhsiao.github.io/domino-news/posts/notes-ui-scheduler/) | 2026-06-10 |
+| [NotesUIDocument](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIDOCUMENT_CLASS.html) | UI | [notes-ui-workspace-document](https://bryanhsiao.github.io/domino-news/posts/notes-ui-workspace-document/), [notes-ui-scheduler](https://bryanhsiao.github.io/domino-news/posts/notes-ui-scheduler/), [xpages-ssjs-runonserver-stale-document](https://bryanhsiao.github.io/domino-news/posts/xpages-ssjs-runonserver-stale-document/) | 2026-06-10 |
 | [NotesUIScheduler](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUISCHEDULER_CLASS.html) | UI | [notes-ui-scheduler](https://bryanhsiao.github.io/domino-news/posts/notes-ui-scheduler/) | 2026-08-02 |
 | [NotesUIView](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIVIEW_CLASS.html) | UI | [notes-ui-view](https://bryanhsiao.github.io/domino-news/posts/notes-ui-view/), [notes-ui-database](https://bryanhsiao.github.io/domino-news/posts/notes-ui-database/) | 2026-07-26 |
 | [NotesUIWorkspace](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESUIWORKSPACE_CLASS.html) | UI | [notes-ui-workspace-document](https://bryanhsiao.github.io/domino-news/posts/notes-ui-workspace-document/), [notes-timer](https://bryanhsiao.github.io/domino-news/posts/notes-timer/), [notes-ui-view](https://bryanhsiao.github.io/domino-news/posts/notes-ui-view/), [notes-ui-database](https://bryanhsiao.github.io/domino-news/posts/notes-ui-database/) | 2026-06-10 |
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [xpages-ssjs-runonserver-stale-document](https://bryanhsiao.github.io/domino-news/posts/xpages-ssjs-runonserver-stale-document/) | `NotesUIDocument` | — | — |
 | [domino-linux-path-case-sensitivity](https://bryanhsiao.github.io/domino-news/posts/domino-linux-path-case-sensitivity/) | — | — | — |
 | [domino-maintenance-commands-playbook](https://bryanhsiao.github.io/domino-news/posts/domino-maintenance-commands-playbook/) | — | — | — |
 | [domino-1202-categorized-view-regression-family](https://bryanhsiao.github.io/domino-news/posts/domino-1202-categorized-view-regression-family/) | — | — | — |
@@ -328,7 +329,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | [openntf-domino-iq-rag-webinar](https://bryanhsiao.github.io/domino-news/posts/openntf-domino-iq-rag-webinar/) | — | — | — |
 | [dblookup-cache-64k](https://bryanhsiao.github.io/domino-news/posts/dblookup-cache-64k/) | `NotesView` | — | — |
 | [agent-run-as-identity](https://bryanhsiao.github.io/domino-news/posts/agent-run-as-identity/) | `NotesSession`, `NotesAgent` | `Session`, `Agent` | `session` |
-| [notes-ui-scheduler](https://bryanhsiao.github.io/domino-news/posts/notes-ui-scheduler/) | `NotesUIScheduler`, `NotesUIDocument`, `NotesDateTime` | — | — |
+| [notes-ui-scheduler](https://bryanhsiao.github.io/domino-news/posts/notes-ui-scheduler/) | `NotesUIDocument`, `NotesUIScheduler`, `NotesDateTime` | — | — |
 | [button-field-navigator](https://bryanhsiao.github.io/domino-news/posts/button-field-navigator/) | `Button`, `Field`, `Navigator` | — | — |
 | [lotusscript-web-agent-io](https://bryanhsiao.github.io/domino-news/posts/lotusscript-web-agent-io/) | `NotesSession` | — | — |
 | [dxl-round-trip-pitfalls](https://bryanhsiao.github.io/domino-news/posts/dxl-round-trip-pitfalls/) | `NotesDXLImporter`, `NotesDXLExporter` | `DxlExporter`, `DxlImporter` | `DxlExporter`, `DxlImporter` |
