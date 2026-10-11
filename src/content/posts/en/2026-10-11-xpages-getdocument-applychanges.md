@@ -16,6 +16,8 @@ sources:
     url: "https://www.ibm.com/docs/en/SSVRGU_9.0.1/reference/r_wpdr_xsp_xspdocument_r.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-getdocument-applychanges.webp"
+coverStyle: "photoreal-3d"
 ---
 
 In XPages SSJS you've surely seen both forms: `document1.getDocument()`, and `document1.getDocument(true)`. The `true` is `applyChanges` — but what changes does it actually "apply," and when must you add it versus when is it just for peace of mind?

@@ -16,6 +16,8 @@ sources:
     url: "https://www.ibm.com/docs/en/SSVRGU_9.0.1/reference/r_wpdr_xsp_xspdocument_r.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-getdocument-applychanges.webp"
+coverStyle: "photoreal-3d"
 ---
 
 你在 XPages 的 SSJS 裡一定看過兩種寫法：`document1.getDocument()`，還有 `document1.getDocument(true)`。那個 `true` 是 `applyChanges`——但它到底「套用」了什麼改動？什麼時候非加不可、什麼時候加了只是心安？
