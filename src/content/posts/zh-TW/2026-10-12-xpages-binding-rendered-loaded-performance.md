@@ -18,6 +18,8 @@ sources:
     url: "http://intec.co.uk/understanding-partial-execution-part-three-jsf-lifecycle/"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-binding-rendered-loaded-performance.webp"
+coverStyle: "pencil-sketch"
 ---
 
 你在一個 computed 值、或某個控制項的 `rendered` 公式裡隨手塞了一行 `print(...)`，然後按一下按鈕——結果 console 裡那行印了五遍、六遍。你只按了一次，它憑什麼算這麼多遍？

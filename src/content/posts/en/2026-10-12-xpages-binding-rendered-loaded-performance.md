@@ -18,6 +18,8 @@ sources:
     url: "http://intec.co.uk/understanding-partial-execution-part-three-jsf-lifecycle/"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/xpages-binding-rendered-loaded-performance.webp"
+coverStyle: "pencil-sketch"
 ---
 
 You drop a `print(...)` into a computed value, or a control's `rendered` formula, click a button once — and that line prints five, six times in the console. You clicked once; why did it run so many times?
