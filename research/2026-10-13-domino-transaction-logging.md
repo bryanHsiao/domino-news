@@ -61,6 +61,13 @@ admin 概念型。回補 10/08 維護指令那篇整篇拿「有沒有 translog�
   - ②「伺服器 panic」無官方出處（real-world lore）→ 改為文件有據的「log 檔不斷長出、只進不出、塞爆 log 磁碟」，拿掉 panic。呼應 [[feedback_no_vague_community_consensus]]。
   - agent 另確認 backup 頁逐字「Compacting a database using an option other than -b」「Running Fixup on a database」→ require full backup。
 
+## 補強（使用者觸發，promote 後）
+
+使用者問「有提到從哪啟用?如何檢查有沒有啟用?」+「跟 10/08 做雙向引用、順序上 translog 應先於維護指令」。
+- **「怎麼檢查現在有沒有開」新一節**（雙語）：① Server 文件 Transactional Logging 分頁（最準、設定來源）；② notes.ini `TRANSLOG_Status=1`=開、`TRANSLOG_Style` 0=circular/1=archived/2=linear（[HCL dominowiki TransLog_Style](https://ds-infolib.hcltechsw.com/ldd/dominowiki.nsf/dx/TransLog_Style)），caveat：TRANSLOG_* 由 Server 文件寫下並覆寫、讀可看現狀但要改走 Server 文件；③ log 路徑有 `Sxxxxxxx.TXN`＋`NLOGCTRL.LFH`。（TRANSLOG_Status 1/0 方向、Style 0/1/2 對照 WebSearch 多源確認；官方現行 notes.ini 頁抓不到，故 Server 文件為主、notes.ini 為輔、框成「讀現狀用」。）
+- **雙向引用補齊**：10/13 本來就連去 10/08；這次在 **10/08 的「transaction log 改變一切」段加回連指向 10/13**，並照使用者的順序建議寫「建議先讀 translog 那篇再回來看指令」。兩篇都在正式目錄、push 會重新 deploy。
+- diversity 升到 4 URL 各 25%；雙語 temp-build 通過。
+
 ## 異動日誌
 
 - 2026-10-13 新建。對帳確認今日無文、自選 translog 回補 10/08;官方三文為據;雙向連 10/08;humanizer 自審;排 10/13 Path A ＋需手動 publish-pending 促發。（Opus 4.8）

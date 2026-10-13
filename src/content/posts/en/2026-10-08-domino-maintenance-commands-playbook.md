@@ -119,7 +119,7 @@ You can't take the database offline during the day but have to act:
 
 ## Transaction logging changes everything
 
-If you remember one thing from this piece, remember this: **whether transaction logging is on decides which set of options you should use.**
+If you remember one thing from this piece, remember this: **whether transaction logging is on decides which set of options you should use.** (For what transaction logging actually is — the three styles, how to enable and check it — see [Domino transaction logging](/domino-news/en/posts/domino-transaction-logging/); reading that one first makes these commands flow better.)
 
 - **Logging on**: don't run `fixup` routinely (restart auto-recovers); to run `fixup` on a logged database you need `-J`; compact with `-b` (keeps the `DBIID`), **not** `-B` or `-c` — those reassign the `DBIID` and force your backup chain to start over.
 - **Any compaction that reassigns the `DBIID`** (`-B`, `-c`, and `-REPLICA`, which builds a new replica): if you use a certified backup tool, take a full backup immediately after so the tool re-recognizes the database.

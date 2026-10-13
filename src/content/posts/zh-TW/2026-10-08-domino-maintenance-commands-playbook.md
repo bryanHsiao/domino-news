@@ -119,7 +119,7 @@ coverStyle: "art-deco"
 
 ## transaction log 改變一切
 
-如果整篇只記一件事，記這個：**有沒有開 transaction log，決定你該下哪組參數。**
+如果整篇只記一件事，記這個：**有沒有開 transaction log，決定你該下哪組參數。**（transaction log 本身是什麼、三種 style、怎麼啟用與檢查，見 [Domino 交易日誌](/domino-news/posts/domino-transaction-logging/)——其實建議先讀那篇、再回來看這些指令會更順。）
 
 - **開了日誌**：routine 不要跑 `fixup`（重啟自動復原）；要對日誌資料庫跑 `fixup` 得加 `-J`；壓縮用 `-b`（保留 `DBIID`），**不要**用 `-B` 或 `-c`——它們會換 `DBIID`、害你的備份鏈要重來。
 - **任何換 `DBIID` 的壓縮**（`-B`、`-c`，以及建新 replica 的 `-REPLICA`）做完，若你用認證備份工具，立刻做一次完整備份，讓備份工具重新認得這份資料庫。

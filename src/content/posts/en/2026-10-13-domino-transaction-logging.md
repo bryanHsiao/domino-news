@@ -80,6 +80,14 @@ You enable it on the **Server document's Transactional Logging tab** ([official 
 - **Automatic fixup of corrupt databases**: on by default — the fallback when the log can't recover a database.
 - **Runtime/Restart performance**: Standard by default; you can favor runtime (fewer checkpoints) or restart recovery (more checkpoints).
 
+## How to check whether it's on
+
+Three places confirm it:
+
+- **The Server document (most authoritative)**: on the Transactional Logging tab, is "Transactional logging" set to Enabled, and which style? This is where the setting **comes from**.
+- **notes.ini**: `TRANSLOG_Status=1` means on (`0` or absent means off); `TRANSLOG_Style` tells you the style ([HCL wiki](https://ds-infolib.hcltechsw.com/ldd/dominowiki.nsf/dx/TransLog_Style): `0` = circular, `1` = archived, `2` = linear). Note: these `TRANSLOG_*` values are written from the Server document and get overwritten by it — **read them to see the current state, but change it in the Server document, not by editing notes.ini directly** (a direct edit won't stick).
+- **The log path**: when on, the log directory (default `LOGDIR` under the data directory) holds `Sxxxxxxx.TXN` log extents and an `NLOGCTRL.LFH` control file; when off, those files aren't there.
+
 ## Wrap-up
 
 - **What it is**: database changes are written into one central transaction log first, then flushed to the NSFs.

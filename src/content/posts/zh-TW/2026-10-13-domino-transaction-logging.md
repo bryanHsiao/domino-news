@@ -80,6 +80,14 @@ coverStyle: "minimalist-mono"
 - **Automatic fixup of corrupt databases**:預設開,當日誌救不回時的後備。
 - **Runtime/Restart performance**:預設 Standard;可偏向 runtime(較少 checkpoint)或 restart recovery(較多 checkpoint)。
 
+## 怎麼檢查現在有沒有開
+
+三個地方可以確認:
+
+- **Server 文件(最準)**:Transactional Logging 分頁的「Transactional logging」是不是 Enabled、style 選哪個——這是設定的**來源**。
+- **notes.ini**:`TRANSLOG_Status=1` 代表開(`0` 或沒這行=關);`TRANSLOG_Style` 看 style([HCL wiki](https://ds-infolib.hcltechsw.com/ldd/dominowiki.nsf/dx/TransLog_Style):`0`=circular、`1`=archived、`2`=linear)。要注意:這些 `TRANSLOG_*` 值是從 Server 文件寫下來、也會被它蓋回去——**讀它可以看現狀,但要改請改 Server 文件,別直接動 notes.ini**(直接改不會留著)。
+- **log 路徑**:開著的話,log 目錄(預設 data 下的 `LOGDIR`)裡會有 `Sxxxxxxx.TXN` 的 log extent 和一個 `NLOGCTRL.LFH` 控制檔;沒開就沒有這些檔。
+
 ## 小結
 
 - **是什麼**:把資料庫變更先批次寫進一個集中的交易日誌,再落到各 NSF。
