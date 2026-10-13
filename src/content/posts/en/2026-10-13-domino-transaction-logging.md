@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/12.0.0/admin/admn_backupandrestorerequirements.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-transaction-logging.webp"
+coverStyle: "minimalist-mono"
 ---
 
 If you've seen the Domino maintenance-command rules, you'll have noticed that "**is transaction logging on?**" is always the branch that decides everything: with logging, don't schedule `fixup` routinely; compact with `-b`, not the file-shrinking `-B`; and after anything that changes the `DBIID`, take a fresh full backup immediately.

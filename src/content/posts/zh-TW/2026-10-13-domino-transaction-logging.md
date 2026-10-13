@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/12.0.0/admin/admn_backupandrestorerequirements.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-transaction-logging.webp"
+coverStyle: "minimalist-mono"
 ---
 
 如果你看過 Domino 的維護指令那套規則,會發現「**有沒有開 transaction logging**」老是那個決定一切的分支:有日誌,就別把 `fixup` 排進日常;壓縮要用 `-b`、不要用會縮檔的 `-B`;只要做了會換 `DBIID` 的操作,就得立刻補一次完整備份。
