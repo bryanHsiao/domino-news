@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-10-12 · Posts scanned: 178 · Classes catalogued: 97*
+*Generated: 2026-10-13 · Posts scanned: 179 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [domino-transaction-logging](https://bryanhsiao.github.io/domino-news/posts/domino-transaction-logging/) | — | — | — |
 | [xpages-binding-rendered-loaded-performance](https://bryanhsiao.github.io/domino-news/posts/xpages-binding-rendered-loaded-performance/) | — | — | — |
 | [xpages-getdocument-applychanges](https://bryanhsiao.github.io/domino-news/posts/xpages-getdocument-applychanges/) | — | — | — |
 | [xpages-ssjs-runonserver-stale-document](https://bryanhsiao.github.io/domino-news/posts/xpages-ssjs-runonserver-stale-document/) | `NotesUIDocument` | — | — |
