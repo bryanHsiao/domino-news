@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/12.0.2/admin/admn_daos_t2.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-daos-attachment-consolidation.webp"
+coverStyle: "risograph"
 ---
 
 同一份報價單 PDF,被 email 給 30 個人、再被各部門存進幾個資料庫——傳統上,那個附件就在每份文件裡各存一份完整的拷貝。NSF 肥大,很多時候就是這樣堆出來的。

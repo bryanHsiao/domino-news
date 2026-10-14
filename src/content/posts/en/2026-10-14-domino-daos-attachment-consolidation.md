@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/12.0.2/admin/admn_daos_t2.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-daos-attachment-consolidation.webp"
+coverStyle: "risograph"
 ---
 
 The same quote PDF, emailed to 30 people and then filed into a few databases by different departments — traditionally that attachment is stored as a full, separate copy inside every document. That's a big part of how NSFs bloat.
