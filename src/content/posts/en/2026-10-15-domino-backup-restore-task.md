@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/12.0.2/admin/admn_restoringdatabases.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-backup-restore-task.webp"
+coverStyle: "art-deco"
 ---
 
 Before Domino 12, a database-level backup — one that can restore a single database and do point-in-time recovery — meant wiring up a third-party backup tool. From 12, that's **built in**: Domino ships two server tasks, **Backup** and **Restore**, driven by one **`dominobackup.nsf`** configuration database, so you can schedule backups and restore a single database on demand. But it has the exact same hard prerequisite DAOS does — **transaction logging has to be on first** (what that is, how to enable/check it, in [Domino transaction logging](/domino-news/en/posts/domino-transaction-logging/)).

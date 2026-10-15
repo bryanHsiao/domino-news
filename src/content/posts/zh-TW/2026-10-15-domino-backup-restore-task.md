@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/12.0.2/admin/admn_restoringdatabases.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-backup-restore-task.webp"
+coverStyle: "art-deco"
 ---
 
 Domino 12 之前,想做「資料庫層級、能挑單一庫還原、能做時點還原」的備份,你得自己接一套第三方備份工具。12 版起,這件事變成**內建**的了:Domino 自帶 **Backup** 和 **Restore** 兩個 server task,配一個 **`dominobackup.nsf`** 設定資料庫,就能排程備份、再按需還原單一資料庫。但它有個跟 DAOS 一模一樣的硬前提——**得先開 transaction logging**(那是什麼、怎麼開/檢查,見 [Domino 交易日誌](/domino-news/posts/domino-transaction-logging/))。
