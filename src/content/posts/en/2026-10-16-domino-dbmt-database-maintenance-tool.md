@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/12.0.2/admin/indirect_files_to_save_time_running_maintenance_tasks.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-dbmt-database-maintenance-tool.webp"
+coverStyle: "pencil-sketch"
 ---
 
 [The maintenance-commands piece](/domino-news/en/posts/domino-maintenance-commands-playbook/) walks you through `compact`, `updall`, and `fixup` one at a time. But nobody types those by hand at 2 AM in production — the old way was a pile of Program documents running `updall` nightly, plus a separate `compact`. From Domino 9, **dbmt (the database maintenance tool)** folds them into one: HCL puts it plainly — **"The dbmt tool relieves the administrator of the need to run the Updall task"** — doing compact + updall + (when needed) fixup in a single task, with thread counts, a time window, and a compact-every-n-days cadence to pace it.

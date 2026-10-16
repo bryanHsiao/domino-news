@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/12.0.2/admin/indirect_files_to_save_time_running_maintenance_tasks.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-dbmt-database-maintenance-tool.webp"
+coverStyle: "pencil-sketch"
 ---
 
 [維護指令那篇](/domino-news/posts/domino-maintenance-commands-playbook/)教你一個個下 `compact`、`updall`、`fixup`。但正式環境沒人半夜手動下——傳統做法是排一堆 Program document,每晚跑 `updall`、再另外排 `compact`。Domino 9 起有個 **dbmt(database maintenance tool)** 把這些收成一條:官方一句話——**「The dbmt tool relieves the administrator of the need to run the Updall task」**,一個 task 就做掉 compact + updall +(必要時)fixup,還能用執行緒數、時間窗、每幾天壓一次來控節奏。
