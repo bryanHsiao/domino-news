@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/conf_nifnsf_view_path_r.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-nifnsf-view-index-off-nsf.webp"
+coverStyle: "watercolor"
 ---
 
 上一篇 [DAOS](/domino-news/posts/domino-daos-attachment-consolidation/) 把**附件**搬出 NSF。但 NSF 肥大常常還有另一半元凶:**view index(檢視索引)**。每個檢視都要維護一份索引,索引就躺在 `.nsf` 裡,一起把檔案撐大、也拖慢備份。

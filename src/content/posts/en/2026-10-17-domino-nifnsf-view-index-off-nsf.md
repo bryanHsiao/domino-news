@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/conf_nifnsf_view_path_r.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-nifnsf-view-index-off-nsf.webp"
+coverStyle: "watercolor"
 ---
 
 The last piece, [DAOS](/domino-news/en/posts/domino-daos-attachment-consolidation/), moved **attachments** out of the NSF. But an NSF usually bloats from a second thing too: **view indexes**. Every view maintains an index, and that index sits inside the `.nsf`, swelling the file and slowing backups.
