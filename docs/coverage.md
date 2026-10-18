@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-10-17 · Posts scanned: 183 · Classes catalogued: 97*
+*Generated: 2026-10-18 · Posts scanned: 184 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [domino-template-inheritance-design-task](https://bryanhsiao.github.io/domino-news/posts/domino-template-inheritance-design-task/) | — | — | — |
 | [domino-nifnsf-view-index-off-nsf](https://bryanhsiao.github.io/domino-news/posts/domino-nifnsf-view-index-off-nsf/) | — | — | — |
 | [domino-dbmt-database-maintenance-tool](https://bryanhsiao.github.io/domino-news/posts/domino-dbmt-database-maintenance-tool/) | — | — | — |
 | [domino-backup-restore-task](https://bryanhsiao.github.io/domino-news/posts/domino-backup-restore-task/) | — | — | — |
