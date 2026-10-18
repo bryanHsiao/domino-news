@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/12.0.2/basic/H_ABOUT_REPLACING_A_DESIGN.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-template-inheritance-design-task.webp"
+coverStyle: "photoreal-3d"
 ---
 
 You change a form in a production database, and the next morning it's gone — the design snapped back to how it was. Nine times out of ten nobody touched it: that database has **"Inherit design from template"** set, and the server's **Designer task** **refreshed** the master template's design overnight, taking your change down with it.

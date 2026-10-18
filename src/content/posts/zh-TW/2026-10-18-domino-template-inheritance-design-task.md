@@ -18,6 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/12.0.2/basic/H_ABOUT_REPLACING_A_DESIGN.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-template-inheritance-design-task.webp"
+coverStyle: "photoreal-3d"
 ---
 
 你改了某個正式資料庫的表單,隔天早上一看——改的東西不見了,整個設計被打回原狀。十之八九不是誰動了手腳,而是那個庫設定了「**Inherit design from template**」,伺服器的 **Designer task** 半夜把 master template 的設計**刷**了回來,連你昨天改的一起蓋掉。
