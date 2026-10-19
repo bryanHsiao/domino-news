@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/12.0.2/basic/H_ABOUT_TEMPLATES_AND_MASTER_TEMPLATES_.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-hide-database-design.webp"
+coverStyle: "paper-craft"
 ---
 
 You hand a template to a customer, or install it on their server, and you don't want anyone seeing — or changing — the forms, formulas, and LotusScript inside. That's what **hiding a database design** does. Once set, the whole database's design is sealed: the designer tools won't open it, and the formulas and code are invisible.

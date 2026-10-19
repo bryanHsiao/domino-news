@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/12.0.2/basic/H_ABOUT_TEMPLATES_AND_MASTER_TEMPLATES_.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-hide-database-design.webp"
+coverStyle: "paper-craft"
 ---
 
 你把一個 template 交給客戶、或裝到對方的伺服器,不想讓人看到、也改不到裡面的表單、公式和 LotusScript——這就是「**隱藏資料庫設計(Hide design)**」要做的事。它一勾下去,整個庫的設計就被封起來:設計師工具打不開、公式與程式碼看不到。
