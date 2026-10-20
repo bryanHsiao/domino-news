@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-10-19 · Posts scanned: 185 · Classes catalogued: 97*
+*Generated: 2026-10-20 · Posts scanned: 186 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [domino-mail-routing-mailbox](https://bryanhsiao.github.io/domino-news/posts/domino-mail-routing-mailbox/) | — | — | — |
 | [domino-hide-database-design](https://bryanhsiao.github.io/domino-news/posts/domino-hide-database-design/) | — | — | — |
 | [domino-template-inheritance-design-task](https://bryanhsiao.github.io/domino-news/posts/domino-template-inheritance-design-task/) | — | — | — |
 | [domino-nifnsf-view-index-off-nsf](https://bryanhsiao.github.io/domino-news/posts/domino-nifnsf-view-index-off-nsf/) | — | — | — |
