@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/conf_managingundeliverablemailinmailbox_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-mail-routing-mailbox.webp"
+coverStyle: "ukiyo-e"
 ---
 
 A user clicks Send — where does the message actually go? In Domino, the start of the answer is always the same: **every message first lands in a database called `mail.box`**, and then the **Router task** reads the recipients one by one and decides the next step. Once you can see the chain from `mail.box` to the recipient's mailbox, you know where to look when you're chasing "why hasn't it arrived" or "where's this bounce stuck."

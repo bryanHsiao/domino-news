@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/conf_managingundeliverablemailinmailbox_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-mail-routing-mailbox.webp"
+coverStyle: "ukiyo-e"
 ---
 
 使用者按下送出,信到底去了哪?在 Domino,答案的起點永遠是同一個:**每封信都先落進一個叫 `mail.box` 的資料庫**,然後由 **Router task** 一封一封讀收件人、決定下一步。看懂從 `mail.box` 到收件人信箱這條鏈,你在排「信怎麼還沒到」「退信卡在哪」時,才知道該去哪裡看。
