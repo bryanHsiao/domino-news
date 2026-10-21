@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/admn_agentmanagertellcommands_r.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-agent-manager-scheduling.webp"
+coverStyle: "minimalist-mono"
 ---
 
 你排了一個 agent 每小時跑,結果它**沒跑**、**跑很慢**、或**跑到一半被砍**。第一直覺是「agent 寫壞了」,但在伺服器上,排程 agent 的生死其實掌握在另一個 server task 手裡——**Agent Manager(AMgr)**。它決定什麼時段能跑、同時能跑幾個、每個最多跑多久。看懂 AMgr 的設定,「為什麼沒跑」通常幾分鐘就查得出來。

@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/admn_agentmanagertellcommands_r.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-agent-manager-scheduling.webp"
+coverStyle: "minimalist-mono"
 ---
 
 You schedule an agent to run hourly, and it **doesn't run**, **runs late**, or **gets killed mid-run**. The first instinct is "the agent is broken," but on the server, a scheduled agent's fate is really in the hands of another server task — the **Agent Manager (AMgr)**. It decides which window an agent can run in, how many can run at once, and how long each may run. Once you can read AMgr's settings, "why didn't it run" is usually a few minutes of checking.
