@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/12.0.0/admin/trial_config_internet_site.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-internet-site-documents.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 You change a Domino web setting — some HTTP option, a session timeout, which site maps to which database — and **nothing happens**. Often it isn't a wrong value, it's the **wrong place**: Domino's Internet-protocol configuration comes from **two sources**, and a server reads only one of them at a time. Knowing which it reads, and how to switch, is the starting point for every Domino web-config problem.

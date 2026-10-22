@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/12.0.0/admin/trial_config_internet_site.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-internet-site-documents.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 你改了 Domino 的 web 設定——某個 HTTP 選項、session 逾時、哪個網站對應哪個資料庫——結果**完全沒生效**。很多時候不是設錯值,而是**改錯地方**:Domino 的 Internet 協定設定有**兩套來源**,而伺服器同一時間只讀其中一套。看懂它讀哪裡、怎麼切,是所有 Domino web 設定問題的起點。
