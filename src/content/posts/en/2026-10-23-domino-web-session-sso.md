@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/9.0.1/admin/conf_creatingawebssoconfigurationdocument_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-web-session-sso.webp"
+coverStyle: "paper-craft"
 ---
 
 A user logs into Domino in a browser and then clicks around — opening different databases — without logging in again. Why? Because Domino uses **session-based authentication**: on a successful login the server **issues a token and puts it in a cookie**, and the browser carries that cookie on every request, so the server recognizes "who you are and that you're still logged in." And when you have **several** Domino servers and want a user to **log into one and reach the others** (SSO), the token behind that needs a shared secret.

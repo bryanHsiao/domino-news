@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/9.0.1/admin/conf_creatingawebssoconfigurationdocument_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-web-session-sso.webp"
+coverStyle: "paper-craft"
 ---
 
 使用者在瀏覽器登入 Domino 之後,為什麼接下來一路點、開不同資料庫,都不用再登入一次?因為 Domino 用的是 **session-based authentication**:登入成功後,伺服器**發一個 token、塞進一個 cookie**,之後瀏覽器每次請求都帶著它,伺服器就認得「你是誰、還在登入狀態」。而當你有**好幾台** Domino,想讓使用者**登入一台、其他台都通**(SSO),那把 token 背後就需要一份共享密鑰的設定。
