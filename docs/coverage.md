@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-10-22 · Posts scanned: 188 · Classes catalogued: 97*
+*Generated: 2026-10-23 · Posts scanned: 189 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -259,6 +259,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [domino-web-session-sso](https://bryanhsiao.github.io/domino-news/posts/domino-web-session-sso/) | — | — | — |
 | [domino-internet-site-documents](https://bryanhsiao.github.io/domino-news/posts/domino-internet-site-documents/) | — | — | — |
 | [domino-agent-manager-scheduling](https://bryanhsiao.github.io/domino-news/posts/domino-agent-manager-scheduling/) | — | — | — |
 | [domino-mail-routing-mailbox](https://bryanhsiao.github.io/domino-news/posts/domino-mail-routing-mailbox/) | — | — | — |
