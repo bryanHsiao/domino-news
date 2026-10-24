@@ -557,7 +557,7 @@ sources:                                # 2+ trusted official references
     url: "https://help.hcl-software.com/..."
   - title: "..."
     url: "..."
-cover: "/covers/<slug>.png"             # Written by backfill-covers
+cover: "/covers/<slug>.webp"            # Written by backfill-covers (also emits <slug>.jpg for og:image)
 coverStyle: "..."                       # Written by backfill-covers
 relatedJava: ["Session", "Document"]    # Java counterpart class names — [] if
                                         # no Domino-API equivalent exists
