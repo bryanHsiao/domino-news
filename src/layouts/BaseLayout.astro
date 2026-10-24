@@ -55,16 +55,16 @@ const navActive = {
 // Absolute URLs for SEO/social tags
 const siteOrigin = Astro.site ? Astro.site.origin : 'https://bryanhsiao.github.io';
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? siteOrigin).toString();
-// og:image / twitter:image use the .png fallback (not .webp) because some
-// social-share preview generators — LinkedIn in particular — don't render
-// WebP reliably. Page-internal use of the cover (post hero / card grid)
-// stays on .webp via the original `cover` prop. PNG fallbacks are produced
-// alongside every WebP by scripts/lib/cover-prompt.ts and the one-time
-// scripts/generate-png-cover-fallback.ts.
-const defaultOgImage = `${siteOrigin}${baseNoSlash}/covers/welcome.png`;
-const coverPngPath = cover ? cover.replace(/\.webp$/, '.png') : null;
-const ogImageUrl = coverPngPath
-  ? `${siteOrigin}${baseNoSlash}${coverPngPath.startsWith('/') ? coverPngPath : `/${coverPngPath}`}`
+// og:image / twitter:image use the 1200x630 .jpg fallback (not .webp)
+// because some social-share preview generators — LinkedIn in particular —
+// don't render WebP reliably. Page-internal use of the cover (post hero /
+// card grid) stays on .webp via the original `cover` prop. JPEG fallbacks
+// are produced alongside every WebP by scripts/lib/cover-prompt.ts and the
+// one-time scripts/generate-og-cover-fallback.ts.
+const defaultOgImage = `${siteOrigin}${baseNoSlash}/covers/welcome.jpg`;
+const coverOgPath = cover ? cover.replace(/\.webp$/, '.jpg') : null;
+const ogImageUrl = coverOgPath
+  ? `${siteOrigin}${baseNoSlash}${coverOgPath.startsWith('/') ? coverOgPath : `/${coverOgPath}`}`
   : defaultOgImage;
 const otherLangPath = stripped || '/';
 const otherLangUrl = new URL(localizedPath(otherLang, otherLangPath), Astro.site ?? siteOrigin).toString();
@@ -101,6 +101,8 @@ const otherLangUrl = new URL(localizedPath(otherLang, otherLangPath), Astro.site
     <meta property="og:description" content={pageDesc} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:locale" content={lang === 'zh-TW' ? 'zh_TW' : 'en_US'} />
 
     {/* Twitter / X card */}

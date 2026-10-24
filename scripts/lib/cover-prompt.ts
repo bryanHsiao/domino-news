@@ -39,6 +39,11 @@ const IMAGE_QUALITY = (process.env.OPENAI_IMAGE_QUALITY ?? 'medium') as
   | 'high'
   | 'auto';
 
+// og:image fallback spec, shared with scripts/generate-og-cover-fallback.ts.
+export const OG_WIDTH = 1200;
+export const OG_HEIGHT = 630;
+export const OG_JPEG_QUALITY = 82;
+
 export interface StyleVariant {
   id: string;
   desc: string;
@@ -265,19 +270,23 @@ export async function generateCoverImage(
     //   - {slug}.webp (quality 85) — used for actual page rendering; ~10% the
     //     size of an unconverted PNG on the smooth-gradient illustrative
     //     styles this prompt produces.
-    //   - {slug}.png  — fallback for og:image / twitter:image, since some
+    //   - {slug}.jpg  — fallback for og:image / twitter:image, since some
     //     social-share preview generators (LinkedIn in particular) don't
-    //     handle WebP reliably. Larger than the WebP but only consumed by
-    //     share-preview crawlers, not page traffic.
+    //     handle WebP reliably. Cropped to 1200x630 (the size share cards
+    //     render at) and JPEG-encoded — the previous lossless PNG fallback
+    //     was ~3 MB per cover and dominated the Pages artifact size.
     // See scripts/convert-covers-to-webp.ts and
-    // scripts/generate-png-cover-fallback.ts for the one-time backfills
+    // scripts/generate-og-cover-fallback.ts for the one-time backfills
     // that established this two-artifact pattern.
     const buffer = Buffer.from(b64, 'base64');
     const webpName = `${slug}.webp`;
-    const pngName = `${slug}.png`;
+    const ogName = `${slug}.jpg`;
     await sharp(buffer).webp({ quality: 85 }).toFile(join(coversDir, webpName));
-    await sharp(buffer).png({ compressionLevel: 9 }).toFile(join(coversDir, pngName));
-    console.log(`[cover]   saved -> ${webpName} + ${pngName} (style=${styleId})`);
+    await sharp(buffer)
+      .resize(OG_WIDTH, OG_HEIGHT, { fit: 'cover', position: 'attention' })
+      .jpeg({ quality: OG_JPEG_QUALITY, mozjpeg: true })
+      .toFile(join(coversDir, ogName));
+    console.log(`[cover]   saved -> ${webpName} + ${ogName} (style=${styleId})`);
     return { coverPath: `/covers/${webpName}`, styleId };
   } catch (err) {
     console.warn(`[cover] Generation FAILED for ${slug}:`, err);

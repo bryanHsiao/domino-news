@@ -409,7 +409,7 @@ publishing) can still go straight to `src/content/posts/` + manual
   tag-filter chip bar grouped by the four axes. Client-side single-select
   filtering, wired via `astro:page-load` so it survives view-transition
   navigation.
-- **Homepage** has the hero (`/covers/welcome.png`) + tagline only on
+- **Homepage** has the hero (`/covers/welcome.webp`) + tagline only on
   page 1. pageSize for homepage: 9.
 - **deploy.yml** triggers on every push to main, plus
   `nightly-rebuild.yml` at 23:30 UTC daily as a safety net so a future-
