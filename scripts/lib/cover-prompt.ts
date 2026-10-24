@@ -30,7 +30,9 @@ import { join } from 'node:path';
 import OpenAI from 'openai';
 import sharp from 'sharp';
 
-const IMAGE_MODEL = process.env.OPENAI_IMAGE_MODEL ?? 'gpt-image-1';
+// gpt-image-1 was retired by OpenAI on 2026-10-23; the published replacement
+// is gpt-image-2.5-sunburst (or gpt-image-2.5-flare). See OpenAI deprecations.
+const IMAGE_MODEL = process.env.OPENAI_IMAGE_MODEL ?? 'gpt-image-2.5-sunburst';
 const IMAGE_QUALITY = (process.env.OPENAI_IMAGE_QUALITY ?? 'medium') as
   | 'low'
   | 'medium'

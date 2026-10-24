@@ -15,7 +15,7 @@
  * posts don't pile up on the same visual style.
  *
  * Required env: OPENAI_API_KEY
- * Optional env: OPENAI_IMAGE_MODEL (default gpt-image-1),
+ * Optional env: OPENAI_IMAGE_MODEL (default gpt-image-2.5-sunburst),
  *               OPENAI_IMAGE_QUALITY (default medium),
  *               FORCE_REGEN=1 to regenerate every cover.
  *
