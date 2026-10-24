@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/10.0.1/admin/admn_eventhandlernotificationmethods_r.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-domain-monitoring-ddm.webp"
+coverStyle: "photoreal-3d"
 ---
 
 Server trouble is usually "the users complain first, then you find out" — and by the time you notice, it's often too late. **DDM (Domino Domain Monitoring)** is Domino's built-in, **proactive**-leaning monitoring: it runs **probes** on a schedule to check the health of various feature areas, records events into **`ddm.nsf`**, gives you a **domain-wide** status view in the Domino Administrator, and can **notify you automatically** when something fires — often with a probable cause and a suggested fix. This piece walks through how DDM's pieces fit together.

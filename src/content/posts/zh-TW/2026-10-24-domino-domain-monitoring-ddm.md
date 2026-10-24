@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/10.0.1/admin/admn_eventhandlernotificationmethods_r.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-domain-monitoring-ddm.webp"
+coverStyle: "photoreal-3d"
 ---
 
 伺服器出事,很多時候是「使用者先哀號、你才知道」——等你發現,往往已經晚了。**DDM(Domino Domain Monitoring)** 是 Domino 內建、往**主動**那端走的監控:它定期跑**probe**去查各領域的健康,把事件收進 **`ddm.nsf`**,在 Domino Administrator 裡給你一個**全網域**的狀態視圖,出事還能**自動通知**你、甚至附上可能原因與建議動作。這篇講 DDM 的幾個零件怎麼湊起來。
