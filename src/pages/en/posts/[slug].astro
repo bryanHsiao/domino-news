@@ -73,7 +73,7 @@ const jsonLd = {
       inLanguage: 'en',
       mainEntityOfPage: canonical,
       url: canonical,
-      ...(absCover ? { image: absCover.replace(/\.webp$/, '.png') } : {}),
+      ...(absCover ? { image: absCover.replace(/\.webp$/, '.jpg') } : {}),
       keywords: keywordsList.join(', '),
       publisher: {
         '@type': 'Organization',

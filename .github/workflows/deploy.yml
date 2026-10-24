@@ -3,6 +3,17 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+    # 這些路徑不會進 dist（staging 中的文章、退稿、coverage 報表、文件），
+    # 只動到它們的 commit 不必重新部署 — 每次部署會產生 ~數十 MB 的 Pages
+    # artifact，算進 Actions storage 配額。
+    # 注意 data/、research/、scripts/ 都會被 build 讀到，不能列進來。
+    paths-ignore:
+      - '_pending/**'
+      - '_drafts/**'
+      - 'docs/**'
+      - '.claude/**'
+      - 'README.md'
+      - 'CLAUDE.md'
   workflow_dispatch:
 
 permissions:
