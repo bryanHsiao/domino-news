@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.0/admin/conf_understandingthedesktoppolicysettingsdocument_c.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-policies.webp"
+coverStyle: "bw-grain"
 ---
 
 想把一個設定——密碼規則、郵件配額、桌面功能開關、administration ECL——**一次套到全公司**的 Notes 使用者,而不是一台一台設,靠的就是 **policy**。但 policy 不只是「設一次到處生效」這麼簡單:它有兩種指派方式、好幾種設定文件、一套「使用者實際吃到哪個值」的計算規則,還有一個決定「使用者能不能自己改回去」的關鍵開關。這篇把它講清楚。

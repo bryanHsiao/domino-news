@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/14.5.0/admin/conf_understandingthedesktoppolicysettingsdocument_c.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-policies.webp"
+coverStyle: "bw-grain"
 ---
 
 To apply one setting — a password rule, a mail quota, a desktop feature toggle, an administration ECL — to **every** Notes user at once, rather than setting each machine, you use a **policy**. But a policy is more than "set it once, it applies everywhere": it has two assignment types, several settings documents, a rule for which value a user actually gets, and one switch that decides whether users can change it back. This piece lays it out.
