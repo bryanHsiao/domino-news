@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/plan_howworkloadbalancingworks_c.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-clustering-failover.webp"
+coverStyle: "pencil-sketch"
 ---
 
 一台 Domino 掛了、或忙到爆,使用者卻幾乎無感地繼續用——那就是 **cluster** 在做 **failover** 與**負載平衡**。但 failover 不是魔法:它有一個硬前提——**另一台 cluster 伺服器上要有這個資料庫的 replica**,沒有 replica 就沒得切。背後是一組元件在合作:每台的 **Cluster Manager** 互相探活、一份 **`cldbdir.nsf`** 記誰有哪些 replica、一個 **Cluster Replicator** 近即時地把變更同步到各 replica。這篇把它們怎麼湊起來講清楚。

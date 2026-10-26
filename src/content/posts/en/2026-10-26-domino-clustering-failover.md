@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/plan_howworkloadbalancingworks_c.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-clustering-failover.webp"
+coverStyle: "pencil-sketch"
 ---
 
 A Domino server goes down, or gets slammed, and users keep working almost without noticing — that's a **cluster** doing **failover** and **workload balancing**. But failover isn't magic: it has one hard prerequisite — **another cluster server must hold a replica of the database** — no replica, nothing to fail over to. Behind it is a set of components working together: each server's **Cluster Manager** checks the others are alive, one **`cldbdir.nsf`** tracks who has which replica, and a **Cluster Replicator** keeps the replicas near-synchronized. This piece lays out how they fit together.
