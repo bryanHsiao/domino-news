@@ -86,6 +86,12 @@ const coveredCount = nodes.filter((n) => n.url).length;
     #mv-dir #cd .cd-panel { top: calc(var(--map-hdr, 64px) + 12px); max-height: calc(100vh - var(--map-hdr, 64px) - 24px); }
   }
   body:has(#mv-islands) { overflow-x: clip; }
+  /* Immersive views fill the window exactly — no footer, no page scrollbar —
+     like the reference site's map. The grouped list scrolls as usual. */
+  html.map-fullscreen, html.map-fullscreen body { overflow: hidden; }
+  html.map-fullscreen main:has(> .map-tabs) { padding-bottom: 0; }
+  html.map-fullscreen .site-footer { display: none; }
+  html.map-fullscreen #mv-graph, html.map-fullscreen #mv-islands { min-height: 0; }
   /* Wide screens: the tab switch floats top-centre over each view's title bar
      (like the reference site's toolbar) instead of sitting in its own band. */
   @media (min-width: 1280px) {
@@ -105,9 +111,11 @@ const coveredCount = nodes.filter((n) => n.url).length;
       html.style.setProperty('--map-page-w', html.clientWidth + 'px');
       if (hdr) html.style.setProperty('--map-hdr', hdr.offsetHeight + 'px');
       var view = ['mv-graph', 'mv-islands'].map(function (id) { return document.getElementById(id); }).filter(function (el) { return el && !el.hidden; })[0];
-      if (view) html.style.setProperty('--map-above', Math.round(view.getBoundingClientRect().top + window.scrollY) + 'px');
+      if (view) html.style.setProperty('--map-above', Math.ceil(view.getBoundingClientRect().top + window.scrollY) + 'px');
     }
     function initMapTabs() {
+      // <html> survives view-transition navigation: start every page unlocked
+      document.documentElement.classList.remove('map-fullscreen');
       var tabs = document.querySelectorAll('.map-tab');
       if (!tabs.length) return;
       var dir = document.getElementById('mv-dir'), graph = document.getElementById('mv-graph'), islands = document.getElementById('mv-islands');
@@ -125,6 +133,7 @@ const coveredCount = nodes.filter((n) => n.url).length;
           dir.hidden = v !== 'dir';
           graph.hidden = v !== 'graph';
           islands.hidden = v !== 'islands';
+          document.documentElement.classList.toggle('map-fullscreen', v !== 'dir');
           window.scrollTo(0, 0);
           sizeViews();
           if (v === 'graph' || v === 'islands') window.dispatchEvent(new Event('resize'));
