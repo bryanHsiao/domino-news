@@ -1,6 +1,7 @@
 // Scenery around the archipelago: sky, light, water, a basin of hills that
-// rings the islands, satellite islets, boats and clouds. Purely decorative —
-// a fixed bright day (v1 has no day/night cycle).
+// rings the islands, satellite islets, boats and clouds. Purely decorative.
+// The light follows one of four times of day (TIMES); scene.js blends between
+// them and applies the result with applyTime().
 import { SimplexNoise } from 'three/examples/jsm/math/SimplexNoise.js';
 import { WATER_Y, mulberry32 } from './layout.js';
 
@@ -9,7 +10,17 @@ const smooth = (a, b, x) => {
   return t * t * (3 - 2 * t);
 };
 
-export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }) {
+// Sky gradient, sun (moon at night), ambient, water and haze per time of day.
+// `dir` points toward the sun; `night` (0–1) lights windows, lamps and stars.
+export const TIMES = {
+  dawn: { top: 0xa9bde6, horizon: 0xf8d6c4, sun: 0xffcdb0, sunI: 2.1, hemiSky: 0xf4dcd6, hemiGround: 0x7a6a6e, hemiI: 1.3, shallow: 0x86bccb, deep: 0x6297ad, fog: 0xf3dfd6, dir: [0.8, 0.42, 0.45], night: 0.2 },
+  day: { top: 0x9fd0ec, horizon: 0xf4eee3, sun: 0xfff1de, sunI: 2.9, hemiSky: 0xeef6fa, hemiGround: 0x8f8270, hemiI: 1.35, shallow: 0x62b2bd, deep: 0x4a96a8, fog: 0xf4eee3, dir: [-0.55, 0.85, 0.45], night: 0 },
+  dusk: { top: 0x55589a, horizon: 0xf0905e, sun: 0xff8448, sunI: 1.7, hemiSky: 0xe6a88e, hemiGround: 0x5e4652, hemiI: 1.0, shallow: 0x5d85a3, deep: 0x3d5e83, fog: 0xd8957a, dir: [-0.85, 0.36, 0.4], night: 0.6 },
+  night: { top: 0x0e1836, horizon: 0x2c3b6a, sun: 0xb4c2ff, sunI: 0.75, hemiSky: 0x8090c8, hemiGround: 0x3b3444, hemiI: 1.0, shallow: 0x2f527a, deep: 0x1d3458, fog: 0x26315a, dir: [0.35, 0.8, -0.3], night: 1 },
+};
+
+// `boatProps` builds the boats into their own kit so scene.js can let them drift.
+export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, boatProps = props) {
   const rnd = mulberry32(11);
   const noise = new SimplexNoise({ random: mulberry32(7) });
   const fbm = (x, z) => {
@@ -36,15 +47,21 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }) 
         uTop: { value: new THREE.Color(0x9fd0ec) },
         uHorizon: { value: new THREE.Color(0xf4eee3) },
         uSun: { value: new THREE.Color(0xfff1de) },
-        uSunDir: { value: sunDir },
+        uSunDir: { value: sunDir.clone() },
+        uNight: { value: 0 },
       },
       vertexShader: `varying vec3 vDir;
         void main() { vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-      fragmentShader: `uniform vec3 uTop, uHorizon, uSun, uSunDir; varying vec3 vDir;
+      fragmentShader: `uniform vec3 uTop, uHorizon, uSun, uSunDir; uniform float uNight; varying vec3 vDir;
+        float rand(vec3 p) { return fract(sin(dot(p, vec3(91.7, 47.3, 13.1))) * 24634.63); }
         void main() {
-          float h = clamp(vDir.y, 0.0, 1.0);
+          vec3 d = normalize(vDir);
+          float h = clamp(d.y, 0.0, 1.0);
           vec3 c = mix(uHorizon, uTop, smoothstep(0.0, 0.5, h));
-          c += uSun * pow(max(dot(normalize(vDir), uSunDir), 0.0), 24.0) * 0.3;
+          c += uSun * pow(max(dot(d, normalize(uSunDir)), 0.0), 24.0) * 0.3;
+          // sparse stars fading in toward the zenith at night
+          float star = step(0.9968, rand(floor(d * 190.0))) * smoothstep(0.1, 0.55, h) * uNight;
+          c += vec3(star * 0.85);
           gl_FragColor = vec4(c, 1.0);
           #include <colorspace_fragment>
         }`,
@@ -56,7 +73,8 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }) 
   scene.fog = new THREE.Fog(0xf4eee3, radius * 3.2, radius * 11);
 
   // ---- light: warm sun with soft shadows over the islands, cool fill
-  scene.add(new THREE.HemisphereLight(0xeef6fa, 0x8f8270, 1.35));
+  const hemi = new THREE.HemisphereLight(0xeef6fa, 0x8f8270, 1.35);
+  scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xfff1de, 2.9);
   sun.position.copy(center).addScaledVector(sunDir, radius * 3 + 20);
   sun.target.position.copy(center);
@@ -197,10 +215,10 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }) 
   for (let i = 0; i < 9; i++) {
     const a = rnd() * Math.PI * 2;
     const d = radius + 1 + rnd() * 5;
-    props.boat(cx + Math.cos(a) * d, cz + Math.sin(a) * d, rnd() * Math.PI * 2, rnd, WATER_Y);
+    boatProps.boat(cx + Math.cos(a) * d, cz + Math.sin(a) * d, rnd() * Math.PI * 2, rnd, WATER_Y);
   }
 
-  // ---- clouds drifting behind the hills (static in v1)
+  // ---- clouds behind the hills
   for (let i = 0; i < 8; i++) {
     const a = Math.PI + 0.3 + rnd() * (Math.PI - 0.6);
     const d = radius + 32 + rnd() * 34;
@@ -215,6 +233,25 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }) 
   return {
     update(dt) {
       waterMat.uniforms.uTime.value += dt;
+    },
+    // p: one blended time-of-day state (Colors, a unit `dir`, `night` 0–1)
+    applyTime(p) {
+      const su = sky.material.uniforms;
+      su.uTop.value.copy(p.top);
+      su.uHorizon.value.copy(p.horizon);
+      su.uSun.value.copy(p.sun);
+      su.uSunDir.value.copy(p.dir);
+      su.uNight.value = p.night;
+      hemi.color.copy(p.hemiSky);
+      hemi.groundColor.copy(p.hemiGround);
+      hemi.intensity = p.hemiI;
+      sun.color.copy(p.sun);
+      sun.intensity = p.sunI;
+      sun.position.copy(center).addScaledVector(p.dir, radius * 3 + 20);
+      fill.intensity = 0.35 * (1 - 0.6 * p.night);
+      waterMat.uniforms.uShallow.value.copy(p.shallow);
+      waterMat.uniforms.uDeep.value.copy(p.deep);
+      scene.fog.color.copy(p.fog);
     },
   };
 }

@@ -394,11 +394,12 @@ function buildWalkGraph(tiles, fused, bridges) {
     adj.push([]);
     return nodes.length - 1;
   };
-  const link = (a, b) => {
+  // arch: peak height of a bridge deck along this edge (0 on land)
+  const link = (a, b, arch = 0) => {
     const len = Math.hypot(nodes[a].x - nodes[b].x, nodes[a].z - nodes[b].z);
-    edges.push([a, b, len]);
-    adj[a].push([b, len]);
-    adj[b].push([a, len]);
+    edges.push([a, b, len, arch]);
+    adj[a].push([b, len, arch]);
+    adj[b].push([a, len, arch]);
   };
   const ring = new Map();
   for (const t of tiles) {
@@ -426,7 +427,12 @@ function buildWalkGraph(tiles, fused, bridges) {
   for (const [a, b] of fused) link(nearest(a, b.x, b.z), nearest(b, a.x, a.z));
   for (const br of bridges) {
     br.walk = [nearest(br.a, br.b.x, br.b.z), nearest(br.b, br.a.x, br.a.z)];
-    link(br.walk[0], br.walk[1]);
+    // same arch as the drawn bridge (world.js bridgeStyle): stronger relation,
+    // higher arch; long spans arch up to twice as high
+    const deck = Math.hypot(br.a.x - br.b.x, br.a.z - br.b.z) - 2 * (R * 0.866 - 0.12);
+    const base = !br.rel ? 0.05 : br.rel.n >= 4 ? 0.12 : br.rel.n >= 2 ? 0.09 : 0.07;
+    br.arch = base * Math.min(2, Math.max(1, deck / 2));
+    link(br.walk[0], br.walk[1], br.arch);
   }
   return { nodes, edges, adj };
 }

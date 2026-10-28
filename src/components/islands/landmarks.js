@@ -78,7 +78,7 @@ export function buildLandmark(kind, kit, x, z) {
         const b = y + 0.08 + i * 0.4;
         P('cyl', x, b + 0.17, z, 1.1, 0.34, 1.1, 0x5f86b8);
         P('cyl', x, b + 0.36, z, 1.12, 0.05, 1.12, 0x3b4a63);
-        P('sphere', x + 0.3, b + 0.2, z + 0.46, 0.07, 0.07, 0.07, 0x9be38f);
+        P('bulb', x + 0.3, b + 0.2, z + 0.46, 0.07, 0.07, 0.07, 0x9be38f);
         P('box', x - 0.15, b + 0.2, z + 0.5, 0.3, 0.04, 0.04, 0x9fb6d6);
       }
       P('cyl', x, y + 1.3, z, 1.08, 0.04, 1.08, 0x8fb0d8);
@@ -172,7 +172,7 @@ export function buildLandmark(kind, kit, x, z) {
       P('cyl', x, y + 1.82, z, 0.72, 0.34, 0.72, 0x4f6f88);
       P('cyl', x, y + 2.02, z, 0.82, 0.06, 0.82, 0xf4efe6);
       for (let i = 0; i < 4; i++) P('cyl', x, y + 2.13 + i * 0.16, z, 0.04, 0.16, 0.04, i % 2 ? 0xffffff : 0xdb6a41);
-      P('sphere', x, y + 2.75, z, 0.08, 0.08, 0.08, 0xff5a3c);
+      P('bulb', x, y + 2.75, z, 0.08, 0.08, 0.08, 0xff5a3c);
       P('dome', x + 0.22, y + 0.42, z + 0.18, 0.24, 0.12, 0.24, 0xf4efe6, [-Math.PI / 2 - 0.5, 0, 0]);
       break;
     }
@@ -229,7 +229,7 @@ export function buildLandmark(kind, kit, x, z) {
       P('dome', x, y + 0.16, z, 1.15, 0.62, 1.15, 0xbfe3ee);
       P('box', x, y + 0.28, z + 0.55, 0.22, 0.26, 0.06, 0x4f6f88);
       P('cyl', x, y + 0.93, z, 0.04, 0.3, 0.04, 0x8a8f96);
-      P('sphere', x, y + 1.3, z, 0.36, 0.36, 0.36, 0xfcea8b);
+      P('bulb', x, y + 1.3, z, 0.36, 0.36, 0.36, 0xfcea8b);
       P('cyl', x, y + 1.3, z, 0.82, 0.02, 0.82, 0x8b6fd1, [0.5, 0, 0.3]);
       P('cyl', x, y + 1.3, z, 0.7, 0.02, 0.7, 0x58a6a6, [-0.4, 0, -0.5]);
       break;
@@ -253,7 +253,7 @@ export function buildLandmark(kind, kit, x, z) {
       }
       P('dome', x + 0.1, y + 1.3, z - 0.06, 0.32, 0.12, 0.32, 0xf4efe6, [-Math.PI / 2, 0, 0]);
       P('dome', x - 0.08, y + 1.75, z - 0.08, 0.26, 0.1, 0.26, 0xf4efe6, [-Math.PI / 2, 0, 0]);
-      P('sphere', x, y + 2.36, z - 0.2, 0.08, 0.08, 0.08, 0xff5a3c);
+      P('bulb', x, y + 2.36, z - 0.2, 0.08, 0.08, 0.08, 0xff5a3c);
       break;
     }
     case 'cabinet': {

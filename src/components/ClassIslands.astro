@@ -47,6 +47,11 @@ const T =
         btnHome: '全景',
         btnSearch: '搜尋',
         btnList: '清單',
+        timeGroup: '時段',
+        times: { dawn: '清晨', day: '白天', dusk: '黃昏', night: '夜晚' },
+        timeShort: { dawn: '晨', day: '日', dusk: '昏', night: '夜' },
+        bird: '俯瞰',
+        birdLong: '俯瞰',
         listTitle: '所有島嶼',
         sub: '每個 category 一座島，類別越多島越大；有關聯的島之間才有橋，橋越寬關聯越多 · 拖曳轉看、滾輪縮放 · 點島看清單、點房子開文章、指著橋看關聯',
         covered: '已涵蓋',
@@ -82,6 +87,11 @@ const T =
         btnHome: 'Fit',
         btnSearch: 'Find',
         btnList: 'List',
+        timeGroup: 'Time of day',
+        times: { dawn: 'Dawn', day: 'Day', dusk: 'Dusk', night: 'Night' },
+        timeShort: { dawn: 'Dawn', day: 'Day', dusk: 'Dusk', night: 'Night' },
+        bird: 'Top',
+        birdLong: 'Top view',
         listTitle: 'All islands',
         sub: 'One island per category, bigger for more classes; bridges only join related islands, wider for more links · drag to orbit, scroll to zoom · click an island for its list, a house to open its article, hover a bridge for its links',
         covered: 'covered',
@@ -133,6 +143,7 @@ const statTip =
   data-rel-bridge={T.relBridge}
   data-rel-walk={T.relWalk}
   data-list-title={T.listTitle}
+  data-times={JSON.stringify(T.times)}
 >
   <div class="ci-stage">
     <canvas id="ci-canvas"></canvas>
@@ -151,6 +162,15 @@ const statTip =
         <input id="ci-q" type="search" placeholder={T.search} autocomplete="off" />
         <button id="ci-reset" type="button">{T.reset}</button>
       </div>
+      <!-- time of day + bird's-eye (wider screens; phones use the tools column) -->
+      <div class="ci-modes">
+        <div class="ci-time" role="group" aria-label={T.timeGroup}>
+          {(['dawn', 'day', 'dusk', 'night'] as const).map((k) => (
+            <button type="button" data-time={k} class={k === 'day' ? 'on' : undefined} title={T.times[k]}>{T.timeShort[k]}</button>
+          ))}
+        </div>
+        <button type="button" class="ci-bird" data-act="bird" aria-pressed="false"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1.2"></path></svg>{T.birdLong}</button>
+      </div>
     </div>
 
     <!-- Small screens: map tools as a column of small buttons top-right (like
@@ -159,6 +179,8 @@ const statTip =
       <button type="button" data-act="home"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M4 12L12 4M6.5 4H12v5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>{T.btnHome}</button>
       <button type="button" data-act="search" aria-expanded="false"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>{T.btnSearch}</button>
       <button type="button" data-act="list"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2.5 4h11M2.5 8h11M2.5 12h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>{T.btnList}</button>
+      <button type="button" data-act="time" title={T.timeGroup}><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path></svg><span class="ci-time-name">{T.times.day}</span></button>
+      <button type="button" data-act="bird" aria-pressed="false"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1.2"></path></svg>{T.bird}</button>
     </nav>
 
     <div id="ci-loading" class="ci-loading" hidden>{T.loading}</div>
@@ -210,6 +232,12 @@ const statTip =
   #ci .ci-controls input:focus { outline: none; border-color: var(--coral); }
   #ci .ci-controls #ci-reset { flex: none; font: inherit; font-size: 12px; padding: 6px 12px; border: 1px solid var(--hair); border-radius: 8px; background: #fff; color: var(--ink); cursor: pointer; }
   #ci .ci-controls #ci-reset:hover { border-color: var(--coral); }
+  #ci .ci-modes { display: flex; gap: 6px; margin-top: 8px; }
+  #ci .ci-time { display: inline-flex; border: 1px solid var(--hair); border-radius: 8px; overflow: hidden; background: #fff; }
+  #ci .ci-time button { font: inherit; font-size: 12px; padding: 5px 11px; border: 0; background: transparent; color: var(--ink-mut); cursor: pointer; }
+  #ci .ci-time button.on { background: var(--ink); color: var(--paper); }
+  #ci .ci-bird { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; padding: 5px 11px; border: 1px solid var(--hair); border-radius: 8px; background: #fff; color: var(--ink); cursor: pointer; }
+  #ci .ci-bird[aria-pressed='true'] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   #ci #ci-canvas { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
   #ci #ci-canvas:active { cursor: grabbing; }
 
@@ -293,7 +321,7 @@ const statTip =
   #ci .ci-tools { display: none; position: absolute; top: 10px; right: 10px; z-index: 7; flex-direction: column; gap: 8px; }
   #ci .ci-tools button { display: flex; align-items: center; justify-content: center; gap: 5px; width: 68px; height: 42px; padding: 0 8px; border-radius: 12px; border: 1px solid var(--hair);
     background: rgba(255, 248, 244, 0.95); color: var(--ink); font: 600 12.5px/1 system-ui, -apple-system, 'Noto Sans TC', sans-serif; box-shadow: 0 4px 14px rgba(33, 29, 29, 0.12); cursor: pointer; }
-  #ci .ci-tools button[aria-expanded='true'] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  #ci .ci-tools button[aria-expanded='true'], #ci .ci-tools button[aria-pressed='true'] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   #ci .ci-panel .plist-isl { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
   #ci .ci-panel .pisl { display: flex; align-items: center; gap: 8px; text-align: left; border: 1px solid var(--hair); background: #fff; border-radius: 9px; padding: 8px 10px; font: inherit; color: var(--ink); cursor: pointer; }
   #ci .ci-panel .pisl:hover { border-color: var(--coral); }
@@ -312,7 +340,7 @@ const statTip =
     #ci .ci-name { margin-top: 3px; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; }
     #ci .ci-stat { display: inline-flex; margin-top: 7px; padding: 3px 9px; font-size: 10.5px; }
     #ci .ci-stat b { font-size: 13px; }
-    #ci .ci-sub, #ci .ci-controls { display: none; }
+    #ci .ci-sub, #ci .ci-controls, #ci .ci-modes { display: none; }
     #ci.search-open .ci-card { width: calc(100% - 100px); }
     #ci.search-open .ci-controls { display: flex; margin-top: 9px; }
     #ci .ci-controls #ci-reset { display: none; }
@@ -382,7 +410,7 @@ const statTip =
         '<div class="plist">' + rows + '</div>' +
         (rel ? '<div class="prel"><div class="prel-lbl">' + esc(DS.relTitle) + '</div><div class="prel-key">⇄ ' + esc(DS.relBridge) + ' · ⋯ ' + esc(DS.relWalk) + '</div><div class="prel-chips">' + rel + '</div></div>' : '');
       panel.hidden = false;
-      panel.querySelector('.pclose').addEventListener('click', function () { if (api) api.reset(); });
+      panel.querySelector('.pclose').addEventListener('click', doReset);
       Array.prototype.forEach.call(panel.querySelectorAll('.prel-chip'), function (chip) {
         chip.addEventListener('click', function () { if (api) api.select(chip.dataset.cat); });
       });
@@ -449,12 +477,36 @@ const statTip =
     }
     Array.prototype.forEach.call(root.querySelectorAll('.ci-tools button'), function (b) {
       b.addEventListener('click', function () {
-        if (b.dataset.act === 'home') { if (api) api.reset(); }
+        if (b.dataset.act === 'home') doReset();
+        else if (b.dataset.act === 'time') { if (api) { api.nextTime(); syncModes(); } }
         else if (b.dataset.act === 'search') setSearch(!root.classList.contains('search-open'));
         else if (b.dataset.act === 'list') renderIslandList();
       });
     });
-    document.getElementById('ci-reset').addEventListener('click', function () { if (api) api.reset(); });
+    document.getElementById('ci-reset').addEventListener('click', doReset);
+
+    // Time of day and bird's-eye: card controls (wider screens) and tools
+    // column (phones) drive the same scene state; syncModes mirrors it back.
+    var TIME_TXT = JSON.parse(DS.times || '{}');
+    function syncModes() {
+      if (!api) return;
+      var t = api.getTime(), b = api.isBird();
+      Array.prototype.forEach.call(root.querySelectorAll('.ci-time button'), function (btn) { btn.classList.toggle('on', btn.dataset.time === t); });
+      var nameEl = root.querySelector('.ci-tools .ci-time-name');
+      if (nameEl) nameEl.textContent = TIME_TXT[t] || t;
+      Array.prototype.forEach.call(root.querySelectorAll('[data-act="bird"]'), function (btn) { btn.setAttribute('aria-pressed', String(b)); });
+    }
+    function doReset() {
+      if (!api) return;
+      api.reset(); // also leaves bird's-eye
+      syncModes();
+    }
+    Array.prototype.forEach.call(root.querySelectorAll('.ci-time button'), function (btn) {
+      btn.addEventListener('click', function () { if (api) { api.setTime(btn.dataset.time); syncModes(); } });
+    });
+    Array.prototype.forEach.call(root.querySelectorAll('[data-act="bird"]'), function (btn) {
+      btn.addEventListener('click', function () { if (api) { api.setBird(!api.isBird()); syncModes(); } });
+    });
     document.getElementById('ci-fb-btn').addEventListener('click', function () {
       var dirTab = document.querySelector('.map-tab[data-view="dir"]');
       if (dirTab) dirTab.click();

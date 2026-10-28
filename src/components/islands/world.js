@@ -213,13 +213,15 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
         props.bush(bx, bz, 0.2 + rnd() * 0.1, rnd, TOP);
       }
     }
+    // lamps on the curb and a couple of people on the grass, clear of the
+    // walking ring the walkers use
     for (const k of [1, 4]) {
-      const [lx, lz] = hexVertex(t.x, t.z, 1.8, k);
+      const [lx, lz] = hexVertex(t.x, t.z, 1.98, k);
       props.lamp(lx, lz, TOP);
     }
     for (let p = 0; p < 2; p++) {
       const a = rnd() * Math.PI * 2;
-      props.person(t.x + Math.cos(a) * 1.8, t.z + Math.sin(a) * 1.8 * 0.95, rnd, TOP);
+      props.person(t.x + Math.cos(a) * 1.55, t.z + Math.sin(a) * 1.55 * 0.95, rnd, TOP);
     }
   }
 
@@ -347,15 +349,15 @@ function house(kit, n, theme, x, z, scale) {
   for (let f = 0; f < floors; f++) {
     const wy = yb + f * FH + FH * 0.55;
     if (!round) {
-      P('box', x + w / 2 + 0.006, wy, z, 0.012, FH * 0.36, d * 0.56, GLASS);
-      P('box', x - w / 2 - 0.006, wy, z, 0.012, FH * 0.36, d * 0.56, GLASS);
+      P('glass', x + w / 2 + 0.006, wy, z, 0.012, FH * 0.36, d * 0.56, GLASS);
+      P('glass', x - w / 2 - 0.006, wy, z, 0.012, FH * 0.36, d * 0.56, GLASS);
     }
     if (f === 0) {
       P('box', x, yb + 0.085, fz, 0.13, 0.17, 0.012, DOOR);
-      P('box', x - w * 0.3, wy, fz - (round ? 0.05 : 0), w * 0.2, FH * 0.36, 0.012, GLASS);
-      P('box', x + w * 0.3, wy, fz - (round ? 0.05 : 0), w * 0.2, FH * 0.36, 0.012, GLASS);
+      P('glass', x - w * 0.3, wy, fz - (round ? 0.05 : 0), w * 0.2, FH * 0.36, 0.012, GLASS);
+      P('glass', x + w * 0.3, wy, fz - (round ? 0.05 : 0), w * 0.2, FH * 0.36, 0.012, GLASS);
     } else {
-      P('box', x, wy, fz, w * (round ? 0.5 : 0.7), FH * 0.36, 0.012, GLASS);
+      P('glass', x, wy, fz, w * (round ? 0.5 : 0.7), FH * 0.36, 0.012, GLASS);
     }
   }
 
