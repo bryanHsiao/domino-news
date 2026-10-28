@@ -12,6 +12,7 @@ import { createEnvironment } from './environment.js';
 const FOV = 32;
 const HOME_POLAR = THREE.MathUtils.degToRad(57);
 const PALE = new THREE.Color(0xe9e4da);
+const CORAL = new THREE.Color(0xdb6a41);
 
 function esc(s) {
   return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -58,19 +59,22 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
 
   // ---- world
   const buildingKit = createKit(THREE);
+  const bridgeKit = createKit(THREE);
   const decorKit = createKit(THREE);
   const props = createProps(THREE, decorKit);
-  const world = buildWorld(THREE, scene, { buildings: buildingKit, decor: decorKit }, props, layout);
+  const world = buildWorld(THREE, scene, { buildings: buildingKit, bridges: bridgeKit, decor: decorKit }, props, layout);
   const env = createEnvironment(THREE, scene, props, decorKit, layout.bounds);
   const partMat = new THREE.MeshStandardMaterial({ roughness: 0.86, metalness: 0 });
   const buildingMeshes = buildingKit.build(scene, partMat);
+  const bridgeMeshes = bridgeKit.build(scene, partMat);
+  const bridgeById = new Map(layout.bridges.map((b) => [b.id, b]));
   decorKit.build(scene, partMat);
 
   // ---- camera framing
   const tanHalf = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
-  // The archipelago is wider than deep, so on landscape screens its bounding
-  // circle can overfill vertically a little and still show every island.
-  const fitDistance = (r) => r * Math.max(2.1, 1.05 / (tanHalf * camera.aspect)) * 1.05;
+  // Frames the archipelago's bounding circle; on landscape screens it may
+  // overfill vertically a little and still show every island.
+  const fitDistance = (r) => r * Math.max(2.35, 1.05 / (tanHalf * camera.aspect)) * 1.05;
   const homeTarget = new THREE.Vector3(cx, TOP, cz);
   const sph = new THREE.Spherical();
   const posFor = (target, dist, polar, azimuth) => {
@@ -149,6 +153,8 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   function select(cat, fly) {
     selected = cat || null;
     for (const [k, m] of world.outlines) m.visible = k === selected;
+    // light up the selected island's bridges: its direct routes
+    for (const b of layout.bridges) bridgeKit.tint(b.id, CORAL, selected && (b.a.cat === selected || b.b.cat === selected) ? 0.55 : 0);
     refreshLabels();
     if (selected && fly) flyToCluster(clusterByCat.get(selected));
     onSelect && onSelect(selected ? clusterByCat.get(selected) : null);
@@ -205,7 +211,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     home(false);
   }
 
-  // ---- picking: buildings first (they stand on the decks)
+  // ---- picking: the nearest of a class house, a bridge or an island deck
   const ray = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
   function pickAt(clientX, clientY) {
@@ -213,10 +219,16 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     ndc.set(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(ndc, camera);
     const b = ray.intersectObjects(buildingMeshes, false)[0];
+    const br = ray.intersectObjects(bridgeMeshes, false)[0];
     const t = ray.intersectObjects(world.pickTargets, false)[0];
-    if (b && (!t || b.distance <= t.distance + 0.05)) {
+    const far = (h) => (h ? h.distance : Infinity);
+    if (b && far(b) <= Math.min(far(br), far(t) + 0.05)) {
       const id = b.object.userData.owners[b.instanceId];
       if (id && nodeById.has(id)) return { node: nodeById.get(id) };
+    }
+    if (br && far(br) <= far(t) + 0.05) {
+      const id = br.object.userData.owners[br.instanceId];
+      if (id && bridgeById.has(id)) return { bridge: bridgeById.get(id) };
     }
     if (t) return { cat: t.object.userData.cat };
     return null;
@@ -243,6 +255,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     down = null;
     if (!d || d.moved) return;
     const hit = pickAt(e.clientX, e.clientY);
+    if (hit && hit.bridge) return; // bridges only explain themselves on hover
     if (!hit) {
       if (selected) select(null, false);
     } else if (hit.node) {
@@ -264,21 +277,38 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     const at = hoverAt;
     hoverAt = null;
     const hit = pickAt(at.x, at.y);
-    canvas.style.cursor = hit ? 'pointer' : '';
-    if (!hit || !hit.node) {
+    canvas.style.cursor = hit && !hit.bridge ? 'pointer' : '';
+    if (!hit || (!hit.node && !hit.bridge)) {
       tipEl.hidden = true;
       hoverId = null;
       return;
     }
-    const n = hit.node;
-    if (n.id !== hoverId) {
-      hoverId = n.id;
-      const kind = classKind(n);
-      const tags = [n.ui ? strings.ui : strings.be];
-      if (n.key) tags.push(strings.key);
-      if (!n.url) tags.push(strings.un);
-      tipEl.innerHTML = '<b>' + esc(n.name) + '</b><span>' + esc(n.cat) + ' · ' + esc(tags.join(' · ')) + '</span>' + (n.url ? '<em>' + esc(strings.open) + '</em>' : '');
-      tipEl.dataset.kind = kind;
+    if (hit.bridge) {
+      const b = hit.bridge;
+      if (b.id !== hoverId) {
+        hoverId = b.id;
+        const title = '<b>' + esc(b.a.cat) + ' ⇄ ' + esc(b.b.cat) + '</b>';
+        if (!b.rel) {
+          tipEl.innerHTML = title + '<span>' + esc(strings.path) + '</span>';
+        } else {
+          // which class/member makes the link, e.g. NotesDatabase.CreateDocument → NotesDocument
+          const lines = b.rel.via.slice(0, 4).map((v) => '<code>' + esc(v.s) + (v.m ? '.' + esc(v.m) : '') + ' → ' + esc(v.t) + '</code>');
+          const more = b.rel.via.length > 4 ? '<span>' + esc(strings.more.replace('{n}', b.rel.via.length - 4)) + '</span>' : '';
+          tipEl.innerHTML = title + '<span>' + b.rel.n + esc(strings.rel) + '</span>' + lines.join('') + more;
+        }
+        tipEl.dataset.kind = 'bridge';
+      }
+    } else {
+      const n = hit.node;
+      if (n.id !== hoverId) {
+        hoverId = n.id;
+        const kind = classKind(n);
+        const tags = [n.ui ? strings.ui : strings.be];
+        if (n.key) tags.push(strings.key);
+        if (!n.url) tags.push(strings.un);
+        tipEl.innerHTML = '<b>' + esc(n.name) + '</b><span>' + esc(n.cat) + ' · ' + esc(tags.join(' · ')) + '</span>' + (n.url ? '<em>' + esc(strings.open) + '</em>' : '');
+        tipEl.dataset.kind = kind;
+      }
     }
     const r = stage.getBoundingClientRect();
     tipEl.style.transform = `translate(${Math.round(at.x - r.left + 14)}px, ${Math.round(at.y - r.top + 16)}px)`;
@@ -332,5 +362,6 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   }
   raf = requestAnimationFrame(frame);
 
-  return { select: (cat) => select(cat, true), reset, filter, clusters: layout.clusters };
+  // `walk` is the pedestrian network (tile rings + bridges) for future walkers.
+  return { select: (cat) => select(cat, true), reset, filter, clusters: layout.clusters, walk: layout.walk };
 }

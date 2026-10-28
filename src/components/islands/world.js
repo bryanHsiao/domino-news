@@ -73,7 +73,7 @@ export function classKind(n) {
 }
 export const ROOF_COLORS = ROOF;
 
-export function buildWorld(THREE, scene, { buildings, decor }, props, layout) {
+export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, layout) {
   const pickTargets = [];
   const outlines = new Map();
   const tileAt = new Map(layout.tiles.map((t) => [t.q + ',' + t.r, t]));
@@ -179,32 +179,9 @@ export function buildWorld(THREE, scene, { buildings, decor }, props, layout) {
     add(look.plugSkirtGeo, look.skirtMat, { cat: j.cat, x: j.x, y: skirtY - 0.01, z: j.z });
   }
 
-  // ---- bridges between neighbouring islands (wooden arched decks)
-  for (const { a, b } of layout.bridges) {
-    const dx = b.x - a.x, dz = b.z - a.z;
-    const L = Math.hypot(dx, dz);
-    const ux = dx / L, uz = dz / L;
-    const ri = R * 0.866 - 0.12;
-    const ax = a.x + ux * ri, az = a.z + uz * ri;
-    const len = L - 2 * ri;
-    const yaw = Math.atan2(ux, uz);
-    const ARCH = 0.09;
-    const N = 8;
-    for (let s = 0; s < N; s++) {
-      const t = (s + 0.5) / N;
-      const y = TOP + 0.03 + Math.sin(t * Math.PI) * ARCH;
-      const slope = (Math.cos(t * Math.PI) * ARCH * Math.PI) / len;
-      decor.part('box', [ax + ux * len * t, y, az + uz * len * t], [0.42, 0.035, len / N + 0.01], s % 2 ? 0xb48560 : 0xa77a55, null, [-Math.atan(slope), yaw, 0]);
-    }
-    const px = uz, pz = -ux; // sideways unit vector
-    for (const side of [-1, 1]) {
-      for (let s = 0; s <= 4; s++) {
-        const t = s / 4;
-        decor.part('box', [ax + ux * len * t + px * 0.2 * side, TOP + 0.13 + Math.sin(t * Math.PI) * ARCH, az + uz * len * t + pz * 0.2 * side], [0.03, 0.18, 0.03], 0xfff8f4);
-      }
-      decor.part('box', [ax + ux * len * 0.5 + px * 0.2 * side, TOP + 0.22 + ARCH * 0.66, az + uz * len * 0.5 + pz * 0.2 * side], [0.025, 0.025, len], 0x9a7454, null, [0, yaw, 0]);
-    }
-  }
+  // ---- bridges: only between related islands; the stronger the relation
+  // (number of class links), the wider and sturdier the bridge
+  for (const br of layout.bridges) buildBridge(bridges, br);
 
   // ---- landmark, themed class buildings and greenery per tile
   layout.clusters.forEach((c, ci) => {
@@ -271,6 +248,70 @@ export function buildWorld(THREE, scene, { buildings, decor }, props, layout) {
   }
 
   return { pickTargets, outlines };
+}
+
+// Bridge look by relation strength: 4+ links a wide stone bridge, 2–3 a wooden
+// one, a single link a narrow footbridge; a plain walkway (no relation, only
+// there so every island can be reached) is a rope bridge.
+function bridgeStyle(n) {
+  if (!n) return { deck: [0xb7a993, 0xa89a84], width: 0.3, thick: 0.03, post: 0x7d6a58, rail: 0x7d6a58, arch: 0.05, walls: false };
+  if (n >= 4) return { deck: [0xd6cbb8, 0xcabfab], width: 0.62, thick: 0.06, post: 0xe6dccb, rail: 0xe6dccb, arch: 0.12, walls: true };
+  if (n >= 2) return { deck: [0xb48560, 0xa77a55], width: 0.46, thick: 0.04, post: 0xfff8f4, rail: 0x9a7454, arch: 0.09, walls: false };
+  return { deck: [0xc9a27c, 0xb8916b], width: 0.36, thick: 0.035, post: 0xfff8f4, rail: 0x9a7454, arch: 0.07, walls: false };
+}
+
+// An arched bridge from tile a's edge to tile b's edge. Every part is owned by
+// the bridge id so it can be hovered (relation tooltip) and highlighted.
+function buildBridge(kit, br) {
+  const { a, b, id } = br;
+  const st = bridgeStyle(br.rel ? br.rel.n : 0);
+  const dx = b.x - a.x, dz = b.z - a.z;
+  const L = Math.hypot(dx, dz);
+  const ux = dx / L, uz = dz / L;
+  const ri = R * 0.866 - 0.12;
+  const ax = a.x + ux * ri, az = a.z + uz * ri;
+  const len = L - 2 * ri;
+  const yaw = Math.atan2(ux, uz);
+  const arch = st.arch * Math.min(2, Math.max(1, len / 2)); // long spans arch higher
+  const at = (t) => [ax + ux * len * t, TOP + 0.03 + Math.sin(t * Math.PI) * arch, az + uz * len * t];
+  const tilt = (t) => -Math.atan((Math.cos(t * Math.PI) * arch * Math.PI) / len);
+  const px = uz, pz = -ux; // sideways unit vector
+  const half = st.width / 2 - 0.02;
+
+  const N = Math.max(6, Math.round(len / 0.3));
+  for (let s = 0; s < N; s++) {
+    const t = (s + 0.5) / N;
+    kit.part('box', at(t), [st.width, st.thick, len / N + 0.01], st.deck[s % 2], id, [tilt(t), yaw, 0]);
+  }
+  const segs = Math.max(3, Math.round(len / 0.55));
+  for (const side of [-1, 1]) {
+    if (st.walls) {
+      // low stone parapets following the arch
+      for (let s = 0; s < segs; s++) {
+        const t = (s + 0.5) / segs;
+        const [x, y, z] = at(t);
+        kit.part('box', [x + px * half * side, y + 0.08, z + pz * half * side], [0.06, 0.12, len / segs + 0.02], st.rail, id, [tilt(t), yaw, 0]);
+      }
+      continue;
+    }
+    for (let s = 0; s <= segs; s++) {
+      const [x, y, z] = at(s / segs);
+      kit.part('box', [x + px * half * side, y + 0.1, z + pz * half * side], [0.03, 0.18, 0.03], st.post, id);
+    }
+    for (let s = 0; s < segs; s++) {
+      const t = (s + 0.5) / segs;
+      const [x, y, z] = at(t);
+      kit.part('box', [x + px * half * side, y + 0.19, z + pz * half * side], [0.022, 0.022, len / segs + 0.02], st.rail, id, [tilt(t), yaw, 0]);
+    }
+  }
+  // piers under long spans
+  if (len > 3.2) {
+    for (const t of [1 / 3, 2 / 3]) {
+      const [x, y, z] = at(t);
+      const h = y - WATER_Y + 0.2;
+      kit.part('cyl', [x, y - h / 2, z], [0.16, h, 0.16], st.walls ? 0xcabfab : 0x8a6a4e, id);
+    }
+  }
 }
 
 // One class = one small house in its island's architecture. The class decides
