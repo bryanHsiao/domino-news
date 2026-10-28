@@ -1,5 +1,5 @@
 ---
-title: "排程 agent 為什麼沒跑、或跑太慢:Agent Manager 的日/夜時段、並行數、執行時間上限,與 Tell Amgr 怎麼查"
+title: "排程 agent 為什麼沒跑、或跑太慢"
 description: "你排了一個 agent 每小時跑,結果它沒跑、跑很慢、或跑到一半被砍——多半不是 agent 本身壞了,是 Agent Manager(AMgr)這個 server task 的設定在管它。這篇講 AMgr 怎麼排程:Server 文件的日/夜兩個時段(預設日 8AM–8PM、夜 8PM–8AM)以及最常見的陷阱——兩段之間若留了 gap,那段時間 AMgr 根本不跑排程 agent;Max concurrent agents(1–10,預設日 1 夜 2)與 Max LotusScript/Java execution time(預設日 10 分、夜 15 分,超過就被砍並記進 Agent Log);文件/郵件觸發為什麼不是即時(AMgr_DocUpdateEventDelay、AMgr_DocUpdateAgentMinInterval 預設 30 分等 notes.ini 節流);「Agent scheduling is paused」是什麼意思;以及用 Tell Amgr Schedule / Tell Amgr Status 從主控台查「它到底排了沒」。最後給一張「排程 agent 沒跑」的逐項排查清單。"
 pubDate: 2026-10-21T07:30:00+08:00
 lang: zh-TW

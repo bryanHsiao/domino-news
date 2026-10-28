@@ -1,5 +1,5 @@
 ---
-title: "DDM(Domino Domain Monitoring):Domino 內建的主動監控——probe 查什麼、事件進 ddm.nsf、collection hierarchy 一處看全網域、event handler 出事通知你"
+title: "DDM:Domino 內建的主動監控"
 description: "伺服器出事通常是「使用者先哀號、你才知道」。DDM(Domino Domain Monitoring)是 Domino 內建、往主動那端走的監控:它定期跑 probe 去查資料庫、目錄、郵件、作業系統、複寫、安全、伺服器、web 各領域的健康,把事件收進 ddm.nsf,並在 Domino Administrator 裡給你一個 top-down、依功能分類的全網域狀態視圖,還常附上 probable cause 與建議的修正動作。這篇講 probe 是什麼(以及它們的設定文件放在 EVENTS4.NSF、改了即生效)、ddm.nsf 怎麼存事件、怎麼用 collection hierarchy 讓一台 collection server 匯整整個網域(收集間隔固定 5 分鐘)、enhanced 與 simple 事件差在哪,以及 event handler 怎麼在事件發生時用 log/mail/跑 agent/跑程式/下 console 指令/SNMP trap 通知你。"
 pubDate: 2026-10-24T07:30:00+08:00
 lang: zh-TW

@@ -1,5 +1,5 @@
 ---
-title: "一封信在 Domino 裡怎麼走:mail.box、Router、NRPC 逐跳 vs SMTP,以及卡在 mail.box 裡的 dead 與 held mail"
+title: "一封信在 Domino 裡怎麼走:全部經過 mail.box"
 description: "使用者按下送出之後,信到底去了哪?在 Domino,每封信都先落進一個叫 mail.box 的資料庫,再由 Router task 一封一封讀收件人、決定「本機投遞」還是「轉給下一台」。這篇把這條鏈講清楚:mail.box 是什麼(為什麼一台可以有好幾個 mail1.box/mail2.box)、Router 怎麼定期檢查並查 routing table、兩種傳輸協定(預設的 Notes routing/NRPC 怎麼逐跳把信搬到下一台的 mail.box,SMTP 怎麼用 DNS MX、port 25、只走 MIME,以及它預設關閉、在 Configuration Settings 的 Router/SMTP 分頁開),信怎麼投進收件人 home server 的 mail file;最後講卡在 mail.box 的兩種信——dead(stop sign:投不出去又退不回寄件人)與 held(紅驚嘆號:mail rule 或 quota 擋下來),各自怎麼來、怎麼處理。"
 pubDate: 2026-10-20T07:30:00+08:00
 lang: zh-TW

@@ -1,5 +1,5 @@
 ---
-title: "Why Your Scheduled Agent Doesn't Run (or Runs Late): Agent Manager's Day/Night Windows, Concurrency, Execution Limits, and Tell Amgr"
+title: "Why Your Scheduled Agent Doesn't Run — or Runs Late"
 description: "You schedule an agent to run hourly, and it doesn't run, runs late, or gets killed mid-run — usually it's not the agent that's broken, it's the Agent Manager (AMgr) server task's settings governing it. This piece covers how AMgr schedules: the Server document's daytime/nighttime windows (default day 8AM–8PM, night 8PM–8AM) and the most common trap — if the two periods leave a gap, AMgr doesn't run scheduled agents during it; Max concurrent agents (1–10, default day 1 / night 2) and Max LotusScript/Java execution time (default day 10 min, night 15 min — over it, the agent is terminated and logged in the Agent Log); why document/mail triggers aren't instant (AMgr_DocUpdateEventDelay, AMgr_DocUpdateAgentMinInterval default 30 min, and other notes.ini throttles); what 'Agent scheduling is paused' means; and using Tell Amgr Schedule / Tell Amgr Status from the console to see whether it was even scheduled. Ends with a step-by-step checklist for a scheduled agent that won't run."
 pubDate: 2026-10-21T07:30:00+08:00
 lang: en

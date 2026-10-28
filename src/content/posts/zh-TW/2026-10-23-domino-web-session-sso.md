@@ -1,5 +1,5 @@
 ---
-title: "Domino web 登入怎麼運作:basic vs session 認證、單機 vs 多機 SSO、那把 shared secret,以及切到 Internet Sites 會自動停用 SSO 的雷"
+title: "Domino web 登入與多機 SSO 怎麼運作"
 description: "使用者在瀏覽器登入 Domino 後一路點都不用再登入,靠的是 session-based authentication:伺服器發一個 token、放進 cookie,之後瀏覽器每次帶著它。多台伺服器之間「登入一次到處通」(SSO)則多靠一份放在 Domino Directory、含一把 shared secret key 的 Web SSO Configuration 文件。這篇講 basic 與 session 認證差在哪、單機 cookie 與多機 SSO 的分別、Web SSO Configuration 文件要複寫到所有參與伺服器、幾個會讓 SSO 失敗的硬條件(DNS domain 要以句點開頭、URL 要用 FQDN、cookie 不能跨 TCP/IP domain、只能列 Domino 伺服器、所有 SSO 伺服器要用同一種 Internet-access 方式),一個很容易中的雷——在 Server 文件開 Internet Sites 會自動停用既有 SSO 設定,以及跟 WebSphere 共用 LTPA 時的注意事項(匯入 WebSphere key 就不能設 idle timeout、LTPA realm 要一致)。"
 pubDate: 2026-10-23T07:30:00+08:00
 lang: zh-TW

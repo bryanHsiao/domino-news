@@ -1,5 +1,5 @@
 ---
-title: "Where Domino Reads Its Web Config: Internet Site Documents vs the Server Document, the All-or-Nothing Rule, and Why Ports Stay in the Server Document"
+title: "Where Domino Reads Its Web Config: Internet Sites or the Server Document"
 description: "You change a Domino web setting and nothing happens — often it's not a wrong value, it's the wrong place: Domino's Internet-protocol configuration comes from two sources, the older Server document (Web Server Configurations / virtual servers) and the newer Internet Site documents (stored in the Domino Directory and managed centrally). Which one a server reads is decided by one switch on the Server document's Basics tab. This piece covers how the two models switch, which protocols an Internet Site document configures (Web/IMAP/POP3/SMTP Inbound/LDAP/IIOP), why edits don't need a restart, an easy-to-hit all-or-nothing rule (if one protocol on a server uses Internet Sites, all protocols must), what the Web Site document's Basics/Configuration/Domino Web Engine/Security tabs each control, which settings (TCP/IP port, SSL port, server access) always stay in the Server document, and how to confirm from the HTTP startup message which source the server is actually using."
 pubDate: 2026-10-22T07:30:00+08:00
 lang: en

@@ -1,5 +1,5 @@
 ---
-title: "Domino 的 web 設定到底讀哪裡:Internet Site documents vs Server 文件,all-or-nothing,以及為什麼 port 還是留在 Server 文件"
+title: "Domino web 設定讀哪裡:Internet Site 還是 Server 文件"
 description: "你改了 Domino 的 web 設定卻沒生效,很多時候不是設錯,是改錯地方——Domino 的 Internet 協定設定有兩套來源:舊的 Server 文件(Web Server Configurations / 虛擬伺服器),和新的 Internet Site documents(存在 Domino Directory、可跨伺服器集中管理)。伺服器到底讀哪一套,由 Server 文件 Basics 分頁一個開關決定。這篇講兩種模型怎麼切、Internet Site documents 能設哪些協定(Web/IMAP/POP3/SMTP Inbound/LDAP/IIOP)、改動為什麼不用重啟、一個很容易踩的 all-or-nothing 規則(同一台伺服器只要有一個協定用 Internet Site,就得所有協定都用)、Web Site document 的 Basics/Configuration/Domino Web Engine/Security 分頁各管什麼、哪些設定(TCP/IP port、SSL port、server access)無論如何都還是留在 Server 文件,以及怎麼從 HTTP 啟動訊息確認伺服器實際讀的是哪一套。"
 pubDate: 2026-10-22T07:30:00+08:00
 lang: zh-TW

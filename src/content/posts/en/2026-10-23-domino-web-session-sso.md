@@ -1,5 +1,5 @@
 ---
-title: "How Domino Web Login Works: Basic vs Session Authentication, Single- vs Multi-Server SSO, the Shared Secret, and the Trap Where Enabling Internet Sites Disables SSO"
+title: "How Domino Web Login and Multi-Server SSO Work"
 description: "A user logs into Domino in a browser and then clicks around without logging in again — that's session-based authentication: the server issues a token, puts it in a cookie, and the browser carries it on every request. Letting a user log into one server and reach several others (SSO) relies on a Web SSO Configuration document in the Domino Directory holding a shared secret key. This piece covers how basic and session authentication differ, single-server cookies vs multi-server SSO, that the Web SSO Configuration document must replicate to every participating server, the hard conditions that make SSO fail (the DNS domain must start with a period, URLs must use the FQDN, cookies can't cross TCP/IP domains, only Domino servers can be listed, and all SSO servers must use the same Internet-access method), an easy trap — enabling Internet Sites in the Server document automatically disables an existing SSO configuration — and the caveats for sharing LTPA with WebSphere (importing WebSphere keys removes the idle-timeout option, and the LTPA realm must match)."
 pubDate: 2026-10-23T07:30:00+08:00
 lang: en

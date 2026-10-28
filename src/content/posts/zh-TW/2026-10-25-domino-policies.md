@@ -1,5 +1,5 @@
 ---
-title: "Policy documents:從一個地方把設定推到全公司的 Notes client——organizational vs explicit、effective policy、How to Apply 的四種模式"
+title: "Policy:從一個地方把設定推到全公司"
 description: "想把一個設定(密碼規則、郵件配額、桌面功能開關、ECL)一次套到全公司的 Notes 使用者,靠的是 policy。這篇講 Domino policy 的運作:兩種指派方式——organizational policy(依註冊時的 OU 自動套用)與 explicit policy(手動指派給個人或群組);各種 policy settings document(registration / desktop / mail / security / archive,以及已淘汰、併進 desktop 的 setup);effective policy 是什麼——使用者實際生效的設定,是在執行當下由 OU、explicit(含所屬群組)、與繼承自上層 policy 的值動態算出來的;最關鍵的 How to Apply 四種模式(Don't set value / Set initial value / Set value whenever modified / Set value and prevent changes=鎖死),決定使用者能不能改;以及 exception policy 怎麼讓特定人例外。"
 pubDate: 2026-10-25T07:30:00+08:00
 lang: zh-TW

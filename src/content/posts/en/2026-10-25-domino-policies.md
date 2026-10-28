@@ -1,5 +1,5 @@
 ---
-title: "Policy Documents: Pushing Settings to Every Notes Client From One Place — Organizational vs Explicit, the Effective Policy, and How to Apply's Four Modes"
+title: "Policies: Push Settings to Every Notes Client From One Place"
 description: "To apply one setting — a password rule, a mail quota, a desktop feature toggle, an ECL — to every Notes user at once instead of machine by machine, you use a policy. This piece explains how Domino policies work: the two assignment types (organizational policies apply automatically based on the OU used at registration; explicit policies are assigned by hand to individuals or groups); the policy settings document types (registration / desktop / mail / security / archive, plus the deprecated setup that merged into desktop); what the effective policy is — the settings a user actually gets, dynamically computed at execution time from OU-level, explicit (including groups), and inherited parent-policy values; the crucial How to Apply modes (Don't set value / Set initial value / Set value whenever modified / Set value and prevent changes = locked), which decide whether users can change a value; and how an exception policy lets specific users override otherwise-mandatory settings."
 pubDate: 2026-10-25T07:30:00+08:00
 lang: en

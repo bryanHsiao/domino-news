@@ -1,5 +1,5 @@
 ---
-title: "Domino cluster 怎麼做 failover 與負載平衡:Cluster Manager、cldbdir.nsf、事件驅動的 Cluster Replicator,以及「沒 replica 就沒 failover」"
+title: "Domino cluster failover:沒 replica 就沒 failover"
 description: "一台 Domino 掛了、或忙到不行,使用者卻幾乎無感地繼續用——那是 cluster 在做 failover 與負載平衡。但 failover 不是魔法:它的硬前提是「另一台 cluster 伺服器上有這個資料庫的 replica」,沒有 replica 就沒得切。這篇講 Domino cluster 的幾個元件怎麼合作:每台的 Cluster Manager 用 probe 互相探可用性與負載、靠監看 Domino Directory 的 ClusterName 找成員;cldbdir.nsf(每台一份、每個資料庫與 replica 一份文件);事件驅動、近即時的 Cluster Replicator(約每 15 秒檢查一次、只在 cluster 成員間推變更,對外仍用一般 REPLICA);failover 怎麼走(Cluster Manager 查出有 replica 的伺服器、按可用性排序、把清單送給 Notes client,對使用者大致透明);以及負載平衡的 availability threshold 怎麼把伺服器標成 BUSY、把請求導去其他 replica,和給 HTTP client 的 Internet Cluster Manager(ICM)。"
 pubDate: 2026-10-26T07:30:00+08:00
 lang: zh-TW

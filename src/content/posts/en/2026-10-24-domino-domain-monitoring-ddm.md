@@ -1,5 +1,5 @@
 ---
-title: "DDM (Domino Domain Monitoring): Domino's Built-in Proactive Monitoring — Probes, Events in ddm.nsf, a Domain-Wide View via the Collection Hierarchy, and Event Handlers That Tell You"
+title: "DDM: Domino's Built-in Proactive Monitoring"
 description: "Server trouble is usually 'the users complain first, then you find out.' DDM (Domino Domain Monitoring) is Domino's built-in, proactive-leaning monitoring: it runs probes on a schedule to check the health of databases, the directory, messaging, the operating system, replication, security, the server, and the web, records events into ddm.nsf, and gives you a top-down, feature-oriented view of the whole domain in the Domino Administrator — often with a probable cause and suggested corrective actions. This piece covers what a probe is (and that its configuration documents live in EVENTS4.NSF and take effect immediately), how ddm.nsf stores events, how the collection hierarchy lets one collection server consolidate the whole domain (the collection interval is a fixed 5 minutes), the difference between enhanced and simple events, and how an event handler notifies you — by logging, mail, running an agent, running a program, sending console commands, or an SNMP trap — when an event fires."
 pubDate: 2026-10-24T07:30:00+08:00
 lang: en

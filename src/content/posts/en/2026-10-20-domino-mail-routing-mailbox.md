@@ -1,5 +1,5 @@
 ---
-title: "How a Message Routes Through Domino: mail.box, the Router, NRPC Hop-by-Hop vs SMTP, and the Dead and Held Mail Stuck in mail.box"
+title: "How a Message Routes Through Domino: It All Goes Through mail.box"
 description: "A user clicks Send — where does the message actually go? In Domino, every message first lands in a database called mail.box, and the Router task reads the recipients one by one and decides 'deliver locally' or 'transfer to the next server.' This piece lays out the chain: what mail.box is (and why one server can run several mail1.box/mail2.box), how the Router periodically checks it and consults its routing table, the two transfer protocols (default Notes routing / NRPC moving the message hop-by-hop into the next server's mail.box, and SMTP using DNS MX, port 25, MIME only, off by default and enabled on the Router/SMTP tab of the Configuration Settings document), how the message is delivered into the recipient's home-server mail file; and finally the two kinds of message stuck in mail.box — dead (stop-sign: can be neither delivered nor returned to the sender) and held (red exclamation: held by a mail rule or quota) — what causes each and how to handle them."
 pubDate: 2026-10-20T07:30:00+08:00
 lang: en
