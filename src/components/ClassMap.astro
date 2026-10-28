@@ -27,6 +27,10 @@ const T =
   lang === 'zh-TW'
     ? {
         title: 'LotusScript 類別相依地圖',
+        name: '類別相依地圖',
+        tools: '地圖操作',
+        btnFit: '全景',
+        btnSearch: '搜尋',
         sub: 'HCL Domino · 節點＝類別，連線＝「A 的方法/屬性回傳 B」 · 亮起的節點可點進文章',
         covered: '已涵蓋',
         search: '搜尋類別…',
@@ -45,6 +49,10 @@ const T =
       }
     : {
         title: 'LotusScript Class Map',
+        name: 'Class Map',
+        tools: 'Map tools',
+        btnFit: 'Fit',
+        btnSearch: 'Find',
         sub: 'HCL Domino · nodes are classes, edges mean "A returns B via a method/property" · lit nodes link to an article',
         covered: 'covered',
         search: 'Search classes…',
@@ -61,6 +69,11 @@ const T =
         legKey: 'key class',
         hint: 'Pinch to zoom · tap a node for relations',
       };
+// What the coverage pill counts (shown on hover).
+const statTip =
+  lang === 'zh-TW'
+    ? `${total} 個 LotusScript 類別中，已有 ${coveredCount} 個寫成文章（有文章連到該類別或它的屬性／方法的官方文件）`
+    : `${coveredCount} of the ${total} LotusScript classes already have an article (a post links to the class or one of its members' HCL docs)`;
 ---
 
 <div
@@ -71,10 +84,10 @@ const T =
 >
   <header class="cm-top">
     <div class="cm-title">
-      <h1>{T.title}</h1>
+      <h1><span class="cm-brand">LotusScript</span> <span class="cm-name">{T.name}</span></h1>
       <p class="cm-sub">{T.sub}</p>
     </div>
-    <div class="cm-stat"><b>{coveredCount}</b><span>/ {total} {T.covered}</span></div>
+    <div class="cm-stat" title={statTip}><b>{coveredCount}</b><span>/ {total} {T.covered}</span></div>
   </header>
   <div class="cm-controls">
     <input id="cm-q" type="search" placeholder={T.search} autocomplete="off" />
@@ -93,6 +106,12 @@ const T =
       <button id="cm-in" aria-label="zoom in">＋</button>
     </div>
   </div>
+  <!-- Phones: same small-button column as the islands view; the controls bar
+       above folds into a drawer opened by the search button. -->
+  <nav class="cm-tools" data-map-tools aria-label={T.tools}>
+    <button type="button" data-act="fit"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M4 12L12 4M6.5 4H12v5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>{T.btnFit}</button>
+    <button type="button" data-act="search" aria-expanded="false"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>{T.btnSearch}</button>
+  </nav>
   <div class="cm-stage">
     <svg id="cm-svg" role="img" aria-label={T.title}><g id="cm-cam"><g id="cm-edges"></g><g id="cm-nodes"></g></g></svg>
     <div id="cm-hint" class="cm-hint" data-hint={T.hint}></div>
@@ -176,6 +195,32 @@ const T =
   :root[data-theme='dark'] #cm .nd.be text, :root[data-theme='dark'] #cm .nd.ui text { fill: #0a0a0a; }
   :root[data-theme='dark'] #cm .cm-legend { background: rgba(23,23,23,.9); }
   :root[data-theme='light'] #cm { --cbg: #faf9f6; --cpanel: #fff; --cink: #1a1a1a; --cmuted: #6b6b6b; --cline: #e2e0d8; --cgold: #d99000; --cbe: #1d4ed8; --cui: #7c3aed; --cun: #9aa0a8; --cedge: #c9c6bd; }
+
+  #cm .cm-brand { color: #db6a41; }
+  /* Phones: the same layout as the islands view — a brand card top-left, a
+     column of small buttons top-right (fit, search); the controls bar folds
+     into a drawer under the card, and the legend gives way, so the graph
+     gets the whole height. */
+  #cm .cm-tools { display: none; position: absolute; top: 10px; right: 10px; z-index: 7; flex-direction: column; gap: 8px; }
+  #cm .cm-tools button { display: flex; align-items: center; justify-content: center; gap: 5px; width: 68px; height: 42px; padding: 0 8px; border-radius: 12px; border: 1px solid rgba(33, 29, 29, 0.18); background: rgba(255, 248, 244, 0.95); color: #211d1d; font: 600 12.5px/1 system-ui, -apple-system, 'Noto Sans TC', sans-serif; box-shadow: 0 4px 14px rgba(33, 29, 29, 0.12); cursor: pointer; }
+  #cm .cm-tools button[aria-expanded='true'] { background: #211d1d; color: #fff8f4; border-color: #211d1d; }
+  @media (max-width: 760px) {
+    #cm { position: relative; }
+    #cm .cm-top { position: absolute; top: 10px; left: 10px; z-index: 7; display: block; max-width: calc(100% - 100px); padding: 10px 14px 11px; border: 1px solid rgba(33, 29, 29, 0.18); border-radius: 16px; background: rgba(255, 248, 244, 0.95); box-shadow: 0 8px 26px rgba(33, 29, 29, 0.14); color: #211d1d; }
+    #cm .cm-title h1 { display: flex; flex-direction: column; line-height: 1.02; font-size: 13px; font-weight: 700; color: #211d1d; }
+    #cm .cm-brand { font-size: 24px; font-weight: 800; letter-spacing: -0.03em; }
+    #cm .cm-name { margin-top: 3px; letter-spacing: 0.08em; }
+    #cm .cm-sub { display: none; }
+    #cm .cm-stat { display: inline-flex; margin-top: 7px; padding: 3px 9px; }
+    #cm .cm-stat b { font-size: 13px; }
+    #cm .cm-stat span { font-size: 10.5px; }
+    #cm .cm-controls { display: none; position: absolute; z-index: 7; left: 10px; top: var(--cm-drawer-top, 118px); width: calc(100% - 100px); flex-wrap: wrap; gap: 6px; padding: 8px; border: 1px solid rgba(33, 29, 29, 0.18); border-radius: 12px; background: rgba(255, 248, 244, 0.95); box-shadow: 0 8px 26px rgba(33, 29, 29, 0.14); }
+    #cm.search-open .cm-controls { display: flex; }
+    #cm .cm-controls input, #cm .cm-controls select { flex: 1 1 100%; min-width: 0; background: #fff; color: #211d1d; border-color: rgba(33, 29, 29, 0.18); }
+    #cm .cm-seg, #cm .cm-zoom, #cm .cm-legend { display: none; }
+    #cm .cm-tools { display: flex; }
+    #cm .cm-hint { top: auto; bottom: 14px; }
+  }
 </style>
 
 <script>
@@ -288,6 +333,22 @@ const T =
     }
     q.addEventListener('input', function () { pinnedId = null; tip.hidden = true; applyFilter(); });
     catSel.addEventListener('change', function () { pinnedId = null; tip.hidden = true; applyFilter(); });
+
+    // Phones: the small-button tools. Search opens the controls bar as a
+    // drawer under the brand card; closing it clears the search and filter.
+    var searchBtn = root.querySelector('.cm-tools [data-act="search"]');
+    root.querySelector('.cm-tools [data-act="fit"]').addEventListener('click', function () { clearPin(); fit(); });
+    searchBtn.addEventListener('click', function () {
+      var open = !root.classList.contains('search-open');
+      if (open) {
+        var top = root.querySelector('.cm-top');
+        root.style.setProperty('--cm-drawer-top', (top.offsetTop + top.offsetHeight + 8) + 'px');
+      }
+      root.classList.toggle('search-open', open);
+      searchBtn.setAttribute('aria-expanded', String(open));
+      if (open) q.focus();
+      else if (q.value || catSel.value) { q.value = ''; catSel.value = ''; pinnedId = null; tip.hidden = true; applyFilter(); }
+    });
     Array.prototype.forEach.call(document.querySelectorAll('#cm-type button'), function (b) { b.onclick = function () { fType = b.dataset.v; Array.prototype.forEach.call(document.querySelectorAll('#cm-type button'), function (x) { x.classList.toggle('on', x === b); }); applyFilter(); }; });
     requestAnimationFrame(fit);
     // Refit on window resize, and when the graph view is un-hidden by the

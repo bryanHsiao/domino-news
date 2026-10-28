@@ -42,9 +42,9 @@ const coveredCount = nodes.filter((n) => n.url).length;
 
 <BaseLayout lang={lang} title={t('nav.map')} description="An interactive map of HCL Domino's LotusScript classes — readable cards grouped by category; click a card to see what it returns and what returns it, and open the article for classes already written. Toggle to a relationship graph too.">
   <div class="map-tabs" role="tablist" aria-label="view switch">
-    <button class="map-tab on" data-view="dir" type="button"><span class="mt-ic" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15"><path d="M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg></span>Grouped</button>
-    <button class="map-tab" data-view="graph" type="button"><span class="mt-ic" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15"><path d="M5.2 5.4l1.9 5M10.8 5.4l-1.9 5M5.6 3.8h4.8" stroke="currentColor" stroke-width="1.4"></path><circle cx="3.6" cy="3.8" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle><circle cx="12.4" cy="3.8" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle><circle cx="8" cy="12.4" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle></svg></span>Graph</button>
-    <button class="map-tab" data-view="islands" type="button"><span class="mt-ic" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15"><path d="M8 1.8l5.4 3.1v6.2L8 14.2l-5.4-3.1V4.9z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path></svg></span>Islands</button>
+    <button class="map-tab on" data-view="dir" type="button"><span class="mt-ic" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15"><path d="M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg></span><span class="mt-full">Grouped</span><span class="mt-short">Cards</span></button>
+    <button class="map-tab" data-view="graph" type="button"><span class="mt-ic" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15"><path d="M5.2 5.4l1.9 5M10.8 5.4l-1.9 5M5.6 3.8h4.8" stroke="currentColor" stroke-width="1.4"></path><circle cx="3.6" cy="3.8" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle><circle cx="12.4" cy="3.8" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle><circle cx="8" cy="12.4" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle></svg></span><span class="mt-full">Graph</span><span class="mt-short">Graph</span></button>
+    <button class="map-tab" data-view="islands" type="button"><span class="mt-ic" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15"><path d="M8 1.8l5.4 3.1v6.2L8 14.2l-5.4-3.1V4.9z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path></svg></span><span class="mt-full">Islands</span><span class="mt-short">Isles</span></button>
   </div>
 
   <div id="mv-dir">
@@ -59,10 +59,14 @@ const coveredCount = nodes.filter((n) => n.url).length;
 </BaseLayout>
 
 <style>
-  .map-tabs { display: inline-flex; gap: 4px; margin: 0 0 12px; padding: 4px; border: 1px solid var(--color-border, #e2e0d8); border-radius: 11px; background: var(--color-surface, #fff); }
-  .map-tab { font: inherit; font-size: 0.88rem; font-weight: 600; padding: 7px 16px; border: 0; border-radius: 8px; background: transparent; color: var(--color-text-muted, #6b6b6b); cursor: pointer; }
-  .map-tab.on { background: var(--color-brand-dark, #0a0a0a); color: #fff; }
-  .mt-ic { display: none; }
+  /* Segmented tab switch on tablets and wider; phones get the small-button
+     column instead (global styles below). */
+  @media (min-width: 761px) {
+    .map-tabs { display: inline-flex; gap: 4px; margin: 0 0 12px; padding: 4px; border: 1px solid var(--color-border, #e2e0d8); border-radius: 11px; background: var(--color-surface, #fff); }
+    .map-tab { font: inherit; font-size: 0.88rem; font-weight: 600; padding: 7px 16px; border: 0; border-radius: 8px; background: transparent; color: var(--color-text-muted, #6b6b6b); cursor: pointer; }
+    .map-tab.on { background: var(--color-brand-dark, #0a0a0a); color: #fff; }
+    .mt-ic, .mt-short { display: none; }
+  }
   #mv-dir[hidden], #mv-graph[hidden], #mv-islands[hidden] { display: none; }
 </style>
 
@@ -102,33 +106,17 @@ const coveredCount = nodes.filter((n) => n.url).length;
     html.map-fullscreen #ci .ci-legend, html.map-fullscreen #cm .cm-legend { bottom: 66px; }
     html.map-fullscreen #ci .ci-hint { bottom: 108px; }
   }
-  /* Phones: like the reference site, the view switch joins the column of
-     small buttons on the right — stacked under the view's own tools (the
-     islands' tools column, the graph's controls bar; --map-tabs-top is
-     measured by the script). The current view's button is hidden; the
-     legends give way. */
+  /* Phones, every view: like the reference site, each view has a brand card
+     top-left and a column of small buttons top-right (its own tools, marked
+     data-map-tools); the view switch joins that column, stacked under the
+     tools (--map-tabs-top is measured by the script). The current view's
+     button is hidden. */
   @media (max-width: 760px) {
-    html.map-fullscreen main:has(> .map-tabs) { padding-top: 0; }
-    html.map-fullscreen .map-tabs { position: fixed; z-index: 6; top: var(--map-tabs-top, 50%); right: 10px; display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; border: 0; background: none; }
-    html.map-fullscreen .map-tab { display: flex; align-items: center; gap: 6px; width: 100px; height: 42px; padding: 0 12px; border-radius: 12px; border: 1px solid rgba(33, 29, 29, 0.18); background: rgba(255, 248, 244, 0.95); color: #211d1d; font: 600 12.5px/1 system-ui, -apple-system, 'Noto Sans TC', sans-serif; box-shadow: 0 4px 14px rgba(33, 29, 29, 0.12); }
-    html.map-fullscreen .map-tab.on { display: none; }
-    html.map-fullscreen .map-tab .mt-ic { display: inline-flex; }
-    html.map-fullscreen #cm .cm-legend { display: none; }
-  }
-  /* Phones: tighten the graph's own bars so the graph keeps most of the
-     height — title and coverage on one line, one row of controls (the
-     backend/UI filter and +/- give way: category filter and pinch-zoom stay). */
-  @media (max-width: 640px) {
-    html.map-fullscreen #cm .cm-top { flex-wrap: nowrap; padding: 8px 12px; }
-    html.map-fullscreen #cm .cm-title h1 { font-size: 15px; }
-    html.map-fullscreen #cm .cm-stat { flex: none; padding: 4px 10px; }
-    html.map-fullscreen #cm .cm-stat b { font-size: 15px; }
-    html.map-fullscreen #cm .cm-stat span { font-size: 11px; }
-    html.map-fullscreen #cm .cm-controls { flex-wrap: nowrap; padding: 6px 12px; }
-    html.map-fullscreen #cm .cm-controls input { flex: 1 1 0; min-width: 0; }
-    html.map-fullscreen #cm .cm-controls select { flex: 0 1 34%; min-width: 0; }
-    html.map-fullscreen #cm .cm-seg, html.map-fullscreen #cm #cm-in, html.map-fullscreen #cm #cm-out { display: none; }
-    html.map-fullscreen #cm .cm-legend { font-size: 10px; gap: 8px; padding: 4px 8px; }
+    main:has(> .map-tabs) { padding-top: 0; }
+    .map-tabs { position: fixed; z-index: 6; top: var(--map-tabs-top, calc(var(--map-hdr, 64px) + 110px)); right: 10px; display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; border: 0; background: none; }
+    .map-tab { display: flex; align-items: center; justify-content: center; gap: 5px; width: 68px; height: 42px; padding: 0 8px; border-radius: 12px; border: 1px solid rgba(33, 29, 29, 0.18); background: rgba(255, 248, 244, 0.95); color: #211d1d; font: 600 12.5px/1 system-ui, -apple-system, 'Noto Sans TC', sans-serif; box-shadow: 0 4px 14px rgba(33, 29, 29, 0.12); cursor: pointer; }
+    .map-tab.on, .map-tab .mt-full { display: none; }
+    .map-tab .mt-ic { display: inline-flex; }
   }
   /* Wide screens: the tab switch floats top-centre over each view's title bar
      (like the reference site's toolbar) instead of sitting in its own band. */
@@ -148,11 +136,11 @@ const coveredCount = nodes.filter((n) => n.url).length;
       var hdr = document.querySelector('header.site-header');
       html.style.setProperty('--map-page-w', html.clientWidth + 'px');
       if (hdr) html.style.setProperty('--map-hdr', hdr.offsetHeight + 'px');
-      var view = ['mv-graph', 'mv-islands'].map(function (id) { return document.getElementById(id); }).filter(function (el) { return el && !el.hidden; })[0];
+      var view = ['mv-dir', 'mv-graph', 'mv-islands'].map(function (id) { return document.getElementById(id); }).filter(function (el) { return el && !el.hidden; })[0];
       if (!view) return;
-      html.style.setProperty('--map-above', Math.ceil(view.getBoundingClientRect().top + window.scrollY) + 'px');
-      // phones: the view switch stacks under the view's own tools
-      var anchor = view.querySelector(view.id === 'mv-islands' ? '.ci-tools' : '.cm-controls');
+      if (view.id !== 'mv-dir') html.style.setProperty('--map-above', Math.ceil(view.getBoundingClientRect().top + window.scrollY) + 'px');
+      // phones: the view switch stacks under the view's own tools column
+      var anchor = view.querySelector('[data-map-tools]');
       var ab = anchor && anchor.getBoundingClientRect();
       if (ab && ab.height) html.style.setProperty('--map-tabs-top', Math.ceil(ab.bottom + 8) + 'px');
     }
