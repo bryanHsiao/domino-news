@@ -1,5 +1,5 @@
 ---
-title: "Domino Maintenance Commands in Practice — Option Rules, the Transaction-Log Branch, and Scenario Playbooks (Daily / Repair / Won't Open)"
+title: "Domino Maintenance Commands: compact -b vs -B Comes Down to the DBIID"
 description: "The options for updall, compact, and fixup are all over the web, but the same compact run with -b vs -B — and whether transaction logging is on — produces wildly different results: one keeps the DBIID, the other reassigns it and breaks your backup chain. This piece turns HCL's own maintenance manual into a practical reference: three syntax rules first (parameter position, case-sensitivity -b≠-B, keyword options), then compact's three compaction styles, then the full command sequences for three scenarios — scheduled daily maintenance, corruption repair, and work-hours-no-downtime — each marked for whether transaction logging is enabled."
 pubDate: 2026-10-08T07:30:00+08:00
 lang: en

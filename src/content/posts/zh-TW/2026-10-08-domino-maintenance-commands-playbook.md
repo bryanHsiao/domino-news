@@ -1,5 +1,5 @@
 ---
-title: "Domino 維護指令實戰：參數規則、transaction log 分支，與三種情境 playbook（日常／修復／開不起來）"
+title: "Domino 維護指令實戰：compact -b 和 -B 差在 DBIID"
 description: "updall、compact、fixup 的參數網路上一抓一大把，但同一個 compact 下 -b 還是 -B、有沒有開 transaction logging，結果天差地遠：一個保留 DBIID、一個換掉 DBIID 害你備份鏈斷。這篇把官方維護手冊整理成實戰速查：先講三條語法規則（參數位置、大小寫 -b≠-B、關鍵字參數），再講 compact 的三種壓縮 style，最後給三種情境的完整指令序列——日常排程、資料庫損毀修復、工作時間不能停機——每一串都標明有無 transaction log 的差別。"
 pubDate: 2026-10-08T07:30:00+08:00
 lang: zh-TW
