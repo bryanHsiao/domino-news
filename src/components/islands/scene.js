@@ -68,7 +68,9 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
 
   // ---- camera framing
   const tanHalf = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
-  const fitDistance = (r) => r * Math.max(2.5, 1.05 / (tanHalf * camera.aspect)) * 1.05;
+  // The archipelago is wider than deep, so on landscape screens its bounding
+  // circle can overfill vertically a little and still show every island.
+  const fitDistance = (r) => r * Math.max(2.1, 1.05 / (tanHalf * camera.aspect)) * 1.05;
   const homeTarget = new THREE.Vector3(cx, TOP, cz);
   const sph = new THREE.Spherical();
   const posFor = (target, dist, polar, azimuth) => {
@@ -88,14 +90,49 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     return { c, el, p: new THREE.Vector3(c.anchor.x, TOP - 0.2, c.anchor.z) };
   });
   const v = new THREE.Vector3();
+  // Plates are decluttered every frame: in priority order (selected island,
+  // then bigger islands, then nearer ones) a plate that would overlap one
+  // already placed shrinks to its number; hovering it shows the name again.
+  let measured = false;
+  function measureLabels() {
+    for (const L of labels) {
+      L.el.style.display = '';
+      L.el.classList.remove('compact');
+      L.full = [L.el.offsetWidth, L.el.offsetHeight];
+      L.el.classList.add('compact');
+      L.small = [L.el.offsetWidth, L.el.offsetHeight];
+      L.el.classList.toggle('compact', !!L.compact);
+    }
+    measured = labels.every((L) => L.full[0] > 0);
+  }
   function placeLabels(w, h) {
+    if (!measured) measureLabels();
+    const visible = [];
     for (const L of labels) {
       v.copy(L.p).project(camera);
-      const off = v.z > 1 || Math.abs(v.x) > 1.2 || Math.abs(v.y) > 1.2;
-      L.el.style.display = off ? 'none' : '';
-      if (off) continue;
-      L.el.style.transform = `translate(${((v.x * 0.5 + 0.5) * w).toFixed(1)}px, ${((-v.y * 0.5 + 0.5) * h).toFixed(1)}px) translate(-50%, -50%)`;
-      L.el.style.zIndex = String(1000 - Math.round(v.z * 1000));
+      L.off = v.z > 1 || Math.abs(v.x) > 1.2 || Math.abs(v.y) > 1.2;
+      L.sx = (v.x * 0.5 + 0.5) * w;
+      L.sy = (-v.y * 0.5 + 0.5) * h;
+      L.depth = v.z;
+      if (!L.off) visible.push(L);
+    }
+    visible.sort((a, b) => Number(b.c.cat === selected) - Number(a.c.cat === selected) || b.c.count - a.c.count || a.depth - b.depth);
+    const placed = [];
+    const overlaps = (x, y, [bw, bh]) => placed.some((r) => Math.abs(r.x - x) * 2 < r.w + bw + 4 && Math.abs(r.y - y) * 2 < r.h + bh + 2);
+    for (const L of visible) {
+      const compact = L.c.cat !== selected && overlaps(L.sx, L.sy, L.full);
+      const [bw, bh] = compact ? L.small : L.full;
+      placed.push({ x: L.sx, y: L.sy, w: bw, h: bh });
+      if (compact !== !!L.compact) {
+        L.compact = compact;
+        L.el.classList.toggle('compact', compact);
+      }
+    }
+    for (const L of labels) {
+      L.el.style.display = L.off ? 'none' : '';
+      if (L.off) continue;
+      L.el.style.transform = `translate(${L.sx.toFixed(1)}px, ${L.sy.toFixed(1)}px) translate(-50%, -50%)`;
+      L.el.style.zIndex = String(1000 - Math.round(L.depth * 1000));
     }
   }
 
@@ -255,6 +292,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    measured = false; // plate font size can change at the mobile breakpoint
     // Portrait screens frame the islands from farther away; keep the haze
     // behind them so they never look washed out.
     const dist = fitDistance(radius);

@@ -59,20 +59,58 @@ const coveredCount = nodes.filter((n) => n.url).length;
 </BaseLayout>
 
 <style>
-  .map-tabs { display: inline-flex; gap: 4px; margin: 0 0 18px; padding: 4px; border: 1px solid var(--color-border, #e2e0d8); border-radius: 11px; background: var(--color-surface, #fff); }
+  .map-tabs { display: inline-flex; gap: 4px; margin: 0 0 12px; padding: 4px; border: 1px solid var(--color-border, #e2e0d8); border-radius: 11px; background: var(--color-surface, #fff); }
   .map-tab { font: inherit; font-size: 0.88rem; font-weight: 600; padding: 7px 16px; border: 0; border-radius: 8px; background: transparent; color: var(--color-text-muted, #6b6b6b); cursor: pointer; }
   .map-tab.on { background: var(--color-brand-dark, #0a0a0a); color: #fff; }
   #mv-dir[hidden], #mv-graph[hidden], #mv-islands[hidden] { display: none; }
 </style>
 
+<style is:global>
+  /* The graph and the islands are immersive views: full page width (not the
+     1200px content column) and filling the viewport below the tab row. The
+     inline script measures --map-page-w (viewport minus scrollbar) and
+     --map-above (where the views start). */
+  main:has(> .map-tabs) { padding-top: 1.25rem; }
+  #mv-graph, #mv-islands {
+    width: var(--map-page-w, 100vw);
+    margin-left: calc(50% - var(--map-page-w, 100vw) / 2);
+    height: calc(100dvh - var(--map-above, 150px));
+    min-height: 480px;
+  }
+  #mv-graph #cm { height: 100%; min-height: 0; border-radius: 0; border-left: 0; border-right: 0; }
+  body:has(#mv-islands) { overflow-x: clip; }
+  /* Wide screens: in an immersive view the tab switch floats top-centre over
+     the content (like the reference site's toolbar) instead of sitting in its
+     own band; the view starts right under the site header. */
+  @media (min-width: 1280px) {
+    body.map-immersive main:has(> .map-tabs) { padding-top: 0; }
+    body.map-immersive .map-tabs { position: absolute; z-index: 30; top: calc(var(--map-hdr, 64px) + 14px); left: 50%; transform: translateX(-50%); margin: 0; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.16); }
+  }
+</style>
+
 <script is:inline>
   (function () {
+    // Size the immersive views: full width without the scrollbar, and tall
+    // enough to reach the bottom of the viewport from wherever they start.
+    function sizeViews() {
+      var html = document.documentElement;
+      var hdr = document.querySelector('header.site-header');
+      html.style.setProperty('--map-page-w', html.clientWidth + 'px');
+      if (hdr) html.style.setProperty('--map-hdr', hdr.offsetHeight + 'px');
+      var view = ['mv-graph', 'mv-islands'].map(function (id) { return document.getElementById(id); }).filter(function (el) { return el && !el.hidden; })[0];
+      if (view) html.style.setProperty('--map-above', Math.round(view.getBoundingClientRect().top + window.scrollY) + 'px');
+    }
     function initMapTabs() {
       var tabs = document.querySelectorAll('.map-tab');
       if (!tabs.length) return;
       var dir = document.getElementById('mv-dir'), graph = document.getElementById('mv-graph'), islands = document.getElementById('mv-islands');
       if (!dir || !graph || !islands || dir.dataset.tabsReady) return;
       dir.dataset.tabsReady = '1';
+      sizeViews();
+      if (!window.__mapSizeBound) {
+        window.__mapSizeBound = true;
+        window.addEventListener('resize', sizeViews);
+      }
       Array.prototype.forEach.call(tabs, function (b) {
         b.addEventListener('click', function () {
           Array.prototype.forEach.call(tabs, function (x) { x.classList.toggle('on', x === b); });
@@ -80,7 +118,12 @@ const coveredCount = nodes.filter((n) => n.url).length;
           dir.hidden = v !== 'dir';
           graph.hidden = v !== 'graph';
           islands.hidden = v !== 'islands';
-          if (v === 'graph' || v === 'islands') window.dispatchEvent(new Event('resize'));
+          document.body.classList.toggle('map-immersive', v !== 'dir');
+          if (v === 'graph' || v === 'islands') {
+            window.scrollTo(0, 0);
+            sizeViews();
+            window.dispatchEvent(new Event('resize'));
+          }
         });
       });
     }

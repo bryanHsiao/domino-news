@@ -98,23 +98,24 @@ const T =
   data-tip-un={T.tipUn}
   data-tip-open={T.tipOpen}
 >
-  <header class="ci-top">
-    <div class="ci-title">
-      <h1>{T.title}</h1>
-      <p class="ci-sub">{T.sub}</p>
-    </div>
-    <div class="ci-stat"><b>{coveredCount}</b><span>/ {total} {T.covered}</span></div>
-  </header>
-
-  <div class="ci-controls">
-    <input id="ci-q" type="search" placeholder={T.search} autocomplete="off" />
-    <button id="ci-reset" type="button">{T.reset}</button>
-  </div>
-
   <div class="ci-stage">
     <canvas id="ci-canvas"></canvas>
     <div id="ci-labels" class="ci-labels"></div>
     <div id="ci-tip" class="ci-tip" hidden></div>
+
+    <!-- Title card floats over the scene (like the reference's brand card) so
+         the whole frame belongs to the islands. -->
+    <div class="ci-card">
+      <div class="ci-card-head">
+        <h1>{T.title}</h1>
+        <span class="ci-stat"><b>{coveredCount}</b> / {total} {T.covered}</span>
+      </div>
+      <p class="ci-sub">{T.sub}</p>
+      <div class="ci-controls">
+        <input id="ci-q" type="search" placeholder={T.search} autocomplete="off" />
+        <button id="ci-reset" type="button">{T.reset}</button>
+      </div>
+    </div>
 
     <div id="ci-loading" class="ci-loading" hidden>{T.loading}</div>
 
@@ -146,22 +147,25 @@ const T =
     --cbg: #faf9f6; --cpanel: #fff; --cink: #1a1a1a; --cmuted: #6b6b6b; --cline: #e2e0d8; --cgold: #d99000;
     --paper: #fff8f4; --ink: #211d1d; --ink-mut: #78685e; --coral: #db6a41; --butter: #fcea8b; --hair: rgba(33, 29, 29, 0.18);
     --roof-be: #4f86c6; --roof-ui: #8b6fd1; --roof-un: #a8a29a; --roof-key: #e9b444;
-    display: flex; flex-direction: column; height: 80vh; min-height: 520px;
-    border: 1px solid var(--cline); border-radius: 12px; overflow: hidden; background: var(--cbg); color: var(--cink);
+    position: relative; height: 100%; min-height: 480px; overflow: hidden; background: var(--cbg); color: var(--cink);
   }
   #ci * { box-sizing: border-box; }
-  #ci .ci-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--cline); flex-wrap: wrap; }
-  #ci .ci-title h1 { margin: 0; font-size: 18px; font-weight: 600; }
-  #ci .ci-sub { margin: 3px 0 0; font-size: 12px; color: var(--cmuted); max-width: 72ch; }
-  #ci .ci-stat { display: flex; align-items: baseline; gap: 6px; background: var(--color-brand-dark, #0a0a0a); color: var(--color-brand, #fbbf24); padding: 6px 14px; border-radius: 999px; }
-  #ci .ci-stat b { font-size: 20px; font-variant-numeric: tabular-nums; } #ci .ci-stat span { font-size: 12px; opacity: 0.85; }
 
-  #ci .ci-controls { display: flex; gap: 8px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--cline); flex-wrap: wrap; background: var(--cpanel); }
-  #ci .ci-controls input { font: inherit; font-size: 13px; padding: 6px 10px; border: 1px solid var(--cline); border-radius: 8px; background: var(--cbg); color: var(--cink); min-width: 150px; flex: 1 1 150px; max-width: 360px; }
-  #ci .ci-controls #ci-reset { font: inherit; font-size: 12.5px; padding: 6px 14px; border: 1px solid var(--cline); border-radius: 8px; background: var(--cpanel); color: var(--cink); cursor: pointer; }
-  #ci .ci-controls #ci-reset:hover { border-color: var(--cgold); }
+  #ci .ci-stage { position: absolute; inset: 0; overflow: hidden; background: linear-gradient(180deg, #cfe6ee 0%, #f4eee3 55%, #8fc3c9 100%); color: var(--ink); }
 
-  #ci .ci-stage { position: relative; flex: 1; overflow: hidden; background: linear-gradient(180deg, #cfe6ee 0%, #f4eee3 55%, #8fc3c9 100%); color: var(--ink); }
+  /* Floating title card: title, coverage, search, reset. */
+  #ci .ci-card { position: absolute; top: 14px; left: 14px; z-index: 7; width: 360px; max-width: calc(100% - 28px);
+    background: rgba(255, 248, 244, 0.95); border: 1px solid var(--hair); border-radius: 12px; padding: 12px 14px 13px; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.14); }
+  #ci .ci-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  #ci .ci-card h1 { margin: 0; font-size: 17px; font-weight: 720; letter-spacing: -0.01em; color: var(--ink); }
+  #ci .ci-stat { flex: none; display: inline-flex; align-items: baseline; gap: 4px; background: var(--color-brand-dark, #0a0a0a); color: #d9d4cc; padding: 4px 10px; border-radius: 999px; font-size: 11px; white-space: nowrap; }
+  #ci .ci-stat b { color: var(--color-brand, #fbbf24); font-size: 15px; font-variant-numeric: tabular-nums; }
+  #ci .ci-sub { margin: 6px 0 10px; font-size: 11.5px; line-height: 1.5; color: var(--ink-mut); }
+  #ci .ci-controls { display: flex; gap: 6px; }
+  #ci .ci-controls input { font: inherit; font-size: 12.5px; padding: 6px 10px; border: 1px solid var(--hair); border-radius: 8px; background: #fff; color: var(--ink); min-width: 0; flex: 1; }
+  #ci .ci-controls input:focus { outline: none; border-color: var(--coral); }
+  #ci .ci-controls #ci-reset { flex: none; font: inherit; font-size: 12px; padding: 6px 12px; border: 1px solid var(--hair); border-radius: 8px; background: #fff; color: var(--ink); cursor: pointer; }
+  #ci .ci-controls #ci-reset:hover { border-color: var(--coral); }
   #ci #ci-canvas { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
   #ci #ci-canvas:active { cursor: grabbing; }
 
@@ -218,17 +222,23 @@ const T =
      (a higher-specificity display rule otherwise defeats UA [hidden]). */
   #ci .ci-loading[hidden], #ci .ci-fallback[hidden], #ci .ci-panel[hidden], #ci .ci-tip[hidden] { display: none; }
 
+  /* Plates that would collide with a nearer/bigger island's plate shrink to
+     their number (scene.js decides); hovering or selecting shows the name. */
+  #ci .ci-lbl.compact { padding: 4px 6px; }
+  #ci .ci-lbl.compact span, #ci .ci-lbl.compact i { display: none; }
+  #ci .ci-lbl.compact:hover span, #ci .ci-lbl.compact.sel span { display: inline; }
+  #ci .ci-lbl:hover, #ci .ci-lbl.sel { z-index: 2000 !important; }
+
   @media (max-width: 640px) {
-    #ci { height: 82vh; }
-    #ci .ci-top { padding: 10px 12px; } #ci .ci-title h1 { font-size: 16px; } #ci .ci-sub { display: none; }
-    #ci .ci-controls { padding: 8px 12px; }
-    /* 17 plates don't fit a phone: show the number only, the selected island in full */
+    #ci .ci-card { top: 8px; left: 8px; right: 8px; width: auto; max-width: none; padding: 10px 12px; }
+    #ci .ci-card h1 { font-size: 15px; }
+    #ci .ci-sub { display: none; }
+    #ci .ci-card-head { margin-bottom: 8px; }
     #ci .ci-lbl { font-size: 10px; padding: 4px 6px; gap: 4px; }
-    #ci .ci-lbl span, #ci .ci-lbl i { display: none; }
-    #ci .ci-lbl.sel span { display: inline; }
+    #ci .ci-lbl i { display: none; }
     #ci .ci-panel { top: auto; left: 0; right: 0; bottom: 0; width: 100%; max-width: 100%; border-radius: 16px 16px 0 0; max-height: 64%; }
     #ci .ci-legend { gap: 9px; padding: 6px 9px; font-size: 11px; left: 8px; bottom: 8px; max-width: calc(100% - 16px); }
-    #ci .ci-hint { display: block; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 5; background: rgba(33, 29, 29, 0.82); color: #fff8f4; font-size: 11.5px; padding: 5px 12px; border-radius: 999px; pointer-events: none; transition: opacity 0.4s; }
+    #ci .ci-hint { display: block; position: absolute; bottom: 48px; left: 50%; transform: translateX(-50%); z-index: 5; background: rgba(33, 29, 29, 0.82); color: #fff8f4; font-size: 11.5px; padding: 5px 12px; border-radius: 999px; pointer-events: none; transition: opacity 0.4s; }
   }
 
   @media (prefers-color-scheme: dark) {

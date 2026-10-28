@@ -19,7 +19,13 @@ function geometries(THREE) {
     pos.setXYZ(i, x * j, y * j, z * j);
   }
   leaf.computeVertexNormals();
+  // gable roof: triangular prism, unit box footprint, ridge along z
+  const gableShape = new THREE.Shape([new THREE.Vector2(-0.5, -0.5), new THREE.Vector2(0.5, -0.5), new THREE.Vector2(0, 0.5)]);
   sharedGeo = {
+    gable: new THREE.ExtrudeGeometry(gableShape, { depth: 1, bevelEnabled: false }).translate(0, 0, -0.5),
+    // NB: dome sits with its base (rim) at the part's position, unlike the
+    // centred kinds — scale y is the dome's height.
+    dome: new THREE.SphereGeometry(0.5, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 2, 1),
     rbox: new RoundedBoxGeometry(1, 1, 1, 2, 0.09),
     box: new THREE.BoxGeometry(1, 1, 1),
     cyl: new THREE.CylinderGeometry(0.5, 0.5, 1, 12),

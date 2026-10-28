@@ -13,8 +13,8 @@ export function createProps(THREE, kit) {
 
   // Broadleaf tree: trunk + a ring of lumpy clumps (darker below, lighter
   // crown) so it never reads as a single smooth ball.
-  function tree(x, z, s, rnd, y) {
-    const g = pick(GREENS, rnd);
+  function tree(x, z, s, rnd, y, palette = GREENS) {
+    const g = pick(palette, rnd);
     kit.part('trunk', [x, y + s * 0.3, z], [s * 0.16, s * 0.6, s * 0.16], 0x8a6a4e);
     const n = 4 + Math.floor(rnd() * 2);
     for (let i = 0; i < n; i++) {
@@ -46,6 +46,14 @@ export function createProps(THREE, kit) {
     const w = s * 0.6, d = s * 0.5, h = s * 0.42;
     kit.part('rbox', [x, y + h / 2, z], [w, h, d], 0xf4ede2, null, [0, yaw, 0]);
     kit.part('hip', [x, y + h + s * 0.13, z], [w + s * 0.06, s * 0.26, d + s * 0.06], pick(ROOFS, rnd), null, [0, yaw, 0]);
+  }
+
+  // A small pile of wooden crates (warehouse / port islands).
+  function crates(x, z, rnd, y) {
+    const wood = [0xb48560, 0xa77a55, 0xc9a27c];
+    kit.part('rbox', [x - 0.12, y + 0.13, z], [0.26, 0.26, 0.26], pick(wood, rnd), null, [0, rnd() * 0.4, 0]);
+    kit.part('rbox', [x + 0.16, y + 0.11, z + 0.06], [0.22, 0.22, 0.22], pick(wood, rnd), null, [0, rnd() * 0.4, 0]);
+    if (rnd() < 0.6) kit.part('rbox', [x, y + 0.36, z + 0.02], [0.2, 0.2, 0.2], pick(wood, rnd), null, [0, rnd() * 0.6, 0]);
   }
 
   function lamp(x, z, y) {
@@ -80,5 +88,5 @@ export function createProps(THREE, kit) {
     kit.part('cone', [x, y + 2.36, z], [0.4, 0.3, 0.4], 0xdb6a41);
   }
 
-  return { tree, conifer, bush, cottage, lamp, person, boat, lighthouse };
+  return { tree, conifer, bush, crates, cottage, lamp, person, boat, lighthouse };
 }

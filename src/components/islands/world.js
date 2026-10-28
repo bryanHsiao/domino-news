@@ -3,6 +3,7 @@
 // the per-tile greenery.
 import { R, TOP, WATER_Y, DIRS, hexVertex, edgeDir, hashString, mulberry32 } from './layout.js';
 import { groundTexture, ringTexture, bandTexture } from './textures.js';
+import { themeFor, buildLandmark } from './landmarks.js';
 
 const RING_OUT = 1.94;
 const RING_IN = 1.66;
@@ -30,16 +31,18 @@ const STYLES = {
 };
 const STYLE_ORDER = ['plaza', 'courtyard', 'lawn', 'terracotta', 'garden', 'schoolyard', 'meadow', 'softpad', 'street', 'boardwalk', 'farmland', 'gravel', 'rubber', 'forest', 'lawn', 'terracotta', 'garden'];
 
-// Class building colours: the roof carries the meaning (legend), walls stay warm.
+// Class building colours: the roof carries the meaning (legend); walls and
+// shapes come from the island's theme (landmarks.js).
 const ROOF = { be: 0x4f86c6, ui: 0x8b6fd1, un: 0xa8a29a, key: 0xe9b444 };
-const WALLS = [0xf4ede2, 0xf1e6d6, 0xf7f1e8, 0xeee3d3];
 const GLASS = 0x7fa6c2;
 const DOOR = 0x8a6a4e;
 
 // Building slots per tile: centre first, then the ring from back to front so
-// any free (tree) slots end up in the foreground.
-const SLOT_R = 0.9;
-const SLOTS = [[0, 0], ...[240, 300, 180, 0, 120, 60].map((a) => [Math.cos((a * Math.PI) / 180) * SLOT_R, Math.sin((a * Math.PI) / 180) * SLOT_R])];
+// any free (tree) slots end up in the foreground. The island's landmark tile
+// gives its centre to the landmark and pushes the ring out a little.
+const ringSlots = (r) => [240, 300, 180, 0, 120, 60].map((a) => [Math.cos((a * Math.PI) / 180) * r, Math.sin((a * Math.PI) / 180) * r]);
+const SLOTS = [[0, 0], ...ringSlots(0.9)];
+const LANDMARK_SLOTS = ringSlots(1.06);
 
 function hexRing(THREE, rOut, rIn) {
   const s = new THREE.Shape();
@@ -203,12 +206,29 @@ export function buildWorld(THREE, scene, { buildings, decor }, props, layout) {
     }
   }
 
-  // ---- class buildings + greenery per tile
-  for (const t of layout.tiles) {
+  // ---- landmark, themed class buildings and greenery per tile
+  layout.clusters.forEach((c, ci) => {
+    const theme = themeFor(c.cat, ci);
+    // the landmark stands on the tile nearest the island's centre
+    const heart = c.tiles.reduce((best, t) => {
+      const d = Math.hypot(t.x - c.cx, t.z - c.cz), bd = Math.hypot(best.x - c.cx, best.z - c.cz);
+      return d < bd - 1e-6 ? t : best;
+    });
+    for (const t of c.tiles) dressTile(t, theme, t === heart);
+  });
+
+  function dressTile(t, theme, isHeart) {
     const rnd = mulberry32(hashString(t.q + ':' + t.r));
-    t.nodes.forEach((n, i) => house(buildings, n, t.x + SLOTS[i][0], t.z + SLOTS[i][1]));
-    for (let i = t.nodes.length; i < SLOTS.length; i++) {
-      props.tree(t.x + SLOTS[i][0] + (rnd() - 0.5) * 0.2, t.z + SLOTS[i][1] + (rnd() - 0.5) * 0.2, 0.5 + rnd() * 0.15, rnd, TOP);
+    const slots = isHeart ? LANDMARK_SLOTS : SLOTS;
+    if (isHeart) buildLandmark(theme.landmark, decor, t.x, t.z);
+    t.nodes.forEach((n, i) => house(buildings, n, theme, t.x + slots[i][0], t.z + slots[i][1], isHeart ? 0.92 : 1));
+    for (let i = t.nodes.length; i < slots.length; i++) {
+      const sx = t.x + slots[i][0] + (rnd() - 0.5) * 0.2;
+      const sz = t.z + slots[i][1] + (rnd() - 0.5) * 0.2;
+      const flora = theme.flora === 'mixed' ? (rnd() < 0.5 ? 'pine' : 'tree') : theme.flora;
+      if (flora === 'crates' && i % 2 === 0) props.crates(sx, sz, rnd, TOP);
+      else if (flora === 'pine') props.conifer(sx, sz, 0.42 + rnd() * 0.1, rnd, TOP);
+      else props.tree(sx, sz, 0.5 + rnd() * 0.15, rnd, TOP, theme.palette);
     }
     for (let k = 0; k < 6; k++) {
       if (rnd() < 0.55) {
@@ -253,47 +273,95 @@ export function buildWorld(THREE, scene, { buildings, decor }, props, layout) {
   return { pickTargets, outlines };
 }
 
-// One class = one small house. Floors / roof colour / footprint come from the
-// class (key → three floors, gold roof and a flag; uncovered → flat grey roof).
-function house(kit, n, x, z) {
+// One class = one small house in its island's architecture. The class decides
+// floors and roof colour (key → three floors, gold roof and a flag;
+// uncovered → one floor, flat grey roof); the theme decides walls, body and
+// roof shape and proportions.
+function house(kit, n, theme, x, z, scale) {
   const h0 = hashString(n.id);
   const kind = classKind(n);
   const id = n.id;
+  const P = (k, px, py, pz, sx, sy, sz, color) => kit.part(k, [px, py, pz], [sx, sy, sz], color, id);
   const FH = 0.32;
-  const floors = kind === 'key' ? 3 : kind === 'un' ? 1 : 1 + (h0 % 2);
-  const w = kind === 'key' ? 0.72 : 0.6 + (h0 % 3) * 0.03;
-  const d = kind === 'key' ? 0.68 : 0.57 + ((h0 >>> 3) % 3) * 0.03;
-  const wall = kind === 'un' ? 0xd9d3c9 : WALLS[(h0 >>> 5) % WALLS.length];
+  let floors = kind === 'key' ? 3 : kind === 'un' ? 1 : 1 + (h0 % 2);
+  if (theme.tall && kind !== 'un') floors += 1;
+  if (theme.wide && kind !== 'key') floors = 1;
+  let w = (kind === 'key' ? 0.72 : 0.6 + (h0 % 3) * 0.03) * scale;
+  let d = (kind === 'key' ? 0.68 : 0.57 + ((h0 >>> 3) % 3) * 0.03) * scale;
+  if (theme.wide) (w *= 1.2), (d *= 0.92);
+  if (theme.tall) (w *= 0.86), (d *= 0.86);
+  const round = theme.body === 'round';
+  if (round) d = w;
+  const wall = kind === 'un' ? 0xd9d3c9 : theme.walls[(h0 >>> 5) % theme.walls.length];
   const yb = TOP + 0.05;
   const bodyH = floors * FH;
+  const yTop = yb + bodyH;
+  const fz = z + d / 2 + 0.006;
 
-  kit.part('rbox', [x, TOP + 0.025, z], [w + 0.08, 0.05, d + 0.08], 0xd8ccb8, id);
-  kit.part('rbox', [x, yb + bodyH / 2, z], [w, bodyH, d], wall, id);
-  for (let f = 1; f < floors; f++) kit.part('box', [x, yb + f * FH, z], [w + 0.014, 0.022, d + 0.014], 0xe2d6c4, id);
+  // plinth + body + floor lines
+  P(round ? 'cyl' : 'rbox', x, TOP + 0.025, z, w + 0.08, 0.05, d + 0.08, 0xd8ccb8);
+  P(round ? 'cyl' : 'rbox', x, yb + bodyH / 2, z, w, bodyH, d, wall);
+  for (let f = 1; f < floors; f++) P(round ? 'cyl' : 'box', x, yb + f * FH, z, w + 0.014, 0.022, d + 0.014, 0xe2d6c4);
+  // windows (front on every body, sides on box bodies) and a door
   for (let f = 0; f < floors; f++) {
     const wy = yb + f * FH + FH * 0.55;
-    const fz = z + d / 2 + 0.006;
-    kit.part('box', [x + w / 2 + 0.006, wy, z], [0.012, FH * 0.36, d * 0.56], GLASS, id);
-    kit.part('box', [x - w / 2 - 0.006, wy, z], [0.012, FH * 0.36, d * 0.56], GLASS, id);
+    if (!round) {
+      P('box', x + w / 2 + 0.006, wy, z, 0.012, FH * 0.36, d * 0.56, GLASS);
+      P('box', x - w / 2 - 0.006, wy, z, 0.012, FH * 0.36, d * 0.56, GLASS);
+    }
     if (f === 0) {
-      kit.part('box', [x, yb + 0.085, fz], [0.13, 0.17, 0.012], DOOR, id);
-      kit.part('box', [x - w * 0.3, wy, fz], [w * 0.2, FH * 0.36, 0.012], GLASS, id);
-      kit.part('box', [x + w * 0.3, wy, fz], [w * 0.2, FH * 0.36, 0.012], GLASS, id);
+      P('box', x, yb + 0.085, fz, 0.13, 0.17, 0.012, DOOR);
+      P('box', x - w * 0.3, wy, fz - (round ? 0.05 : 0), w * 0.2, FH * 0.36, 0.012, GLASS);
+      P('box', x + w * 0.3, wy, fz - (round ? 0.05 : 0), w * 0.2, FH * 0.36, 0.012, GLASS);
     } else {
-      kit.part('box', [x, wy, fz], [w * 0.7, FH * 0.36, 0.012], GLASS, id);
+      P('box', x, wy, fz, w * (round ? 0.5 : 0.7), FH * 0.36, 0.012, GLASS);
     }
   }
-  const yTop = yb + bodyH;
-  if (kind === 'un') {
-    kit.part('rbox', [x, yTop + 0.025, z], [w + 0.05, 0.05, d + 0.05], ROOF.un, id);
-    return;
-  }
-  kit.part('box', [x, yTop + 0.015, z], [w + 0.09, 0.03, d + 0.09], 0xefe6da, id);
+
+  // roof
+  const rc = ROOF[kind];
   const rh = 0.22 + 0.04 * floors;
-  kit.part('hip', [x, yTop + 0.03 + rh / 2, z], [w + 0.06, rh, d + 0.06], ROOF[kind], id);
+  let roofTop;
+  const roof = kind === 'un' ? 'none' : theme.roof;
+  switch (roof) {
+    case 'none':
+      P('rbox', x, yTop + 0.025, z, w + 0.05, 0.05, d + 0.05, ROOF.un);
+      return;
+    case 'gable':
+      P('box', x, yTop + 0.015, z, w + 0.09, 0.03, d + 0.09, 0xefe6da);
+      P('gable', x, yTop + 0.03 + rh / 2, z, w + 0.08, rh, d + 0.1, rc);
+      roofTop = yTop + 0.03 + rh;
+      break;
+    case 'flat':
+      P('rbox', x, yTop + 0.035, z, w + 0.06, 0.07, d + 0.06, rc);
+      P('box', x + w * 0.18, yTop + 0.12, z - d * 0.15, w * 0.3, 0.1, d * 0.3, 0xc9ced2);
+      roofTop = yTop + 0.07;
+      break;
+    case 'saw':
+      P('box', x, yTop + 0.015, z, w + 0.05, 0.03, d + 0.05, 0xefe6da);
+      for (const k of [-1, 0, 1]) P('gable', x + (k * w) / 3, yTop + 0.03 + rh * 0.4, z, w / 3 + 0.01, rh * 0.8, d + 0.04, rc);
+      roofTop = yTop + 0.03 + rh * 0.8;
+      break;
+    case 'dome': {
+      const s = Math.min(w, d) * 1.02;
+      if (!round) P('box', x, yTop + 0.015, z, w + 0.04, 0.03, d + 0.04, 0xefe6da);
+      P('dome', x, yTop, z, s, rh * 1.2, s, rc);
+      roofTop = yTop + rh * 1.2;
+      break;
+    }
+    case 'cone':
+      P('cyl', x, yTop + 0.015, z, w + 0.08, 0.03, w + 0.08, 0xefe6da);
+      P('cone', x, yTop + 0.03 + rh * 0.75, z, w * 1.18, rh * 1.5, w * 1.18, rc);
+      roofTop = yTop + 0.03 + rh * 1.5;
+      break;
+    default:
+      // hip
+      P('box', x, yTop + 0.015, z, w + 0.09, 0.03, d + 0.09, 0xefe6da);
+      P('hip', x, yTop + 0.03 + rh / 2, z, w + 0.06, rh, d + 0.06, rc);
+      roofTop = yTop + 0.03 + rh;
+  }
   if (kind === 'key') {
-    const yr = yTop + 0.03 + rh;
-    kit.part('cyl', [x, yr + 0.15, z], [0.02, 0.3, 0.02], 0x5a4a3c, id);
-    kit.part('box', [x + 0.07, yr + 0.25, z], [0.13, 0.08, 0.008], 0xdb6a41, id);
+    P('cyl', x, roofTop + 0.15, z, 0.02, 0.3, 0.02, 0x5a4a3c);
+    P('box', x + 0.07, roofTop + 0.25, z, 0.13, 0.08, 0.008, 0xdb6a41);
   }
 }
