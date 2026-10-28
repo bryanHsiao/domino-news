@@ -1,0 +1,385 @@
+---
+import type { Lang } from '../i18n/ui';
+
+interface IslandNode {
+  id: string;
+  name: string;
+  cat: string;
+  ui: boolean;
+  key: boolean;
+  url: string | null;
+  desc?: string;
+}
+interface IslandData {
+  nodes: IslandNode[];
+  links: { s: string; t: string; via?: string[] }[];
+}
+interface Props {
+  lang: Lang;
+  data: IslandData;
+  coveredCount: number;
+  total: number;
+}
+const { lang, data, coveredCount, total } = Astro.props;
+
+// Island numbering: the six core-containment categories first (fixed spine
+// order, same as ClassDirectory), then the rest by class count descending.
+// Where the islands go is decided in ./islands/layout.js from the class links
+// (related categories sit a bridge apart).
+const CORE = ['Session', 'Database', 'View', 'Document', 'Item', 'Rich Text'];
+const counts: Record<string, number> = {};
+data.nodes.forEach((n) => (counts[n.cat] = (counts[n.cat] || 0) + 1));
+const cats = [
+  ...CORE.filter((c) => counts[c]),
+  ...Object.keys(counts)
+    .filter((c) => !CORE.includes(c))
+    .sort((a, b) => counts[b] - counts[a] || a.localeCompare(b)),
+];
+const nodes = data.nodes.map(({ id, name, cat, ui, key, url }) => ({ id, name, cat, ui, key, url }));
+const payload = { nodes, cats, links: data.links };
+
+const T =
+  lang === 'zh-TW'
+    ? {
+        title: 'LotusScript 類別島嶼',
+        sub: '每個 category 一座島，類別越多島越大；有關聯的島之間才有橋，橋越寬關聯越多 · 拖曳轉看、滾輪縮放 · 點島看清單、點房子開文章、指著橋看關聯',
+        covered: '已涵蓋',
+        search: '搜尋類別…',
+        reset: '重設視角',
+        legBe: '後端',
+        legUi: 'UI',
+        legUn: '尚未寫成文章',
+        legKey: 'key class',
+        hint: '拖曳轉看 · 點島看清單',
+        panelCount: ' 個類別',
+        close: '關閉',
+        tipBe: '後端',
+        tipUi: 'UI',
+        tipKey: 'key class',
+        tipUn: '尚未寫成文章',
+        tipOpen: '點一下開文章 →',
+        tipRel: ' 條關聯（A 的方法／屬性回傳 B）',
+        tipPath: '步道：兩個類別沒有直接關聯，經這裡可走到其他島',
+        tipMore: '還有 {n} 條',
+        relTitle: '與其他島的關聯',
+        relBridge: '有橋直達',
+        relWalk: '經其他島步行',
+        fbTitle: '這個瀏覽器無法顯示 3D 島嶼',
+        fbBody: '你的瀏覽器或裝置不支援 WebGL。島嶼檢視需要 WebGL 才能渲染。',
+        fbBtn: '改用分類檢視',
+        loading: '載入 3D 島嶼中…',
+      }
+    : {
+        title: 'LotusScript Class Islands',
+        sub: 'One island per category, bigger for more classes; bridges only join related islands, wider for more links · drag to orbit, scroll to zoom · click an island for its list, a house to open its article, hover a bridge for its links',
+        covered: 'covered',
+        search: 'Search classes…',
+        reset: 'Reset view',
+        legBe: 'Backend',
+        legUi: 'UI',
+        legUn: 'Not written yet',
+        legKey: 'Key class',
+        hint: 'Drag to orbit · tap an island',
+        panelCount: ' classes',
+        close: 'Close',
+        tipBe: 'Backend',
+        tipUi: 'UI',
+        tipKey: 'key class',
+        tipUn: 'not written yet',
+        tipOpen: 'Click to open the article →',
+        tipRel: ' links (a method/property of A returns B)',
+        tipPath: 'Footpath: these categories have no direct link; it lets you walk on to other islands',
+        tipMore: '+{n} more',
+        relTitle: 'Related islands',
+        relBridge: 'bridge',
+        relWalk: 'via other islands',
+        fbTitle: "This browser can't show the 3D islands",
+        fbBody: 'Your browser or device has no WebGL support. The islands view needs WebGL to render.',
+        fbBtn: 'Use the grouped view',
+        loading: 'Loading the 3D islands…',
+      };
+---
+
+<div
+  id="ci"
+  data-count={T.panelCount}
+  data-close={T.close}
+  data-tip-be={T.tipBe}
+  data-tip-ui={T.tipUi}
+  data-tip-key={T.tipKey}
+  data-tip-un={T.tipUn}
+  data-tip-open={T.tipOpen}
+  data-tip-rel={T.tipRel}
+  data-tip-path={T.tipPath}
+  data-tip-more={T.tipMore}
+  data-rel-title={T.relTitle}
+  data-rel-bridge={T.relBridge}
+  data-rel-walk={T.relWalk}
+>
+  <div class="ci-stage">
+    <canvas id="ci-canvas"></canvas>
+    <div id="ci-labels" class="ci-labels"></div>
+    <div id="ci-tip" class="ci-tip" hidden></div>
+
+    <!-- Title card floats over the scene (like the reference's brand card) so
+         the whole frame belongs to the islands. -->
+    <div class="ci-card">
+      <div class="ci-card-head">
+        <h1>{T.title}</h1>
+        <span class="ci-stat"><b>{coveredCount}</b> / {total} {T.covered}</span>
+      </div>
+      <p class="ci-sub">{T.sub}</p>
+      <div class="ci-controls">
+        <input id="ci-q" type="search" placeholder={T.search} autocomplete="off" />
+        <button id="ci-reset" type="button">{T.reset}</button>
+      </div>
+    </div>
+
+    <div id="ci-loading" class="ci-loading" hidden>{T.loading}</div>
+
+    <div id="ci-fallback" class="ci-fallback" hidden>
+      <h2>{T.fbTitle}</h2>
+      <p>{T.fbBody}</p>
+      <button id="ci-fb-btn" type="button">{T.fbBtn}</button>
+    </div>
+
+    <aside id="ci-panel" class="ci-panel" hidden></aside>
+
+    <div id="ci-hint" class="ci-hint" data-hint={T.hint}></div>
+
+    <div class="ci-legend">
+      <span><i class="sw be"></i>{T.legBe}</span>
+      <span><i class="sw ui"></i>{T.legUi}</span>
+      <span><i class="sw un"></i>{T.legUn}</span>
+      <span><i class="sw key"></i>{T.legKey}</span>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="ci-data" set:html={JSON.stringify(payload)}></script>
+
+<style is:global>
+  /* Page chrome (header, controls) follows the site theme; everything inside
+     the stage follows the always-daylight scene: cream paper, coral, ink. */
+  #ci {
+    --cbg: #faf9f6; --cpanel: #fff; --cink: #1a1a1a; --cmuted: #6b6b6b; --cline: #e2e0d8; --cgold: #d99000;
+    --paper: #fff8f4; --ink: #211d1d; --ink-mut: #78685e; --coral: #db6a41; --butter: #fcea8b; --hair: rgba(33, 29, 29, 0.18);
+    --roof-be: #4f86c6; --roof-ui: #8b6fd1; --roof-un: #a8a29a; --roof-key: #e9b444;
+    position: relative; height: 100%; min-height: 480px; overflow: hidden; background: var(--cbg); color: var(--cink);
+  }
+  #ci * { box-sizing: border-box; }
+
+  #ci .ci-stage { position: absolute; inset: 0; overflow: hidden; background: linear-gradient(180deg, #cfe6ee 0%, #f4eee3 55%, #8fc3c9 100%); color: var(--ink); }
+
+  /* Floating title card: title, coverage, search, reset. */
+  #ci .ci-card { position: absolute; top: 14px; left: 14px; z-index: 7; width: 360px; max-width: calc(100% - 28px);
+    background: rgba(255, 248, 244, 0.95); border: 1px solid var(--hair); border-radius: 12px; padding: 12px 14px 13px; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.14); }
+  #ci .ci-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  #ci .ci-card h1 { margin: 0; font-size: 17px; font-weight: 720; letter-spacing: -0.01em; color: var(--ink); }
+  #ci .ci-stat { flex: none; display: inline-flex; align-items: baseline; gap: 4px; background: var(--color-brand-dark, #0a0a0a); color: #d9d4cc; padding: 4px 10px; border-radius: 999px; font-size: 11px; white-space: nowrap; }
+  #ci .ci-stat b { color: var(--color-brand, #fbbf24); font-size: 15px; font-variant-numeric: tabular-nums; }
+  #ci .ci-sub { margin: 6px 0 10px; font-size: 11.5px; line-height: 1.5; color: var(--ink-mut); }
+  #ci .ci-controls { display: flex; gap: 6px; }
+  #ci .ci-controls input { font: inherit; font-size: 12.5px; padding: 6px 10px; border: 1px solid var(--hair); border-radius: 8px; background: #fff; color: var(--ink); min-width: 0; flex: 1; }
+  #ci .ci-controls input:focus { outline: none; border-color: var(--coral); }
+  #ci .ci-controls #ci-reset { flex: none; font: inherit; font-size: 12px; padding: 6px 12px; border: 1px solid var(--hair); border-radius: 8px; background: #fff; color: var(--ink); cursor: pointer; }
+  #ci .ci-controls #ci-reset:hover { border-color: var(--coral); }
+  #ci #ci-canvas { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+  #ci #ci-canvas:active { cursor: grabbing; }
+
+  #ci .ci-labels { position: absolute; inset: 0; pointer-events: none; z-index: 3; overflow: hidden; }
+  #ci .ci-lbl { position: absolute; left: 0; top: 0; pointer-events: auto; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+    font: 600 11.5px/1.15 system-ui, -apple-system, 'Noto Sans TC', sans-serif; color: var(--ink); background: rgba(255, 248, 244, 0.94);
+    border: 1px solid rgba(33, 29, 29, 0.21); border-radius: 5px; padding: 6px 9px; box-shadow: 0 2px 0 rgba(33, 29, 29, 0.08); transition: opacity 0.2s, background-color 0.2s; }
+  #ci .ci-lbl b { color: var(--coral); font: 700 10px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  #ci .ci-lbl i { font: 600 10px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-style: normal; color: var(--ink-mut); }
+  #ci .ci-lbl:hover { border-color: var(--coral); }
+  #ci .ci-lbl.sel { background: var(--ink); color: var(--paper); border-color: var(--coral); }
+  #ci .ci-lbl.sel b { color: var(--butter); } #ci .ci-lbl.sel i { color: #cfc6bf; }
+  #ci .ci-lbl.dim { opacity: 0.28; }
+
+  #ci .ci-tip { position: absolute; left: 0; top: 0; z-index: 8; pointer-events: none; display: flex; flex-direction: column; gap: 2px; max-width: 260px;
+    background: rgba(255, 248, 244, 0.97); border: 1px solid var(--hair); border-radius: 8px; padding: 7px 10px; box-shadow: 0 6px 18px rgba(33, 29, 29, 0.16); font-size: 12px; line-height: 1.35; }
+  #ci .ci-tip b { font-size: 13px; }
+  #ci .ci-tip span { color: var(--ink-mut); font-size: 11px; }
+  #ci .ci-tip em { font-style: normal; color: var(--coral); font-weight: 600; font-size: 11px; }
+  #ci .ci-tip code { font: 10.5px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #ci .ci-tip[data-kind='bridge'] { max-width: 380px; }
+
+  #ci .ci-panel .prel { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--hair); }
+  #ci .ci-panel .prel-lbl { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-mut); }
+  #ci .ci-panel .prel-key { font-size: 0.7rem; color: var(--ink-mut); margin: 3px 0 8px; }
+  #ci .ci-panel .prel-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  #ci .ci-panel .prel-chip { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 0.78rem; padding: 4px 8px; border-radius: 7px; border: 1px dashed var(--hair); background: transparent; color: var(--ink); cursor: pointer; }
+  #ci .ci-panel .prel-chip.br { border-style: solid; background: #fff; }
+  #ci .ci-panel .prel-chip:hover { border-color: var(--coral); }
+  #ci .ci-panel .prel-chip .ic { color: var(--coral); font-weight: 700; }
+  #ci .ci-panel .prel-chip i { font-style: normal; font: 600 10px ui-monospace, monospace; color: var(--ink-mut); }
+
+  #ci .ci-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 4; color: var(--ink-mut); font-size: 14px; }
+
+  #ci .ci-fallback { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; padding: 30px; background: var(--cbg); color: var(--cink); }
+  #ci .ci-fallback h2 { margin: 0; font-size: 17px; font-weight: 650; }
+  #ci .ci-fallback p { margin: 0; color: var(--cmuted); font-size: 13.5px; max-width: 42ch; }
+  #ci .ci-fallback button { margin-top: 6px; font: inherit; font-size: 13px; font-weight: 600; padding: 9px 18px; border: 0; border-radius: 9px; background: var(--color-brand-dark, #0a0a0a); color: var(--color-brand, #fbbf24); cursor: pointer; }
+
+  #ci .ci-panel { position: absolute; top: 14px; right: 14px; z-index: 6; width: 300px; max-width: calc(100% - 28px); max-height: calc(100% - 28px); overflow: auto;
+    background: var(--paper); color: var(--ink); border: 1px solid var(--hair); border-radius: 14px; padding: 15px 16px 17px; box-shadow: 0 12px 34px rgba(33, 29, 29, 0.18); }
+  #ci .ci-panel .pclose { float: right; border: 0; background: transparent; color: var(--ink-mut); cursor: pointer; font-size: 1.15rem; line-height: 1; padding: 2px 4px; }
+  #ci .ci-panel .pnum { font: 700 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--coral); }
+  #ci .ci-panel h3 { font-size: 1.1rem; font-weight: 720; letter-spacing: -0.01em; margin: 2px 0; color: var(--ink); }
+  #ci .ci-panel .pmeta { font-size: 0.76rem; color: var(--ink-mut); margin-bottom: 12px; font-variant-numeric: tabular-nums; }
+  #ci .ci-panel .plist { display: flex; flex-direction: column; gap: 6px; }
+  #ci .ci-panel .pcls { text-align: left; border: 1px solid var(--hair); background: #fff; border-radius: 9px; padding: 8px 10px; font: inherit; cursor: pointer; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+  #ci .ci-panel .pcls:hover { border-color: var(--coral); }
+  #ci .ci-panel .pcls.un { color: var(--ink-mut); border-style: dashed; cursor: default; }
+  #ci .ci-panel .pcls .dot { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  #ci .ci-panel .pcls .nm { font-size: 0.88rem; font-weight: 600; flex: 1; letter-spacing: -0.01em; }
+  #ci .ci-panel .pcls .st { color: var(--roof-key); font-size: 0.75rem; }
+  #ci .ci-panel .pcls .go { font-size: 0.72rem; color: var(--coral); }
+
+  #ci .dot.be, #ci .sw.be { background: var(--roof-be); }
+  #ci .dot.ui, #ci .sw.ui { background: var(--roof-ui); }
+  #ci .dot.un, #ci .sw.un { background: var(--roof-un); }
+  #ci .dot.key, #ci .sw.key { background: var(--roof-key); }
+
+  #ci .ci-legend { position: absolute; left: 14px; bottom: 12px; z-index: 5; display: flex; gap: 14px; flex-wrap: wrap; background: rgba(255, 248, 244, 0.92); border: 1px solid var(--hair); border-radius: 8px; padding: 7px 12px; font-size: 12px; color: var(--ink-mut); }
+  #ci .ci-legend .sw { display: inline-block; width: 14px; height: 10px; border-radius: 2px 2px 0 0; clip-path: polygon(0 100%, 50% 0, 100% 100%); vertical-align: -1px; margin-right: 5px; }
+
+  #ci .ci-hint { display: none; }
+
+  /* The hidden attribute must win over the explicit display on these overlays
+     (a higher-specificity display rule otherwise defeats UA [hidden]). */
+  #ci .ci-loading[hidden], #ci .ci-fallback[hidden], #ci .ci-panel[hidden], #ci .ci-tip[hidden] { display: none; }
+
+  /* Plates that would collide with a nearer/bigger island's plate shrink to
+     their number (scene.js decides); hovering or selecting shows the name. */
+  #ci .ci-lbl.compact { padding: 4px 6px; }
+  #ci .ci-lbl.compact span, #ci .ci-lbl.compact i { display: none; }
+  #ci .ci-lbl.compact:hover span, #ci .ci-lbl.compact.sel span { display: inline; }
+  #ci .ci-lbl:hover, #ci .ci-lbl.sel { z-index: 2000 !important; }
+
+  @media (max-width: 640px) {
+    #ci .ci-card { top: 8px; left: 8px; right: 8px; width: auto; max-width: none; padding: 10px 12px; }
+    #ci .ci-card h1 { font-size: 15px; }
+    #ci .ci-sub { display: none; }
+    #ci .ci-card-head { margin-bottom: 8px; }
+    #ci .ci-lbl { font-size: 10px; padding: 4px 6px; gap: 4px; }
+    #ci .ci-lbl i { display: none; }
+    #ci .ci-panel { top: auto; left: 0; right: 0; bottom: 0; width: 100%; max-width: 100%; border-radius: 16px 16px 0 0; max-height: 64%; }
+    #ci .ci-legend { gap: 9px; padding: 6px 9px; font-size: 11px; left: 8px; bottom: 8px; max-width: calc(100% - 16px); }
+    #ci .ci-hint { display: block; position: absolute; bottom: 48px; left: 50%; transform: translateX(-50%); z-index: 5; background: rgba(33, 29, 29, 0.82); color: #fff8f4; font-size: 11.5px; padding: 5px 12px; border-radius: 999px; pointer-events: none; transition: opacity 0.4s; }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #ci { --cbg: #0f0f0f; --cpanel: #171717; --cink: #ececec; --cmuted: #9a9a9a; --cline: #2a2a2a; --cgold: #fbbf24; }
+  }
+  :root[data-theme='dark'] #ci { --cbg: #0f0f0f; --cpanel: #171717; --cink: #ececec; --cmuted: #9a9a9a; --cline: #2a2a2a; --cgold: #fbbf24; }
+  :root[data-theme='light'] #ci { --cbg: #faf9f6; --cpanel: #fff; --cink: #1a1a1a; --cmuted: #6b6b6b; --cline: #e2e0d8; --cgold: #d99000; }
+</style>
+
+<script>
+  function initClassIslands() {
+    var root = document.getElementById('ci');
+    var dataEl = document.getElementById('ci-data');
+    if (!root || !dataEl || root.dataset.ready) return;
+    root.dataset.ready = '1';
+
+    var DATA = JSON.parse(dataEl.textContent || '{"nodes":[],"cats":[]}');
+    var DS = root.dataset;
+    var stage = root.querySelector('.ci-stage');
+    var canvas = document.getElementById('ci-canvas');
+    var panel = document.getElementById('ci-panel');
+    var loadingEl = document.getElementById('ci-loading');
+    var fallbackEl = document.getElementById('ci-fallback');
+    var hint = document.getElementById('ci-hint');
+    var q = document.getElementById('ci-q');
+    var api = null;
+
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function webglOK() {
+      try {
+        var c = document.createElement('canvas');
+        return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl')));
+      } catch (e) { return false; }
+    }
+    function kindOf(n) { return n.key ? 'key' : !n.url ? 'un' : n.ui ? 'ui' : 'be'; }
+
+    // Right-hand panel listing the selected island's classes.
+    function renderPanel(cluster) {
+      if (!cluster) { panel.hidden = true; panel.innerHTML = ''; return; }
+      var rows = cluster.members.map(function (n) {
+        var k = kindOf(n);
+        return '<button class="pcls' + (n.url ? '' : ' un') + '" data-id="' + esc(n.id) + '">' +
+          '<span class="dot ' + k + '"></span><span class="nm">' + esc(n.name) + '</span>' +
+          (n.key ? '<span class="st">★</span>' : '') + (n.url ? '<span class="go">→</span>' : '') + '</button>';
+      }).join('');
+      // Related islands: ⇄ = a bridge goes there directly, ⋯ = reached on foot via other islands
+      var rel = (cluster.relations || []).map(function (r) {
+        return '<button class="prel-chip' + (r.bridged ? ' br' : '') + '" data-cat="' + esc(r.cat) + '" title="' + esc(r.bridged ? DS.relBridge : DS.relWalk) + '">' +
+          '<span class="ic">' + (r.bridged ? '⇄' : '⋯') + '</span>' + esc(r.cat) + '<i>' + r.n + '</i></button>';
+      }).join('');
+      panel.innerHTML =
+        '<button class="pclose" aria-label="' + esc(DS.close) + '">×</button>' +
+        '<div class="pnum">' + String(cluster.num).padStart(2, '0') + '</div>' +
+        '<h3>' + esc(cluster.cat) + '</h3>' +
+        '<div class="pmeta">' + cluster.count + esc(DS.count) + '</div>' +
+        '<div class="plist">' + rows + '</div>' +
+        (rel ? '<div class="prel"><div class="prel-lbl">' + esc(DS.relTitle) + '</div><div class="prel-key">⇄ ' + esc(DS.relBridge) + ' · ⋯ ' + esc(DS.relWalk) + '</div><div class="prel-chips">' + rel + '</div></div>' : '');
+      panel.hidden = false;
+      panel.querySelector('.pclose').addEventListener('click', function () { if (api) api.reset(); });
+      Array.prototype.forEach.call(panel.querySelectorAll('.prel-chip'), function (chip) {
+        chip.addEventListener('click', function () { if (api) api.select(chip.dataset.cat); });
+      });
+      Array.prototype.forEach.call(panel.querySelectorAll('.pcls'), function (btn) {
+        btn.addEventListener('click', function () {
+          var n = cluster.members.filter(function (m) { return m.id === btn.dataset.id; })[0];
+          if (n && n.url) window.location.href = n.url;
+        });
+      });
+    }
+
+    var booted = false;
+    function boot() {
+      if (booted || !root.offsetParent) return; // wait until the tab is visible
+      booted = true;
+      if (!webglOK()) { fallbackEl.hidden = false; return; }
+      loadingEl.hidden = false;
+      import('./islands/scene.js').then(function (mod) {
+        api = mod.createIslandScene({
+          canvas: canvas,
+          stage: stage,
+          labelsEl: document.getElementById('ci-labels'),
+          tipEl: document.getElementById('ci-tip'),
+          data: DATA,
+          strings: { be: DS.tipBe, ui: DS.tipUi, key: DS.tipKey, un: DS.tipUn, open: DS.tipOpen, rel: DS.tipRel, path: DS.tipPath, more: DS.tipMore },
+          onSelect: renderPanel,
+          onOpen: function (n) { window.location.href = n.url; },
+        });
+        loadingEl.hidden = true;
+        if (q.value) api.filter(q.value);
+        if (hint && hint.dataset.hint && window.matchMedia && window.matchMedia('(max-width:640px)').matches) {
+          hint.textContent = hint.dataset.hint;
+          setTimeout(function () { hint.style.opacity = '0'; }, 4200);
+        }
+      }).catch(function (err) {
+        loadingEl.hidden = true;
+        fallbackEl.hidden = false;
+        console.error('[ClassIslands] could not start the 3D view', err);
+      });
+    }
+
+    q.addEventListener('input', function () { if (api) api.filter(q.value); });
+    document.getElementById('ci-reset').addEventListener('click', function () { if (api) api.reset(); });
+    document.getElementById('ci-fb-btn').addEventListener('click', function () {
+      var dirTab = document.querySelector('.map-tab[data-view="dir"]');
+      if (dirTab) dirTab.click();
+    });
+
+    // map.astro dispatches a synthetic resize when a tab is shown; that is our
+    // cue to load three.js the first time the islands tab becomes visible.
+    boot();
+    window.addEventListener('resize', boot);
+  }
+  document.addEventListener('astro:page-load', initClassIslands);
+</script>
