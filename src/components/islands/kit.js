@@ -37,6 +37,10 @@ function geometries(THREE) {
     sphere: new THREE.SphereGeometry(0.5, 12, 8),
     trunk: new THREE.CylinderGeometry(0.32, 0.5, 1, 7),
     leaf,
+    // light-emitting parts (windows, lamp heads): same shapes as box/sphere,
+    // kept apart so they can get a material that glows at night
+    glass: new THREE.BoxGeometry(1, 1, 1),
+    bulb: new THREE.SphereGeometry(0.5, 12, 8),
   };
   return sharedGeo;
 }
@@ -53,12 +57,13 @@ export function createKit(THREE) {
     batches.get(kind).push({ pos, scale, color, owner, rot });
   }
 
-  function build(scene, material) {
+  // `byKind` overrides the material for some kinds (e.g. glass/bulb → glow).
+  function build(scene, material, byKind = {}) {
     const dummy = new THREE.Object3D();
     dummy.rotation.order = 'YXZ';
     const meshes = [];
     for (const [kind, items] of batches) {
-      const mesh = new THREE.InstancedMesh(geo[kind], material, items.length);
+      const mesh = new THREE.InstancedMesh(geo[kind], byKind[kind] || material, items.length);
       mesh.castShadow = true;
       mesh.receiveShadow = true;
       items.forEach((p, i) => {
@@ -78,6 +83,7 @@ export function createKit(THREE) {
         }
       });
       mesh.userData.owners = items.map((p) => p.owner);
+      mesh.userData.items = items; // base transforms, for parts animated later (boats)
       mesh.instanceMatrix.needsUpdate = true;
       mesh.instanceColor.needsUpdate = true;
       mesh.computeBoundingSphere();

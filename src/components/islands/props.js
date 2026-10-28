@@ -58,7 +58,7 @@ export function createProps(THREE, kit) {
 
   function lamp(x, z, y) {
     kit.part('cyl', [x, y + 0.22, z], [0.03, 0.44, 0.03], 0x4a4744);
-    kit.part('sphere', [x, y + 0.46, z], [0.08, 0.08, 0.08], 0xfff0c2);
+    kit.part('bulb', [x, y + 0.46, z], [0.08, 0.08, 0.08], 0xfff0c2);
   }
 
   function person(x, z, rnd, y) {
@@ -84,7 +84,7 @@ export function createProps(THREE, kit) {
       kit.part('cyl', [x, y + 0.15 + i * 0.3, z], [r * 2, 0.3, r * 2], i % 2 ? 0xdb6a41 : 0xf4efe6);
     }
     kit.part('cyl', [x, y + 1.95, z], [0.42, 0.06, 0.42], 0x3b3a42);
-    kit.part('sphere', [x, y + 2.1, z], [0.26, 0.26, 0.26], 0xfff0c2);
+    kit.part('bulb', [x, y + 2.1, z], [0.26, 0.26, 0.26], 0xfff0c2);
     kit.part('cone', [x, y + 2.36, z], [0.4, 0.3, 0.4], 0xdb6a41);
   }
 

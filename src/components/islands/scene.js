@@ -3,14 +3,21 @@
 // other two map views.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { layoutArchipelago, TOP } from './layout.js';
+import { layoutArchipelago, TOP, mulberry32, walkPath } from './layout.js';
 import { createKit } from './kit.js';
 import { createProps } from './props.js';
 import { buildWorld, classKind } from './world.js';
-import { createEnvironment } from './environment.js';
+import { createEnvironment, TIMES } from './environment.js';
 
 const FOV = 32;
 const HOME_POLAR = THREE.MathUtils.degToRad(57);
+const POLAR_MIN = THREE.MathUtils.degToRad(25);
+const POLAR_MAX = THREE.MathUtils.degToRad(70);
+const BIRD_POLAR = 0.1; // bird's-eye: almost straight down
+const TIME_ORDER = ['dawn', 'day', 'dusk', 'night'];
+const WALKERS = 42;
+const SHIRTS = [0xdb6a41, 0x4f86c6, 0xe9b444, 0x58a6a6, 0x8b6fd1, 0x3b3a42, 0xf2b5c6, 0x9cc27a];
+const SKIN = [0xf1c9a5, 0xd9a27e, 0xb27b57];
 const PALE = new THREE.Color(0xe9e4da);
 const CORAL = new THREE.Color(0xdb6a41);
 
@@ -43,7 +50,8 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  // Nothing in the scene moves, so shadows are rendered once.
+  // The islands never move: shadows are rendered once and again only while
+  // the time of day changes (walkers and boats don't cast shadows).
   renderer.shadowMap.autoUpdate = false;
   renderer.shadowMap.needsUpdate = true;
 
@@ -53,22 +61,31 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   controls.enableDamping = !reduced;
   controls.dampingFactor = 0.07;
   controls.enablePan = false;
-  controls.minPolarAngle = THREE.MathUtils.degToRad(25);
-  controls.maxPolarAngle = THREE.MathUtils.degToRad(70);
+  controls.minPolarAngle = POLAR_MIN;
+  controls.maxPolarAngle = POLAR_MAX;
   controls.minDistance = 5;
 
   // ---- world
   const buildingKit = createKit(THREE);
   const bridgeKit = createKit(THREE);
   const decorKit = createKit(THREE);
+  const boatKit = createKit(THREE); // boats drift, so they get their own meshes
   const props = createProps(THREE, decorKit);
   const world = buildWorld(THREE, scene, { buildings: buildingKit, bridges: bridgeKit, decor: decorKit }, props, layout);
-  const env = createEnvironment(THREE, scene, props, decorKit, layout.bounds);
+  const env = createEnvironment(THREE, scene, props, decorKit, layout.bounds, createProps(THREE, boatKit));
   const partMat = new THREE.MeshStandardMaterial({ roughness: 0.86, metalness: 0 });
-  const buildingMeshes = buildingKit.build(scene, partMat);
+  // windows, lamps and beacons: lit by the night factor of the time of day
+  const glowMat = new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0, emissive: 0xffd28a, emissiveIntensity: 0 });
+  const glowing = { glass: glowMat, bulb: glowMat };
+  const buildingMeshes = buildingKit.build(scene, partMat, glowing);
   const bridgeMeshes = bridgeKit.build(scene, partMat);
   const bridgeById = new Map(layout.bridges.map((b) => [b.id, b]));
-  decorKit.build(scene, partMat);
+  decorKit.build(scene, partMat, glowing);
+  const boatMeshes = boatKit.build(scene, partMat, glowing);
+  for (const m of boatMeshes) {
+    m.frustumCulled = false; // instances move away from where the bounds were computed
+    m.castShadow = false;
+  }
 
   // ---- camera framing
   const tanHalf = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
@@ -81,6 +98,140 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     sph.set(dist, polar, azimuth);
     return new THREE.Vector3().setFromSpherical(sph).add(target);
   };
+
+  // ---- time of day: blend from the current light to a preset over ~1.2 s;
+  // the night factor lights windows, lamps and stars
+  const COLOR_KEYS = ['top', 'horizon', 'sun', 'hemiSky', 'hemiGround', 'shallow', 'deep', 'fog'];
+  const toLight = (t) => {
+    const s = { dir: new THREE.Vector3(...t.dir).normalize(), sunI: t.sunI, hemiI: t.hemiI, night: t.night };
+    for (const k of COLOR_KEYS) s[k] = new THREE.Color(t[k]);
+    return s;
+  };
+  const copyLight = (s) => {
+    const c = { dir: s.dir.clone(), sunI: s.sunI, hemiI: s.hemiI, night: s.night };
+    for (const k of COLOR_KEYS) c[k] = s[k].clone();
+    return c;
+  };
+  const PRESETS = Object.fromEntries(TIME_ORDER.map((k) => [k, toLight(TIMES[k])]));
+  const light = copyLight(PRESETS.day);
+  let timeName = 'day';
+  let timeAnim = null;
+  function blendLight(from, to, k) {
+    for (const key of COLOR_KEYS) light[key].copy(from[key]).lerp(to[key], k);
+    light.dir.copy(from.dir).lerp(to.dir, k).normalize();
+    light.sunI = from.sunI + (to.sunI - from.sunI) * k;
+    light.hemiI = from.hemiI + (to.hemiI - from.hemiI) * k;
+    light.night = from.night + (to.night - from.night) * k;
+    env.applyTime(light);
+    glowMat.emissiveIntensity = light.night * 1.4;
+    renderer.shadowMap.needsUpdate = true; // the sun moved
+  }
+  function setTime(name) {
+    if (!PRESETS[name]) return timeName;
+    timeName = name;
+    timeAnim = { from: copyLight(light), to: PRESETS[name], t: reduced ? 1 : 0 };
+    return timeName;
+  }
+
+  // ---- walkers: people strolling the walk network (tile rings, the land
+  // between an island's tiles, and the bridges, following their arch)
+  const walk = layout.walk;
+  const wrnd = mulberry32(2026);
+  const nodesOf = new Map(); // category -> walk-node ids
+  walk.nodes.forEach((n, i) => {
+    if (!nodesOf.has(n.cat)) nodesOf.set(n.cat, []);
+    nodesOf.get(n.cat).push(i);
+  });
+  const walkCats = [...nodesOf.keys()];
+  const bodyMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.5, 0.42, 1, 8), partMat, WALKERS);
+  const headMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(0.5, 10, 8), partMat, WALKERS);
+  for (const m of [bodyMesh, headMesh]) {
+    m.frustumCulled = false;
+    m.receiveShadow = true;
+  }
+  const walkers = [];
+  const tint = new THREE.Color();
+  function setSegment(w) {
+    const e = walk.adj[w.path[w.seg]].find((x) => x[0] === w.path[w.seg + 1]);
+    w.len = e ? Math.max(e[1], 0.05) : 1;
+    w.arch = e ? e[2] : 0;
+  }
+  // a new trip: from where the walker stands to a random spot on another island
+  function planTrip(w) {
+    let cat = walkCats[Math.floor(wrnd() * walkCats.length)];
+    if (cat === walk.nodes[w.at].cat) cat = walkCats[(walkCats.indexOf(cat) + 1) % walkCats.length];
+    const ids = nodesOf.get(cat);
+    const path = walkPath(walk, w.at, ids[Math.floor(wrnd() * ids.length)]);
+    w.path = path.length > 1 ? path : [w.at, walk.adj[w.at][0][0]];
+    w.seg = 0;
+    w.t = 0;
+    setSegment(w);
+  }
+  for (let i = 0; i < WALKERS; i++) {
+    const w = { at: Math.floor(wrnd() * walk.nodes.length), speed: 0.3 + wrnd() * 0.2, side: (wrnd() - 0.5) * 0.22, phase: wrnd() * 6.28 };
+    planTrip(w);
+    w.t = wrnd(); // spread them out along their first stretch
+    bodyMesh.setColorAt(i, tint.set(SHIRTS[i % SHIRTS.length]));
+    headMesh.setColorAt(i, tint.set(SKIN[Math.floor(wrnd() * SKIN.length)]));
+    walkers.push(w);
+  }
+  scene.add(bodyMesh, headMesh);
+  const dummy = new THREE.Object3D();
+  dummy.rotation.order = 'YXZ';
+  function updateWalkers(dt, time) {
+    walkers.forEach((w, i) => {
+      w.t += (w.speed * dt) / w.len;
+      while (w.t >= 1) {
+        w.t -= 1;
+        w.seg++;
+        if (w.seg >= w.path.length - 1) {
+          w.at = w.path[w.path.length - 1];
+          planTrip(w);
+          break;
+        }
+        setSegment(w);
+      }
+      const a = walk.nodes[w.path[w.seg]];
+      const b = walk.nodes[w.path[w.seg + 1]];
+      const dx = b.x - a.x, dz = b.z - a.z;
+      const L = Math.hypot(dx, dz) || 1;
+      const x = a.x + dx * w.t - (dz / L) * w.side;
+      const z = a.z + dz * w.t + (dx / L) * w.side;
+      const y = TOP + (w.arch ? 0.05 + Math.sin(w.t * Math.PI) * w.arch : 0) + Math.abs(Math.sin(time * 7 + w.phase)) * 0.012;
+      dummy.rotation.set(0, Math.atan2(dx, dz), 0);
+      dummy.position.set(x, y + 0.09, z);
+      dummy.scale.set(0.1, 0.16, 0.1);
+      dummy.updateMatrix();
+      bodyMesh.setMatrixAt(i, dummy.matrix);
+      dummy.position.set(x, y + 0.21, z);
+      dummy.scale.set(0.085, 0.085, 0.085);
+      dummy.updateMatrix();
+      headMesh.setMatrixAt(i, dummy.matrix);
+    });
+    bodyMesh.instanceMatrix.needsUpdate = true;
+    headMesh.instanceMatrix.needsUpdate = true;
+  }
+  updateWalkers(0, 0); // place them (with reduced motion they stay put)
+
+  // ---- boats: slow circles and a gentle bob; every part of a boat shares
+  // its x/z, which keys the boat's own phase
+  function updateBoats(time) {
+    for (const m of boatMeshes) {
+      m.userData.items.forEach((p, i) => {
+        const h = Math.sin(p.pos[0] * 12.9898 + p.pos[2] * 78.233) * 43758.5453;
+        const ph = (h - Math.floor(h)) * Math.PI * 2;
+        const a = ph + time * 0.035;
+        const x = p.pos[0] + (Math.cos(a) - Math.cos(ph)) * 0.7;
+        const z = p.pos[2] + (Math.sin(a) - Math.sin(ph)) * 0.7;
+        dummy.position.set(x, p.pos[1] + Math.sin(time * 1.3 + ph) * 0.025, z);
+        dummy.rotation.set(Math.sin(time * 1.1 + ph) * 0.04, Math.atan2(-Math.sin(a), Math.cos(a)), 0);
+        dummy.scale.set(p.scale[0], p.scale[1], p.scale[2]);
+        dummy.updateMatrix();
+        m.setMatrixAt(i, dummy.matrix);
+      });
+      m.instanceMatrix.needsUpdate = true;
+    }
+  }
 
   // ---- name plates: cream pills hung on each island's front edge
   const labels = layout.clusters.map((c) => {
@@ -173,13 +324,30 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
 
   // ---- camera moves
   let anim = null;
-  function flyTo(target, pos) {
+  function flyTo(target, pos, done) {
     if (reduced) {
       controls.target.copy(target);
       camera.position.copy(pos);
+      if (done) done();
       return;
     }
-    anim = { t: 0, camFrom: camera.position.clone(), camTo: pos, tgtFrom: controls.target.clone(), tgtTo: target };
+    anim = { t: 0, camFrom: camera.position.clone(), camTo: pos, tgtFrom: controls.target.clone(), tgtTo: target, done };
+  }
+
+  // ---- bird's-eye: look almost straight down on the whole map (still free
+  // to turn and zoom); the polar limits switch once the camera arrives
+  let bird = false;
+  const birdDistance = () => radius * Math.max(1.05 / tanHalf, 1.05 / (tanHalf * camera.aspect));
+  function setBird(on) {
+    bird = !!on;
+    controls.minPolarAngle = 0;
+    controls.maxPolarAngle = POLAR_MAX;
+    const pos = bird ? posFor(homeTarget, birdDistance(), BIRD_POLAR, 0) : posFor(homeTarget, fitDistance(radius), HOME_POLAR, 0);
+    flyTo(homeTarget.clone(), pos, () => {
+      controls.minPolarAngle = bird ? 0 : POLAR_MIN;
+      controls.maxPolarAngle = bird ? BIRD_POLAR + 0.05 : POLAR_MAX;
+    });
+    return bird;
   }
   function flyToCluster(c) {
     const target = new THREE.Vector3(c.cx, TOP, c.cz);
@@ -194,7 +362,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       target.addScaledVector(toCamera, c.radius * 1.6 + 2);
     }
     sph.setFromVector3(v.subVectors(camera.position, controls.target));
-    const polar = THREE.MathUtils.clamp(sph.phi, THREE.MathUtils.degToRad(40), THREE.MathUtils.degToRad(58));
+    const polar = bird ? BIRD_POLAR : THREE.MathUtils.clamp(sph.phi, THREE.MathUtils.degToRad(40), THREE.MathUtils.degToRad(58));
     flyTo(target, posFor(target, Math.max(17, fitDistance(c.radius) * 1.7), polar, sph.theta));
   }
   function home(instant) {
@@ -206,9 +374,11 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       camera.position.copy(pos);
     } else flyTo(homeTarget.clone(), pos);
   }
+  // back to the default view (leaving bird's-eye too)
   function reset() {
     select(null, false);
-    home(false);
+    if (bird) setBird(false);
+    else home(false);
   }
 
   // ---- picking: the nearest of a class house, a bridge or an island deck
@@ -347,13 +517,28 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     raf = requestAnimationFrame(frame);
     if (!canvas.offsetParent) return; // tab hidden
     const dt = Math.min(clock.getDelta(), 0.05);
-    if (!reduced) env.update(dt);
+    const time = clock.elapsedTime;
+    if (!reduced) {
+      env.update(dt);
+      updateWalkers(dt, time);
+      updateBoats(time);
+    }
+    if (timeAnim) {
+      timeAnim.t = Math.min(1, timeAnim.t + dt / 1.2);
+      const k = timeAnim.t * timeAnim.t * (3 - 2 * timeAnim.t);
+      blendLight(timeAnim.from, timeAnim.to, k);
+      if (timeAnim.t >= 1) timeAnim = null;
+    }
     if (anim) {
       anim.t = Math.min(1, anim.t + dt / 0.8);
       const k = 1 - Math.pow(1 - anim.t, 3);
       camera.position.lerpVectors(anim.camFrom, anim.camTo, k);
       controls.target.lerpVectors(anim.tgtFrom, anim.tgtTo, k);
-      if (anim.t >= 1) anim = null;
+      if (anim.t >= 1) {
+        const done = anim.done;
+        anim = null;
+        if (done) done();
+      }
     }
     controls.update();
     renderer.render(scene, camera);
@@ -362,6 +547,18 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   }
   raf = requestAnimationFrame(frame);
 
-  // `walk` is the pedestrian network (tile rings + bridges) for future walkers.
-  return { select: (cat) => select(cat, true), reset, filter, clusters: layout.clusters, walk: layout.walk };
+  // `walk` is the pedestrian network (tile rings + bridges) the walkers use.
+  return {
+    select: (cat) => select(cat, true),
+    reset,
+    filter,
+    setTime,
+    // step to the next time of day (dawn → day → dusk → night → dawn)
+    nextTime: () => setTime(TIME_ORDER[(TIME_ORDER.indexOf(timeName) + 1) % TIME_ORDER.length]),
+    getTime: () => timeName,
+    setBird,
+    isBird: () => bird,
+    clusters: layout.clusters,
+    walk: layout.walk,
+  };
 }
