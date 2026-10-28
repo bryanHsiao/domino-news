@@ -22,37 +22,42 @@ interface Props {
 }
 const { lang, data, coveredCount, total } = Astro.props;
 
-// Island ordering: the six core-containment categories form the inner ring
-// (fixed spine order), the rest circle the outer ring sorted by class count
-// descending. Mirrors ClassDirectory's CORE spine so the two views agree.
+// Island order: the six core-containment categories first (fixed spine order,
+// same as ClassDirectory), then the rest by class count descending. The 3D
+// layout in ./islands/layout.js grows the archipelago from the centre in this
+// order, so the spine sits in the middle and the map never reshuffles.
 const CORE = ['Session', 'Database', 'View', 'Document', 'Item', 'Rich Text'];
 const counts: Record<string, number> = {};
 data.nodes.forEach((n) => (counts[n.cat] = (counts[n.cat] || 0) + 1));
-const core = CORE.filter((c) => counts[c]);
-const others = Object.keys(counts)
-  .filter((c) => !CORE.includes(c))
-  .sort((a, b) => counts[b] - counts[a] || a.localeCompare(b));
-const cats = [...core, ...others];
-const payload = { nodes: data.nodes, cats, counts, core };
+const cats = [
+  ...CORE.filter((c) => counts[c]),
+  ...Object.keys(counts)
+    .filter((c) => !CORE.includes(c))
+    .sort((a, b) => counts[b] - counts[a] || a.localeCompare(b)),
+];
+const nodes = data.nodes.map(({ id, name, cat, ui, key, url }) => ({ id, name, cat, ui, key, url }));
+const payload = { nodes, cats };
 
 const T =
   lang === 'zh-TW'
     ? {
         title: 'LotusScript 類別島嶼',
-        sub: '每個 category 一座島，島越大代表類別越多 · 拖曳轉看、滾輪縮放 · 點島看清單、點建築開文章',
+        sub: '每個 category 一座島，類別越多島越大 · 拖曳轉看、滾輪縮放 · 點島看清單、點房子開文章',
         covered: '已涵蓋',
         search: '搜尋類別…',
         reset: '重設視角',
-        legBe: '後端（已涵蓋）',
-        legUi: 'UI（已涵蓋）',
-        legUn: '未涵蓋',
+        legBe: '後端',
+        legUi: 'UI',
+        legUn: '尚未寫成文章',
         legKey: 'key class',
         hint: '拖曳轉看 · 點島看清單',
         panelCount: ' 個類別',
-        open: '讀這篇文章 →',
-        none: '尚未寫成文章',
         close: '關閉',
-        back: '← 全部島嶼',
+        tipBe: '後端',
+        tipUi: 'UI',
+        tipKey: 'key class',
+        tipUn: '尚未寫成文章',
+        tipOpen: '點一下開文章 →',
         fbTitle: '這個瀏覽器無法顯示 3D 島嶼',
         fbBody: '你的瀏覽器或裝置不支援 WebGL。島嶼檢視需要 WebGL 才能渲染。',
         fbBtn: '改用分類檢視',
@@ -60,20 +65,22 @@ const T =
       }
     : {
         title: 'LotusScript Class Islands',
-        sub: 'One island per category, sized by class count · drag to orbit, scroll to zoom · click an island for its list, a building to open its article',
+        sub: 'One island per category, bigger for more classes · drag to orbit, scroll to zoom · click an island for its list, a house to open its article',
         covered: 'covered',
         search: 'Search classes…',
         reset: 'Reset view',
-        legBe: 'Backend (covered)',
-        legUi: 'UI (covered)',
-        legUn: 'Uncovered',
-        legKey: 'key class',
+        legBe: 'Backend',
+        legUi: 'UI',
+        legUn: 'Not written yet',
+        legKey: 'Key class',
         hint: 'Drag to orbit · tap an island',
         panelCount: ' classes',
-        open: 'Read the article →',
-        none: 'Not written yet',
         close: 'Close',
-        back: '← All islands',
+        tipBe: 'Backend',
+        tipUi: 'UI',
+        tipKey: 'key class',
+        tipUn: 'not written yet',
+        tipOpen: 'Click to open the article →',
         fbTitle: "This browser can't show the 3D islands",
         fbBody: 'Your browser or device has no WebGL support. The islands view needs WebGL to render.',
         fbBtn: 'Use the grouped view',
@@ -83,12 +90,13 @@ const T =
 
 <div
   id="ci"
-  data-open={T.open}
-  data-none={T.none}
-  data-close={T.close}
-  data-back={T.back}
   data-count={T.panelCount}
-  data-covered={T.covered}
+  data-close={T.close}
+  data-tip-be={T.tipBe}
+  data-tip-ui={T.tipUi}
+  data-tip-key={T.tipKey}
+  data-tip-un={T.tipUn}
+  data-tip-open={T.tipOpen}
 >
   <header class="ci-top">
     <div class="ci-title">
@@ -106,6 +114,7 @@ const T =
   <div class="ci-stage">
     <canvas id="ci-canvas"></canvas>
     <div id="ci-labels" class="ci-labels"></div>
+    <div id="ci-tip" class="ci-tip" hidden></div>
 
     <div id="ci-loading" class="ci-loading" hidden>{T.loading}</div>
 
@@ -123,7 +132,7 @@ const T =
       <span><i class="sw be"></i>{T.legBe}</span>
       <span><i class="sw ui"></i>{T.legUi}</span>
       <span><i class="sw un"></i>{T.legUn}</span>
-      <span><i class="sw ky"></i>{T.legKey}</span>
+      <span><i class="sw key"></i>{T.legKey}</span>
     </div>
   </div>
 </div>
@@ -131,17 +140,19 @@ const T =
 <script type="application/json" id="ci-data" set:html={JSON.stringify(payload)}></script>
 
 <style is:global>
+  /* Page chrome (header, controls) follows the site theme; everything inside
+     the stage follows the always-daylight scene: cream paper, coral, ink. */
   #ci {
-    --cbg: #faf9f6; --cpanel: #fff; --cink: #1a1a1a; --cmuted: #6b6b6b; --cline: #e2e0d8;
-    --cgold: #d99000; --cbe: #1d4ed8; --cui: #7c3aed; --cun: #9aa0a8;
-    --csky-a: #cfe0f2; --csky-b: #eef3f8;
-    display: flex; flex-direction: column; height: 78vh; min-height: 500px;
+    --cbg: #faf9f6; --cpanel: #fff; --cink: #1a1a1a; --cmuted: #6b6b6b; --cline: #e2e0d8; --cgold: #d99000;
+    --paper: #fff8f4; --ink: #211d1d; --ink-mut: #78685e; --coral: #db6a41; --butter: #fcea8b; --hair: rgba(33, 29, 29, 0.18);
+    --roof-be: #4f86c6; --roof-ui: #8b6fd1; --roof-un: #a8a29a; --roof-key: #e9b444;
+    display: flex; flex-direction: column; height: 80vh; min-height: 520px;
     border: 1px solid var(--cline); border-radius: 12px; overflow: hidden; background: var(--cbg); color: var(--cink);
   }
   #ci * { box-sizing: border-box; }
   #ci .ci-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--cline); flex-wrap: wrap; }
   #ci .ci-title h1 { margin: 0; font-size: 18px; font-weight: 600; }
-  #ci .ci-sub { margin: 3px 0 0; font-size: 12px; color: var(--cmuted); max-width: 70ch; }
+  #ci .ci-sub { margin: 3px 0 0; font-size: 12px; color: var(--cmuted); max-width: 72ch; }
   #ci .ci-stat { display: flex; align-items: baseline; gap: 6px; background: var(--color-brand-dark, #0a0a0a); color: var(--color-brand, #fbbf24); padding: 6px 14px; border-radius: 999px; }
   #ci .ci-stat b { font-size: 20px; font-variant-numeric: tabular-nums; } #ci .ci-stat span { font-size: 12px; opacity: 0.85; }
 
@@ -150,71 +161,81 @@ const T =
   #ci .ci-controls #ci-reset { font: inherit; font-size: 12.5px; padding: 6px 14px; border: 1px solid var(--cline); border-radius: 8px; background: var(--cpanel); color: var(--cink); cursor: pointer; }
   #ci .ci-controls #ci-reset:hover { border-color: var(--cgold); }
 
-  #ci .ci-stage { position: relative; flex: 1; overflow: hidden; background: linear-gradient(170deg, var(--csky-b), var(--csky-a)); }
+  #ci .ci-stage { position: relative; flex: 1; overflow: hidden; background: linear-gradient(180deg, #cfe6ee 0%, #f4eee3 55%, #8fc3c9 100%); color: var(--ink); }
   #ci #ci-canvas { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
-  #ci #ci-canvas.grabbing { cursor: grabbing; }
+  #ci #ci-canvas:active { cursor: grabbing; }
 
   #ci .ci-labels { position: absolute; inset: 0; pointer-events: none; z-index: 3; overflow: hidden; }
-  #ci .ci-lbl { position: absolute; transform: translate(-50%, -100%); white-space: nowrap; pointer-events: auto; cursor: pointer;
-    background: var(--color-brand-dark, #0a0a0a); color: #fff; border-radius: 8px; padding: 4px 9px; font-size: 11.5px; line-height: 1.25;
-    box-shadow: 0 4px 14px rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 7px; transition: opacity .15s; }
-  #ci .ci-lbl .nn { color: var(--color-brand, #fbbf24); font-variant-numeric: tabular-nums; font-weight: 700; }
-  #ci .ci-lbl .cn { font-weight: 600; letter-spacing: -.01em; }
-  #ci .ci-lbl .ct { color: #cfcfcf; font-variant-numeric: tabular-nums; }
-  #ci .ci-lbl::after { content: ""; position: absolute; left: 50%; top: 100%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: var(--color-brand-dark, #0a0a0a); }
-  #ci .ci-lbl:hover { opacity: 1 !important; }
-  #ci .ci-lbl.dim { opacity: .34; }
+  #ci .ci-lbl { position: absolute; left: 0; top: 0; pointer-events: auto; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+    font: 600 11.5px/1.15 system-ui, -apple-system, 'Noto Sans TC', sans-serif; color: var(--ink); background: rgba(255, 248, 244, 0.94);
+    border: 1px solid rgba(33, 29, 29, 0.21); border-radius: 5px; padding: 6px 9px; box-shadow: 0 2px 0 rgba(33, 29, 29, 0.08); transition: opacity 0.2s, background-color 0.2s; }
+  #ci .ci-lbl b { color: var(--coral); font: 700 10px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  #ci .ci-lbl i { font: 600 10px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-style: normal; color: var(--ink-mut); }
+  #ci .ci-lbl:hover { border-color: var(--coral); }
+  #ci .ci-lbl.sel { background: var(--ink); color: var(--paper); border-color: var(--coral); }
+  #ci .ci-lbl.sel b { color: var(--butter); } #ci .ci-lbl.sel i { color: #cfc6bf; }
+  #ci .ci-lbl.dim { opacity: 0.28; }
 
-  #ci .ci-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 4; color: var(--cmuted); font-size: 14px; background: linear-gradient(170deg, var(--csky-b), var(--csky-a)); }
+  #ci .ci-tip { position: absolute; left: 0; top: 0; z-index: 8; pointer-events: none; display: flex; flex-direction: column; gap: 2px; max-width: 260px;
+    background: rgba(255, 248, 244, 0.97); border: 1px solid var(--hair); border-radius: 8px; padding: 7px 10px; box-shadow: 0 6px 18px rgba(33, 29, 29, 0.16); font-size: 12px; line-height: 1.35; }
+  #ci .ci-tip b { font-size: 13px; }
+  #ci .ci-tip span { color: var(--ink-mut); font-size: 11px; }
+  #ci .ci-tip em { font-style: normal; color: var(--coral); font-weight: 600; font-size: 11px; }
 
-  #ci .ci-fallback { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; padding: 30px; background: var(--cbg); }
+  #ci .ci-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 4; color: var(--ink-mut); font-size: 14px; }
+
+  #ci .ci-fallback { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; padding: 30px; background: var(--cbg); color: var(--cink); }
   #ci .ci-fallback h2 { margin: 0; font-size: 17px; font-weight: 650; }
   #ci .ci-fallback p { margin: 0; color: var(--cmuted); font-size: 13.5px; max-width: 42ch; }
   #ci .ci-fallback button { margin-top: 6px; font: inherit; font-size: 13px; font-weight: 600; padding: 9px 18px; border: 0; border-radius: 9px; background: var(--color-brand-dark, #0a0a0a); color: var(--color-brand, #fbbf24); cursor: pointer; }
 
   #ci .ci-panel { position: absolute; top: 14px; right: 14px; z-index: 6; width: 300px; max-width: calc(100% - 28px); max-height: calc(100% - 28px); overflow: auto;
-    background: var(--cpanel); border: 1px solid var(--cline); border-radius: 14px; padding: 15px 16px 17px; box-shadow: 0 10px 34px rgba(0,0,0,.22); }
-  #ci .ci-panel .pclose { float: right; border: 0; background: transparent; color: var(--cmuted); cursor: pointer; font-size: 1.15rem; line-height: 1; padding: 2px 4px; }
-  #ci .ci-panel .pnum { font-size: .72rem; font-weight: 700; color: var(--cgold); font-variant-numeric: tabular-nums; letter-spacing: .04em; }
-  #ci .ci-panel h3 { font-size: 1.1rem; font-weight: 720; letter-spacing: -.01em; margin: 2px 0 2px; }
-  #ci .ci-panel .pmeta { font-size: .76rem; color: var(--cmuted); margin-bottom: 12px; font-variant-numeric: tabular-nums; }
+    background: var(--paper); color: var(--ink); border: 1px solid var(--hair); border-radius: 14px; padding: 15px 16px 17px; box-shadow: 0 12px 34px rgba(33, 29, 29, 0.18); }
+  #ci .ci-panel .pclose { float: right; border: 0; background: transparent; color: var(--ink-mut); cursor: pointer; font-size: 1.15rem; line-height: 1; padding: 2px 4px; }
+  #ci .ci-panel .pnum { font: 700 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--coral); }
+  #ci .ci-panel h3 { font-size: 1.1rem; font-weight: 720; letter-spacing: -0.01em; margin: 2px 0; color: var(--ink); }
+  #ci .ci-panel .pmeta { font-size: 0.76rem; color: var(--ink-mut); margin-bottom: 12px; font-variant-numeric: tabular-nums; }
   #ci .ci-panel .plist { display: flex; flex-direction: column; gap: 6px; }
-  #ci .ci-panel .pcls { text-align: left; border: 1px solid var(--cline); background: var(--cbg); border-radius: 9px; padding: 8px 10px; font: inherit; cursor: pointer; color: var(--cink); display: flex; align-items: center; gap: 8px; }
-  #ci .ci-panel .pcls:hover { border-color: var(--cgold); }
-  #ci .ci-panel .pcls .dot { width: 9px; height: 9px; border-radius: 3px; flex: none; }
-  #ci .ci-panel .pcls .dot.be { background: var(--cbe); } #ci .ci-panel .pcls .dot.ui { background: var(--cui); }
-  #ci .ci-panel .pcls .dot.un { background: transparent; border: 1.5px dashed var(--cun); }
-  #ci .ci-panel .pcls .nm { font-size: .88rem; font-weight: 600; flex: 1; letter-spacing: -.01em; }
-  #ci .ci-panel .pcls .st { color: var(--cgold); font-size: .72rem; }
-  #ci .ci-panel .pcls .go { font-size: .66rem; color: var(--cmuted); }
-  #ci .ci-panel .pcls.un { color: var(--cmuted); border-style: dashed; }
+  #ci .ci-panel .pcls { text-align: left; border: 1px solid var(--hair); background: #fff; border-radius: 9px; padding: 8px 10px; font: inherit; cursor: pointer; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+  #ci .ci-panel .pcls:hover { border-color: var(--coral); }
+  #ci .ci-panel .pcls.un { color: var(--ink-mut); border-style: dashed; cursor: default; }
+  #ci .ci-panel .pcls .dot { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  #ci .ci-panel .pcls .nm { font-size: 0.88rem; font-weight: 600; flex: 1; letter-spacing: -0.01em; }
+  #ci .ci-panel .pcls .st { color: var(--roof-key); font-size: 0.75rem; }
+  #ci .ci-panel .pcls .go { font-size: 0.72rem; color: var(--coral); }
 
-  #ci .ci-legend { position: absolute; left: 14px; bottom: 12px; z-index: 5; display: flex; gap: 14px; flex-wrap: wrap; background: rgba(255,255,255,.9); border: 1px solid var(--cline); border-radius: 8px; padding: 7px 12px; font-size: 12px; color: var(--cmuted); }
-  #ci .ci-legend .sw { display: inline-block; width: 14px; height: 11px; border-radius: 3px; vertical-align: -1px; margin-right: 5px; }
-  #ci .sw.be { background: var(--cbe); } #ci .sw.ui { background: var(--cui); } #ci .sw.un { border: 1.5px dashed var(--cun); } #ci .sw.ky { border: 2px solid var(--cgold); }
+  #ci .dot.be, #ci .sw.be { background: var(--roof-be); }
+  #ci .dot.ui, #ci .sw.ui { background: var(--roof-ui); }
+  #ci .dot.un, #ci .sw.un { background: var(--roof-un); }
+  #ci .dot.key, #ci .sw.key { background: var(--roof-key); }
+
+  #ci .ci-legend { position: absolute; left: 14px; bottom: 12px; z-index: 5; display: flex; gap: 14px; flex-wrap: wrap; background: rgba(255, 248, 244, 0.92); border: 1px solid var(--hair); border-radius: 8px; padding: 7px 12px; font-size: 12px; color: var(--ink-mut); }
+  #ci .ci-legend .sw { display: inline-block; width: 14px; height: 10px; border-radius: 2px 2px 0 0; clip-path: polygon(0 100%, 50% 0, 100% 100%); vertical-align: -1px; margin-right: 5px; }
 
   #ci .ci-hint { display: none; }
 
   /* The hidden attribute must win over the explicit display on these overlays
      (a higher-specificity display rule otherwise defeats UA [hidden]). */
-  #ci .ci-loading[hidden], #ci .ci-fallback[hidden], #ci .ci-panel[hidden] { display: none; }
+  #ci .ci-loading[hidden], #ci .ci-fallback[hidden], #ci .ci-panel[hidden], #ci .ci-tip[hidden] { display: none; }
 
   @media (max-width: 640px) {
     #ci { height: 82vh; }
     #ci .ci-top { padding: 10px 12px; } #ci .ci-title h1 { font-size: 16px; } #ci .ci-sub { display: none; }
     #ci .ci-controls { padding: 8px 12px; }
+    /* 17 plates don't fit a phone: show the number only, the selected island in full */
+    #ci .ci-lbl { font-size: 10px; padding: 4px 6px; gap: 4px; }
+    #ci .ci-lbl span, #ci .ci-lbl i { display: none; }
+    #ci .ci-lbl.sel span { display: inline; }
     #ci .ci-panel { top: auto; left: 0; right: 0; bottom: 0; width: 100%; max-width: 100%; border-radius: 16px 16px 0 0; max-height: 64%; }
     #ci .ci-legend { gap: 9px; padding: 6px 9px; font-size: 11px; left: 8px; bottom: 8px; max-width: calc(100% - 16px); }
-    #ci .ci-hint { display: block; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 5; background: rgba(17,17,17,.82); color: #eee; font-size: 11.5px; padding: 5px 12px; border-radius: 999px; pointer-events: none; transition: opacity .4s; }
+    #ci .ci-hint { display: block; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 5; background: rgba(33, 29, 29, 0.82); color: #fff8f4; font-size: 11.5px; padding: 5px 12px; border-radius: 999px; pointer-events: none; transition: opacity 0.4s; }
   }
 
   @media (prefers-color-scheme: dark) {
-    #ci { --cbg: #0f0f0f; --cpanel: #171717; --cink: #ececec; --cmuted: #9a9a9a; --cline: #2a2a2a; --cgold: #fbbf24; --cbe: #3b82f6; --cui: #a78bfa; --cun: #5a606a; --csky-a: #0b1020; --csky-b: #141b2e; }
-    #ci .ci-legend { background: rgba(23,23,23,.9); }
+    #ci { --cbg: #0f0f0f; --cpanel: #171717; --cink: #ececec; --cmuted: #9a9a9a; --cline: #2a2a2a; --cgold: #fbbf24; }
   }
-  :root[data-theme='dark'] #ci { --cbg: #0f0f0f; --cpanel: #171717; --cink: #ececec; --cmuted: #9a9a9a; --cline: #2a2a2a; --cgold: #fbbf24; --cbe: #3b82f6; --cui: #a78bfa; --cun: #5a606a; --csky-a: #0b1020; --csky-b: #141b2e; }
-  :root[data-theme='dark'] #ci .ci-legend { background: rgba(23,23,23,.9); }
-  :root[data-theme='light'] #ci { --cbg: #faf9f6; --cpanel: #fff; --cink: #1a1a1a; --cmuted: #6b6b6b; --cline: #e2e0d8; --cgold: #d99000; --cbe: #1d4ed8; --cui: #7c3aed; --cun: #9aa0a8; --csky-a: #cfe0f2; --csky-b: #eef3f8; }
+  :root[data-theme='dark'] #ci { --cbg: #0f0f0f; --cpanel: #171717; --cink: #ececec; --cmuted: #9a9a9a; --cline: #2a2a2a; --cgold: #fbbf24; }
+  :root[data-theme='light'] #ci { --cbg: #faf9f6; --cpanel: #fff; --cink: #1a1a1a; --cmuted: #6b6b6b; --cline: #e2e0d8; --cgold: #d99000; }
 </style>
 
 <script>
@@ -224,346 +245,90 @@ const T =
     if (!root || !dataEl || root.dataset.ready) return;
     root.dataset.ready = '1';
 
-    var DATA = JSON.parse(dataEl.textContent || '{"nodes":[],"cats":[],"counts":{},"core":[]}');
+    var DATA = JSON.parse(dataEl.textContent || '{"nodes":[],"cats":[]}');
     var DS = root.dataset;
     var stage = root.querySelector('.ci-stage');
     var canvas = document.getElementById('ci-canvas');
-    var labelsEl = document.getElementById('ci-labels');
     var panel = document.getElementById('ci-panel');
     var loadingEl = document.getElementById('ci-loading');
     var fallbackEl = document.getElementById('ci-fallback');
     var hint = document.getElementById('ci-hint');
     var q = document.getElementById('ci-q');
+    var api = null;
 
     function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-    function isDark() {
-      var th = document.documentElement.getAttribute('data-theme');
-      if (th === 'dark') return true;
-      if (th === 'light') return false;
-      return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
     function webglOK() {
       try {
         var c = document.createElement('canvas');
-        return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
+        return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl')));
       } catch (e) { return false; }
     }
-    function gotoGrouped() {
-      var dirTab = document.querySelector('.map-tab[data-view="dir"]');
-      if (dirTab) dirTab.click();
-    }
+    function kindOf(n) { return n.key ? 'key' : !n.url ? 'un' : n.ui ? 'ui' : 'be'; }
 
-    // --- Lay out the 17 islands procedurally (no hand-authored layout file).
-    // Core six on an inner hex ring, the rest around an outer ring sized by
-    // count. Order is fixed (from the Astro side) so islands never jump.
-    var R_INNER = 15, R_OUTER = 34;
-    function islandRadius(count) { return 2.0 + 1.15 * Math.sqrt(count); }
-    var islands = [];
-    DATA.cats.forEach(function (cat, idx) {
-      var isCore = DATA.core.indexOf(cat) !== -1;
-      var pos;
-      if (isCore) {
-        var i = DATA.core.indexOf(cat);
-        var a = -Math.PI / 2 + (i * Math.PI * 2) / 6;
-        pos = { x: Math.cos(a) * R_INNER, z: Math.sin(a) * R_INNER };
-      } else {
-        var oi = idx - DATA.core.length;
-        var ao = -Math.PI / 2 + (oi * Math.PI * 2) / 12;
-        pos = { x: Math.cos(ao) * R_OUTER, z: Math.sin(ao) * R_OUTER };
-      }
-      islands.push({ cat: cat, count: DATA.counts[cat], num: idx + 1, x: pos.x, z: pos.z, r: islandRadius(DATA.counts[cat]) });
-    });
-    var islByCat = {}; islands.forEach(function (il) { islByCat[il.cat] = il; });
-
-    // Group nodes by category, keep island order. Compute each building's
-    // local position on its island with a golden-angle (sunflower) spread.
-    var buildings = []; // { node, island, lx, lz }
-    islands.forEach(function (il) {
-      var members = DATA.nodes.filter(function (n) { return n.cat === il.cat; });
-      il.members = members;
-      var spread = il.r * 0.64;
-      members.forEach(function (n, i) {
-        var ang = i * 2.399963229728653;
-        var rad = members.length <= 1 ? 0 : spread * Math.sqrt((i + 0.5) / members.length);
-        buildings.push({ node: n, island: il, lx: Math.cos(ang) * rad, lz: Math.sin(ang) * rad });
+    // Right-hand panel listing the selected island's classes.
+    function renderPanel(cluster) {
+      if (!cluster) { panel.hidden = true; panel.innerHTML = ''; return; }
+      var rows = cluster.members.map(function (n) {
+        var k = kindOf(n);
+        return '<button class="pcls' + (n.url ? '' : ' un') + '" data-id="' + esc(n.id) + '">' +
+          '<span class="dot ' + k + '"></span><span class="nm">' + esc(n.name) + '</span>' +
+          (n.key ? '<span class="st">★</span>' : '') + (n.url ? '<span class="go">→</span>' : '') + '</button>';
+      }).join('');
+      panel.innerHTML =
+        '<button class="pclose" aria-label="' + esc(DS.close) + '">×</button>' +
+        '<div class="pnum">' + String(cluster.num).padStart(2, '0') + '</div>' +
+        '<h3>' + esc(cluster.cat) + '</h3>' +
+        '<div class="pmeta">' + cluster.count + esc(DS.count) + '</div>' +
+        '<div class="plist">' + rows + '</div>';
+      panel.hidden = false;
+      panel.querySelector('.pclose').addEventListener('click', function () { if (api) api.reset(); });
+      Array.prototype.forEach.call(panel.querySelectorAll('.pcls'), function (btn) {
+        btn.addEventListener('click', function () {
+          var n = cluster.members.filter(function (m) { return m.id === btn.dataset.id; })[0];
+          if (n && n.url) window.location.href = n.url;
+        });
       });
-    });
+    }
 
     var booted = false;
     function boot() {
-      if (booted) return;
-      if (!root.offsetParent && stage.clientWidth === 0) return; // still hidden
+      if (booted || !root.offsetParent) return; // wait until the tab is visible
       booted = true;
       if (!webglOK()) { fallbackEl.hidden = false; return; }
       loadingEl.hidden = false;
-      Promise.all([
-        import('three'),
-        import('three/examples/jsm/controls/OrbitControls.js'),
-      ]).then(function (mods) {
+      import('./islands/scene.js').then(function (mod) {
+        api = mod.createIslandScene({
+          canvas: canvas,
+          stage: stage,
+          labelsEl: document.getElementById('ci-labels'),
+          tipEl: document.getElementById('ci-tip'),
+          data: DATA,
+          strings: { be: DS.tipBe, ui: DS.tipUi, key: DS.tipKey, un: DS.tipUn, open: DS.tipOpen },
+          onSelect: renderPanel,
+          onOpen: function (n) { window.location.href = n.url; },
+        });
         loadingEl.hidden = true;
-        buildScene(mods[0], mods[1].OrbitControls);
+        if (q.value) api.filter(q.value);
+        if (hint && hint.dataset.hint && window.matchMedia && window.matchMedia('(max-width:640px)').matches) {
+          hint.textContent = hint.dataset.hint;
+          setTimeout(function () { hint.style.opacity = '0'; }, 4200);
+        }
       }).catch(function (err) {
         loadingEl.hidden = true;
         fallbackEl.hidden = false;
-        console.error('[ClassIslands] failed to load three.js', err);
+        console.error('[ClassIslands] could not start the 3D view', err);
       });
     }
 
-    function buildScene(THREE, OrbitControls) {
-      var dark = isDark();
-      var ISLAND_H = 3;
-      var scene = new THREE.Scene();
-      scene.background = new THREE.Color(dark ? 0x0b1020 : 0xcfe0f2);
-      scene.fog = new THREE.Fog(dark ? 0x0b1020 : 0xcfe0f2, 90, 190);
+    q.addEventListener('input', function () { if (api) api.filter(q.value); });
+    document.getElementById('ci-reset').addEventListener('click', function () { if (api) api.reset(); });
+    document.getElementById('ci-fb-btn').addEventListener('click', function () {
+      var dirTab = document.querySelector('.map-tab[data-view="dir"]');
+      if (dirTab) dirTab.click();
+    });
 
-      var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-
-      var camera = new THREE.PerspectiveCamera(46, 1, 0.1, 500);
-      var HOME_POS = new THREE.Vector3(0, 50, 66);
-      var HOME_TGT = new THREE.Vector3(0, 0, 0);
-      camera.position.copy(HOME_POS);
-
-      var controls = new OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.08;
-      controls.minDistance = 16;
-      controls.maxDistance = 140;
-      controls.maxPolarAngle = 1.47; // stay just above the sea plane
-      controls.target.copy(HOME_TGT);
-
-      // Lights — static warm key + cool fill (v1: no day/night cycle).
-      scene.add(new THREE.HemisphereLight(dark ? 0x4a5a86 : 0xbcd4ff, dark ? 0x10131c : 0x6b7d66, dark ? 0.85 : 1.05));
-      var key = new THREE.DirectionalLight(0xffe7c2, dark ? 1.15 : 1.35);
-      key.position.set(34, 52, 28);
-      scene.add(key);
-      var rim = new THREE.DirectionalLight(dark ? 0x3550a0 : 0xa9c4ff, 0.4);
-      rim.position.set(-40, 26, -34);
-      scene.add(rim);
-
-      // Sea
-      var seaMat = new THREE.MeshStandardMaterial({ color: dark ? 0x0a1830 : 0x7fb0e6, roughness: 0.55, metalness: 0.1 });
-      var sea = new THREE.Mesh(new THREE.CircleGeometry(120, 72), seaMat);
-      sea.rotation.x = -Math.PI / 2;
-      sea.position.y = -0.05;
-      scene.add(sea);
-
-      // Warm low-poly island-top palette (rotates across islands).
-      var TOPS = [0x8bbf6a, 0xd8b45e, 0xc98c5a, 0x9fc77d, 0xe0c074, 0xb79a6a, 0x7fb59a, 0xcf9f66];
-      var raycastTargets = [];
-
-      // Island hex prisms (flat-shaded, slightly tapered → low-poly diorama).
-      islands.forEach(function (il, i) {
-        var topCol = new THREE.Color(TOPS[i % TOPS.length]);
-        if (dark) topCol.multiplyScalar(0.72);
-        var geo = new THREE.CylinderGeometry(il.r, il.r * 0.82, ISLAND_H, 6);
-        geo.rotateY(Math.PI / 6); // flat edge faces the camera-ish
-        var mat = new THREE.MeshStandardMaterial({ color: topCol, roughness: 0.92, metalness: 0.0, flatShading: true });
-        var mesh = new THREE.Mesh(geo, mat);
-        mesh.position.set(il.x, ISLAND_H / 2, il.z);
-        mesh.userData = { island: il };
-        scene.add(mesh);
-        raycastTargets.push(mesh);
-        il.mesh = mesh;
-        il.topY = ISLAND_H;
-      });
-
-      // Buildings — one instanced box mesh, 97 instances, colour + height by
-      // covered / UI / key (reusing the be/ui/un/key palette semantics).
-      var COL_BE = new THREE.Color(dark ? 0x4f92f6 : 0x2f6fed);
-      var COL_UI = new THREE.Color(dark ? 0xb49bff : 0x7c5cdf);
-      var COL_UN = new THREE.Color(dark ? 0x565c66 : 0xb4b0a4);
-      var COL_KEY = new THREE.Color(0xe6a21e);
-      function baseColor(n) { return n.key ? COL_KEY.clone() : (!n.url ? COL_UN.clone() : (n.ui ? COL_UI.clone() : COL_BE.clone())); }
-      function buildingHeight(n) { var h = n.url ? 1.5 : 0.95; if (n.key) h += 1.1; return h; }
-
-      var boxGeo = new THREE.BoxGeometry(1, 1, 1);
-      var boxMat = new THREE.MeshStandardMaterial({ roughness: 0.6, metalness: 0.08, flatShading: true });
-      var inst = new THREE.InstancedMesh(boxGeo, boxMat, buildings.length);
-      inst.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-      var dummy = new THREE.Object3D();
-      var baseCols = [];
-      buildings.forEach(function (b, i) {
-        var h = buildingHeight(b.node);
-        var w = b.node.key ? 1.15 : 0.9;
-        var yaw = ((b.node.id.charCodeAt(0) * 37 + i * 13) % 90) * Math.PI / 180;
-        dummy.position.set(b.island.x + b.lx, b.island.topY + h / 2, b.island.z + b.lz);
-        dummy.rotation.set(0, yaw, 0);
-        dummy.scale.set(w, h, w);
-        dummy.updateMatrix();
-        inst.setMatrixAt(i, dummy.matrix);
-        var col = baseColor(b.node);
-        baseCols.push(col);
-        inst.setColorAt(i, col);
-      });
-      inst.instanceColor.needsUpdate = true;
-      scene.add(inst);
-      raycastTargets.push(inst);
-
-      // --- Floating HTML name plates (project world → screen each frame).
-      var labelEls = [];
-      islands.forEach(function (il) {
-        var el = document.createElement('div');
-        el.className = 'ci-lbl';
-        el.innerHTML = '<span class="nn">' + ('0' + il.num).slice(-2) + '</span>' +
-          '<span class="cn">' + esc(il.cat) + '</span>' +
-          '<span class="ct">' + il.count + '</span>';
-        el.addEventListener('click', function () { focusIsland(il); });
-        labelsEl.appendChild(el);
-        il.labelEl = el;
-      });
-
-      var tmpV = new THREE.Vector3();
-      function updateLabels() {
-        var w = stage.clientWidth, h = stage.clientHeight;
-        islands.forEach(function (il) {
-          tmpV.set(il.x, il.topY + 2.4 + il.r * 0.12, il.z);
-          tmpV.project(camera);
-          var behind = tmpV.z > 1;
-          il.labelEl.style.display = behind ? 'none' : '';
-          if (behind) return;
-          il.labelEl.style.left = ((tmpV.x * 0.5 + 0.5) * w) + 'px';
-          il.labelEl.style.top = ((-tmpV.y * 0.5 + 0.5) * h) + 'px';
-        });
-      }
-
-      // --- Camera focus animation on island select.
-      var anim = null; // { camFrom, camTo, tgtFrom, tgtTo, t }
-      function focusIsland(il) {
-        selectIsland(il);
-        var dir = new THREE.Vector3().subVectors(camera.position, controls.target).normalize();
-        var dist = 20 + il.r * 1.6;
-        var tgt = new THREE.Vector3(il.x, il.topY, il.z);
-        var camTo = new THREE.Vector3().copy(tgt).addScaledVector(dir, dist).setY(Math.max(tgt.y + 10, 14 + il.r));
-        anim = { camFrom: camera.position.clone(), camTo: camTo, tgtFrom: controls.target.clone(), tgtTo: tgt, t: 0 };
-      }
-      function resetView() {
-        clearPanel();
-        anim = { camFrom: camera.position.clone(), camTo: HOME_POS.clone(), tgtFrom: controls.target.clone(), tgtTo: HOME_TGT.clone(), t: 0 };
-      }
-
-      // --- Side panel: list a category's classes; click → open its article.
-      var selected = null;
-      function selectIsland(il) {
-        selected = il;
-        islands.forEach(function (o) { o.labelEl.classList.toggle('dim', o !== il); });
-        var rows = il.members.map(function (n) {
-          var kind = !n.url ? 'un' : (n.ui ? 'ui' : 'be');
-          return '<button class="pcls ' + kind + '" data-id="' + esc(n.id) + '">' +
-            '<span class="dot ' + kind + '"></span>' +
-            '<span class="nm">' + esc(n.name) + '</span>' +
-            (n.key ? '<span class="st">★</span>' : '') +
-            (n.url ? '<span class="go">→</span>' : '') +
-            '</button>';
-        }).join('');
-        panel.innerHTML =
-          '<button class="pclose" aria-label="' + esc(DS.close) + '">×</button>' +
-          '<div class="pnum">' + ('0' + il.num).slice(-2) + '</div>' +
-          '<h3>' + esc(il.cat) + '</h3>' +
-          '<div class="pmeta">' + il.count + esc(DS.count) + '</div>' +
-          '<div class="plist">' + rows + '</div>';
-        panel.hidden = false;
-        panel.querySelector('.pclose').addEventListener('click', function () { clearPanel(); resetView(); });
-        Array.prototype.forEach.call(panel.querySelectorAll('.pcls'), function (btn) {
-          btn.addEventListener('click', function () {
-            var n = il.members.filter(function (m) { return m.id === btn.dataset.id; })[0];
-            if (n && n.url) window.location.href = n.url;
-          });
-        });
-      }
-      function clearPanel() {
-        selected = null;
-        panel.hidden = true; panel.innerHTML = '';
-        islands.forEach(function (o) { o.labelEl.classList.remove('dim'); });
-      }
-
-      // --- Picking: buildings take priority (they sit on top of islands).
-      var ray = new THREE.Raycaster();
-      var ndc = new THREE.Vector2();
-      function pick(clientX, clientY) {
-        var r = canvas.getBoundingClientRect();
-        ndc.x = ((clientX - r.left) / r.width) * 2 - 1;
-        ndc.y = -((clientY - r.top) / r.height) * 2 + 1;
-        ray.setFromCamera(ndc, camera);
-        var hits = ray.intersectObjects(raycastTargets, false);
-        if (!hits.length) return null;
-        var hit = hits[0];
-        if (hit.object === inst) return { type: 'building', node: buildings[hit.instanceId].node, island: buildings[hit.instanceId].island };
-        if (hit.object.userData && hit.object.userData.island) return { type: 'island', island: hit.object.userData.island };
-        return null;
-      }
-
-      // Click vs drag discrimination on the canvas.
-      var down = null;
-      renderer.domElement.addEventListener('pointerdown', function (e) { down = { x: e.clientX, y: e.clientY, moved: false }; });
-      renderer.domElement.addEventListener('pointermove', function (e) { if (down && (Math.abs(e.clientX - down.x) + Math.abs(e.clientY - down.y) > 6)) down.moved = true; });
-      renderer.domElement.addEventListener('pointerup', function (e) {
-        if (!down || down.moved) { down = null; return; }
-        down = null;
-        var p = pick(e.clientX, e.clientY);
-        if (!p) { if (selected) { clearPanel(); } return; }
-        if (p.type === 'building') {
-          if (p.node.url) { window.location.href = p.node.url; }
-          else { focusIsland(p.island); }
-        } else if (p.type === 'island') {
-          focusIsland(p.island);
-        }
-      });
-
-      // --- Search: dim non-matching buildings + their island labels.
-      function applyFilter() {
-        var term = (q.value || '').trim().toLowerCase();
-        var matchByIsland = {};
-        buildings.forEach(function (b, i) {
-          var ok = !term || b.node.name.toLowerCase().indexOf(term) >= 0 || b.node.id.toLowerCase().indexOf(term) >= 0;
-          var c = baseCols[i];
-          if (ok) { inst.setColorAt(i, c); matchByIsland[b.island.cat] = true; }
-          else { inst.setColorAt(i, c.clone().lerp(new THREE.Color(dark ? 0x23262c : 0xd9d6cf), 0.82)); }
-        });
-        inst.instanceColor.needsUpdate = true;
-        if (term) islands.forEach(function (il) { il.labelEl.classList.toggle('dim', !matchByIsland[il.cat]); });
-        else if (!selected) islands.forEach(function (il) { il.labelEl.classList.remove('dim'); });
-      }
-      q.addEventListener('input', applyFilter);
-
-      document.getElementById('ci-reset').addEventListener('click', resetView);
-      var fbBtn = document.getElementById('ci-fb-btn'); if (fbBtn) fbBtn.addEventListener('click', gotoGrouped);
-
-      // --- Sizing + render loop.
-      function resize() {
-        var w = stage.clientWidth, h = stage.clientHeight;
-        if (!w || !h) return;
-        renderer.setSize(w, h, false);
-        camera.aspect = w / h; camera.updateProjectionMatrix();
-      }
-      resize();
-      window.addEventListener('resize', resize);
-
-      function tick() {
-        requestAnimationFrame(tick);
-        if (!renderer.domElement.offsetParent) return; // hidden tab → skip work
-        if (anim) {
-          anim.t = Math.min(1, anim.t + 0.045);
-          var e = 1 - Math.pow(1 - anim.t, 3); // ease-out cubic
-          camera.position.lerpVectors(anim.camFrom, anim.camTo, e);
-          controls.target.lerpVectors(anim.tgtFrom, anim.tgtTo, e);
-          if (anim.t >= 1) anim = null;
-        }
-        controls.update();
-        renderer.render(scene, camera);
-        updateLabels();
-      }
-      tick();
-
-      if (hint && hint.dataset.hint && window.matchMedia && window.matchMedia('(max-width:640px)').matches) {
-        hint.textContent = hint.dataset.hint;
-        setTimeout(function () { hint.style.opacity = '0'; }, 4200);
-      }
-    }
-
-    // Boot when the islands tab first becomes visible. map.astro dispatches a
-    // synthetic resize on tab switch; we also try immediately in case this
-    // view is already on screen.
+    // map.astro dispatches a synthetic resize when a tab is shown; that is our
+    // cue to load three.js the first time the islands tab becomes visible.
     boot();
     window.addEventListener('resize', boot);
   }

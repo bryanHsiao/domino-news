@@ -1,0 +1,299 @@
+// Island bodies (decks, paving, edge bands, water skirts), the land that
+// joins tiles of one island, bridges between islands, the class buildings and
+// the per-tile greenery.
+import { R, TOP, WATER_Y, DIRS, hexVertex, edgeDir, hashString, mulberry32 } from './layout.js';
+import { groundTexture, ringTexture, bandTexture } from './textures.js';
+
+const RING_OUT = 1.94;
+const RING_IN = 1.66;
+const SKIRT_TOP = TOP + 0.04;
+const SKIRT_BOT = WATER_Y - 0.6;
+const WATER_TONE = 0x9fd3d8;
+
+// Decorative identities, assigned in island order. Ground pattern + base tone,
+// walking-ring tint and the edge band pattern.
+const STYLES = {
+  plaza: { ground: 'tiles', tone: 0xd9cbb4, ring: 0xe3d3b8, band: ['bricks', '#d8ccb8', '#bfae95'] },
+  courtyard: { ground: 'tiles', tone: 0xd9b08c, ring: 0xe6cfb0, band: ['bricks', '#c77b5c', '#e9d8c0'] },
+  lawn: { ground: 'grass', tone: 0xb9cd98, ring: 0xbfd6df, band: ['glass', '#9fc4c6', '#e6f0ef'] },
+  terracotta: { ground: 'tiles', tone: 0xdcb79a, ring: 0xe6b796, band: ['bricks', '#d08a64', '#f2d0b4'] },
+  garden: { ground: 'grass', tone: 0xb4c993, ring: 0xdfe6cf, band: ['ivy', '#8db86f', '#b4c993'] },
+  schoolyard: { ground: 'court', tone: 0xc9785a, ring: 0xf1dc9a, band: ['dots', '#e8c547', '#58a6a6'] },
+  meadow: { ground: 'grass', tone: 0xbccf9c, ring: 0xd9866a, band: ['stripes', '#c8775a', '#ffffff'] },
+  softpad: { ground: 'checker', tone: 0xb9d6e6, ring: 0xf2d2d6, band: ['dots', '#f2b5c6', '#9fc4e6'] },
+  street: { ground: 'tiles', tone: 0xcfc3b2, ring: 0xb9b3ab, band: ['hazard', '#e8c547', '#3b3a42'] },
+  boardwalk: { ground: 'boards', tone: 0xc9a27c, ring: 0xc9a27c, band: ['timber', '#9a7a5a', '#c9a27c'] },
+  farmland: { ground: 'rows', tone: 0xa9b878, ring: 0xcdb08a, band: ['ivy', '#6c4f3a', '#8fb37a'] },
+  gravel: { ground: 'gravel', tone: 0xc7b08f, ring: 0xc9b89a, band: ['stripes', '#db6a41', '#f2efe8'] },
+  rubber: { ground: 'court', tone: 0xe2a46f, ring: 0x8fc6c4, band: ['stripes', '#e7a383', '#58a6a6'] },
+  forest: { ground: 'grass', tone: 0x9fb683, ring: 0xa98e6c, band: ['ivy', '#6f8a62', '#9cc27a'] },
+};
+const STYLE_ORDER = ['plaza', 'courtyard', 'lawn', 'terracotta', 'garden', 'schoolyard', 'meadow', 'softpad', 'street', 'boardwalk', 'farmland', 'gravel', 'rubber', 'forest', 'lawn', 'terracotta', 'garden'];
+
+// Class building colours: the roof carries the meaning (legend), walls stay warm.
+const ROOF = { be: 0x4f86c6, ui: 0x8b6fd1, un: 0xa8a29a, key: 0xe9b444 };
+const WALLS = [0xf4ede2, 0xf1e6d6, 0xf7f1e8, 0xeee3d3];
+const GLASS = 0x7fa6c2;
+const DOOR = 0x8a6a4e;
+
+// Building slots per tile: centre first, then the ring from back to front so
+// any free (tree) slots end up in the foreground.
+const SLOT_R = 0.9;
+const SLOTS = [[0, 0], ...[240, 300, 180, 0, 120, 60].map((a) => [Math.cos((a * Math.PI) / 180) * SLOT_R, Math.sin((a * Math.PI) / 180) * SLOT_R])];
+
+function hexRing(THREE, rOut, rIn) {
+  const s = new THREE.Shape();
+  const h = new THREE.Path();
+  for (let k = 0; k < 6; k++) {
+    const [x, z] = hexVertex(0, 0, rOut, k);
+    k ? s.lineTo(x, -z) : s.moveTo(x, -z);
+    const [x2, z2] = hexVertex(0, 0, rIn, k);
+    k ? h.lineTo(x2, -z2) : h.moveTo(x2, -z2);
+  }
+  s.closePath();
+  h.closePath();
+  s.holes.push(h);
+  return new THREE.ShapeGeometry(s).rotateX(-Math.PI / 2);
+}
+
+// World-space UVs so a deck texture runs seamlessly across joined tiles.
+function worldUV(geo) {
+  const p = geo.attributes.position;
+  const uv = geo.attributes.uv;
+  for (let i = 0; i < p.count; i++) uv.setXY(i, p.getX(i) / 2.2, p.getZ(i) / 2.2);
+  return geo;
+}
+
+export function classKind(n) {
+  if (n.key) return 'key';
+  return !n.url ? 'un' : n.ui ? 'ui' : 'be';
+}
+export const ROOF_COLORS = ROOF;
+
+export function buildWorld(THREE, scene, { buildings, decor }, props, layout) {
+  const pickTargets = [];
+  const outlines = new Map();
+  const tileAt = new Map(layout.tiles.map((t) => [t.q + ',' + t.r, t]));
+  const add = (geo, mat, { cast = false, receive = true, cat = null, x = 0, y = 0, z = 0 } = {}) => {
+    const m = new THREE.Mesh(geo, mat);
+    m.position.set(x, y, z);
+    m.castShadow = cast;
+    m.receiveShadow = receive;
+    if (cat) {
+      m.userData.cat = cat;
+      pickTargets.push(m);
+    }
+    scene.add(m);
+    return m;
+  };
+
+  // ---- shared materials / geometry
+  const ringTex = ringTexture(THREE);
+  const curbMat = new THREE.MeshStandardMaterial({ color: 0xe4d6c3, roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
+  const foamMat = new THREE.MeshBasicMaterial({ color: 0xf6fbfa, transparent: true, opacity: 0.55, depthWrite: false });
+  const outlineMat = new THREE.MeshBasicMaterial({ color: 0xdb6a41, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -8 });
+  const ringGeo = hexRing(THREE, RING_OUT, RING_IN);
+  const curbGeo = hexRing(THREE, R, R - 0.07);
+  const innerCurbGeo = hexRing(THREE, RING_IN, RING_IN - 0.04);
+  const bandGeo = new THREE.CylinderGeometry(R + 0.012, R + 0.012, 0.18, 6, 1, true);
+  const haloGeo = hexRing(THREE, R + 0.75, R - 0.02);
+  const foamGeo = hexRing(THREE, R + 0.17, R - 0.02);
+  const skirtH = SKIRT_TOP - SKIRT_BOT;
+  const skirtY = (SKIRT_TOP + SKIRT_BOT) / 2;
+
+  // Skirt shaded from the island's shallow-water tint at the deck down to open
+  // water, so the side reads as a clear shallow shelf rather than a soil wall.
+  function skirtGeometry(top, open = true, radius = R) {
+    const g = new THREE.CylinderGeometry(radius, radius, skirtH, 6, 4, open);
+    const p = g.attributes.position;
+    const col = new Float32Array(p.count * 3);
+    const water = new THREE.Color(WATER_TONE);
+    const cc = new THREE.Color();
+    for (let i = 0; i < p.count; i++) {
+      const t = (skirtH / 2 - p.getY(i)) / skirtH;
+      cc.copy(top).lerp(water, Math.min(1, t * 1.5));
+      col.set([cc.r, cc.g, cc.b], i * 3);
+    }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    return g;
+  }
+
+  // ---- per-island look
+  const looks = new Map();
+  layout.clusters.forEach((c, i) => {
+    const style = STYLES[STYLE_ORDER[i % STYLE_ORDER.length]];
+    const seed = hashString(c.cat);
+    const shallow = new THREE.Color(style.tone).lerp(new THREE.Color(WATER_TONE), 0.55);
+    const ringMat = new THREE.MeshStandardMaterial({ map: ringTex, color: style.ring, roughness: 0.9, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 });
+    looks.set(c.cat, {
+      topMat: new THREE.MeshStandardMaterial({ map: groundTexture(THREE, style, seed), roughness: 0.92 }),
+      ringMat,
+      bandMat: new THREE.MeshStandardMaterial({ map: bandTexture(THREE, style, seed + 1), roughness: 0.85 }),
+      wallMat: new THREE.MeshLambertMaterial({ color: shallow }),
+      skirtMat: new THREE.MeshLambertMaterial({ vertexColors: true }),
+      haloMat: new THREE.MeshBasicMaterial({ color: shallow, transparent: true, opacity: 0.5, depthWrite: false }),
+      skirtGeo: skirtGeometry(shallow),
+      plugSkirtGeo: skirtGeometry(shallow, true, 0.62),
+    });
+  });
+
+  // ---- tiles
+  for (const t of layout.tiles) {
+    const look = looks.get(t.cat);
+    const deck = new THREE.CircleGeometry(R - 0.04, 6).rotateZ(Math.PI / 6).rotateX(-Math.PI / 2).translate(t.x, TOP, t.z);
+    add(worldUV(deck), look.topMat, { cat: t.cat });
+    add(ringGeo, look.ringMat, { x: t.x, y: TOP + 0.012, z: t.z });
+    add(curbGeo, curbMat, { x: t.x, y: TOP + 0.04, z: t.z });
+    add(innerCurbGeo, curbMat, { x: t.x, y: TOP + 0.02, z: t.z });
+    add(look.skirtGeo, look.skirtMat, { cast: true, cat: t.cat, x: t.x, y: skirtY, z: t.z });
+    add(bandGeo, look.bandMat, { x: t.x, y: TOP - 0.07, z: t.z });
+    add(haloGeo, look.haloMat, { receive: false, x: t.x, y: WATER_Y + 0.008, z: t.z });
+    add(foamGeo, foamMat, { receive: false, x: t.x, y: WATER_Y + 0.012, z: t.z });
+  }
+
+  // ---- land joining tiles of the same island
+  const span = R * 0.98;
+  for (const [a, b] of layout.fused) {
+    const look = looks.get(a.cat);
+    const dx = b.x - a.x, dz = b.z - a.z;
+    const L = Math.hypot(dx, dz);
+    const yaw = Math.atan2(dx, dz);
+    const len = L - 2 * R * 0.866 + 0.5;
+    const mx = (a.x + b.x) / 2, mz = (a.z + b.z) / 2;
+    const deck = new THREE.PlaneGeometry(span, len).rotateX(-Math.PI / 2).rotateY(yaw).translate(mx, TOP - 0.004, mz);
+    add(worldUV(deck), look.topMat, { cat: a.cat });
+    add(new THREE.BoxGeometry(span, skirtH, len).rotateY(yaw).translate(mx, skirtY - 0.01, mz), look.wallMat, { cast: true, cat: a.cat });
+    const px = Math.cos(yaw), pz = -Math.sin(yaw);
+    for (const side of [-1, 1]) {
+      const band = new THREE.BoxGeometry(0.03, 0.18, len).rotateY(yaw).translate(mx + px * (span / 2) * side, TOP - 0.07, mz + pz * (span / 2) * side);
+      add(band, look.bandMat);
+    }
+  }
+  for (const j of layout.junctions) {
+    const look = looks.get(j.cat);
+    const deck = new THREE.CircleGeometry(0.62, 6).rotateZ(Math.PI / 6).rotateX(-Math.PI / 2).translate(j.x, TOP - 0.005, j.z);
+    add(worldUV(deck), look.topMat, { cat: j.cat });
+    add(look.plugSkirtGeo, look.skirtMat, { cat: j.cat, x: j.x, y: skirtY - 0.01, z: j.z });
+  }
+
+  // ---- bridges between neighbouring islands (wooden arched decks)
+  for (const { a, b } of layout.bridges) {
+    const dx = b.x - a.x, dz = b.z - a.z;
+    const L = Math.hypot(dx, dz);
+    const ux = dx / L, uz = dz / L;
+    const ri = R * 0.866 - 0.12;
+    const ax = a.x + ux * ri, az = a.z + uz * ri;
+    const len = L - 2 * ri;
+    const yaw = Math.atan2(ux, uz);
+    const ARCH = 0.09;
+    const N = 8;
+    for (let s = 0; s < N; s++) {
+      const t = (s + 0.5) / N;
+      const y = TOP + 0.03 + Math.sin(t * Math.PI) * ARCH;
+      const slope = (Math.cos(t * Math.PI) * ARCH * Math.PI) / len;
+      decor.part('box', [ax + ux * len * t, y, az + uz * len * t], [0.42, 0.035, len / N + 0.01], s % 2 ? 0xb48560 : 0xa77a55, null, [-Math.atan(slope), yaw, 0]);
+    }
+    const px = uz, pz = -ux; // sideways unit vector
+    for (const side of [-1, 1]) {
+      for (let s = 0; s <= 4; s++) {
+        const t = s / 4;
+        decor.part('box', [ax + ux * len * t + px * 0.2 * side, TOP + 0.13 + Math.sin(t * Math.PI) * ARCH, az + uz * len * t + pz * 0.2 * side], [0.03, 0.18, 0.03], 0xfff8f4);
+      }
+      decor.part('box', [ax + ux * len * 0.5 + px * 0.2 * side, TOP + 0.22 + ARCH * 0.66, az + uz * len * 0.5 + pz * 0.2 * side], [0.025, 0.025, len], 0x9a7454, null, [0, yaw, 0]);
+    }
+  }
+
+  // ---- class buildings + greenery per tile
+  for (const t of layout.tiles) {
+    const rnd = mulberry32(hashString(t.q + ':' + t.r));
+    t.nodes.forEach((n, i) => house(buildings, n, t.x + SLOTS[i][0], t.z + SLOTS[i][1]));
+    for (let i = t.nodes.length; i < SLOTS.length; i++) {
+      props.tree(t.x + SLOTS[i][0] + (rnd() - 0.5) * 0.2, t.z + SLOTS[i][1] + (rnd() - 0.5) * 0.2, 0.5 + rnd() * 0.15, rnd, TOP);
+    }
+    for (let k = 0; k < 6; k++) {
+      if (rnd() < 0.55) {
+        const [bx, bz] = hexVertex(t.x, t.z, 1.48, k);
+        props.bush(bx, bz, 0.2 + rnd() * 0.1, rnd, TOP);
+      }
+    }
+    for (const k of [1, 4]) {
+      const [lx, lz] = hexVertex(t.x, t.z, 1.8, k);
+      props.lamp(lx, lz, TOP);
+    }
+    for (let p = 0; p < 2; p++) {
+      const a = rnd() * Math.PI * 2;
+      props.person(t.x + Math.cos(a) * 1.8, t.z + Math.sin(a) * 1.8 * 0.95, rnd, TOP);
+    }
+  }
+
+  // ---- selection outline per island: only the edges facing another island
+  for (const c of layout.clusters) {
+    const pos = [];
+    const y = TOP + 0.06;
+    for (const t of c.tiles)
+      for (let k = 0; k < 6; k++) {
+        const [dq, dr] = DIRS[edgeDir(k)];
+        const nb = tileAt.get(t.q + dq + ',' + (t.r + dr));
+        if (nb && nb.cat === t.cat) continue;
+        const [ax, az] = hexVertex(t.x, t.z, R + 0.02, k);
+        const [bx, bz] = hexVertex(t.x, t.z, R + 0.02, k + 1);
+        const [ix, iz] = hexVertex(t.x, t.z, R - 0.1, k);
+        const [jx, jz] = hexVertex(t.x, t.z, R - 0.1, k + 1);
+        pos.push(ax, y, az, bx, y, bz, jx, y, jz, ax, y, az, jx, y, jz, ix, y, iz);
+      }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    const m = new THREE.Mesh(g, outlineMat);
+    m.visible = false;
+    m.renderOrder = 2;
+    scene.add(m);
+    outlines.set(c.cat, m);
+  }
+
+  return { pickTargets, outlines };
+}
+
+// One class = one small house. Floors / roof colour / footprint come from the
+// class (key → three floors, gold roof and a flag; uncovered → flat grey roof).
+function house(kit, n, x, z) {
+  const h0 = hashString(n.id);
+  const kind = classKind(n);
+  const id = n.id;
+  const FH = 0.32;
+  const floors = kind === 'key' ? 3 : kind === 'un' ? 1 : 1 + (h0 % 2);
+  const w = kind === 'key' ? 0.72 : 0.6 + (h0 % 3) * 0.03;
+  const d = kind === 'key' ? 0.68 : 0.57 + ((h0 >>> 3) % 3) * 0.03;
+  const wall = kind === 'un' ? 0xd9d3c9 : WALLS[(h0 >>> 5) % WALLS.length];
+  const yb = TOP + 0.05;
+  const bodyH = floors * FH;
+
+  kit.part('rbox', [x, TOP + 0.025, z], [w + 0.08, 0.05, d + 0.08], 0xd8ccb8, id);
+  kit.part('rbox', [x, yb + bodyH / 2, z], [w, bodyH, d], wall, id);
+  for (let f = 1; f < floors; f++) kit.part('box', [x, yb + f * FH, z], [w + 0.014, 0.022, d + 0.014], 0xe2d6c4, id);
+  for (let f = 0; f < floors; f++) {
+    const wy = yb + f * FH + FH * 0.55;
+    const fz = z + d / 2 + 0.006;
+    kit.part('box', [x + w / 2 + 0.006, wy, z], [0.012, FH * 0.36, d * 0.56], GLASS, id);
+    kit.part('box', [x - w / 2 - 0.006, wy, z], [0.012, FH * 0.36, d * 0.56], GLASS, id);
+    if (f === 0) {
+      kit.part('box', [x, yb + 0.085, fz], [0.13, 0.17, 0.012], DOOR, id);
+      kit.part('box', [x - w * 0.3, wy, fz], [w * 0.2, FH * 0.36, 0.012], GLASS, id);
+      kit.part('box', [x + w * 0.3, wy, fz], [w * 0.2, FH * 0.36, 0.012], GLASS, id);
+    } else {
+      kit.part('box', [x, wy, fz], [w * 0.7, FH * 0.36, 0.012], GLASS, id);
+    }
+  }
+  const yTop = yb + bodyH;
+  if (kind === 'un') {
+    kit.part('rbox', [x, yTop + 0.025, z], [w + 0.05, 0.05, d + 0.05], ROOF.un, id);
+    return;
+  }
+  kit.part('box', [x, yTop + 0.015, z], [w + 0.09, 0.03, d + 0.09], 0xefe6da, id);
+  const rh = 0.22 + 0.04 * floors;
+  kit.part('hip', [x, yTop + 0.03 + rh / 2, z], [w + 0.06, rh, d + 0.06], ROOF[kind], id);
+  if (kind === 'key') {
+    const yr = yTop + 0.03 + rh;
+    kit.part('cyl', [x, yr + 0.15, z], [0.02, 0.3, 0.02], 0x5a4a3c, id);
+    kit.part('box', [x + 0.07, yr + 0.25, z], [0.13, 0.08, 0.008], 0xdb6a41, id);
+  }
+}
