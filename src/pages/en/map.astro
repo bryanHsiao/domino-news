@@ -91,7 +91,32 @@ const coveredCount = nodes.filter((n) => n.url).length;
   html.map-fullscreen, html.map-fullscreen body { overflow: hidden; }
   html.map-fullscreen main:has(> .map-tabs) { padding-bottom: 0; }
   html.map-fullscreen .site-footer { display: none; }
-  html.map-fullscreen #mv-graph, html.map-fullscreen #mv-islands { min-height: 0; }
+  html.map-fullscreen #mv-graph, html.map-fullscreen #mv-islands, html.map-fullscreen #mv-islands #ci { min-height: 0; }
+  /* Narrower screens: no room at the top, so in the immersive views the tab
+     switch floats at the bottom centre like an app tab bar (the scene starts
+     right under the header); legends and hints move up to clear it. An open
+     island panel (bottom sheet) covers it. */
+  @media (max-width: 1279px) {
+    html.map-fullscreen main:has(> .map-tabs) { padding-top: 0; }
+    html.map-fullscreen .map-tabs { position: fixed; z-index: 6; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; white-space: nowrap; margin: 0; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.22); }
+    html.map-fullscreen #ci .ci-legend, html.map-fullscreen #cm .cm-legend { bottom: 66px; }
+    html.map-fullscreen #ci .ci-hint { bottom: 108px; }
+  }
+  /* Phones: tighten the graph's own bars so the graph keeps most of the
+     height — title and coverage on one line, one row of controls (the
+     backend/UI filter and +/- give way: category filter and pinch-zoom stay). */
+  @media (max-width: 640px) {
+    html.map-fullscreen #cm .cm-top { flex-wrap: nowrap; padding: 8px 12px; }
+    html.map-fullscreen #cm .cm-title h1 { font-size: 15px; }
+    html.map-fullscreen #cm .cm-stat { flex: none; padding: 4px 10px; }
+    html.map-fullscreen #cm .cm-stat b { font-size: 15px; }
+    html.map-fullscreen #cm .cm-stat span { font-size: 11px; }
+    html.map-fullscreen #cm .cm-controls { flex-wrap: nowrap; padding: 6px 12px; }
+    html.map-fullscreen #cm .cm-controls input { flex: 1 1 0; min-width: 0; }
+    html.map-fullscreen #cm .cm-controls select { flex: 0 1 34%; min-width: 0; }
+    html.map-fullscreen #cm .cm-seg, html.map-fullscreen #cm #cm-in, html.map-fullscreen #cm #cm-out { display: none; }
+    html.map-fullscreen #cm .cm-legend { font-size: 10px; gap: 8px; padding: 4px 8px; }
+  }
   /* Wide screens: the tab switch floats top-centre over each view's title bar
      (like the reference site's toolbar) instead of sitting in its own band. */
   @media (min-width: 1280px) {
