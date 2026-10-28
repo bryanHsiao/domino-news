@@ -1,5 +1,5 @@
 ---
-title: "DBMT (Database Maintenance Tool): Stop Scheduling compact, updall, and fixup as Three Nightly Tasks — One Command Does It, with Thread and Time-Window Control"
+title: "DBMT: One Command Replaces Nightly compact, updall, and fixup"
 description: "The maintenance-commands piece walks you through compact, updall, and fixup one at a time; but nobody types those by hand at 2 AM in production — the old way was a pile of Program documents running updall nightly plus a separate compact. From Domino 9, dbmt (the database maintenance tool) folds them into one: HCL says it 'relieves the administrator of the need to run the Updall task,' doing compact + updall + (when needed) fixup in a single task, with thread counts, a time window, and a compact-every-n-days cadence to pace it. This piece covers what dbmt does, how to run it from a Program document, the key compact-side options (-ct / -cnd / -tl / -range / -force) and updall-side options (-ut / -ftiNdays), and the one special case — -ods, which does a copy-style compact that reassigns the DBIID — and why that ties back to transaction logging and ODS upgrades."
 pubDate: 2026-10-16T07:30:00+08:00
 lang: en

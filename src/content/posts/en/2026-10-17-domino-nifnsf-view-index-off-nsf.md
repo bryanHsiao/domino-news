@@ -1,5 +1,5 @@
 ---
-title: "NIFNSF: Move View Indexes Out of the NSF Too — DAOS Moves Attachments, NIFNSF Moves View Indexes, and Both Need Transaction Logging First"
+title: "NIFNSF: Move View Indexes Out of the NSF"
 description: "An NSF bloats from two things: attachments (DAOS moves those out) and view indexes. NIFNSF (moving view indexes out of databases) handles the second — it moves a database's view indexes out of the .nsf into separate .ndx files, making the NSF smaller and backup/restore faster (an .ndx can grow to 1 TB). This piece covers what it does, why — like DAOS — it must have transaction logging enabled first, the ODS 51+ requirement, how to configure it on the Server document's NIFNSF tab in 12.0.2+ (versus the older notes.ini NIFNSFEnable / NIFBasePath / CREATE_NIFNSF_DATABASES), how to enable it per database with load compact -c -nifnsf on, and how to check with show dir -nifnsf — plus why enabling it with -c brings us right back to the DBIID rule."
 pubDate: 2026-10-17T07:30:00+08:00
 lang: en

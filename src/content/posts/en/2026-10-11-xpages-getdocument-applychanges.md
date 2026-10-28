@@ -1,5 +1,5 @@
 ---
-title: "What the true in document1.getDocument(true) Actually Does — applyChanges, When to Add It, When It's Redundant"
+title: "What the true in document1.getDocument(true) Actually Does"
 description: "In XPages SSJS you see both document1.getDocument() and document1.getDocument(true) everywhere, but what does that true (applyChanges) actually apply, when must you add it, and when is it just superstition? Getting the side wrong has real cost: omit it and you might save a document missing the values you just set in code; add it blindly and you don't really understand it. This piece sorts out getDocument() vs getDocument(true): true flushes the data source's pending changes (control input + programmatic setValue) into the backend document; in a normal submit the Update Model Values phase has already synced the on-screen values in, so it's usually redundant; you genuinely need true when you made programmatic changes or operate directly on the backend document. Plus the split with save() and getComponent().getValue()."
 pubDate: 2026-10-11T07:30:00+08:00
 lang: en

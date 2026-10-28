@@ -1,5 +1,5 @@
 ---
-title: "XPages 效能：為什麼一次提交你的 computed 被算了好幾遍——#{} vs ${}、rendered vs loaded"
+title: "XPages 效能：為什麼 computed 一次提交被算好幾遍"
 description: "在 XPages 的 computed 值或 rendered 公式裡擺個 println，按一下按鈕，它卻跑了五六遍——這不是 bug，是 XPages 每次提交都跑整輪 JSF 生命週期，而 #{}（compute dynamically）的 value binding 每被讀一次就重算一次、跨多個階段加起來就是好幾遍。這篇講三個把 computed 重算壓下來的旋鈕：#{}（每次重算）vs ${}（載入算一次、靜態），rendered（在 tree 裡、每階段都算）vs loaded（根本不建進 tree、全程跳過），以及它們各自的使用時機與 ${} 的 caveat。"
 pubDate: 2026-10-12T07:30:00+08:00
 lang: zh-TW

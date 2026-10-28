@@ -1,5 +1,5 @@
 ---
-title: "隱藏資料庫設計(Hide design):出貨 template 給客戶前怎麼鎖設計,它關掉的到底是什麼,以及為什麼你一定要自己留一份沒隱藏的 template"
+title: "隱藏資料庫設計:出貨 template 前先鎖設計"
 description: "你把一個 template 交給客戶或裝到對方伺服器,不想讓人看到、改到裡面的表單公式和 LotusScript——這就是「隱藏資料庫設計」在做的事。它一勾下去,官方的說法是「disables all design operations and hides all formulas and scripts」:View → Design 消失、表單/檢視/agent 不能看不能改、公式與程式碼看不到、設計也不能複製。這篇講它怎麼做(透過 Replace Design 勾「Hide formulas and LotusScript」,或繼承一個設計已隱藏的 template)、關掉了哪些操作、為什麼它不是「加密鎖」(對有 Designer/Manager 權限的人不是永久防線,要配 ACL)、一個沒有退路的重點——沒有「取消隱藏」這回事,你一定要自己留一份沒隱藏的 template,以及隱藏設計會擋住 agent 變更、要怎麼用 @Command[AgentEnableDisable] 處理。"
 pubDate: 2026-10-19T07:30:00+08:00
 lang: zh-TW

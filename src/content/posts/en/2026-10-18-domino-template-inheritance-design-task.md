@@ -1,5 +1,5 @@
 ---
-title: "Template Inheritance and the Designer Task: Why Your Design Changes Get Overwritten Overnight, Refresh vs Replace Design, and How to Protect Elements You Don't Want Touched"
+title: "Template Inheritance: Why Your Design Changes Get Overwritten Overnight"
 description: "You change a form in a production database, and the next morning the change is gone — because that database has 'Inherit design from template' set, and the server's Designer task overwrote it overnight from the master template. This piece explains how Domino template inheritance actually works: what a master template is (an NTF with 'Database is a template'), how a database links to one via the Design tab's 'Inherit design from template,' how the design flows down through the server's Designer task (load design, runs daily at 1 AM by default, needs a replica of the template on each server), the difference between Refresh Design and Replace Design, and how to protect elements with 'Prohibit design refresh or replace' plus 'Propagate' — plus the practical traps: private agents/folders can't live in a template, and the icon/About/Using documents don't inherit by default."
 pubDate: 2026-10-18T07:30:00+08:00
 lang: en

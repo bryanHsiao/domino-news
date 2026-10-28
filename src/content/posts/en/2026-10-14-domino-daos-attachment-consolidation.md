@@ -1,5 +1,5 @@
 ---
-title: "DAOS (Domino Attachment and Object Service): Moving Attachments Out of the NSF into De-duplicated NLO Files — and Why It Needs Transaction Logging First"
+title: "DAOS: Move Attachments Out of the NSF"
 description: "The same attachment stored in dozens of documents, even across several databases, is how an NSF bloats. DAOS moves attachments out of the NSF and stores them, de-duplicated, as a single .nlo file on the server, leaving a reference called a 'ticket' in the document. This piece covers how it works (de-dup happens at save time, not in a later maintenance task), why you must enable transaction logging before it, how to set the Server document DAOS tab (base path, minimum size, deferred deletion) and add databases, and tier 2 moving cold attachments to S3; plus the reminder that after the attachments move out, you still compact the NSF to actually reclaim the space."
 pubDate: 2026-10-14T07:30:00+08:00
 lang: en

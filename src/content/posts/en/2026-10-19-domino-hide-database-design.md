@@ -1,5 +1,5 @@
 ---
-title: "Hiding a Database Design: How to Lock the Design Before You Ship a Template, What It Actually Disables, and Why You Must Keep an Unhidden Copy of the Template"
+title: "Hiding a Database Design: Lock It Before You Ship a Template"
 description: "You hand a template to a customer or install it on their server, and you don't want anyone seeing or changing the forms, formulas, and LotusScript inside — that's what hiding a database design does. Once set, in HCL's words it 'disables all design operations and hides all formulas and scripts': View > Design disappears, forms/views/agents can't be viewed or changed, formulas and code are invisible, and the design can't even be copied. This piece covers how it's done (via Replace Design with 'Hide formulas and LotusScript,' or inheriting from a template whose design is hidden), what it disables, why it isn't an encryption lock (it's not a permanent barrier to Designer/Manager users — pair it with the ACL), the point with no way back — there is no 'unhide,' so you must keep an unhidden copy of the template — and how hiding blocks agent changes, so use @Command[AgentEnableDisable]."
 pubDate: 2026-10-19T07:30:00+08:00
 lang: en

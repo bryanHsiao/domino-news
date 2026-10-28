@@ -1,5 +1,5 @@
 ---
-title: "XPages Performance: Why Your Computed Values Run Many Times per Submit — #{} vs ${}, rendered vs loaded"
+title: "XPages Performance: Why Computed Values Run Many Times per Submit"
 description: "Drop a println in a computed value or a rendered formula, click a button once, and it runs five or six times — not a bug, but XPages running the whole JSF lifecycle on every submit, where a #{} (compute dynamically) value binding is re-evaluated every time it's read, adding up to several runs across the phases. This piece covers three knobs that cut that repetition: #{} (re-evaluated each time) vs ${} (computed once at load, static), rendered (in the tree, evaluated across phases) vs loaded (never built into the tree, skipped entirely), when to use each, and the ${} caveat."
 pubDate: 2026-10-12T07:30:00+08:00
 lang: en

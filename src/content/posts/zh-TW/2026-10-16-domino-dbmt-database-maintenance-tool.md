@@ -1,5 +1,5 @@
 ---
-title: "DBMT(Database Maintenance Tool):別再每晚排 compact、updall、fixup 三個 task,一條指令收完、還自己控執行緒與時間窗"
+title: "DBMT:一條指令收掉 compact、updall、fixup"
 description: "維護指令那篇教你一個個下 compact、updall、fixup;但正式環境沒人半夜手動下——傳統做法是排一堆 Program document 每晚跑。Domino 9 起的 dbmt(database maintenance tool)把這些收成一條:官方說它「relieves the administrator of the need to run the Updall task」,一個 task 就做掉 compact + updall +(必要時)fixup,還能用執行緒數、時間窗、每幾天壓一次來控節奏。這篇講 dbmt 在做什麼、怎麼從 Program document 跑、compact 面(-ct／-cnd／-tl／-range／-force)與 updall 面(-ut／-ftiNdays)的關鍵開關,以及 -ods 這個會做 copy-style、換掉 DBIID 的特例——為什麼它跟交易日誌、ODS 升級綁在一起。"
 pubDate: 2026-10-16T07:30:00+08:00
 lang: zh-TW

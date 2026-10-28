@@ -1,5 +1,5 @@
 ---
-title: "模板繼承與 Designer task:為什麼你改的設計半夜被蓋回去,Refresh 與 Replace Design 差在哪,怎麼擋住不想被覆寫的元素"
+title: "模板繼承:為什麼你改的設計半夜被蓋回去"
 description: "你改了某個資料庫的表單,隔天早上改的東西不見了——因為那個庫「Inherit design from template」,伺服器的 Designer task 半夜把 master template 的設計蓋回來了。這篇講 Domino 的模板繼承到底怎麼運作:master template 是什麼(NTF + 「Database is a template」)、資料庫怎麼靠 Design 分頁的「Inherit design from template」綁上去、設計怎麼透過伺服器的 Designer task(load design,預設每天凌晨 1 點跑、每台伺服器都要有 template 的 replica)流下去、Refresh Design 與 Replace Design 差在哪,以及怎麼用「Prohibit design refresh or replace」加「Propagate」擋住不想被覆寫的元素——還有幾個實務陷阱:private agent/folder 不能進 template、icon/About/Using 預設不繼承。"
 pubDate: 2026-10-18T07:30:00+08:00
 lang: zh-TW

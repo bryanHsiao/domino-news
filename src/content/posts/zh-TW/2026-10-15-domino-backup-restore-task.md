@@ -1,5 +1,5 @@
 ---
-title: "Domino 內建 Backup task(dominobackup.nsf):12 版終於自帶備份還原,為什麼它一樣要先開 transaction logging"
+title: "Domino 內建 Backup task:12 版終於自帶備份還原"
 description: "Domino 12 之前,想做資料庫層級的備份還原,得自己接第三方(走 C API Toolkit)的工具;12 版起,Domino 內建了 Backup 與 Restore 兩個 server task,用一個 dominobackup.nsf 設定資料庫就能排程備份、按需還原單一資料庫。這篇講它是什麼、為什麼它跟 DAOS 一樣「一定要先開 transaction logging」、怎麼用 Configuration view 的平台預設設定文件建一份 config(Main/Backup/Snapshot/Restore/Prune/Notification 分頁)、怎麼用 load backup 的開關(-b/-t/-i/-s/-p)排程跑、以及怎麼從 Database Inventory 還原——包含一個很容易踩的雷:還原到 data 目錄之外會換掉 DBIID、讓之前的交易日誌失效。"
 pubDate: 2026-10-15T07:30:00+08:00
 lang: zh-TW

@@ -1,5 +1,5 @@
 ---
-title: "NIFNSF:把 view index 也搬出 NSF——DAOS 搬附件、NIFNSF 搬檢視索引,一樣要先開 transaction logging"
+title: "NIFNSF:把 view index 搬出 NSF"
 description: "NSF 肥大,一半是附件(交給 DAOS 搬出去),另一半常常是 view index(檢視索引)。NIFNSF(把檢視索引移出資料庫)就是對付後者的:它把一個庫的 view index 從 .nsf 裡搬出去、存成獨立的 .ndx 檔,讓 NSF 變小、備份還原變快(.ndx 單檔可到 1TB)。這篇講它在做什麼、為什麼它跟 DAOS 一樣「一定要先開 transaction logging」、還要 ODS 51 以上、12.0.2 起怎麼在 Server 文件的 NIFNSF 分頁設(對應舊的 notes.ini NIFNSFEnable／NIFBasePath／CREATE_NIFNSF_DATABASES)、怎麼用 load compact -c -nifnsf on 逐庫開、show dir -nifnsf 怎麼查——以及為什麼「用 -c 開」又把我們帶回 DBIID 那條規則。"
 pubDate: 2026-10-17T07:30:00+08:00
 lang: zh-TW

@@ -1,5 +1,5 @@
 ---
-title: "DAOS(Domino Attachment and Object Service):把附件搬出 NSF、去重存成 NLO,為什麼它一定要先開 transaction logging"
+title: "DAOS:把附件搬出 NSF"
 description: "同一個附件在幾十份文件、甚至好幾個資料庫裡各存一份,NSF 就是這樣肥起來的。DAOS 把附件搬出 NSF、在伺服器上去重存成一份 .nlo 檔,文件裡只留一張叫「ticket」的引用。這篇講它怎麼運作(存檔當下就去重、不是事後維護)、為什麼開它之前一定要先開 transaction logging、Server 文件 DAOS 分頁怎麼設(base path、minimum size、defer deletion)、資料庫怎麼加入,以及 tier 2 把冷附件搬去 S3;最後提醒:附件搬走後,NSF 還要 compact 才真的瘦下來。"
 pubDate: 2026-10-14T07:30:00+08:00
 lang: zh-TW

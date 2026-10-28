@@ -1,5 +1,5 @@
 ---
-title: "Domino Transaction Logging: the Three Styles, Why It Replaces Routine Fixup, and How It Drives Compact's DBIID"
+title: "Domino Transaction Logging: It Replaces Routine Fixup"
 description: "In the maintenance-command rules, 'is transaction logging on?' is always the branch that decides which option you type — with logging, don't run fixup routinely, compact with -b to keep the DBIID, and take a fresh backup after anything that changes the DBIID. But what is transaction logging, and why does it flip so many rules at once? This piece explains it: it records database changes into one log and replays it automatically on a crash restart, so logged databases need no consistency check (and no routine fixup); the three styles (circular / linear / archived) and their trade-offs; and why operations that rebuild a database (copy-style compact, fixup on a corrupt database, enabling logging) assign a new DBIID, invalidate the old log, and force a full backup."
 pubDate: 2026-10-13T07:30:00+08:00
 lang: en

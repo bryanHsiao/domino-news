@@ -1,5 +1,5 @@
 ---
-title: "Domino 交易日誌(transaction logging):三種 style、為什麼開了它就不用 routine fixup,以及它怎麼牽動 compact 的 DBIID"
+title: "Domino 交易日誌:開了就不用 routine fixup"
 description: "維護指令那套規則裡,「有沒有開 transaction logging」一直是那個決定你該下哪個參數的分支——有日誌別 routine 跑 fixup、compact 要用 -b 保留 DBIID、換過 DBIID 要立刻補備份。但交易日誌到底是什麼、為什麼它能一次翻掉這麼多規則?這篇講清楚:它把資料庫變更先寫進一個 log,當機重啟時自動回放、所以 logged 資料庫根本不需要一致性檢查(也就不用 routine fixup);三種 style(circular／linear／archived)各自的取捨;以及為什麼「重建資料庫」的操作(copy-style compact、對損毀跑 fixup、第一次開日誌)會換掉 DBIID、讓舊 log 失效、逼你補一次完整備份。"
 pubDate: 2026-10-13T07:30:00+08:00
 lang: zh-TW

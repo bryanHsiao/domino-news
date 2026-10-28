@@ -1,5 +1,5 @@
 ---
-title: "Domino's Built-in Backup Task (dominobackup.nsf): Domino 12 Finally Ships Backup and Restore — and Why It Also Needs Transaction Logging First"
+title: "Domino's Built-in Backup Task: Domino 12 Finally Ships Backup and Restore"
 description: "Before Domino 12, database-level backup and restore meant wiring up a third-party tool (via the C API Toolkit). From 12, Domino ships Backup and Restore as built-in server tasks: one dominobackup.nsf configuration database lets you schedule backups and restore a single database on demand. This piece covers what it is, why — like DAOS — it must have transaction logging enabled first, how to build a config from the platform default in the Configuration view (the Main/Backup/Snapshot/Restore/Prune/Notification tabs), how to run it with load backup's switches (-b/-t/-i/-s/-p), and how to restore from the Database Inventory — including an easy trap: restoring outside the data directory reassigns the DBIID and invalidates the earlier transaction logs."
 pubDate: 2026-10-15T07:30:00+08:00
 lang: en

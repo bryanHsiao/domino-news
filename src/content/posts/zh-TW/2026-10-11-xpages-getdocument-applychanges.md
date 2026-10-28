@@ -1,5 +1,5 @@
 ---
-title: "document1.getDocument(true) 的 true 到底在做什麼——applyChanges、什麼時候該加、什麼時候是多餘"
+title: "document1.getDocument(true) 的 true 到底在做什麼"
 description: "XPages SSJS 裡 document1.getDocument() 和 document1.getDocument(true) 到處都有人用，但那個 true（applyChanges）到底套用了什麼、什麼時候非加不可、什麼時候加了也是多餘？加錯邊的代價很實在：少加，你可能存了一份漏掉程式剛改的值的文件；多加，則是憑直覺亂下。這篇把 getDocument() 與 getDocument(true) 的差別講清楚：true 是把 data source 的待套改動（控制項輸入 + 程式 setValue）flush 進 backend 文件；一般送出事件裡 Update Model Values 早就把畫面值同步進去了、多半不用加；真正需要 true 的是你做了程式改動、或要直接對 backend 文件動作時。附上 save() 與 getComponent().getValue() 的分工。"
 pubDate: 2026-10-11T07:30:00+08:00
 lang: zh-TW
