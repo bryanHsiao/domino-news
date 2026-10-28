@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.0/admin/conf_settingdeliverycontrols_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-server-mail-rules.webp"
+coverStyle: "collage"
 ---
 
 Some messages you don't want landing in a user's inbox at all: block anything with a certain attachment, divert mail sent to a departed account, keep a copy of a category for the record. You **don't need an agent** for this — Domino's **server mail rules** apply while the message is still sitting in **MAIL.BOX**, as the router handles it. They're a different thing from the rules a user sets in their own mailbox: one is server-side, before the inbox; the other is client-side, after it.

@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/notes/12.0.0/client/mail_ooo_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-out-of-office.webp"
+coverStyle: "low-poly-3d"
 ---
 
 使用者出差設了外出自動回覆,回來忘了關、系統還在對每封新信亂回;或是外出回覆總慢半拍、隔一兩小時才送出。這些症狀多半不是 bug,而是你伺服器把 **Out of Office(外出通知)** 設成了哪一型——**Service** 還是 **Agent**。兩型行為差很多,而現在的環境幾乎都該用 Service。(使用者自己在 client 怎麼開外出,見 [Notes 設定外出通知](https://help.hcl-software.com/notes/12.0.0/client/mail_ooo_t.html);這篇講的是**伺服器端**兩型的差別與選擇。)

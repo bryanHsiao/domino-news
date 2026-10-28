@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.0/admin/conf_settingdeliverycontrols_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-server-mail-rules.webp"
+coverStyle: "collage"
 ---
 
 有些信你根本不想讓它進到使用者信箱:帶某種附件的直接擋、寄給離職帳號的轉去別處、某類信留一份備查。這些**不用寫 agent**——Domino 的**伺服器 mail rules** 會在信還躺在 **MAIL.BOX**、router 處理它的那一刻就套用。它跟使用者信箱裡自己設的規則是兩回事:一個在伺服器端、信進信箱前;一個在 client 端、信進信箱後。

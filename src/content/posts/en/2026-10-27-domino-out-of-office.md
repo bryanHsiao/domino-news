@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/notes/12.0.0/client/mail_ooo_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-out-of-office.webp"
+coverStyle: "low-poly-3d"
 ---
 
 A user goes away, sets an out-of-office auto-reply, comes back and forgets to turn it off — so the system keeps blasting a reply at every new message; or the out-of-office reply always lags, going out an hour or two late. These symptoms usually aren't a bug — they're a consequence of which **Out of Office** type your server runs: the **Service** or the **Agent**. The two behave very differently, and today you should almost always use the Service.
