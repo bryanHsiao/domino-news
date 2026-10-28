@@ -68,3 +68,77 @@
 - 把新 session 的分支切到 `feat/map-3d-island`，先讀這份 brief。
 - 先把上面「待討論 1、2、4」收斂（技術選型、島的對應、範圍），再談資料與實作。
 - 需要時用瀏覽器實際打開參考站與現有 `/map/` 對照互動行為。
+
+---
+
+## 規劃決議（2026-10-28）
+
+母 session 的規劃討論已收斂，下列四項為**定案**，不再重新選型。接著在
+`feat/map-3d-island` 的子分支上實作 v1。
+
+### 四項定案
+
+1. **技術選型 → 即時 Three.js**。真 3D、程序化生成，不走預烘焙插畫 +
+   hotspot 疊圖。理由：島與建築要資料驅動（島大小、建築數跟著
+   `ls_classes.json` 走），插畫路線每次資料變動都要重出圖、維護成本高。
+2. **島的對應 → 17 個 category 一對一**。一座島 = 一個 LotusScript
+   category，共 17 座；**島的大小 ∝ 該 category 的 class 數**。不重新設計
+   分組、不把 97 個節點硬收進少數幾座島。
+   - 數量分佈（已核對 `data/ls_classes.json`，97 class / 197 link）：
+     DOM/XML 25、Session 10、Rich Text 9、UI 8、Database 7、Document 6、
+     Item 5、View 5、Admin 4、JSON 4、Calendar 3、GPS 3、DQL 2、
+     DominoIQ 2、Composite Apps 2、HTTP 1、Session File Operations 1。
+3. **範圍 → 新增第三個「島嶼檢視」tab**。漸進式，不動現有兩個視圖
+   （分類檢視 `ClassDirectory.astro`、關係圖 `ClassMap.astro`）。這兩個
+   tab 必須維持原樣能跑。
+4. **v1 精緻度 → 靜態精緻**。先把靜態的島群做漂亮、互動做順，先不做
+   日夜光照、搬運動畫、協作線——那些排進 Phase 2/3。
+
+### v1 實作骨架
+
+- **新元件** `src/components/ClassIslands.astro`，比照 `ClassMap.astro` /
+  `ClassDirectory.astro` 既有慣例：
+  - props：`lang` / `data`（`{nodes,links}`）/ `coveredCount` / `total`，
+    由 `src/pages/map.astro`（及 en）傳入，與另兩個元件同一組。
+  - 雙語 `T` 字串物件（zh-TW / en 兩套）。
+  - `<style is:global>` 全部作用域包在 `#ci` 底下；深淺色主題比照另兩個
+    元件（`@media (prefers-color-scheme: dark)` + `:root[data-theme=...]`）。
+  - JSON payload 塞 `<script type="application/json">`；init 綁
+    `document.addEventListener('astro:page-load', ...)`，用 `dataset.ready`
+    防重入。
+- **Three.js 延遲載入**：用動態 `import()`，只在第一次切到島嶼 tab 時才載
+  three，不拖累現有兩視圖首屏。three 從 npm 裝（`three` + `@types/three`）。
+  偵測 WebGL 不可用時 fallback（顯示提示 + 導回分類檢視）。
+- **程序化島佈局**：17 個擠出六邊形島台，大小 ∝ class 數；六邊形環狀排盤
+  （core 脊椎 Session / Database / View / Document / Item / Rich Text 置中，
+  其餘依數量繞外圈）。排序固定讓島不跳位。**純程序化算，不新增手刻佈局
+  資料檔**。
+- **建築**：每島上每個 class 一個 instanced 方塊（共 97 個），顏色 / 高度
+  帶出 已涵蓋 / UI / key（沿用 be / ui / un / key 語意與配色）。
+- **名牌**：每島一個浮空 HTML overlay，把 3D world 座標投影到螢幕 —— 編號
+  + category 名 + class 數。
+- **互動**：OrbitControls 自由轉看；點島 → 相機聚焦該島 + 右側面板列出該
+  category 的 classes（沿用 `ClassDirectory` 面板 UX / 樣式）；點建築 →
+  開該 class 文章（`node.url`）；搜尋框過濾；97/97 覆蓋率徽章；全雙語。
+- **設計系統**：UI chrome（名牌 / 面板 / tab）沿用站台 dark navy
+  `--color-brand-dark` + 金色 `--color-brand`（#fbbf24）；3D 場景本身用
+  溫暖 low-poly 配色調和。
+- **接線**：`map.astro`（zh-TW）與 `en/map.astro`（en）各加第三個 tab
+  按鈕「島嶼檢視 / Islands」與 `#mv-islands` 容器，掛 `ClassIslands`；
+  沿用 map.astro 既有那段 inline tab-switch script（切到島嶼 tab 時比照
+  graph 發 resize / 觸發 lazy-init）。
+
+### Phase 2 / 3 roadmap（本次不做）
+
+- **Phase 2**：日夜光照切換（晨 / 日 / 昏 / 夜）、鳥瞰視角、島「呼吸」
+  （細微起伏動態）。對應參考站頂部的光線時段與鳥瞰工具。
+- **Phase 3**：協作線 —— 把 `ls_classes.json` 的 197 條 links 畫成島與島
+  之間的連線 / 搬運動畫（「A 的方法回傳 B」的關係在 3D 場景裡視覺化）。
+
+### 分支與基礎建設定位
+
+- 這條線在 feature branch `feat/map-3d-island`，與站上日報文章工作分開。
+  本次實作落在從 `feat/map-3d-island` 切出的子分支，commit 先進子分支，
+  之後再 merge 回 `feat/map-3d-island`。
+- 這是**站台基礎建設（元件 / build）**，不是技術文章，所以**不需要**跑
+  CLAUDE.md 的 NotebookLM 研究鏈 —— 程式碼靠 build 驗證自己。
