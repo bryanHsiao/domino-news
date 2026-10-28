@@ -78,13 +78,20 @@ const coveredCount = nodes.filter((n) => n.url).length;
     min-height: 480px;
   }
   #mv-graph #cm { height: 100%; min-height: 0; border-radius: 0; border-left: 0; border-right: 0; }
+  /* The grouped directory spans the page width too (its height follows the
+     content), so all three views share the same full-width bars. */
+  #mv-dir { width: var(--map-page-w, 100vw); margin-left: calc(50% - var(--map-page-w, 100vw) / 2); }
+  @media (min-width: 721px) {
+    /* keep the sticky detail panel below the sticky site header */
+    #mv-dir #cd .cd-panel { top: calc(var(--map-hdr, 64px) + 12px); max-height: calc(100vh - var(--map-hdr, 64px) - 24px); }
+  }
   body:has(#mv-islands) { overflow-x: clip; }
-  /* Wide screens: in an immersive view the tab switch floats top-centre over
-     the content (like the reference site's toolbar) instead of sitting in its
-     own band; the view starts right under the site header. */
+  /* Wide screens: the tab switch floats top-centre over each view's title bar
+     (like the reference site's toolbar) instead of sitting in its own band. */
   @media (min-width: 1280px) {
-    body.map-immersive main:has(> .map-tabs) { padding-top: 0; }
-    body.map-immersive .map-tabs { position: absolute; z-index: 30; top: calc(var(--map-hdr, 64px) + 14px); left: 50%; transform: translateX(-50%); margin: 0; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.16); }
+    main:has(> .map-tabs) { padding-top: 0; }
+    .map-tabs { position: absolute; z-index: 30; top: calc(var(--map-hdr, 64px) + 14px); left: 50%; transform: translateX(-50%); margin: 0; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.16); }
+    #cd .cd-head, #cm .cm-top { min-height: 74px; }
   }
 </style>
 
@@ -118,12 +125,9 @@ const coveredCount = nodes.filter((n) => n.url).length;
           dir.hidden = v !== 'dir';
           graph.hidden = v !== 'graph';
           islands.hidden = v !== 'islands';
-          document.body.classList.toggle('map-immersive', v !== 'dir');
-          if (v === 'graph' || v === 'islands') {
-            window.scrollTo(0, 0);
-            sizeViews();
-            window.dispatchEvent(new Event('resize'));
-          }
+          window.scrollTo(0, 0);
+          sizeViews();
+          if (v === 'graph' || v === 'islands') window.dispatchEvent(new Event('resize'));
         });
       });
     }
