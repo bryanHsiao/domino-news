@@ -40,7 +40,8 @@ const payload = { nodes: data.nodes, links: data.links, cats, counts };
 const T =
   lang === 'zh-TW'
     ? {
-        title: 'HCL Domino 類別地圖',
+        name: '類別地圖',
+        tools: '清單操作', btnSearch: '搜尋', btnList: '清單', listTitle: '所有分類',
         badge: '已寫成文章',
         sub: 'LotusScript 類別依類別分區。點任一張卡片，看它',
         subEm: '回傳什麼、被誰回傳',
@@ -56,7 +57,8 @@ const T =
         empty: '沒有符合的類別。',
       }
     : {
-        title: 'HCL Domino Class Map',
+        name: 'Class Directory',
+        tools: 'List tools', btnSearch: 'Find', btnList: 'List', listTitle: 'All categories',
         badge: 'written up',
         sub: 'LotusScript classes grouped by category. Click a card to see what it ',
         subEm: 'returns and what returns it',
@@ -71,6 +73,11 @@ const T =
         uiTag: ' · UI', keyTag: ' · key', close: 'Close',
         empty: 'No matching classes.',
       };
+// What the coverage pill counts (shown on hover).
+const statTip =
+  lang === 'zh-TW'
+    ? `${total} 個 LotusScript 類別中，已有 ${coveredCount} 個寫成文章（有文章連到該類別或它的屬性／方法的官方文件）`
+    : `${coveredCount} of the ${total} LotusScript classes already have an article (a post links to the class or one of its members' HCL docs)`;
 ---
 
 <div
@@ -87,15 +94,16 @@ const T =
   data-uitag={T.uiTag}
   data-keytag={T.keyTag}
   data-close={T.close}
+  data-listtitle={T.listTitle}
 >
   <!-- Same bar layout as the relationship graph (ClassMap): title left,
        coverage pill right, then a full-width controls row. -->
   <header class="cd-head">
     <div class="cd-title">
-      <h1>{T.title}</h1>
+      <h1><span class="cd-brand">LotusScript</span> <span class="cd-name">{T.name}</span></h1>
       <p class="cd-sub">{T.sub}<em>{T.subEm}</em>{T.sub2}</p>
     </div>
-    <div class="cd-stat"><b>{coveredCount}</b><span>/ {total} {T.badge}</span></div>
+    <div class="cd-stat" title={statTip}><b>{coveredCount}</b><span>/ {total} {T.badge}</span></div>
   </header>
 
   <div class="cd-controls">
@@ -109,6 +117,14 @@ const T =
       <button data-type="ui">{T.ui}</button>
     </div>
   </div>
+
+  <!-- Phones: the same small-button column as the islands view (fixed, as
+       this view scrolls); search opens the controls bar above as a drawer,
+       list jumps to a category. -->
+  <nav class="cd-tools" data-map-tools aria-label={T.tools}>
+    <button type="button" data-act="search" aria-expanded="false"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>{T.btnSearch}</button>
+    <button type="button" data-act="list"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2.5 4h11M2.5 8h11M2.5 12h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>{T.btnList}</button>
+  </nav>
 
   <div class="cd-main">
     <div class="cd-legend">
@@ -232,6 +248,37 @@ const T =
   }
   :root[data-theme='dark'] #cd { --bg: #0e0e11; --card: #191920; --ink: #ececf0; --mut: #9a9aa6; --line: #2a2a33; --be: #6ea0ff; --be-bg: #16233f; --ui: #b49bff; --ui-bg: #241a3d; --gold: #f0c04b; --gold-bg: #33280d; --un: #6a6a74; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.35); }
   :root[data-theme='light'] #cd { --bg: #faf8f4; --card: #fff; --ink: #1a1a1e; --mut: #6b6b74; --line: #e6e2d9; --be: #2f6fed; --be-bg: #eaf1fe; --ui: #7c5cdf; --ui-bg: #f1ecfd; --gold: #e0a01e; --gold-bg: #fdf4dd; --un: #a7a29a; --shadow: 0 1px 2px rgba(20,20,25,.05), 0 4px 16px rgba(20,20,25,.06); }
+
+  #cd .cd-brand { color: #db6a41; }
+  /* Phones: the same layout as the islands view — a brand card top-left and a
+     column of small buttons top-right (fixed, since this view scrolls). The
+     controls bar becomes a drawer opened by search; the legend and the
+     category chips give way to the list button. */
+  #cd .cd-tools { display: none; position: fixed; top: calc(var(--map-hdr, 64px) + 10px); right: 10px; z-index: 6; flex-direction: column; gap: 8px; }
+  #cd .cd-tools button { display: flex; align-items: center; justify-content: center; gap: 5px; width: 68px; height: 42px; padding: 0 8px; border-radius: 12px; border: 1px solid rgba(33, 29, 29, 0.18); background: rgba(255, 248, 244, 0.95); color: #211d1d; font: 600 12.5px/1 system-ui, -apple-system, 'Noto Sans TC', sans-serif; box-shadow: 0 4px 14px rgba(33, 29, 29, 0.12); cursor: pointer; }
+  #cd .cd-tools button[aria-expanded='true'] { background: #211d1d; color: #fff8f4; border-color: #211d1d; }
+  #cd .cd-panel .plist-cat { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  #cd .cd-panel .pcat-row { display: flex; align-items: center; gap: 8px; text-align: left; border: 1px solid var(--line); background: var(--bg); border-radius: 9px; padding: 9px 11px; font: inherit; color: var(--ink); cursor: pointer; }
+  #cd .cd-panel .pcat-row span { flex: 1; font-size: .9rem; font-weight: 600; }
+  #cd .cd-panel .pcat-row i { font-style: normal; font-size: .75rem; color: var(--mut); font-variant-numeric: tabular-nums; }
+  @media (max-width: 760px) {
+    #cd .cd-head { display: block; width: fit-content; max-width: calc(100% - 100px); margin: 10px 0 10px 10px; padding: 10px 14px 11px; border: 1px solid rgba(33, 29, 29, 0.18); border-radius: 16px; background: rgba(255, 248, 244, 0.95); box-shadow: 0 8px 26px rgba(33, 29, 29, 0.14); color: #211d1d; }
+    #cd .cd-head h1 { display: flex; flex-direction: column; line-height: 1.02; font-size: 13px; font-weight: 700; color: #211d1d; }
+    #cd .cd-brand { font-size: 24px; font-weight: 800; letter-spacing: -0.03em; }
+    #cd .cd-name { margin-top: 3px; letter-spacing: 0.08em; }
+    #cd .cd-sub { display: none; }
+    #cd .cd-stat { display: inline-flex; margin-top: 7px; padding: 3px 9px; }
+    #cd .cd-stat b { font-size: 13px; }
+    #cd .cd-stat span { font-size: 10.5px; }
+    #cd .cd-controls { display: none; width: calc(100% - 100px); margin: 0 0 10px 10px; padding: 8px; border: 1px solid rgba(33, 29, 29, 0.18); border-radius: 12px; background: rgba(255, 248, 244, 0.95); box-shadow: 0 8px 26px rgba(33, 29, 29, 0.14); }
+    #cd.search-open .cd-controls { display: flex; }
+    #cd .cd-search { flex: 1 1 100%; min-width: 0; }
+    #cd .cd-search input { background: #fff; color: #211d1d; }
+    #cd .cd-legend, #cd .cd-jump { display: none; }
+    #cd .cd-tools { display: flex; }
+    #cd .cd-main { padding: 4px 12px 8px; }
+    #cd .cd-cat { scroll-margin-top: calc(var(--map-hdr, 64px) + 10px); }
+  }
 </style>
 
 <script>
@@ -354,6 +401,33 @@ const T =
         Array.prototype.forEach.call(document.querySelectorAll('#cd-type button'), function (x) { x.classList.toggle('cd-on', x === b); });
         typeF = b.dataset.type; applyFilter();
       };
+    });
+
+    // Phones: the small-button tools. Search opens the controls bar as a
+    // drawer (closing it clears the search); list jumps to a category.
+    var searchBtn = root.querySelector('.cd-tools [data-act="search"]');
+    searchBtn.addEventListener('click', function () {
+      var open = !root.classList.contains('search-open');
+      root.classList.toggle('search-open', open);
+      searchBtn.setAttribute('aria-expanded', String(open));
+      if (open) q.focus();
+      else if (q.value) { q.value = ''; applyFilter(); }
+    });
+    root.querySelector('.cd-tools [data-act="list"]').addEventListener('click', function () {
+      clearSel();
+      root.classList.add('has-panel');
+      panel.hidden = false;
+      panel.innerHTML = '<button class="pclose" aria-label="' + esc(DS.close) + '">×</button><h3>' + esc(DS.listtitle) + '</h3>' +
+        '<div class="plist-cat">' + D.cats.map(function (cat) {
+          return '<button class="pcat-row" data-cat="' + esc(cat) + '"><span>' + esc(cat) + '</span><i>' + D.counts[cat] + '</i></button>';
+        }).join('') + '</div>';
+      panel.querySelector('.pclose').addEventListener('click', clearSel);
+      Array.prototype.forEach.call(panel.querySelectorAll('.pcat-row'), function (b) {
+        b.addEventListener('click', function () {
+          clearSel();
+          if (sectionEls[b.dataset.cat]) sectionEls[b.dataset.cat].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
     });
 
     function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
