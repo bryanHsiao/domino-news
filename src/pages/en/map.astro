@@ -42,9 +42,9 @@ const coveredCount = nodes.filter((n) => n.url).length;
 
 <BaseLayout lang={lang} title={t('nav.map')} description="An interactive map of HCL Domino's LotusScript classes — readable cards grouped by category; click a card to see what it returns and what returns it, and open the article for classes already written. Toggle to a relationship graph too.">
   <div class="map-tabs" role="tablist" aria-label="view switch">
-    <button class="map-tab on" data-view="dir" type="button">Grouped</button>
-    <button class="map-tab" data-view="graph" type="button">Graph</button>
-    <button class="map-tab" data-view="islands" type="button">Islands</button>
+    <button class="map-tab on" data-view="dir" type="button"><span class="mt-ic" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15"><path d="M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg></span>Grouped</button>
+    <button class="map-tab" data-view="graph" type="button"><span class="mt-ic" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15"><path d="M5.2 5.4l1.9 5M10.8 5.4l-1.9 5M5.6 3.8h4.8" stroke="currentColor" stroke-width="1.4"></path><circle cx="3.6" cy="3.8" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle><circle cx="12.4" cy="3.8" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle><circle cx="8" cy="12.4" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle></svg></span>Graph</button>
+    <button class="map-tab" data-view="islands" type="button"><span class="mt-ic" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15"><path d="M8 1.8l5.4 3.1v6.2L8 14.2l-5.4-3.1V4.9z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path></svg></span>Islands</button>
   </div>
 
   <div id="mv-dir">
@@ -62,6 +62,7 @@ const coveredCount = nodes.filter((n) => n.url).length;
   .map-tabs { display: inline-flex; gap: 4px; margin: 0 0 12px; padding: 4px; border: 1px solid var(--color-border, #e2e0d8); border-radius: 11px; background: var(--color-surface, #fff); }
   .map-tab { font: inherit; font-size: 0.88rem; font-weight: 600; padding: 7px 16px; border: 0; border-radius: 8px; background: transparent; color: var(--color-text-muted, #6b6b6b); cursor: pointer; }
   .map-tab.on { background: var(--color-brand-dark, #0a0a0a); color: #fff; }
+  .mt-ic { display: none; }
   #mv-dir[hidden], #mv-graph[hidden], #mv-islands[hidden] { display: none; }
 </style>
 
@@ -92,15 +93,27 @@ const coveredCount = nodes.filter((n) => n.url).length;
   html.map-fullscreen main:has(> .map-tabs) { padding-bottom: 0; }
   html.map-fullscreen .site-footer { display: none; }
   html.map-fullscreen #mv-graph, html.map-fullscreen #mv-islands, html.map-fullscreen #mv-islands #ci { min-height: 0; }
-  /* Narrower screens: no room at the top, so in the immersive views the tab
-     switch floats at the bottom centre like an app tab bar (the scene starts
-     right under the header); legends and hints move up to clear it. An open
-     island panel (bottom sheet) covers it. */
-  @media (max-width: 1279px) {
+  /* Tablets: no room at the top, so in the immersive views the tab switch
+     floats at the bottom centre like an app tab bar (the scene starts right
+     under the header); legends and hints move up to clear it. */
+  @media (min-width: 761px) and (max-width: 1279px) {
     html.map-fullscreen main:has(> .map-tabs) { padding-top: 0; }
     html.map-fullscreen .map-tabs { position: fixed; z-index: 6; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; white-space: nowrap; margin: 0; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.22); }
     html.map-fullscreen #ci .ci-legend, html.map-fullscreen #cm .cm-legend { bottom: 66px; }
     html.map-fullscreen #ci .ci-hint { bottom: 108px; }
+  }
+  /* Phones: like the reference site, the view switch joins the column of
+     small buttons on the right — stacked under the view's own tools (the
+     islands' tools column, the graph's controls bar; --map-tabs-top is
+     measured by the script). The current view's button is hidden; the
+     legends give way. */
+  @media (max-width: 760px) {
+    html.map-fullscreen main:has(> .map-tabs) { padding-top: 0; }
+    html.map-fullscreen .map-tabs { position: fixed; z-index: 6; top: var(--map-tabs-top, 50%); right: 10px; display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; border: 0; background: none; }
+    html.map-fullscreen .map-tab { display: flex; align-items: center; gap: 6px; width: 100px; height: 42px; padding: 0 12px; border-radius: 12px; border: 1px solid rgba(33, 29, 29, 0.18); background: rgba(255, 248, 244, 0.95); color: #211d1d; font: 600 12.5px/1 system-ui, -apple-system, 'Noto Sans TC', sans-serif; box-shadow: 0 4px 14px rgba(33, 29, 29, 0.12); }
+    html.map-fullscreen .map-tab.on { display: none; }
+    html.map-fullscreen .map-tab .mt-ic { display: inline-flex; }
+    html.map-fullscreen #cm .cm-legend { display: none; }
   }
   /* Phones: tighten the graph's own bars so the graph keeps most of the
      height — title and coverage on one line, one row of controls (the
@@ -136,7 +149,12 @@ const coveredCount = nodes.filter((n) => n.url).length;
       html.style.setProperty('--map-page-w', html.clientWidth + 'px');
       if (hdr) html.style.setProperty('--map-hdr', hdr.offsetHeight + 'px');
       var view = ['mv-graph', 'mv-islands'].map(function (id) { return document.getElementById(id); }).filter(function (el) { return el && !el.hidden; })[0];
-      if (view) html.style.setProperty('--map-above', Math.ceil(view.getBoundingClientRect().top + window.scrollY) + 'px');
+      if (!view) return;
+      html.style.setProperty('--map-above', Math.ceil(view.getBoundingClientRect().top + window.scrollY) + 'px');
+      // phones: the view switch stacks under the view's own tools
+      var anchor = view.querySelector(view.id === 'mv-islands' ? '.ci-tools' : '.cm-controls');
+      var ab = anchor && anchor.getBoundingClientRect();
+      if (ab && ab.height) html.style.setProperty('--map-tabs-top', Math.ceil(ab.bottom + 8) + 'px');
     }
     function initMapTabs() {
       // <html> survives view-transition navigation: start every page unlocked
