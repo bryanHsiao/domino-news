@@ -17,12 +17,12 @@ export const PER_TILE = 6; // class buildings per tile
 // After packing, every island is pushed away from the map centre by this
 // factor, then nudged until no channel between two islands is narrower than
 // MIN_CHANNEL (tiles of one island stay joined).
-export const SPREAD = 1.25;
-const MIN_CHANNEL = 1.3;
+export const SPREAD = 1.0; // EXP compact (was 1.25)
+const MIN_CHANNEL = 0.8; // EXP compact (was 1.3)
 const WALK_RING = 1.8; // radius of the walking ring painted on each tile
 // Off-shore islands sit this much open water away from the archipelago, in
 // this direction (radians in the x/z plane; +z faces the default camera).
-const OFFSHORE_GAP = 3;
+const OFFSHORE_GAP = 1.4; // EXP compact (was 3)
 const OFFSHORE_ANGLE = 1.1;
 // The harbour town stands on the lake shore in this direction (back left,
 // where the far shore is in view on every screen), its centre this far
