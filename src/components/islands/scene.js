@@ -12,6 +12,7 @@ import { createCrowd } from './people.js';
 import { createLinks } from './links.js';
 import { createHarbours } from './harbour.js';
 import { createSigns } from './signs.js';
+import { createWildlife } from './wildlife.js';
 
 // Opening angle: the view the user turned to and liked on the live site
 // (2026-10-30) — the camera as low as the controls allow, turned a touch so
@@ -105,6 +106,8 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   const glowMat = new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0, emissive: 0xffd28a, emissiveIntensity: 0 });
   const glowing = { glass: glowMat, bulb: glowMat };
   const harbours = createHarbours(THREE, scene, decorKit, props, layout, partMat, glowing);
+  // gulls, dolphins, tuna, a bait ball now and then, drifting clouds
+  const wildlife = reduced ? null : createWildlife(THREE, scene, layout);
   const buildingMeshes = buildingKit.build(scene, partMat, glowing);
   const bridgeMeshes = bridgeKit.build(scene, partMat);
   const bridgeById = new Map(layout.bridges.map((b) => [b.id, b]));
@@ -753,6 +756,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       updateWalkers(dt);
       updateBoats(motion);
       harbours.update(motion);
+      wildlife.update(dt);
       links.update(dt);
     }
     followTheClock(dt);
