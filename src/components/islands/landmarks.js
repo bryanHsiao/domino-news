@@ -33,6 +33,8 @@ export const THEMES = {
   DQL: { walls: [0xf0ece4, 0xe6e0d4], roof: 'cone', body: 'round', flora: 'pine', landmark: 'observatory' },
   HTTP: { walls: [0xe9e6e0, 0xdedad2], roof: 'hip', body: 'box', flora: 'pine', landmark: 'radio' },
   'Session File Operations': { walls: [0xe2e6e1, 0xd8ddd6], roof: 'flat', body: 'box', flora: 'crates', landmark: 'cabinet' },
+  // the OpenNTF community harbour on the shore (not a class island)
+  OpenNTF: { walls: [0xf4efe6, 0xe9f0f2, 0xf6e7d6], roof: 'gable', body: 'box', flora: 'crates', landmark: 'beacon' },
 };
 // A category added to the catalogue later still gets a distinct look.
 const FALLBACKS = [
@@ -201,6 +203,20 @@ export function buildLandmark(kind, kit, x, z) {
       for (let i = 0; i < 4; i++) P('cyl', x, y + 2.13 + i * 0.16, z, 0.04, 0.16, 0.04, i % 2 ? 0xffffff : 0xdb6a41);
       P('bulb', x, y + 2.75, z, 0.08, 0.08, 0.08, 0xff5a3c);
       P('dome', x + 0.22, y + 0.42, z + 0.18, 0.24, 0.12, 0.24, 0xf4efe6, [-Math.PI / 2 - 0.5, 0, 0]);
+      break;
+    }
+    case 'beacon': {
+      // OpenNTF — the community harbour's lighthouse: a striped tower with a
+      // keeper's cottage, its lantern lit at night
+      P('rbox', x + 0.32, y + 0.17, z + 0.18, 0.5, 0.34, 0.42, 0xf4efe6);
+      P('gable', x + 0.32, y + 0.44, z + 0.18, 0.56, 0.2, 0.48, 0xdb6a41);
+      for (let i = 0; i < 5; i++) {
+        const r = 0.24 - i * 0.02;
+        P('cyl', x - 0.12, y + 0.16 + i * 0.32, z - 0.08, r * 2, 0.32, r * 2, i % 2 ? 0xdb6a41 : 0xf7f3ec);
+      }
+      P('cyl', x - 0.12, y + 1.68, z - 0.08, 0.34, 0.05, 0.34, 0x3b3a42);
+      P('bulb', x - 0.12, y + 1.82, z - 0.08, 0.22, 0.22, 0.22, 0xfff0c2);
+      P('cone', x - 0.12, y + 2.04, z - 0.08, 0.32, 0.26, 0.32, 0xdb6a41);
       break;
     }
     case 'port': {

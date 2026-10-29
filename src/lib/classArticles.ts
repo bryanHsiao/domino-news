@@ -12,8 +12,9 @@ import { loadMapPosts, computeMapLanguages } from '../../scripts/lib/mapLanguage
 import { getPostsByLang, type Post } from './posts';
 import { localizedPath, type Lang } from '../i18n/ui';
 
-/** The code language an article is written in (its door-person's colour). */
-export type ArticleLang = 'ls' | 'java' | 'ssjs';
+/** The code language an article is written in (its door sign's badge colour);
+ * 'other' = not about one language (the OpenNTF harbour's community posts). */
+export type ArticleLang = 'ls' | 'java' | 'ssjs' | 'other';
 
 export interface ClassArticle {
   lang: ArticleLang;
@@ -23,13 +24,14 @@ export interface ClassArticle {
   date: string; // YYYY-MM-DD, Taipei time
 }
 
-/** A building on the XPages / web-layer island: one web-layer concept post. */
+/** A building on the XPages / web-layer island (one web-layer concept post),
+ * or in the OpenNTF harbour (one community post). */
 export interface XPagesMember {
   slug: string;
   name: string; // house name (the post title)
   desc: string;
   url: string;
-  article: ClassArticle; // the post itself, previewed on its door-person
+  article: ClassArticle; // the post itself, previewed from its door sign
 }
 
 const basename = (u: string) => (u.split('#')[0].split('?')[0].split('/').pop() || '').toLowerCase();
@@ -68,14 +70,15 @@ export async function classArticles(report: CoverageReport, lang: Lang, max = 3)
  *   - `articles`: per class id, its articles ordered LS → Java → SSJS (the LS
  *     ones from classArticles above; Java / SSJS from each post's coversClass +
  *     apiLang frontmatter, via scripts/lib/mapLanguages). Each carries its own
- *     `lang` so the scene can colour its door-person (the "language lamp").
+ *     `lang` so the scene can colour its door sign's badge.
  *   - `xpages`: the XPages / web-layer island's buildings (coversIsland posts).
+ *   - `harbour`: the OpenNTF harbour's buildings (coversHarbour posts).
  * Slugs that resolve to no published post in `lang` are dropped.
  */
 export async function islandArticles(
   report: CoverageReport,
   lang: Lang,
-): Promise<{ articles: Record<string, ClassArticle[]>; xpages: XPagesMember[] }> {
+): Promise<{ articles: Record<string, ClassArticle[]>; xpages: XPagesMember[]; harbour: XPagesMember[] }> {
   const published = new Map((await getPostsByLang(lang)).map((p) => [p.data.slug, p]));
   const taipeiDate = (p: Post) => p.data.pubDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Taipei' });
   const toArticle = (slug: string, articleLang: ArticleLang): ClassArticle | null => {
@@ -114,5 +117,14 @@ export async function islandArticles(
   }
   members.sort((a, b) => b.article.date.localeCompare(a.article.date));
 
-  return { articles, xpages: members };
+  // OpenNTF harbour: one building per community post, newest first.
+  const harbour: XPagesMember[] = [];
+  for (const post of published.values()) {
+    if (post.data.coversHarbour !== 'openntf') continue;
+    const article = toArticle(post.data.slug, 'other')!;
+    harbour.push({ slug: post.data.slug, name: post.data.title, desc: post.data.description, url: article.url, article });
+  }
+  harbour.sort((a, b) => b.article.date.localeCompare(a.article.date));
+
+  return { articles, xpages: members, harbour };
 }

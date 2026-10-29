@@ -3,6 +3,7 @@ title: "Field Notes from OpenNTF's Domino IQ RAG Webinar: the 30-Char Gotcha, Ve
 description: "OpenNTF hosted HCL's Brian Arnold for a deep session on Domino IQ RAG. We've already covered how the pipeline works under the hood; this is the field-report layer — the 30-character limit for RAG-enabling short fields and the concat-field way around it, vectorization in three steps, the three knobs to tune, the fact that Readers/Authors-field security only really started working in Domino 2026 FP1, and the citations, side panel, and MCP still under development."
 pubDate: 2026-08-04T15:00:00+08:00
 lang: en
+coversHarbour: "openntf"
 slug: openntf-domino-iq-rag-webinar
 tags:
   - "Domino IQ"

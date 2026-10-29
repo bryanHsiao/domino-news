@@ -4,6 +4,7 @@ description: "NSF ODP Tooling 是 OpenNTF 的專案，把二進位的 NSF 拆成
 pubDate: "2026-06-27T11:45:02+08:00"
 updatedDate: 2026-06-27
 lang: "zh-TW"
+coversHarbour: "openntf"
 slug: "openntf-nsf-odp-tooling-4-1-0"
 tags:
   - "Domino Designer"

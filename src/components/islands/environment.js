@@ -5,7 +5,7 @@
 // The light follows one of four times of day (TIMES); scene.js blends between
 // them and applies the result with applyTime().
 import { SimplexNoise } from 'three/examples/jsm/math/SimplexNoise.js';
-import { WATER_Y, mulberry32 } from './layout.js';
+import { WATER_Y, TOP, mulberry32 } from './layout.js';
 
 const smooth = (a, b, x) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
@@ -22,7 +22,9 @@ export const TIMES = {
 };
 
 // `boatProps` builds the boats into their own kit so scene.js can let them drift.
-export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, boatProps = props) {
+// `harbours` (layout.js) stand on the shore: the ground under them is levelled
+// and kept clear of trees, cottages and the other scenery.
+export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, boatProps = props, harbours = []) {
   const rnd = mulberry32(11);
   const noise = new SimplexNoise({ random: mulberry32(7) });
   const fbm = (x, z) => {
@@ -82,7 +84,7 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, 
   sun.target.position.copy(center);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
-  const sc = radius + 3;
+  const sc = radius + (harbours.length ? 9 : 3); // the harbour stands past the lake
   Object.assign(sun.shadow.camera, { left: -sc, right: sc, top: sc, bottom: -sc, near: 1, far: radius * 6 + 60 });
   sun.shadow.camera.updateProjectionMatrix();
   sun.shadow.bias = -0.0006;
@@ -135,7 +137,7 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, 
   // facing the default camera (+z) so it never hides the city
   const rimA = radius + 2;
   const rimB = radius + 18;
-  const heightAt = (x, z) => {
+  const rawHeight = (x, z) => {
     const dx = x - cx, dz = (z - cz) * 0.92;
     const d = Math.hypot(dx, dz);
     const rim = smooth(rimA, rimB, d);
@@ -144,6 +146,22 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, 
     if (h > 0) h *= 1 - 0.72 * Math.pow(front, 2.2);
     return h;
   };
+  // A harbour sits on a level shelf of land: flattened behind and under it,
+  // while in front of its quay the lake stays open.
+  const GROUND = TOP - 0.2;
+  const heightAt = (x, z) => {
+    let h = rawHeight(x, z);
+    for (const hb of harbours) {
+      const d = Math.hypot(x - hb.x, z - hb.z);
+      if (d > hb.r + 5) continue;
+      const ox = hb.x - cx, oz = hb.z - cz;
+      const s = ((x - hb.x) * ox + (z - hb.z) * oz) / Math.hypot(ox, oz); // + landward
+      const w = (1 - smooth(hb.r + 0.8, hb.r + 5, d)) * smooth(-hb.r - 0.2, -hb.r + 1.4, s);
+      h += (GROUND - h) * w;
+    }
+    return h;
+  };
+  const nearHarbour = (x, z, pad) => harbours.some((hb) => Math.hypot(x - hb.x, z - hb.z) < hb.r + pad);
   const size = 2 * (radius + 75);
   const tg = new THREE.PlaneGeometry(size, size, 170, 170).rotateX(-Math.PI / 2);
   const tp = tg.attributes.position;
@@ -182,7 +200,7 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, 
     const d = rimA + 2 + rnd() * (rimB + 22 - rimA);
     const x = cx + Math.cos(a) * d, z = cz + (Math.sin(a) * d) / 0.92;
     const h = heightAt(x, z);
-    if (h < 0.35 || h > 8 || slopeAt(x, z, h) > 0.9) continue;
+    if (h < 0.35 || h > 8 || slopeAt(x, z, h) > 0.9 || nearHarbour(x, z, 1.2)) continue;
     const s = 0.7 + rnd() * 0.6;
     if (h > 2.2 || rnd() < 0.45) props.conifer(x, z, s, rnd, h - 0.1);
     else props.tree(x, z, s, rnd, h - 0.1);
@@ -194,7 +212,7 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, 
     const d = rimA + 4 + rnd() * 18;
     const x = cx + Math.cos(a) * d, z = cz + (Math.sin(a) * d) / 0.92;
     const h = heightAt(x, z);
-    if (h < 0.3 || h > 1.6 || slopeAt(x, z, h) > 0.35) continue;
+    if (h < 0.3 || h > 1.6 || slopeAt(x, z, h) > 0.35 || nearHarbour(x, z, 2)) continue;
     props.cottage(x, z, 1 + rnd() * 0.4, rnd, h - 0.05, Math.atan2(cx - x, cz - z));
     homes++;
   }
@@ -206,6 +224,7 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, 
     const d = radius + 2 + rnd() * 3.5;
     const x = cx + Math.cos(a) * d, z = cz + Math.sin(a) * d;
     const r = 0.8 + rnd() * 0.7;
+    if (nearHarbour(x, z, r + 3.5)) continue; // leave the harbour's water open
     kit.part('cyl', [x, WATER_Y + 0.12, z], [r * 2, 0.4, r * 2], 0xe3d3b0);
     kit.part('sphere', [x, WATER_Y + 0.3, z], [r * 1.8, 0.35, r * 1.8], 0xa9c48a);
     islets.push({ x, z, r: r + 0.6 });
@@ -243,7 +262,8 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, 
 
   // ---- along the shore and out on the water
   const lrnd = mulberry32(23);
-  const spots = [...islets]; // keep the new things clear of each other
+  // keep the new things clear of each other, and of the harbour and its boats
+  const spots = [...islets, ...harbours.map((hb) => ({ x: hb.x, z: hb.z, r: hb.r + 4 }))];
   const clear = (x, z, r) => spots.every((s) => Math.hypot(s.x - x, s.z - z) > s.r + r);
   const at = (a, d) => [cx + Math.cos(a) * d, cz + (Math.sin(a) * d) / 0.92];
   // first point out from the centre along angle a where land rises out of the water

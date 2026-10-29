@@ -513,3 +513,30 @@ XPages 島 **10 個成員**。`NotesSession` 同時有 Java 與 SSJS 燈（分�
 - **時段跟時鐘**：開場照訪客本地時間決定時段（05–08 晨、08–17 日、17–19 昏、其餘夜），
   之後每 20 秒檢查一次，跨過時段就自動漸變，並透過 `onTime` 同步按鈕狀態。
   手動點過時段按鈕後就不再自動跟時鐘。
+
+## OpenNTF 港口、XPages 改長橋、門口改告示牌（2026-10-29）
+
+使用者決定：OpenNTF 採方案 B（岸邊社群港）；XPages 不用船、改長長的橋；
+OpenNTF 才用船。另外門口的「人」改成帶「i」圖示的告示牌，讓人一看就知道是介紹。
+
+- **港口成員**：文章 frontmatter 加 `coversHarbour: "openntf"`（`src/content.config.ts`，
+  不需 `apiLang`）。目前標了 4 篇（zh＋en）：`openntf-lotusscript-class-map`、
+  `openntf-home-drapi-jakarta`、`openntf-nsf-odp-tooling-4-1-0`、
+  `openntf-domino-iq-rag-webinar`。`islandArticles()` 回傳 `harbour`，文章語言記為
+  `other`，卡片上顯示「社群／Community」。
+- **港口位置**（`layout.js`）：成員帶 `harbour: true` 的分類不進蜂巢，放在湖的左後方岸上
+  （`HARBOUR_ANGLE`），中心在群島外接圓外 `HARBOUR_OUT`＝3.6。港口不計入
+  `bounds`，所以鏡頭取景和湖的大小都不變。左前方試過，但預設視角拍不到，所以改到後岸。
+  索引上方的「N 座島」不把港口算進去，港口的編號排最後。
+- **港口地形**（`environment.js`）：港口靠陸地的一側和正下方整平成一塊平台，靠湖那側保留
+  開放水面，讓碼頭邊緣露出來。樹、小屋、衛星小島、湖岸碼頭、浮台都會避開港口。
+- **港口造景**（`harbour.js`，取代 `ferry.js`）：
+  - 港口島的地面固定用 boardwalk 木板；地標是燈塔加守塔小屋（`landmarks.js` 的 `beacon`）。
+  - 一座 3 單位長的碼頭伸進湖裡，旁邊停兩艘小船。
+  - 3 艘載著黃色貨箱的貨船從碼頭開到最近、而且直線航道不會撞島的 3 座島，
+    靠岸停一下、調頭，再開回來。
+- **XPages 長橋**：外海島改用一座長木橋，從最近的類別島連過去（`bridge.long`，
+  `bridgeStyle(0, true)`，橋寬 0.42，每約 2.2 單位一根橋墩）。行人可以走上 XPages 島。
+- **門口告示牌**（`signs.js`）：一篇文章一面告示牌，白底板加一個依文章語言上色的圓章
+  （LS 珊瑚、Java 藍、SSJS 綠、社群灰），圓章裡是白色「i」。點牌子會開文章預覽，
+  跟原本點人一樣。原本站在門口的人已經移除，路上走的行人和騎車的人還在。

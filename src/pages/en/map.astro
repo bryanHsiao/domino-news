@@ -41,7 +41,7 @@ const data = { nodes, links };
 const coveredCount = nodes.filter((n) => n.url).length;
 // per-class articles (LS + Java/SSJS language lamps) + the XPages island,
 // for the islands view's previews
-const { articles, xpages } = await islandArticles(report, lang);
+const { articles, xpages, harbour } = await islandArticles(report, lang);
 ---
 
 <BaseLayout lang={lang} title={t('nav.map')} description="HCL Domino Class Map: classes and their links across LotusScript, Java and SSJS — readable cards grouped by category; click a card to see what it returns and what returns it, and open the article for classes already written. Switch to a relationship graph or 3D islands too.">
@@ -58,7 +58,7 @@ const { articles, xpages } = await islandArticles(report, lang);
     <ClassMap lang={lang} data={data} coveredCount={coveredCount} total={nodes.length} />
   </div>
   <div id="mv-islands">
-    <ClassIslands lang={lang} data={data} articles={articles} xpages={xpages} coveredCount={coveredCount} total={nodes.length} />
+    <ClassIslands lang={lang} data={data} articles={articles} xpages={xpages} harbour={harbour} coveredCount={coveredCount} total={nodes.length} />
   </div>
 </BaseLayout>
 

@@ -22,34 +22,43 @@ interface Props {
   articles: Record<string, ClassArticle[]>;
   /** buildings on the XPages / web-layer island */
   xpages: XPagesMember[];
+  /** buildings in the OpenNTF harbour on the shore */
+  harbour: XPagesMember[];
   coveredCount: number;
   total: number;
 }
-const { lang, data, articles, xpages, coveredCount, total } = Astro.props;
+const { lang, data, articles, xpages, harbour, coveredCount, total } = Astro.props;
 
 // The class houses carry their articles (LS plus any Java / SSJS residents,
-// one person each). The XPages / web-layer posts become a separate island:
+// one door sign each). The XPages / web-layer posts become a separate island:
 // one building per post, standing only in this view — the shared class data
 // (directory / graph) stays the 97 LotusScript classes, untouched.
 const ISLAND = 'XPages';
 const classNodes = data.nodes.map(({ id, name, cat, ui, key, url, desc }) => ({ id, name, cat, ui, key, url, desc: desc || '', articles: articles[id] || [] }));
 const xpagesNodes = xpages.map((m) => ({ id: 'xpages:' + m.slug, name: m.name, cat: ISLAND, ui: true, key: false, url: m.url, desc: m.desc || '', articles: [m.article], island: true }));
-const nodes = [...classNodes, ...xpagesNodes];
+// The OpenNTF community posts stand in a harbour town on the lake shore, not
+// on an island: the community supplies tools, it isn't part of the API.
+const HARBOUR = 'OpenNTF';
+const harbourNodes = harbour.map((m) => ({ id: 'openntf:' + m.slug, name: m.name, cat: HARBOUR, ui: false, key: false, url: m.url, desc: m.desc || '', articles: [m.article], island: true, harbour: true }));
+const nodes = [...classNodes, ...xpagesNodes, ...harbourNodes];
 
 // Island numbering: the six core-containment categories first (fixed spine
 // order, same as ClassDirectory), then the rest by class count descending.
 // Where the islands go is decided in ./islands/layout.js from the class links
 // (related categories sit a bridge apart); the XPages island has no class
-// links, so it is reached by a plain footbridge.
+// links, so it stands out at sea at the end of a long bridge, and the OpenNTF
+// harbour (numbered last) sits on the shore, linked by boats.
 const CORE = ['Session', 'Database', 'View', 'Document', 'Item', 'Rich Text'];
 const counts: Record<string, number> = {};
 nodes.forEach((n) => (counts[n.cat] = (counts[n.cat] || 0) + 1));
 const cats = [
   ...CORE.filter((c) => counts[c]),
   ...Object.keys(counts)
-    .filter((c) => !CORE.includes(c))
+    .filter((c) => !CORE.includes(c) && c !== HARBOUR)
     .sort((a, b) => counts[b] - counts[a] || a.localeCompare(b)),
+  ...(counts[HARBOUR] ? [HARBOUR] : []),
 ];
+const islandCount = cats.filter((c) => c !== HARBOUR).length;
 const payload = { nodes, cats, links: data.links };
 
 const T =
@@ -83,7 +92,8 @@ const T =
         pauseTip: '暫停行人、船與海面',
         listTitle: '所有島嶼',
         noMatch: '沒有符合的類別',
-        sub: '每個 category 一座島，類別越多島越大；有關聯的島之間才有橋，橋越寬關聯越多，捧箱子的人在有關聯的島之間搬運。有 Java／SSJS 文章的房子屋頂插一支對應顏色的旗（藍＝Java、綠＝SSJS）；門口的人一個代表一篇文章；XPages／網頁層概念文另成一座島。拖曳轉看、滾輪縮放；點島看清單與關聯線，點房子看類別介紹，點門口的人看文章預覽，指著房子或橋看關聯。',
+        langOther: '社群',
+        sub: '每個 category 一座島，類別越多島越大；有關聯的島之間才有橋，橋越寬關聯越多，捧箱子的人在有關聯的島之間搬運。有 Java／SSJS 文章的房子屋頂插一支對應顏色的旗（藍＝Java、綠＝SSJS）；門口的「i」告示牌一面代表一篇文章（圓章顏色＝文章語言）；XPages／網頁層概念文另成一座外海島，靠長橋連過去；OpenNTF 社群文在岸邊的港口，船從那裡開往各島。拖曳轉看、滾輪縮放；點島看清單與關聯線，點房子看類別介紹，點告示牌看文章預覽，指著房子或橋看關聯。',
         covered: '已涵蓋',
         search: '搜尋類別…',
         reset: '重設視角',
@@ -152,7 +162,8 @@ const T =
         pauseTip: 'Pause the walkers, boats and water',
         listTitle: 'All islands',
         noMatch: 'No matching class',
-        sub: 'One island per category, bigger for more classes; bridges only join related islands, wider for more links, and porters carry boxes between related islands. A house with a Java / SSJS article flies a roof flag in that colour (blue = Java, green = SSJS); each person at a door is one article; the web-layer XPages posts form their own island. Drag to orbit, scroll to zoom; click an island for its list and relation lines, a house for the class overview, a person at its door for an article preview; hover a house or bridge for its links.',
+        langOther: 'Community',
+        sub: 'One island per category, bigger for more classes; bridges only join related islands, wider for more links, and porters carry boxes between related islands. A house with a Java / SSJS article flies a roof flag in that colour (blue = Java, green = SSJS); each “i” sign at a door is one article (its badge in the article’s language colour); the web-layer XPages posts form their own island out at sea, reached by a long bridge; the OpenNTF community posts stand in a harbour on the shore, its boats sailing out to the islands. Drag to orbit, scroll to zoom; click an island for its list and relation lines, a house for the class overview, a sign at its door for an article preview; hover a house or bridge for its links.',
         covered: 'covered',
         search: 'Search classes…',
         reset: 'Reset view',
@@ -221,6 +232,7 @@ const statTip =
   data-more-articles={T.moreArticles}
   data-tip-rel={T.tipRel}
   data-tip-path={T.tipPath}
+  data-lang-other={T.langOther}
   data-tip-more={T.tipMore}
   data-rel-title={T.relTitle}
   data-rel-bridge={T.relBridge}
@@ -320,7 +332,7 @@ const statTip =
     <div class="ci-ix-head">
       <div class="ci-eyebrow">{T.eyebrow}</div>
       <div class="ci-langs">{T.langs}</div>
-      <p class="ci-ix-meta">{T.meta.replace('{i}', String(cats.length)).replace('{c}', String(total))}</p>
+      <p class="ci-ix-meta">{T.meta.replace('{i}', String(islandCount)).replace('{c}', String(total))}</p>
       <p class="ci-sub">{T.sub}</p>
       <input id="ci-q" type="search" placeholder={T.search} autocomplete="off" />
     </div>
@@ -476,6 +488,7 @@ const statTip =
   #ci .sw.flag.java, #ci .pdot.java { background: #4f86c6; }
   #ci .sw.flag.ssjs, #ci .pdot.ssjs { background: #4fa36b; }
   #ci .pdot.ls { background: #db6a41; }
+  #ci .pdot.other { background: #9a958c; }
   #ci .ci-leg-sep { width: 1px; align-self: stretch; margin: 1px 2px; background: var(--hair); }
   #ci .ci-panel .part i .pdot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; vertical-align: 0; }
 
@@ -577,8 +590,8 @@ const statTip =
     var q = document.getElementById('ci-q');
     var api = null;
     // Article language → label (identifiers, same in both languages). The
-    // matching door-person colour lives in scene.js (LANG_SHIRT).
-    var LANG_LABEL = { ls: 'LotusScript', java: 'Java', ssjs: 'SSJS' };
+    // matching door-sign badge colour lives in islands/signs.js (LANG_BADGE).
+    var LANG_LABEL = { ls: 'LotusScript', java: 'Java', ssjs: 'SSJS', other: root.dataset.langOther };
 
     function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
     function webglOK() {

@@ -3,6 +3,7 @@ title: "OpenNTF 把首頁 app 搬出 Domino：純靠 DRAPI 跑在 Open Liberty �
 description: "Jesse Gallagher 把 OpenNTF 的首頁 app 從 XPages 改寫成 Jakarta EE，資料層完全走 DRAPI（Domino REST API），最後把它打包成 WAR、部署到 Open Liberty — 跑在 Domino 之外。這件事的意義不是「又一個改寫」，而是它驗證了一條路：為 Domino 寫的 Jakarta EE app 可以是可攜的，資料留在 NSF、執行環境卻不綁 Domino。本文整理他做了什麼、技術堆疊、為什麼值得關注，以及他自己點出的幾個還很粗糙的地方。"
 pubDate: 2026-06-13T07:30:00+08:00
 lang: zh-TW
+coversHarbour: "openntf"
 slug: openntf-home-drapi-jakarta
 tags:
   - "Domino"
