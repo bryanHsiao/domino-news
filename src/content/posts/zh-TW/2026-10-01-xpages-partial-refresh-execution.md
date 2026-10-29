@@ -17,6 +17,8 @@ sources:
     url: "http://intec.co.uk/understanding-partial-execution-part-three-jsf-lifecycle/"
 relatedJava: []
 relatedSsjs: []
+coversIsland: "xpages"
+apiLang: "ssjs"
 cover: "/covers/xpages-partial-refresh-execution.webp"
 coverStyle: "collage"
 ---

@@ -221,6 +221,34 @@ Internal anchors (`/domino-news/posts/...`) don't count — only
 - When a Java / SSJS post eventually lands, retrofit internal links
   back from the LS posts to the new piece.
 
+### `/map/` 多語言地圖標記（coversClass / coversIsland / apiLang）
+
+定於 2026-10-29。`/map/` 的語言燈與 XPages 島直接讀**文章自己的
+frontmatter**，寫新語言文時加幾行就自動長燈／進島，不必改中央 JSON。
+完整架構與決策見 [`docs/map-3d-island-brief.md`](docs/map-3d-island-brief.md)
+的「多語言架構」一節；三個欄位已加進 `src/content.config.ts` schema。
+
+一句話決策規則：
+
+> **這篇在講一個現有 Notes 類別嗎？** → `coversClass`（值＝
+> `data/ls_classes.json` 的節點 id，如 `NotesSession`）＋ `apiLang`。
+> **在講 XPages／網頁層、沒有對應類別嗎？**（scope variables、partial
+> refresh、managed beans、sessionAsSigner、binding 生命週期…）→
+> `coversIsland: "xpages"` ＋ `apiLang`。
+> **純跨切面概念**（threading／memory／error handling）**無單一類別又
+> 非 XPages** → 兩個都不設，先不上地圖。
+
+- `apiLang` 是 `"java"` 或 `"ssjs"`；LS 文不設、維持現狀。一篇最多設
+  `coversClass` 或 `coversIsland` 其一，只要設了其一就必須有 `apiLang`
+  （schema 的 `superRefine` 會擋，違反時 build 直接失敗）。
+- `coversClass` 可為單一字串或字串陣列（一篇同時教兩個類別時，如
+  DXL 的 Exporter／Importer）。
+- ⚠️ **別跟 `relatedJava` / `relatedSsjs` 搞混。** 那兩個欄位在 **LS 文**
+  上、記的是「這個 LS 類別在 Java／SSJS 叫什麼」、URL 指回 **LS 文本身**；
+  `coverage.ts` 的 `javaMentions` / `ssjsMentions` 是從它們建的，**不能**
+  拿來當地圖燈號。`coversClass` / `coversIsland` 方向相反：掛在**獨立的
+  Java／SSJS 文**上，由該文點亮對應節點／島的燈，是「累積方向」。
+
 ---
 
 ## Coverage tracker

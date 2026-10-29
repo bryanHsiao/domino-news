@@ -17,6 +17,8 @@ sources:
     url: "https://www.intec.co.uk/scoped-variables-implicit-variables-repeat-controls/"
 relatedJava: []
 relatedSsjs: []
+coversIsland: "xpages"
+apiLang: "ssjs"
 cover: "/covers/xpages-scope-variables.webp"
 coverStyle: "watercolor"
 ---

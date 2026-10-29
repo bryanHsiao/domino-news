@@ -17,6 +17,8 @@ sources:
     url: "https://www.tutorialspoint.com/jsf/jsf_managed_beans.htm"
 relatedJava: []
 relatedSsjs: []
+coversIsland: "xpages"
+apiLang: "ssjs"
 cover: "/covers/xpages-managed-beans.webp"
 coverStyle: "oil-chiaroscuro"
 ---

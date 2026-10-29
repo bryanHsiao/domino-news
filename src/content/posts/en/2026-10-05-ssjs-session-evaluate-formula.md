@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/12.0.0/xpageuser/wpd_scripts_server.html"
 relatedJava: []
 relatedSsjs: []
+coversClass: "NotesSession"
+apiLang: "ssjs"
 cover: "/covers/ssjs-session-evaluate-formula.webp"
 coverStyle: "minimalist-mono"
 ---

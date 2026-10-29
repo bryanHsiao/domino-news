@@ -29,7 +29,38 @@ const posts = defineCollection({
     coverStyle: z.string().optional(),
     relatedJava: z.array(z.string()).default([]),
     relatedSsjs: z.array(z.string()).default([]),
+    // --- /map/ multi-language island fields (see docs/map-3d-island-brief.md
+    // "多語言架構"). These drive language lamps / the XPages island straight
+    // from a post's own frontmatter — distinct from relatedJava/relatedSsjs,
+    // which live on LS posts and point back at LS posts. ---
+    // One or more data/ls_classes.json node ids (full class names, e.g.
+    // "NotesSession"): this post teaches that Notes class, so light its lamp
+    // for `apiLang`.
+    coversClass: z.union([z.string(), z.array(z.string())]).optional(),
+    // Web-layer concept post with no backing Notes class → the XPages island.
+    // Currently the only value is "xpages".
+    coversIsland: z.string().optional(),
+    // Which programming language this post is written in. LS posts leave it
+    // unset. Required whenever coversClass or coversIsland is set.
+    apiLang: z.enum(['java', 'ssjs']).optional(),
     draft: z.boolean().default(false),
+  }).superRefine((data, ctx) => {
+    // A post maps to at most one of class/island, and if it maps at all it
+    // must say which language it is.
+    if (data.coversClass !== undefined && data.coversIsland !== undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Set at most one of coversClass or coversIsland, not both.',
+        path: ['coversClass'],
+      });
+    }
+    if ((data.coversClass !== undefined || data.coversIsland !== undefined) && data.apiLang === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'apiLang is required when coversClass or coversIsland is set.',
+        path: ['apiLang'],
+      });
+    }
   }),
 });
 

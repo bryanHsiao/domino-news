@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_globals_r.html"
 relatedJava: []
 relatedSsjs: []
+coversClass: "NotesItem"
+apiLang: "ssjs"
 cover: "/covers/ssjs-vector-multivalue.webp"
 coverStyle: "low-poly-3d"
 ---

@@ -379,3 +379,109 @@ Q 版比例：大圓頭（約佔身高一半）、深色髮帽（有的綁包頭
   `lang` 即可，人物也可依 `lang` 上色。這次只做 LotusScript。
 - 提示框：指著房子顯示「點一下看類別介紹」，指著人顯示文章標題與「點一下看文章預覽」；
   點水面會關掉卡片。
+
+---
+
+## 多語言架構（coversClass / coversIsland / apiLang）（2026-10-29）
+
+地圖原本只畫 LotusScript 的 97 個類別。這一節定義「地圖也納入 Java 與 SSJS」
+的**資料層架構**。這次只做資料層（新增 frontmatter 欄位＋讓 build 接受＋回標
+現有語言文），**3D 渲染本身（實際點亮語言燈、畫出 XPages 島）留待後續 PR**；
+對應的渲染 helper（讀 frontmatter → 算每個節點的 `{ls,java,ssjs}` 燈、XPages
+島成員）也一併留待後續。
+
+### 已拍板的決策（母 session 規劃收斂，不重新討論）
+
+多語言用「依內容本質」的**混合**做法，Java 與 SSJS 刻意不對稱：
+
+1. **後端類別文**（Java 幾乎全部、少數講後端類別的 SSJS 文）→ 在**既有節點掛
+   語言燈**，不另開島。因為後端類別在 LS／Java／SSJS 幾乎 1:1 同構
+   （`NotesSession` / `NotesDocument` / `NotesDateTime`… 是同一個類別換語言
+   綁定），另開島會把 97 個節點整組複製、九成是空的。
+2. **XPages／網頁層概念文**（scope variables、partial refresh、managed beans、
+   `sessionAsSigner`、binding 生命週期… 沒有對應的 Notes 類別）→ 進一座獨立的
+   **「XPages／網頁層」島**。
+3. **真相來源用文章自己的 frontmatter**，不是中央 JSON。以後寫新語言文加一行
+   frontmatter 就自動長燈／進島——這是「**累積方向**」。
+4. ⚠️ **不能**用 `coverage.ts` 現有的 `javaMentions` / `ssjsMentions` 當燈號：
+   它們是從 **LS 文**的 `relatedJava` / `relatedSsjs` 建的、指回 LS 文本身，
+   不是 Java／SSJS 獨立文；URL 也接不起來（javadoc URL vs `dom_designer`
+   的 LS doc URL）。新欄位方向相反、獨立於它（見下）。
+
+### 三個欄位（都是 optional，定義在 `src/content.config.ts`）
+
+| 欄位 | 型別 | 意義 |
+|---|---|---|
+| `coversClass` | 字串或字串陣列 | 值＝`data/ls_classes.json` 的節點 id（全名，如 `NotesSession`）。表示這篇教的是哪個 Notes 類別 → 該節點點亮 `apiLang` 的燈。一篇同時教兩個類別時用陣列（如 DXL 的 `NotesDXLExporter` / `NotesDXLImporter`）。 |
+| `coversIsland` | 字串 | 目前只有 `"xpages"`。表示這篇是網頁層概念文、沒有對應類別 → 進 XPages 島。 |
+| `apiLang` | `"java"` \| `"ssjs"` | 這篇是哪個程式語言。LS 文不設、維持現狀。 |
+
+**規則（schema 的 `superRefine` 強制，違反時 build 失敗）**：一篇最多設
+`coversClass` 或 `coversIsland` **其一**；只要設了其一，就**必須**有 `apiLang`。
+
+### 決策規則（一句話）
+
+> **這篇在講一個現有 Notes 類別嗎？** → `coversClass`（+`apiLang`）。
+> **在講 XPages／網頁層、沒有對應類別嗎？** → `coversIsland: "xpages"`（+`apiLang`）。
+> **純跨切面概念**（threading／memory／error handling）**無單一類別又非
+> XPages** → 兩個都不設，先不上地圖。
+
+與 `relatedJava` / `relatedSsjs` 的差異見 `CLAUDE.md` 的「Cross-language
+linking strategy」一節。
+
+### 本次回標結果（2026-10-29）
+
+**`coversClass`（`apiLang: java`）— 6 篇**
+
+| slug | coversClass |
+|---|---|
+| `java-session-notesfactory` | `NotesSession` |
+| `java-document-items` | `NotesDocument` |
+| `java-datetime` | `NotesDateTime` |
+| `java-dql-dominoquery` | `NotesDominoQuery` |
+| `java-dxl-exporter-importer` | `NotesDXLExporter`, `NotesDXLImporter` |
+| `java-agent-anatomy` | `NotesAgent` |
+
+**`coversClass`（`apiLang: ssjs`）— 2 篇**
+
+| slug | coversClass |
+|---|---|
+| `ssjs-session-evaluate-formula` | `NotesSession` |
+| `ssjs-vector-multivalue` | `NotesItem` |
+
+**`coversIsland: "xpages"`（`apiLang: ssjs`）— 10 篇**
+
+`xpages-attachment-multi-delete`、`xpages-save-conflicts`、
+`xpages-scope-variables`、`xpages-sessionassigner`、`xpages-managed-beans`、
+`xpages-partial-refresh-execution`、`xpages-multi-column-category-document`、
+`xpages-ssjs-runonserver-stale-document`、`xpages-getdocument-applychanges`、
+`xpages-binding-rendered-loaded-performance`。
+
+每篇 en 與 zh-TW 兩份都已回標（共 19 slug × 2 = 38 檔）。
+
+亮燈結果（`npm run map-lang-report` 實跑核對）：Java 燈共點亮 **8 個節點**
+（`NotesSession`、`NotesDocument`、`NotesDateTime`、`NotesDominoQuery`、
+`NotesDXLExporter`、`NotesDXLImporter`、`NotesAgent`、`NotesLLMRequest`——6
+篇 Java coversClass 文裡 DXL 一篇覆蓋兩個節點，再加判斷題的 `NotesLLMRequest`，
+故 6 篇 → 8 節點）；SSJS 燈落在 **2 個節點**（`NotesSession`、`NotesItem`）；
+XPages 島 **10 個成員**。`NotesSession` 同時有 Java 與 SSJS 燈（分別來自
+`java-session-notesfactory` 與 `ssjs-session-evaluate-formula`）。
+
+### 判斷題（照決策規則自定，附理由）
+
+| slug | 決定 | 理由 |
+|---|---|---|
+| `java-recycle-memory` | 兩欄都不設 | 跨切面記憶體管理（`recycle()`），不教單一類別 → 先不上地圖。 |
+| `java-collection-iteration` | 兩欄都不設（borderline） | 核心教訓是「先取下一個再 recycle 這個」的**記憶體／順序模式**，與 `java-recycle-memory` 同一主題；標題雖點名 DocumentCollection（`NotesDocumentCollection` 確實是節點），但不教該類別的方法／屬性，掛 Java 燈會讓地圖**過度承諾**「有一篇教這個類別」。若日後覺得該亮，改 `coversClass: NotesDocumentCollection` 一行即可。 |
+| `java-notesexception` | 兩欄都不設 | error handling 跨切面；`NotesException` 在 LS 目錄中根本沒有對應節點（Java-only 例外類別）。 |
+| `java-notesthread` | 兩欄都不設 | threading 跨切面；`NotesThread` 在 LS 目錄中沒有對應節點（Java-only）。 |
+| `domino-iq-timeout-java-ssjs` | `coversClass: NotesLLMRequest`，`apiLang: java` | 內容實教 `LLMReq`／`NotesLLMRequest` 類別（`session.createLLMRequest()` 工廠、`completionStream` 方法、`CompletionStreamCallback`），不只是逾時運維。主語言是 Java；文內明言「SSJS 沒有原生 LLM 類別、是直接呼叫 Java API」，所以 `apiLang` 單填 `java` 是**正確**（而非妥協）——SSJS 端並沒有一個 SSJS 版 LLM 類別可點燈。 |
+
+### 留待後續（這次不做）
+
+- 3D 渲染：節點上實際畫出 Java／SSJS 語言燈、XPages 島的建模與擺位。
+- 資料層 helper：讀所有文章 frontmatter → 算每節點 `{ls,java,ssjs}` 燈狀態、
+  XPages 島成員清單，餵給渲染層（`npm run map-lang-report` 是這個 helper 的
+  雛形，目前只印到 console 供核對）。
+- `ClassIslands.astro` 與 `src/components/islands/*` 由另一條 session 負責，
+  本次未動。

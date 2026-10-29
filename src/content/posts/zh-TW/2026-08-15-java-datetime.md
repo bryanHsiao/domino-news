@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_TOJAVADATE_METHOD_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+coversClass: "NotesDateTime"
+apiLang: "java"
 cover: "/covers/java-datetime.webp"
 coverStyle: "bw-grain"
 ---
