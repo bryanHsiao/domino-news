@@ -3,7 +3,7 @@
 // other two map views.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { layoutArchipelago, TOP, mulberry32, walkPath } from './layout.js';
+import { layoutArchipelago, TOP, R, mulberry32, walkPath } from './layout.js';
 import { createKit } from './kit.js';
 import { createProps } from './props.js';
 import { buildWorld, classKind } from './world.js';
@@ -15,12 +15,10 @@ import { createSigns } from './signs.js';
 
 const FOV = 32;
 const HOME_POLAR = THREE.MathUtils.degToRad(57);
-// Opening distance as a share of the fit-everything distance, by stage width
-// (as the reference does): a wide stage opens close in, a small one (phones
-// included) frames the whole lake.
-const HOME_ZOOM = 0.7;
-const ZOOM_FROM = 600; // stage width (px) up to which the whole lake is framed
-const ZOOM_TO = 1150; // stage width from which the close view applies
+// The opening view fits every island in the lake (off-shore ones included)
+// into the part of the stage the interface leaves clear, at least this many
+// px from its edges.
+const HOME_PAD = 14;
 const POLAR_MIN = THREE.MathUtils.degToRad(25);
 const POLAR_MAX = THREE.MathUtils.degToRad(70);
 const BIRD_POLAR = 0.1; // bird's-eye: almost straight down
@@ -122,20 +120,86 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   // Frames the archipelago's bounding circle; on landscape screens it may
   // overfill vertically a little and still show every island.
   const fitDistance = (r) => r * Math.max(2.35, 1.05 / (tanHalf * camera.aspect)) * 1.05;
-  // The opening view: on a wide stage the archipelago fills most of it and
-  // the outer islets, the harbour and the off-shore island run off its edges
-  // (zoom out to see them); on a small one it frames everything.
-  let stageW = 0;
-  const homeDistance = () => {
-    const t = THREE.MathUtils.clamp((stageW - ZOOM_FROM) / (ZOOM_TO - ZOOM_FROM), 0, 1);
-    return fitDistance(radius) * (1 - (1 - HOME_ZOOM) * t * t * (3 - 2 * t));
-  };
-  const homeTarget = new THREE.Vector3(cx, TOP, cz);
   const sph = new THREE.Spherical();
   const posFor = (target, dist, polar, azimuth) => {
     sph.set(dist, polar, azimuth);
     return new THREE.Vector3().setFromSpherical(sph).add(target);
   };
+  // The opening view (and 全景 / Fit): every island in the lake — the class
+  // archipelago and the off-shore islands — fitted as tightly as it goes into
+  // the clear part of the stage, measured on screen rather than with the
+  // bounding circle (which wastes the corners and pushed the off-shore
+  // islands out of a closer opening shot). The clear part leaves out the
+  // interface laid over the scene: brand card and toolbar on top, the legend
+  // below, the phones' button column on the right. The harbour and the
+  // outer islets may run off the edges.
+  const framePts = layout.tiles
+    .filter((t) => !layout.harbours.some((h) => h.cat === t.cat))
+    .flatMap((t) => [
+      [t.x - R, t.z],
+      [t.x + R, t.z],
+      [t.x, t.z - R],
+      [t.x, t.z + R],
+    ])
+    .map(([x, z]) => new THREE.Vector3(x, TOP, z));
+  const homeTarget = new THREE.Vector3(cx, TOP, cz);
+  let homeDist = 0;
+  const frameCam = new THREE.PerspectiveCamera(FOV, 1, 0.3, 600);
+  const pv = new THREE.Vector3();
+  function clearArea(w, h) {
+    // screen margins taken by the interface: a rect at the top (or bottom)
+    // pushes that edge in; a tall one on the right (the phones' column)
+    // pushes the right edge in. Each is capped so a big panel can't swallow
+    // the view.
+    const m = { l: 0, t: 0, r: 0, b: 0 };
+    if (chrome) {
+      const o = stage.getBoundingClientRect();
+      for (const c of chrome()) {
+        const l = c.left - o.left, t = c.top - o.top, r = c.right - o.left, b = c.bottom - o.top;
+        if (r <= 0 || l >= w || b <= 0 || t >= h) continue; // outside the stage (the docked index)
+        if (b - t > h * 0.3 && l > w * 0.6) m.r = Math.max(m.r, Math.min(w * 0.3, w - l));
+        else if (t < h * 0.3) m.t = Math.max(m.t, Math.min(h * 0.3, b));
+        else if (b > h * 0.7) m.b = Math.max(m.b, Math.min(h * 0.25, h - t));
+      }
+    }
+    return {
+      x0: -1 + (2 * (m.l + HOME_PAD)) / w,
+      x1: 1 - (2 * (m.r + HOME_PAD)) / w,
+      y0: -1 + (2 * (m.b + HOME_PAD)) / h,
+      y1: 1 - (2 * (m.t + HOME_PAD)) / h,
+    };
+  }
+  function fitHome(w, h) {
+    const a = clearArea(w, h);
+    frameCam.aspect = camera.aspect;
+    frameCam.updateProjectionMatrix();
+    const target = new THREE.Vector3(cx, TOP, cz);
+    let dist = fitDistance(radius);
+    // a few rounds of: project, re-centre the target on the clear area, then
+    // scale the distance to the spare room
+    for (let i = 0; i < 8; i++) {
+      frameCam.position.copy(posFor(target, dist, HOME_POLAR, 0));
+      frameCam.lookAt(target);
+      frameCam.updateMatrixWorld();
+      let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+      for (const p of framePts) {
+        pv.copy(p).project(frameCam);
+        x0 = Math.min(x0, pv.x);
+        x1 = Math.max(x1, pv.x);
+        y0 = Math.min(y0, pv.y);
+        y1 = Math.max(y1, pv.y);
+      }
+      // screen x runs along +x; screen up runs along −z on the ground (the
+      // opening view looks north), stretched by the camera's slant
+      const k = dist * tanHalf;
+      target.x += (((x0 + x1) - (a.x0 + a.x1)) / 2) * k * camera.aspect;
+      target.z -= (((y0 + y1) - (a.y0 + a.y1)) / 2) * k / Math.cos(HOME_POLAR);
+      dist *= Math.max((x1 - x0) / (a.x1 - a.x0), (y1 - y0) / (a.y1 - a.y0));
+    }
+    homeTarget.copy(target);
+    homeDist = dist;
+  }
+  const homeDistance = () => homeDist;
 
   // ---- time of day: blend from the current light to a preset over ~1.2 s;
   // the night factor lights windows, lamps and stars
@@ -626,9 +690,9 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     const w = stage.clientWidth, h = stage.clientHeight;
     if (!w || !h) return;
     renderer.setSize(w, h, false);
-    stageW = w;
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    fitHome(w, h);
     links.resize(w, h);
     measured = false; // plate font size can change at the mobile breakpoint
     // Portrait screens frame the islands from farther away; keep the haze
