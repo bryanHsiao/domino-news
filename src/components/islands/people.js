@@ -164,18 +164,8 @@ export function createCrowd(THREE, scene, material, count, { rnd, shadow = false
     meshes.box.instanceColor.needsUpdate = true;
   }
 
-  // recolour person i's shirt (torso + both arms), e.g. to badge a door-person
-  // with its article's language; skin, hair and trousers stay as they were
-  function tintShirt(i, hex) {
-    meshes.torso.setColorAt(i, c.set(hex));
-    meshes.arms.setColorAt(i * 2, c.set(hex));
-    meshes.arms.setColorAt(i * 2 + 1, c.set(hex));
-    meshes.torso.instanceColor.needsUpdate = true;
-    meshes.arms.instanceColor.needsUpdate = true;
-  }
-
   // parts a pointer can hit, one instance per person
   const pickMeshes = [meshes.torso, meshes.head, meshes.hair];
 
-  return { pose, commit, tintBox, tintShirt, people, pickMeshes, meshes: Object.values(meshes) };
+  return { pose, commit, tintBox, people, pickMeshes, meshes: Object.values(meshes) };
 }

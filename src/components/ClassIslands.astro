@@ -83,7 +83,7 @@ const T =
         pauseTip: '暫停行人、船與海面',
         listTitle: '所有島嶼',
         noMatch: '沒有符合的類別',
-        sub: '每個 category 一座島，類別越多島越大；有關聯的島之間才有橋，橋越寬關聯越多，捧箱子的人在有關聯的島之間搬運。門口的人一個代表一篇文章，依語言上色（LotusScript／Java／SSJS）；XPages／網頁層概念文另成一座島。拖曳轉看、滾輪縮放；點島看清單與關聯線，點房子看類別介紹，點門口的人看文章預覽，指著房子或橋看關聯。',
+        sub: '每個 category 一座島，類別越多島越大；有關聯的島之間才有橋，橋越寬關聯越多，捧箱子的人在有關聯的島之間搬運。有 Java／SSJS 文章的房子屋頂插一支對應顏色的旗（藍＝Java、綠＝SSJS）；門口的人一個代表一篇文章；XPages／網頁層概念文另成一座島。拖曳轉看、滾輪縮放；點島看清單與關聯線，點房子看類別介紹，點門口的人看文章預覽，指著房子或橋看關聯。',
         covered: '已涵蓋',
         search: '搜尋類別…',
         reset: '重設視角',
@@ -91,7 +91,7 @@ const T =
         legUi: 'UI',
         legUn: '尚未寫成文章',
         legKey: 'key class',
-        legLangTip: '門口的人依文章語言上色：LotusScript／Java／SSJS',
+        legFlagTip: '有 Java／SSJS 文章的房子，屋頂插一支對應顏色的旗',
         hint: '拖曳轉看 · 點島看清單',
         panelCount: ' 個類別',
         panelCountIsland: ' 篇文章',
@@ -152,7 +152,7 @@ const T =
         pauseTip: 'Pause the walkers, boats and water',
         listTitle: 'All islands',
         noMatch: 'No matching class',
-        sub: 'One island per category, bigger for more classes; bridges only join related islands, wider for more links, and porters carry boxes between related islands. Each person at a door is one article, coloured by its language (LotusScript / Java / SSJS); the web-layer XPages posts form their own island. Drag to orbit, scroll to zoom; click an island for its list and relation lines, a house for the class overview, a person at its door for an article preview; hover a house or bridge for its links.',
+        sub: 'One island per category, bigger for more classes; bridges only join related islands, wider for more links, and porters carry boxes between related islands. A house with a Java / SSJS article flies a roof flag in that colour (blue = Java, green = SSJS); each person at a door is one article; the web-layer XPages posts form their own island. Drag to orbit, scroll to zoom; click an island for its list and relation lines, a house for the class overview, a person at its door for an article preview; hover a house or bridge for its links.',
         covered: 'covered',
         search: 'Search classes…',
         reset: 'Reset view',
@@ -160,7 +160,7 @@ const T =
         legUi: 'UI',
         legUn: 'Not written yet',
         legKey: 'Key class',
-        legLangTip: 'Residents are coloured by their article language: LotusScript / Java / SSJS',
+        legFlagTip: 'A house with a Java / SSJS article flies a flag in that colour',
         hint: 'Drag to orbit · tap an island',
         panelCount: ' classes',
         panelCountIsland: ' posts',
@@ -306,9 +306,8 @@ const statTip =
       <span><i class="sw un"></i>{T.legUn}</span>
       <span><i class="sw key"></i>{T.legKey}</span>
       <span class="ci-leg-sep" aria-hidden="true"></span>
-      <span title={T.legLangTip}><i class="sw lang ls"></i>LotusScript</span>
-      <span title={T.legLangTip}><i class="sw lang java"></i>Java</span>
-      <span title={T.legLangTip}><i class="sw lang ssjs"></i>SSJS</span>
+      <span title={T.legFlagTip}><i class="sw flag java"></i>Java</span>
+      <span title={T.legFlagTip}><i class="sw flag ssjs"></i>SSJS</span>
     </div>
   </div>
 
@@ -468,15 +467,15 @@ const statTip =
   #ci .dot.un, #ci .sw.un { background: var(--roof-un); }
   #ci .dot.key, #ci .sw.key { background: var(--roof-key); }
 
-  /* Language = the colour of a door-person (scene.js LANG_SHIRT). Shown as a
-     round swatch so it never reads as a roof colour (a backend roof and a Java
-     person are both blue — the shape is what tells them apart), and as a small
-     dot on the article rows in the panel. The `.ci-legend` scope is needed so
-     this wins over the roof-triangle `.ci-legend .sw` rule below. */
-  #ci .ci-legend .sw.lang { clip-path: none; border-radius: 50%; width: 10px; height: 10px; vertical-align: -1px; }
-  #ci .sw.lang.ls, #ci .pdot.ls { background: #db6a41; }
-  #ci .sw.lang.java, #ci .pdot.java { background: #4f86c6; }
-  #ci .sw.lang.ssjs, #ci .pdot.ssjs { background: #4fa36b; }
+  /* A house with a Java / SSJS article flies a roof flag in that colour
+     (world.js). The legend shows them as little pennants — a shape distinct
+     from the roof-meaning triangles. The same colours mark each article row in
+     the panel, there as a small round dot (.pdot). The `.ci-legend` scope is
+     needed so the pennant shape wins over the `.ci-legend .sw` triangle below. */
+  #ci .ci-legend .sw.flag { clip-path: polygon(0 0, 100% 42%, 0 72%); border-radius: 0; width: 12px; height: 12px; vertical-align: -1px; }
+  #ci .sw.flag.java, #ci .pdot.java { background: #4f86c6; }
+  #ci .sw.flag.ssjs, #ci .pdot.ssjs { background: #4fa36b; }
+  #ci .pdot.ls { background: #db6a41; }
   #ci .ci-leg-sep { width: 1px; align-self: stretch; margin: 1px 2px; background: var(--hair); }
   #ci .ci-panel .part i .pdot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; vertical-align: 0; }
 
