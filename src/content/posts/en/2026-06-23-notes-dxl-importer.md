@@ -14,7 +14,7 @@ sources:
   - title: "NotesDXLExporter class — HCL Domino Designer 14.5"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLEXPORTER_CLASS.html"
   - title: "Import method (NotesDXLImporter) — HCL Domino Designer 14.5"
-    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_IMPORT_METHOD_DXLIMPORTER.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_IMPORT_METHOD_IMPORTER.html"
 relatedJava: ["DxlImporter"]
 relatedSsjs: ["DxlImporter"]
 cover: "/covers/notes-dxl-importer.webp"

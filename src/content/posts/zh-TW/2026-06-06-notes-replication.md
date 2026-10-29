@@ -13,7 +13,7 @@ sources:
   - title: "NotesReplicationEntry class — HCL Domino Designer 14.5"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESREPLICATIONENTRY_CLASS.html"
   - title: "ReplicationInfo property (NotesDatabase) — HCL Domino Designer 14.5"
-    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_REPLICATIONINFO_PROPERTY_DB.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_REPLICATIONINFO_PROPERTY_7679_ABOUT.html"
 relatedJava: ["Replication", "ReplicationEntry"]
 relatedSsjs: []
 cover: "/covers/notes-replication.webp"

@@ -12,7 +12,7 @@ sources:
   - title: "NotesSession class (LotusScript) — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSESSION_CLASS.html"
   - title: "NotesSession.Evaluate method — HCL Domino 14.5 Designer Help"
-    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EVALUATE_METHOD.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EVALUATE_METHOD_SESSION_COM.html"
   - title: "NotesSession.GetEnvironmentString method — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETENVIRONMENTSTRING_METHOD.html"
   - title: "Examples: OnBehalfOf property (NotesAgent) — HCL Domino Designer Help"
@@ -85,7 +85,7 @@ HCL 文件明確規定（[NotesSession 文件](https://help.hcl-software.com/dom
 | `GetDbDirectory(server)` | 拿到某 server 的 NotesDbDirectory，可以走訪該 server 上所有 db |
 | `CreateDateTime(s)` | 從字串建 NotesDateTime |
 | `CreateLog(name)` | 建 NotesLog 物件（給 agent 寫 log 用） |
-| [`Evaluate(formula, [doc])`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EVALUATE_METHOD.html) | **從 LotusScript 跑 @Formula** — Evaluates a Domino formula |
+| [`Evaluate(formula, [doc])`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EVALUATE_METHOD_SESSION_COM.html) | **從 LotusScript 跑 @Formula** — Evaluates a Domino formula |
 | `FreeTimeSearch` | "Searches for free time slots for calendaring and scheduling" |
 | [`GetEnvironmentString(name)`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETENVIRONMENTSTRING_METHOD.html) | 讀 notes.ini 的 string variable |
 | `SetEnvironmentVar(name, value)` | 寫 notes.ini variable |

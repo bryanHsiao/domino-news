@@ -13,7 +13,7 @@ sources:
   - title: "NotesMIMEHeader class — HCL Domino Designer 14.5"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESMIMEHEADER_CLASS.html"
   - title: "GetMIMEEntity method (NotesDocument) — HCL Domino Designer 14.5"
-    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETMIMEENTITY_METHOD.html"
+    url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GETMIMEENTITY_METHOD_DOC.html"
 relatedJava: ["MIMEEntity", "MIMEHeader"]
 relatedSsjs: []
 cover: "/covers/notes-mime-entity.webp"
