@@ -12,6 +12,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildCoverageReport, type ClassRef, type PostMeta } from './lib/coverage.js';
+import { loadMapPosts, computeMapLanguages } from './lib/mapLanguages.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -115,31 +116,110 @@ async function main() {
   }
   lines.push('');
 
-  // Cross-language: Java
+  // Cross-language tracker.
+  //
+  // Two separate things, kept apart so the "gap" stays accurate as single-
+  // language articles land:
+  //   - DEDICATED articles: a class that has its own Java / SSJS deep-dive,
+  //     from `coversClass` + `apiLang` frontmatter (via mapLanguages). This is
+  //     the authoritative "already written" signal.
+  //   - REFERENCED counterparts: Java / SSJS counterparts an LS post points to
+  //     via relatedJava / relatedSsjs. On its own that does NOT mean an article
+  //     exists — it's just a pointer. The gap = referenced − dedicated.
+  const mapLang = computeMapLanguages(await loadMapPosts(), new Set(r.classes.map((c) => c.id)));
+  const postBySlug = new Map(r.posts.map((p) => [p.slug, p]));
+  const slugLink = (slug: string): string => {
+    const p = postBySlug.get(slug);
+    return p ? postLink(p) : `[${slug}](https://bryanhsiao.github.io/domino-news/posts/${slug}/)`;
+  };
+  const writtenJavaNodes = new Set([...mapLang.lamps].filter(([, l]) => l.java.length).map(([id]) => id));
+  const writtenSsjsNodes = new Set([...mapLang.lamps].filter(([, l]) => l.ssjs.length).map(([id]) => id));
+
+  // Map a relatedJava / relatedSsjs counterpart NAME to its catalogue node id,
+  // so we can tell whether that counterpart already has a dedicated article.
+  // Names drop the `Notes` prefix and vary in case (`DxlExporter` vs node
+  // `NotesDXLExporter`); SSJS names are lowercase (`session`). A few can't be
+  // derived by rule and need an explicit alias.
+  const NAME_NODE_ALIASES: Record<string, string> = {
+    llmreq: 'NotesLLMRequest',
+    llmres: 'NotesLLMRequest',
+  };
+  const classIdsLower = new Map(r.classes.map((c) => [c.id.toLowerCase(), c.id]));
+  const nodeIdForCounterpart = (name: string): string | null => {
+    const lc = name.toLowerCase();
+    return NAME_NODE_ALIASES[lc] ?? classIdsLower.get(lc) ?? classIdsLower.get('notes' + lc) ?? null;
+  };
+  const isWritten = (name: string, writtenNodes: Set<string>): boolean => {
+    const id = nodeIdForCounterpart(name);
+    return id != null && writtenNodes.has(id);
+  };
+
   lines.push('## Cross-language tracker');
   lines.push('');
-  lines.push('Class names recorded in posts\' `relatedJava` / `relatedSsjs` frontmatter — these are the Java / SSJS counterparts that LS posts already point to but that don\'t yet have their own dedicated article. They\'re the natural pool of "topics worth a single-language deep-dive next."');
+  lines.push('**Dedicated** = the class has its own Java / SSJS deep-dive (`coversClass` + `apiLang` frontmatter — the authoritative "already written" list). **Gap** = Java / SSJS counterparts that LS posts point to (via `relatedJava` / `relatedSsjs`) but that do **not** yet have a dedicated article — the natural pool of "topics worth a single-language deep-dive next." A `relatedJava` pointer alone is NOT an article; only `coversClass` + `apiLang` counts as written.');
   lines.push('');
 
-  if (r.javaMentions.size > 0) {
-    lines.push('### Java class mentions');
+  const javaGap = [...r.javaMentions.entries()].filter(([name]) => !isWritten(name, writtenJavaNodes)).sort();
+  const ssjsGap = [...r.ssjsMentions.entries()].filter(([name]) => !isWritten(name, writtenSsjsNodes)).sort();
+  lines.push(
+    `**Summary** — Java: **${writtenJavaNodes.size}** classes have a dedicated article, **${javaGap.length}** referenced counterparts still in the gap. ` +
+      `SSJS: **${writtenSsjsNodes.size}** dedicated, **${ssjsGap.length}** in the gap` +
+      (mapLang.xpages.length ? `, plus **${mapLang.xpages.length}** XPages / web-layer posts (not tied to a backend class)` : '') +
+      '.'
+  );
+  if (mapLang.unknownClassIds.length) {
+    lines.push('');
+    lines.push(`> ⚠️ \`coversClass\` ids that are not catalogue nodes (fix the frontmatter): ${mapLang.unknownClassIds.map((s) => `\`${s}\``).join(', ')}`);
+  }
+  lines.push('');
+
+  // Dedicated articles (authoritative, node-keyed).
+  const dedicated = [...mapLang.lamps.entries()].filter(([, l]) => l.java.length || l.ssjs.length);
+  if (dedicated.length) {
+    lines.push('### Dedicated Java / SSJS articles');
+    lines.push('');
+    lines.push('| Class | Java | SSJS |');
+    lines.push('|---|---|---|');
+    dedicated.sort((a, b) => a[0].localeCompare(b[0]));
+    for (const [id, l] of dedicated) {
+      const java = l.java.length ? l.java.map(slugLink).join(', ') : '—';
+      const ssjs = l.ssjs.length ? l.ssjs.map(slugLink).join(', ') : '—';
+      lines.push(`| \`${id}\` | ${java} | ${ssjs} |`);
+    }
+    lines.push('');
+  }
+
+  if (mapLang.xpages.length) {
+    lines.push(`### XPages / web-layer posts (${mapLang.xpages.length})`);
+    lines.push('');
+    lines.push('These cover the XPages / web application layer, which has no LotusScript back-end class in the catalogue — so they light the map\'s XPages island, not a class node.');
+    lines.push('');
+    lines.push('| Post | Lang |');
+    lines.push('|---|---|');
+    for (const { slug, apiLang } of [...mapLang.xpages].sort((a, b) => a.slug.localeCompare(b.slug))) {
+      lines.push(`| ${slugLink(slug)} | ${apiLang} |`);
+    }
+    lines.push('');
+  }
+
+  // Gap pool (referenced but not yet written).
+  if (javaGap.length) {
+    lines.push(`### Java counterparts still in the gap (${javaGap.length})`);
     lines.push('');
     lines.push('| Java class | LS posts that point to it |');
     lines.push('|---|---|');
-    const sortedJava = [...r.javaMentions.entries()].sort();
-    for (const [name, posts] of sortedJava) {
+    for (const [name, posts] of javaGap) {
       lines.push(`| \`${name}\` | ${posts.map(postLink).join(', ')} |`);
     }
     lines.push('');
   }
 
-  if (r.ssjsMentions.size > 0) {
-    lines.push('### SSJS class mentions');
+  if (ssjsGap.length) {
+    lines.push(`### SSJS counterparts still in the gap (${ssjsGap.length})`);
     lines.push('');
     lines.push('| SSJS class | LS posts that point to it |');
     lines.push('|---|---|');
-    const sortedSsjs = [...r.ssjsMentions.entries()].sort();
-    for (const [name, posts] of sortedSsjs) {
+    for (const [name, posts] of ssjsGap) {
       lines.push(`| \`${name}\` | ${posts.map(postLink).join(', ')} |`);
     }
     lines.push('');

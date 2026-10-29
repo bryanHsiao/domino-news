@@ -47,7 +47,7 @@
 | [NotesCalendarEntry](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDARENTRY_CLASS.html) | Calendar | [notes-calendar](https://bryanhsiao.github.io/domino-news/posts/notes-calendar/) | 2026-06-03 |
 | [NotesCalendarNotice](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCALENDARNOTICE_CLASS.html) | Calendar | [notes-calendar](https://bryanhsiao.github.io/domino-news/posts/notes-calendar/) | 2026-06-03 |
 | [NotesColorObject](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESCOLOROBJECT_CLASS.html) | Session | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) | 2026-07-01 |
-| [NotesDatabase](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATABASE_CLASS.html) | Database | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/), [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [domino-search-decision](https://bryanhsiao.github.io/domino-news/posts/domino-search-decision/), [notes-db-directory](https://bryanhsiao.github.io/domino-news/posts/notes-db-directory/), [notes-form](https://bryanhsiao.github.io/domino-news/posts/notes-form/), [notes-dxl-importer](https://bryanhsiao.github.io/domino-news/posts/notes-dxl-importer/), [profile-documents](https://bryanhsiao.github.io/domino-news/posts/profile-documents/), [notes-document-locking](https://bryanhsiao.github.io/domino-news/posts/notes-document-locking/), [notes-database-ft-index](https://bryanhsiao.github.io/domino-news/posts/notes-database-ft-index/), [notes-ui-database](https://bryanhsiao.github.io/domino-news/posts/notes-ui-database/), [notes-document-ids](https://bryanhsiao.github.io/domino-news/posts/notes-document-ids/) | 2026-04-29 |
+| [NotesDatabase](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATABASE_CLASS.html) | Database | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/), [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [domino-search-decision](https://bryanhsiao.github.io/domino-news/posts/domino-search-decision/), [notes-replication](https://bryanhsiao.github.io/domino-news/posts/notes-replication/), [notes-db-directory](https://bryanhsiao.github.io/domino-news/posts/notes-db-directory/), [notes-form](https://bryanhsiao.github.io/domino-news/posts/notes-form/), [notes-dxl-importer](https://bryanhsiao.github.io/domino-news/posts/notes-dxl-importer/), [profile-documents](https://bryanhsiao.github.io/domino-news/posts/profile-documents/), [notes-document-locking](https://bryanhsiao.github.io/domino-news/posts/notes-document-locking/), [notes-database-ft-index](https://bryanhsiao.github.io/domino-news/posts/notes-database-ft-index/), [notes-ui-database](https://bryanhsiao.github.io/domino-news/posts/notes-ui-database/), [notes-document-ids](https://bryanhsiao.github.io/domino-news/posts/notes-document-ids/) | 2026-04-29 |
 | [NotesDateRange](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATERANGE_CLASS.html) | Item | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) | 2026-05-25 |
 | [NotesDateTime](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDATETIME_CLASS.html) | Item | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/), [notes-datetime-timezone](https://bryanhsiao.github.io/domino-news/posts/notes-datetime-timezone/), [notes-ui-scheduler](https://bryanhsiao.github.io/domino-news/posts/notes-ui-scheduler/) | 2026-05-25 |
 | [NotesDbDirectory](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDBDIRECTORY_CLASS.html) | Session | [notes-db-directory](https://bryanhsiao.github.io/domino-news/posts/notes-db-directory/) | 2026-06-14 |
@@ -141,36 +141,61 @@
 
 ## Cross-language tracker
 
-Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — these are the Java / SSJS counterparts that LS posts already point to but that don't yet have their own dedicated article. They're the natural pool of "topics worth a single-language deep-dive next."
+**Dedicated** = the class has its own Java / SSJS deep-dive (`coversClass` + `apiLang` frontmatter — the authoritative "already written" list). **Gap** = Java / SSJS counterparts that LS posts point to (via `relatedJava` / `relatedSsjs`) but that do **not** yet have a dedicated article — the natural pool of "topics worth a single-language deep-dive next." A `relatedJava` pointer alone is NOT an article; only `coversClass` + `apiLang` counts as written.
 
-### Java class mentions
+**Summary** — Java: **8** classes have a dedicated article, **48** referenced counterparts still in the gap. SSJS: **2** dedicated, **42** in the gap, plus **10** XPages / web-layer posts (not tied to a backend class).
+
+### Dedicated Java / SSJS articles
+
+| Class | Java | SSJS |
+|---|---|---|
+| `NotesAgent` | [java-agent-anatomy](https://bryanhsiao.github.io/domino-news/posts/java-agent-anatomy/) | — |
+| `NotesDateTime` | [java-datetime](https://bryanhsiao.github.io/domino-news/posts/java-datetime/) | — |
+| `NotesDocument` | [java-document-items](https://bryanhsiao.github.io/domino-news/posts/java-document-items/) | — |
+| `NotesDominoQuery` | [java-dql-dominoquery](https://bryanhsiao.github.io/domino-news/posts/java-dql-dominoquery/) | — |
+| `NotesDXLExporter` | [java-dxl-exporter-importer](https://bryanhsiao.github.io/domino-news/posts/java-dxl-exporter-importer/) | — |
+| `NotesDXLImporter` | [java-dxl-exporter-importer](https://bryanhsiao.github.io/domino-news/posts/java-dxl-exporter-importer/) | — |
+| `NotesItem` | — | [ssjs-vector-multivalue](https://bryanhsiao.github.io/domino-news/posts/ssjs-vector-multivalue/) |
+| `NotesLLMRequest` | [domino-iq-timeout-java-ssjs](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-java-ssjs/) | — |
+| `NotesSession` | [java-session-notesfactory](https://bryanhsiao.github.io/domino-news/posts/java-session-notesfactory/) | [ssjs-session-evaluate-formula](https://bryanhsiao.github.io/domino-news/posts/ssjs-session-evaluate-formula/) |
+
+### XPages / web-layer posts (10)
+
+These cover the XPages / web application layer, which has no LotusScript back-end class in the catalogue — so they light the map's XPages island, not a class node.
+
+| Post | Lang |
+|---|---|
+| [xpages-attachment-multi-delete](https://bryanhsiao.github.io/domino-news/posts/xpages-attachment-multi-delete/) | ssjs |
+| [xpages-binding-rendered-loaded-performance](https://bryanhsiao.github.io/domino-news/posts/xpages-binding-rendered-loaded-performance/) | ssjs |
+| [xpages-getdocument-applychanges](https://bryanhsiao.github.io/domino-news/posts/xpages-getdocument-applychanges/) | ssjs |
+| [xpages-managed-beans](https://bryanhsiao.github.io/domino-news/posts/xpages-managed-beans/) | ssjs |
+| [xpages-multi-column-category-document](https://bryanhsiao.github.io/domino-news/posts/xpages-multi-column-category-document/) | ssjs |
+| [xpages-partial-refresh-execution](https://bryanhsiao.github.io/domino-news/posts/xpages-partial-refresh-execution/) | ssjs |
+| [xpages-save-conflicts](https://bryanhsiao.github.io/domino-news/posts/xpages-save-conflicts/) | ssjs |
+| [xpages-scope-variables](https://bryanhsiao.github.io/domino-news/posts/xpages-scope-variables/) | ssjs |
+| [xpages-sessionassigner](https://bryanhsiao.github.io/domino-news/posts/xpages-sessionassigner/) | ssjs |
+| [xpages-ssjs-runonserver-stale-document](https://bryanhsiao.github.io/domino-news/posts/xpages-ssjs-runonserver-stale-document/) | ssjs |
+
+### Java counterparts still in the gap (48)
 
 | Java class | LS posts that point to it |
 |---|---|
 | `ACL` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
 | `ACLEntry` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
 | `AdministrationProcess` | [notes-administration-process](https://bryanhsiao.github.io/domino-news/posts/notes-administration-process/) |
-| `Agent` | [agent-run-as-identity](https://bryanhsiao.github.io/domino-news/posts/agent-run-as-identity/), [notes-agent](https://bryanhsiao.github.io/domino-news/posts/notes-agent/) |
 | `ColorObject` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
 | `DOMParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/) |
 | `Database` | [notes-database-ft-index](https://bryanhsiao.github.io/domino-news/posts/notes-database-ft-index/), [notes-document-locking](https://bryanhsiao.github.io/domino-news/posts/notes-document-locking/), [profile-documents](https://bryanhsiao.github.io/domino-news/posts/profile-documents/), [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
 | `DateRange` | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) |
-| `DateTime` | [notes-datetime-timezone](https://bryanhsiao.github.io/domino-news/posts/notes-datetime-timezone/), [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) |
 | `DbDirectory` | [notes-db-directory](https://bryanhsiao.github.io/domino-news/posts/notes-db-directory/) |
 | `Directory` | [notes-directory](https://bryanhsiao.github.io/domino-news/posts/notes-directory/) |
 | `DirectoryNavigator` | [notes-directory](https://bryanhsiao.github.io/domino-news/posts/notes-directory/) |
-| `Document` | [domino-unread-marks](https://bryanhsiao.github.io/domino-news/posts/domino-unread-marks/), [notes-document-ids](https://bryanhsiao.github.io/domino-news/posts/notes-document-ids/), [notes-document-save-conflict](https://bryanhsiao.github.io/domino-news/posts/notes-document-save-conflict/), [notes-document-locking](https://bryanhsiao.github.io/domino-news/posts/notes-document-locking/), [notes-document-computewithform](https://bryanhsiao.github.io/domino-news/posts/notes-document-computewithform/), [notes-response-documents](https://bryanhsiao.github.io/domino-news/posts/notes-response-documents/), [notes-document-sign-encrypt](https://bryanhsiao.github.io/domino-news/posts/notes-document-sign-encrypt/), [profile-documents](https://bryanhsiao.github.io/domino-news/posts/profile-documents/), [readers-authors-fields](https://bryanhsiao.github.io/domino-news/posts/readers-authors-fields/), [notes-document](https://bryanhsiao.github.io/domino-news/posts/notes-document/) |
 | `DocumentCollection` | [notes-document-collection](https://bryanhsiao.github.io/domino-news/posts/notes-document-collection/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
-| `DominoQuery` | [dql-execution-error-diagnostic](https://bryanhsiao.github.io/domino-news/posts/dql-execution-error-diagnostic/), [dql-view-date-column](https://bryanhsiao.github.io/domino-news/posts/dql-view-date-column/), [dql-production](https://bryanhsiao.github.io/domino-news/posts/dql-production/), [dql-pitfalls](https://bryanhsiao.github.io/domino-news/posts/dql-pitfalls/), [dql-getting-started](https://bryanhsiao.github.io/domino-news/posts/dql-getting-started/) |
-| `DxlExporter` | [embedded-view-cross-db-dxl](https://bryanhsiao.github.io/domino-news/posts/embedded-view-cross-db-dxl/), [dxl-round-trip-pitfalls](https://bryanhsiao.github.io/domino-news/posts/dxl-round-trip-pitfalls/), [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) |
-| `DxlImporter` | [embedded-view-cross-db-dxl](https://bryanhsiao.github.io/domino-news/posts/embedded-view-cross-db-dxl/), [dxl-round-trip-pitfalls](https://bryanhsiao.github.io/domino-news/posts/dxl-round-trip-pitfalls/), [notes-dxl-importer](https://bryanhsiao.github.io/domino-news/posts/notes-dxl-importer/) |
 | `EmbeddedObject` | [xpages-attachment-multi-delete](https://bryanhsiao.github.io/domino-news/posts/xpages-attachment-multi-delete/), [domino-attachments-bulk](https://bryanhsiao.github.io/domino-news/posts/domino-attachments-bulk/), [domino-attachments-three-ways](https://bryanhsiao.github.io/domino-news/posts/domino-attachments-three-ways/), [notes-embedded-object](https://bryanhsiao.github.io/domino-news/posts/notes-embedded-object/) |
 | `Form` | [notes-form](https://bryanhsiao.github.io/domino-news/posts/notes-form/) |
 | `IDVault` | [notes-id-vault](https://bryanhsiao.github.io/domino-news/posts/notes-id-vault/) |
 | `International` | [notes-international](https://bryanhsiao.github.io/domino-news/posts/notes-international/) |
 | `Item` | [readers-authors-fields](https://bryanhsiao.github.io/domino-news/posts/readers-authors-fields/), [domino-large-summary-field-too-large](https://bryanhsiao.github.io/domino-news/posts/domino-large-summary-field-too-large/) |
-| `LLMReq` | [domino-iq-timeout-java-ssjs](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-java-ssjs/), [domino-iq-timeout-streaming](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-streaming/), [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) |
-| `LLMRes` | [domino-iq-timeout-java-ssjs](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-java-ssjs/), [domino-iq-timeout-streaming](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-streaming/), [notes-llm-request](https://bryanhsiao.github.io/domino-news/posts/notes-llm-request/) |
 | `Log` | [notes-log](https://bryanhsiao.github.io/domino-news/posts/notes-log/) |
 | `MIMEEntity` | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) |
 | `MIMEHeader` | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) |
@@ -195,7 +220,6 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `RichTextTab` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
 | `RichTextTable` | [notes-rich-text-table](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-table/) |
 | `SAXParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/) |
-| `Session` | [domino-environment-variables](https://bryanhsiao.github.io/domino-news/posts/domino-environment-variables/), [agent-run-as-identity](https://bryanhsiao.github.io/domino-news/posts/agent-run-as-identity/), [lotusscript-evaluate](https://bryanhsiao.github.io/domino-news/posts/lotusscript-evaluate/), [notes-calendar](https://bryanhsiao.github.io/domino-news/posts/notes-calendar/), [notes-session](https://bryanhsiao.github.io/domino-news/posts/notes-session/) |
 | `Stream` | [notes-stream-encoding](https://bryanhsiao.github.io/domino-news/posts/notes-stream-encoding/), [notes-stream](https://bryanhsiao.github.io/domino-news/posts/notes-stream/) |
 | `View` | [notes-view-autoupdate](https://bryanhsiao.github.io/domino-news/posts/notes-view-autoupdate/), [by-key-lookup-categorized-views](https://bryanhsiao.github.io/domino-news/posts/by-key-lookup-categorized-views/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/), [getalldocumentsbykey](https://bryanhsiao.github.io/domino-news/posts/getalldocumentsbykey/) |
 | `ViewColumn` | [notes-view-column](https://bryanhsiao.github.io/domino-news/posts/notes-view-column/) |
@@ -205,7 +229,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `XMLProcessor` | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) |
 | `XSLTransformer` | [notes-xsl-transformer](https://bryanhsiao.github.io/domino-news/posts/notes-xsl-transformer/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) |
 
-### SSJS class mentions
+### SSJS counterparts still in the gap (42)
 
 | SSJS class | LS posts that point to it |
 |---|---|
@@ -223,7 +247,6 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `EmbeddedObject` | [notes-embedded-object](https://bryanhsiao.github.io/domino-news/posts/notes-embedded-object/) |
 | `Form` | [notes-form](https://bryanhsiao.github.io/domino-news/posts/notes-form/) |
 | `International` | [notes-international](https://bryanhsiao.github.io/domino-news/posts/notes-international/) |
-| `Item` | [domino-large-summary-field-too-large](https://bryanhsiao.github.io/domino-news/posts/domino-large-summary-field-too-large/) |
 | `Name` | [notesname-formats](https://bryanhsiao.github.io/domino-news/posts/notesname-formats/), [notes-name](https://bryanhsiao.github.io/domino-news/posts/notes-name/) |
 | `Newsletter` | [notes-newsletter](https://bryanhsiao.github.io/domino-news/posts/notes-newsletter/) |
 | `NoteCollection` | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/) |
@@ -251,8 +274,6 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | `database` | [notes-database-ft-index](https://bryanhsiao.github.io/domino-news/posts/notes-database-ft-index/), [notes-document-locking](https://bryanhsiao.github.io/domino-news/posts/notes-document-locking/), [profile-documents](https://bryanhsiao.github.io/domino-news/posts/profile-documents/), [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
 | `document` | [domino-unread-marks](https://bryanhsiao.github.io/domino-news/posts/domino-unread-marks/), [notes-document-ids](https://bryanhsiao.github.io/domino-news/posts/notes-document-ids/), [notes-document-locking](https://bryanhsiao.github.io/domino-news/posts/notes-document-locking/), [notes-document-computewithform](https://bryanhsiao.github.io/domino-news/posts/notes-document-computewithform/), [notes-response-documents](https://bryanhsiao.github.io/domino-news/posts/notes-response-documents/), [notes-document-sign-encrypt](https://bryanhsiao.github.io/domino-news/posts/notes-document-sign-encrypt/), [profile-documents](https://bryanhsiao.github.io/domino-news/posts/profile-documents/), [readers-authors-fields](https://bryanhsiao.github.io/domino-news/posts/readers-authors-fields/), [notes-document](https://bryanhsiao.github.io/domino-news/posts/notes-document/) |
 | `documentCollection` | [notes-document-collection](https://bryanhsiao.github.io/domino-news/posts/notes-document-collection/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
-| `item` | [readers-authors-fields](https://bryanhsiao.github.io/domino-news/posts/readers-authors-fields/) |
-| `session` | [domino-environment-variables](https://bryanhsiao.github.io/domino-news/posts/domino-environment-variables/), [agent-run-as-identity](https://bryanhsiao.github.io/domino-news/posts/agent-run-as-identity/), [lotusscript-evaluate](https://bryanhsiao.github.io/domino-news/posts/lotusscript-evaluate/), [notes-session](https://bryanhsiao.github.io/domino-news/posts/notes-session/) |
 | `view` | [notes-view-autoupdate](https://bryanhsiao.github.io/domino-news/posts/notes-view-autoupdate/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
 
 ## Per-post coverage summary
@@ -407,7 +428,7 @@ Class names recorded in posts' `relatedJava` / `relatedSsjs` frontmatter — the
 | [notes-name](https://bryanhsiao.github.io/domino-news/posts/notes-name/) | `NotesName` | `Name` | `Name` |
 | [notes-gps-nomad](https://bryanhsiao.github.io/domino-news/posts/notes-gps-nomad/) | `NotesGPS`, `NotesGPSPosition`, `NotesGPSCoordinates` | — | — |
 | [notes-log](https://bryanhsiao.github.io/domino-news/posts/notes-log/) | `NotesLog` | `Log` | — |
-| [notes-replication](https://bryanhsiao.github.io/domino-news/posts/notes-replication/) | `NotesReplication`, `NotesReplicationEntry` | `Replication`, `ReplicationEntry` | — |
+| [notes-replication](https://bryanhsiao.github.io/domino-news/posts/notes-replication/) | `NotesDatabase`, `NotesReplication`, `NotesReplicationEntry` | `Replication`, `ReplicationEntry` | — |
 | [notes-directory](https://bryanhsiao.github.io/domino-news/posts/notes-directory/) | `NotesSession`, `NotesDirectory`, `NotesDirectoryNavigator` | `Directory`, `DirectoryNavigator` | — |
 | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) | `NotesDocument`, `NotesMIMEEntity`, `NotesMIMEHeader` | `MIMEEntity`, `MIMEHeader` | — |
 | [notes-calendar](https://bryanhsiao.github.io/domino-news/posts/notes-calendar/) | `NotesCalendar`, `NotesCalendarEntry`, `NotesCalendarNotice` | `Session` | — |
