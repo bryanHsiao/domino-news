@@ -5,6 +5,7 @@ import ClassDirectory from '../../components/ClassDirectory.astro';
 import ClassIslands from '../../components/ClassIslands.astro';
 import { useTranslations, localizedPath } from '../../i18n/ui';
 import { buildCoverageReport } from '../../../scripts/lib/coverage';
+import { classArticles } from '../../lib/classArticles';
 import rawData from '../../../data/ls_classes.json';
 
 const lang = 'en' as const;
@@ -38,9 +39,11 @@ const links = raw.links.map((l) => ({
 }));
 const data = { nodes, links };
 const coveredCount = nodes.filter((n) => n.url).length;
+// main articles per class, for the islands view's article previews
+const articles = await classArticles(report, lang);
 ---
 
-<BaseLayout lang={lang} title={t('nav.map')} description="An interactive map of HCL Domino's LotusScript classes — readable cards grouped by category; click a card to see what it returns and what returns it, and open the article for classes already written. Toggle to a relationship graph too.">
+<BaseLayout lang={lang} title={t('nav.map')} description="HCL Domino Class Map: classes and their links across LotusScript, Java and SSJS — readable cards grouped by category; click a card to see what it returns and what returns it, and open the article for classes already written. Switch to a relationship graph or 3D islands too.">
   <div class="map-tabs" role="tablist" aria-label="view switch">
     <button class="map-tab on" data-view="dir" type="button"><span class="mt-ic" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15"><path d="M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg></span><span class="mt-full">Grouped</span><span class="mt-short">Cards</span></button>
     <button class="map-tab" data-view="graph" type="button"><span class="mt-ic" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15"><path d="M5.2 5.4l1.9 5M10.8 5.4l-1.9 5M5.6 3.8h4.8" stroke="currentColor" stroke-width="1.4"></path><circle cx="3.6" cy="3.8" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle><circle cx="12.4" cy="3.8" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle><circle cx="8" cy="12.4" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle></svg></span><span class="mt-full">Graph</span><span class="mt-short">Graph</span></button>
@@ -54,7 +57,7 @@ const coveredCount = nodes.filter((n) => n.url).length;
     <ClassMap lang={lang} data={data} coveredCount={coveredCount} total={nodes.length} />
   </div>
   <div id="mv-islands" hidden>
-    <ClassIslands lang={lang} data={data} coveredCount={coveredCount} total={nodes.length} />
+    <ClassIslands lang={lang} data={data} articles={articles} coveredCount={coveredCount} total={nodes.length} />
   </div>
 </BaseLayout>
 
@@ -64,7 +67,8 @@ const coveredCount = nodes.filter((n) => n.url).length;
   @media (min-width: 761px) {
     .map-tabs { display: inline-flex; gap: 4px; margin: 0 0 12px; padding: 4px; border: 1px solid var(--color-border, #e2e0d8); border-radius: 11px; background: var(--color-surface, #fff); }
     .map-tab { font: inherit; font-size: 0.88rem; font-weight: 600; padding: 7px 16px; border: 0; border-radius: 8px; background: transparent; color: var(--color-text-muted, #6b6b6b); cursor: pointer; }
-    .map-tab.on { background: var(--color-brand-dark, #0a0a0a); color: #fff; }
+    /* ink, not --color-brand-dark: that one turns light in dark mode */
+    .map-tab.on { background: #211d1d; color: #fff8f4; }
     .mt-ic, .mt-short { display: none; }
   }
   #mv-dir[hidden], #mv-graph[hidden], #mv-islands[hidden] { display: none; }
@@ -103,8 +107,7 @@ const coveredCount = nodes.filter((n) => n.url).length;
   @media (min-width: 761px) and (max-width: 1279px) {
     html.map-fullscreen main:has(> .map-tabs) { padding-top: 0; }
     html.map-fullscreen .map-tabs { position: fixed; z-index: 6; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; white-space: nowrap; margin: 0; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.22); }
-    html.map-fullscreen #ci .ci-legend, html.map-fullscreen #cm .cm-legend { bottom: 66px; }
-    html.map-fullscreen #ci .ci-hint { bottom: 108px; }
+    html.map-fullscreen #cm .cm-legend { bottom: 66px; }
   }
   /* Phones, every view: like the reference site, each view has a brand card
      top-left and a column of small buttons top-right (its own tools, marked
@@ -124,6 +127,23 @@ const coveredCount = nodes.filter((n) => n.url).length;
     main:has(> .map-tabs) { padding-top: 0; }
     .map-tabs { position: absolute; z-index: 30; top: calc(var(--map-hdr, 64px) + 14px); left: 50%; transform: translateX(-50%); margin: 0; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.16); }
     #cd .cd-head, #cm .cm-top { min-height: 74px; }
+    /* the title block never runs under the floating view switch: the
+       subtitle gives way (one line, cut short) */
+    #cd .cd-title, #cm .cm-title { max-width: calc(50vw - 170px); }
+    #cd .cd-sub, #cm .cm-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  }
+  /* Islands view, tablets and wider: the scene shares the width with the
+     index docked on the right (ClassIslands sets --ci-ix-w), and its view
+     toolbar takes the top centre, so the view switch sits compact in the
+     scene's top-right corner, like the reference's corner buttons. */
+  @media (min-width: 761px) {
+    html[data-map-view='islands'] .map-tabs { position: fixed; z-index: 30; top: calc(var(--map-hdr, 64px) + 14px); right: calc(var(--ci-ix-w, 300px) + 14px); left: auto; bottom: auto; transform: none; margin: 0; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.16); }
+    /* the scene is always daylight: cream and ink whatever the site theme */
+    html[data-map-view='islands'] .map-tabs { background: rgba(255, 248, 244, 0.95); border-color: rgba(33, 29, 29, 0.18); }
+    html[data-map-view='islands'] .map-tab { display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px; color: #78685e; }
+    html[data-map-view='islands'] .map-tab.on { background: #211d1d; color: #fff8f4; }
+    html[data-map-view='islands'] .map-tab .mt-full { display: none; }
+    html[data-map-view='islands'] .map-tab .mt-ic, html[data-map-view='islands'] .map-tab .mt-short { display: inline-flex; }
   }
 </style>
 
@@ -147,6 +167,7 @@ const coveredCount = nodes.filter((n) => n.url).length;
     function initMapTabs() {
       // <html> survives view-transition navigation: start every page unlocked
       document.documentElement.classList.remove('map-fullscreen');
+      delete document.documentElement.dataset.mapView;
       var tabs = document.querySelectorAll('.map-tab');
       if (!tabs.length) return;
       var dir = document.getElementById('mv-dir'), graph = document.getElementById('mv-graph'), islands = document.getElementById('mv-islands');
@@ -165,6 +186,7 @@ const coveredCount = nodes.filter((n) => n.url).length;
           graph.hidden = v !== 'graph';
           islands.hidden = v !== 'islands';
           document.documentElement.classList.toggle('map-fullscreen', v !== 'dir');
+          document.documentElement.dataset.mapView = v;
           window.scrollTo(0, 0);
           sizeViews();
           if (v === 'graph' || v === 'islands') window.dispatchEvent(new Event('resize'));

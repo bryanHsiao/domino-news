@@ -36,9 +36,11 @@ function esc(s) {
  * @param {{nodes: any[], cats: string[]}} o.data
  * @param {Record<string,string>} o.strings  kind words for the tooltip
  * @param {(cluster: any|null) => void} o.onSelect
- * @param {(node: any) => void} o.onOpen
+ * @param {(node: any) => void} o.onClass    a house was clicked: show the class
+ * @param {(node: any, index: number) => void} o.onArticle  a person was
+ *   clicked: preview article `index` of that class
  */
-export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, strings, onSelect, onOpen }) {
+export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, strings, onSelect, onClass, onArticle }) {
   const reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const layout = layoutArchipelago(data);
   const clusterByCat = new Map(layout.clusters.map((c) => [c.cat, c]));
@@ -88,7 +90,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     m.frustumCulled = false; // instances move away from where the bounds were computed
     m.castShadow = false;
   }
-  // people standing about the islands, in the walkers' character model
+  // the people at the house doors: one per article written about the class
   const standing = createCrowd(THREE, scene, partMat, props.people.length, { rnd: mulberry32(7), shadow: true });
   props.people.forEach((p, i) => standing.pose(i, p.x, p.y, p.z, p.yaw, PERSON));
   standing.commit();
@@ -412,17 +414,23 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     else home(false);
   }
 
-  // ---- picking: the nearest of a class house, a bridge or an island deck
+  // ---- picking: the nearest of an article person, a class house, a bridge
+  // or an island deck
   const ray = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
   function pickAt(clientX, clientY) {
     const r = canvas.getBoundingClientRect();
     ndc.set(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(ndc, camera);
+    const pp = ray.intersectObjects(standing.pickMeshes, false)[0];
     const b = ray.intersectObjects(buildingMeshes, false)[0];
     const br = ray.intersectObjects(bridgeMeshes, false)[0];
     const t = ray.intersectObjects(world.pickTargets, false)[0];
     const far = (h) => (h ? h.distance : Infinity);
+    if (pp && far(pp) <= Math.min(far(b), far(br), far(t)) + 0.02) {
+      const info = props.people[pp.instanceId].info;
+      if (info && nodeById.has(info.node)) return { person: { node: nodeById.get(info.node), index: info.article } };
+    }
     if (b && far(b) <= Math.min(far(br), far(t) + 0.05)) {
       const id = b.object.userData.owners[b.instanceId];
       if (id && nodeById.has(id)) return { node: nodeById.get(id) };
@@ -458,10 +466,11 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     const hit = pickAt(e.clientX, e.clientY);
     if (hit && hit.bridge) return; // bridges only explain themselves on hover
     if (!hit) {
-      if (selected) select(null, false);
+      select(null, false); // also closes a class or article card
     } else if (hit.node) {
-      if (hit.node.url) onOpen && onOpen(hit.node);
-      else select(hit.node.cat, true);
+      onClass && onClass(hit.node);
+    } else if (hit.person) {
+      onArticle && onArticle(hit.person.node, hit.person.index);
     } else select(hit.cat, true);
   });
 
@@ -485,13 +494,22 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     hoverAt = null;
     const hit = pickAt(at.x, at.y);
     canvas.style.cursor = hit && !hit.bridge ? 'pointer' : '';
-    setHoverNode(hit && hit.node ? hit.node.id : null);
-    if (!hit || (!hit.node && !hit.bridge)) {
+    setHoverNode(hit && hit.node ? hit.node.id : hit && hit.person ? hit.person.node.id : null);
+    if (!hit || (!hit.node && !hit.bridge && !hit.person)) {
       tipEl.hidden = true;
       hoverId = null;
       return;
     }
-    if (hit.bridge) {
+    if (hit.person) {
+      const { node, index } = hit.person;
+      const key = 'p:' + node.id + ':' + index;
+      if (key !== hoverId) {
+        hoverId = key;
+        const a = node.articles[index];
+        tipEl.innerHTML = '<b>' + esc(a.title) + '</b><span>' + esc(strings.article) + ' · ' + esc(node.name) + '</span><em>' + esc(strings.preview) + '</em>';
+        tipEl.dataset.kind = 'article';
+      }
+    } else if (hit.bridge) {
       const b = hit.bridge;
       if (b.id !== hoverId) {
         hoverId = b.id;
@@ -516,7 +534,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
         if (!n.url) tags.push(strings.un);
         const nl = links.countFor(n.id);
         const lk = nl ? '<span>' + esc(strings.links.replace('{n}', nl)) + '</span>' : '';
-        tipEl.innerHTML = '<b>' + esc(n.name) + '</b><span>' + esc(n.cat) + ' · ' + esc(tags.join(' · ')) + '</span>' + lk + (n.url ? '<em>' + esc(strings.open) + '</em>' : '');
+        tipEl.innerHTML = '<b>' + esc(n.name) + '</b><span>' + esc(n.cat) + ' · ' + esc(tags.join(' · ')) + '</span>' + lk + '<em>' + esc(strings.info) + '</em>';
         tipEl.dataset.kind = kind;
       }
     }
@@ -605,6 +623,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     // relation lines: 'off' | 'focus' (selected island / pointed class) | 'all'
     setLinks: (m) => links.setMode(m),
     getLinks: () => links.getMode(),
+    linkCount: (id) => links.countFor(id),
     // light up one class's links from outside (the panel's class rows)
     focusClass(id) {
       panelNode = id || null;

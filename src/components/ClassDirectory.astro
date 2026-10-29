@@ -43,9 +43,9 @@ const T =
         name: '類別地圖',
         tools: '清單操作', btnSearch: '搜尋', btnList: '清單', listTitle: '所有分類',
         badge: '已寫成文章',
-        sub: 'LotusScript 類別依類別分區。點任一張卡片，看它',
+        sub: '依 category 分區，點卡片看它',
         subEm: '回傳什麼、被誰回傳',
-        sub2: '——已寫過的類別可直接開文章。',
+        sub2: '',
         search: '搜尋類別… (例如 Database、RichText)',
         all: '全部', backend: '後端', ui: 'UI',
         legBe: '後端類別', legUi: 'UI 類別', legUn: '尚未寫', legKey: '核心類別',
@@ -57,12 +57,12 @@ const T =
         empty: '沒有符合的類別。',
       }
     : {
-        name: 'Class Directory',
+        name: 'Class Map',
         tools: 'List tools', btnSearch: 'Find', btnList: 'List', listTitle: 'All categories',
         badge: 'written up',
-        sub: 'LotusScript classes grouped by category. Click a card to see what it ',
-        subEm: 'returns and what returns it',
-        sub2: ' — classes already written link to their article.',
+        sub: 'By category · click a card for ',
+        subEm: 'what it returns',
+        sub2: '',
         search: 'Search classes… (e.g. Database, RichText)',
         all: 'All', backend: 'Backend', ui: 'UI',
         legBe: 'Backend', legUi: 'UI', legUn: 'Not yet written', legKey: 'Key class',
@@ -100,8 +100,8 @@ const statTip =
        coverage pill right, then a full-width controls row. -->
   <header class="cd-head">
     <div class="cd-title">
-      <h1><span class="cd-brand">LotusScript</span> <span class="cd-name">{T.name}</span></h1>
-      <p class="cd-sub">{T.sub}<em>{T.subEm}</em>{T.sub2}</p>
+      <h1><span class="cd-brand">HCL Domino</span> <span class="cd-name">{T.name}</span></h1>
+      <p class="cd-sub"><span class="cd-langs">LotusScript · Java · SSJS</span>{T.sub}<em>{T.subEm}</em>{T.sub2}</p>
     </div>
     <div class="cd-stat" title={statTip}><b>{coveredCount}</b><span>/ {total} {T.badge}</span></div>
   </header>
@@ -163,6 +163,8 @@ const statTip =
   #cd .cd-head h1 { font-size: 18px; font-weight: 600; }
   #cd .cd-sub { color: var(--mut); font-size: 12px; margin-top: 3px; }
   #cd .cd-sub em { font-style: normal; color: var(--ink); font-weight: 600; }
+  /* the languages the map spans: a short chip, not a sentence */
+  #cd .cd-langs { display: inline-block; margin-right: 6px; padding: 1px 7px; border: 1px solid #db6a41; border-radius: 999px; color: #db6a41; font: 600 10.5px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: nowrap; vertical-align: 1px; }
   #cd .cd-stat { display: flex; align-items: baseline; gap: 6px; background: var(--color-brand-dark, #0a0a0a); color: var(--color-brand, #fbbf24); padding: 6px 14px; border-radius: 999px; }
   #cd .cd-stat b { font-size: 20px; font-variant-numeric: tabular-nums; }
   #cd .cd-stat span { font-size: 12px; opacity: .85; }
