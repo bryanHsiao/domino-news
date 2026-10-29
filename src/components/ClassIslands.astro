@@ -260,18 +260,19 @@ const statTip =
          reference's, time of day and relation lines on top, tools below.
          Phones use the tools column instead. -->
     <div class="ci-bar" role="toolbar" aria-label={T.tools}>
-      <div class="ci-bar-row">
-        <div class="ci-time" role="group" aria-label={T.timeGroup}>
-          {(['dawn', 'day', 'dusk', 'night'] as const).map((k) => (
-            <button type="button" data-time={k} class={k === 'day' ? 'on' : undefined} title={T.times[k]}>{T.timeShort[k]}</button>
-          ))}
-        </div>
-        <div class="ci-time ci-links" role="group" aria-label={T.linksGroup}>
-          <span class="ci-seg-lbl">{T.linksGroup}</span>
-          {(['off', 'focus', 'all'] as const).map((k) => (
-            <button type="button" data-links={k} class={k === 'focus' ? 'on' : undefined} title={T.linkTips[k].replace('{n}', String(data.links.length))}>{T.linkModes[k]}</button>
-          ))}
-        </div>
+      <!-- one row, as the reference: time of day as icons, the relation
+           lines, then the icon buttons -->
+      <div class="ci-time ci-sky" role="group" aria-label={T.timeGroup}>
+        <button type="button" data-time="dawn" title={T.times.dawn} aria-label={T.times.dawn}><svg viewBox="0 0 16 16" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12.5h12M4.5 12.5a3.5 3.5 0 0 1 7 0M8 2.5v4M6.2 4.3L8 2.5l1.8 1.8"></path></svg></button>
+        <button type="button" data-time="day" class="on" title={T.times.day} aria-label={T.times.day}><svg viewBox="0 0 16 16" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2.8"></circle><path d="M8 1.6v1.5M8 12.9v1.5M1.6 8h1.5M12.9 8h1.5M3.5 3.5l1 1M11.5 11.5l1 1M3.5 12.5l1-1M11.5 4.5l1-1"></path></svg></button>
+        <button type="button" data-time="dusk" title={T.times.dusk} aria-label={T.times.dusk}><svg viewBox="0 0 16 16" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12.5h12M4.5 12.5a3.5 3.5 0 0 1 7 0M8 2.5v4M6.2 4.7L8 6.5l1.8-1.8"></path></svg></button>
+        <button type="button" data-time="night" title={T.times.night} aria-label={T.times.night}><svg viewBox="0 0 16 16" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.6 10.1A5.2 5.2 0 0 1 5.9 3.4a5.2 5.2 0 1 0 6.7 6.7z"></path></svg></button>
+      </div>
+      <div class="ci-time ci-links" role="group" aria-label={T.linksGroup}>
+        <span class="ci-seg-lbl">{T.linksGroup}</span>
+        {(['off', 'focus', 'all'] as const).map((k) => (
+          <button type="button" data-links={k} class={k === 'focus' ? 'on' : undefined} title={T.linkTips[k].replace('{n}', String(data.links.length))}>{T.linkModes[k]}</button>
+        ))}
       </div>
       <div class="ci-icons">
         <button type="button" data-act="home" title={T.reset}><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 12L12 4M6.5 4H12v5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>{T.btnHome}</span></button>
@@ -368,12 +369,14 @@ const statTip =
 
   /* View toolbar: centred over the scene on wide screens; tablets tuck it
      under the brand card (see the media query below). */
-  #ci .ci-bar { position: absolute; z-index: 7; top: 14px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  #ci .ci-bar-row { display: flex; gap: 8px; }
-  #ci .ci-bar .ci-time { background: rgba(255, 248, 244, 0.95); border-radius: 999px; box-shadow: 0 6px 18px rgba(33, 29, 29, 0.12); }
-  #ci .ci-bar .ci-time button { padding: 6px 12px; }
-  #ci .ci-icons { display: flex; gap: 2px; padding: 5px; background: rgba(255, 248, 244, 0.95); border: 1px solid var(--hair); border-radius: 16px; box-shadow: 0 8px 22px rgba(33, 29, 29, 0.14); }
-  #ci .ci-icons button { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 54px; padding: 7px 8px 6px; border: 0; border-radius: 11px; background: transparent; color: var(--ink);
+  /* Wide screens: one row of pills beside the brand card (the reference's
+     toolbar), clear of the view tabs at the top right. */
+  #ci .ci-bar { position: absolute; z-index: 7; top: 14px; left: 248px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; max-width: calc(100% - 262px); }
+  #ci .ci-bar .ci-time { align-items: center; gap: 2px; padding: 5px; background: rgba(255, 248, 244, 0.95); border-radius: 999px; box-shadow: 0 6px 18px rgba(33, 29, 29, 0.12); }
+  #ci .ci-bar .ci-time button { height: 36px; padding: 0 12px; border-radius: 999px; }
+  #ci .ci-bar .ci-sky button { display: grid; place-items: center; width: 36px; padding: 0; }
+  #ci .ci-icons { display: flex; gap: 2px; padding: 4px; background: rgba(255, 248, 244, 0.95); border: 1px solid var(--hair); border-radius: 999px; box-shadow: 0 8px 22px rgba(33, 29, 29, 0.14); }
+  #ci .ci-icons button { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 50px; padding: 5px 8px 4px; border: 0; border-radius: 999px; background: transparent; color: var(--ink);
     font: 600 11px/1 system-ui, -apple-system, 'Noto Sans TC', sans-serif; cursor: pointer; }
   #ci .ci-icons button:hover { background: rgba(33, 29, 29, 0.07); }
   #ci .ci-icons button[data-act='pause'][aria-pressed='true'], #ci .ci-icons button[data-act='bird'][aria-pressed='true'] { background: var(--ink); color: var(--paper); }
@@ -554,11 +557,11 @@ const statTip =
     #ci .ci-panel { position: absolute; left: 0; right: 0; bottom: 0; z-index: 8; max-height: 64%; padding: 15px 16px 17px; background: var(--paper); border: 1px solid var(--hair); border-radius: 16px 16px 0 0; box-shadow: 0 -10px 34px rgba(33, 29, 29, 0.18); }
     #ci .ci-hint { display: block; position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 5; background: rgba(33, 29, 29, 0.82); color: #fff8f4; font-size: 11.5px; padding: 5px 12px; border-radius: 999px; pointer-events: none; transition: opacity 0.4s; white-space: nowrap; }
   }
-  /* Tablets: not enough room beside the brand card, so the toolbar sits
-     under it, left-aligned (as the reference does at this width). */
-  @media (min-width: 761px) and (max-width: 1199px) {
-    #ci .ci-bar { top: 128px; left: 14px; transform: none; align-items: flex-start; }
-    #ci .ci-bar-row { flex-direction: column; align-items: flex-start; }
+  /* Narrower desktops and tablets: no room beside the brand card next to
+     the view tabs, so the row sits under the card, left-aligned (as the
+     reference does at these widths); it wraps only if it must. */
+  @media (min-width: 761px) and (max-width: 1439px) {
+    #ci .ci-bar { top: 128px; left: 14px; max-width: calc(100% - 28px); }
   }
   @media (max-width: 640px) {
     #ci .ci-lbl { font-size: 10px; padding: 4px 6px; gap: 4px; }
