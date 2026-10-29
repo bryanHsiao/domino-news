@@ -5,6 +5,7 @@ import ClassDirectory from '../../components/ClassDirectory.astro';
 import ClassIslands from '../../components/ClassIslands.astro';
 import { useTranslations, localizedPath } from '../../i18n/ui';
 import { buildCoverageReport } from '../../../scripts/lib/coverage';
+import { classArticles } from '../../lib/classArticles';
 import rawData from '../../../data/ls_classes.json';
 
 const lang = 'en' as const;
@@ -38,6 +39,8 @@ const links = raw.links.map((l) => ({
 }));
 const data = { nodes, links };
 const coveredCount = nodes.filter((n) => n.url).length;
+// main articles per class, for the islands view's article previews
+const articles = await classArticles(report, lang);
 ---
 
 <BaseLayout lang={lang} title={t('nav.map')} description="An interactive map of HCL Domino's LotusScript classes — readable cards grouped by category; click a card to see what it returns and what returns it, and open the article for classes already written. Toggle to a relationship graph too.">
@@ -54,7 +57,7 @@ const coveredCount = nodes.filter((n) => n.url).length;
     <ClassMap lang={lang} data={data} coveredCount={coveredCount} total={nodes.length} />
   </div>
   <div id="mv-islands" hidden>
-    <ClassIslands lang={lang} data={data} coveredCount={coveredCount} total={nodes.length} />
+    <ClassIslands lang={lang} data={data} articles={articles} coveredCount={coveredCount} total={nodes.length} />
   </div>
 </BaseLayout>
 

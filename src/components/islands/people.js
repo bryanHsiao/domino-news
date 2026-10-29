@@ -164,5 +164,8 @@ export function createCrowd(THREE, scene, material, count, { rnd, shadow = false
     meshes.box.instanceColor.needsUpdate = true;
   }
 
-  return { pose, commit, tintBox, people, meshes: Object.values(meshes) };
+  // parts a pointer can hit, one instance per person
+  const pickMeshes = [meshes.torso, meshes.head, meshes.hair];
+
+  return { pose, commit, tintBox, people, pickMeshes, meshes: Object.values(meshes) };
 }
