@@ -562,6 +562,10 @@ coverStyle: "..."                       # Written by backfill-covers
 relatedJava: ["Session", "Document"]    # Java counterpart class names — [] if
                                         # no Domino-API equivalent exists
 relatedSsjs: ["Session", "Document"]    # Same for SSJS
+# --- Java / SSJS posts only (LS posts omit all three) — see "Map fields" ---
+# coversClass: NotesStream              # /map/ node id — LS-style full name
+# coversIsland: xpages                  # OR this, for XPages web-layer concepts
+# apiLang: java                         # java | ssjs — required with either
 ---
 ```
 
@@ -577,6 +581,40 @@ even if no article exists for the Java / SSJS side. They feed the
 coverage tracker's cross-language matrix and surface "topics worth
 a single-language deep-dive next." Use `[]` if there's no
 Domino-API counterpart in that language.
+
+**Map fields: `coversClass` / `coversIsland` / `apiLang`** — Java and
+SSJS posts only; LS posts leave all three unset (LS coverage comes
+from the `sources` URLs). These put the post on the `/map/` islands
+view: a class post plants a language flag on that class's building
+(Java blue / SSJS green), an XPages post joins the XPages island. Set
+them in **both** the zh-TW and en files. Which one:
+
+- Teaches a specific Notes class → `coversClass: <node id>` + `apiLang`.
+- XPages / web-layer concept with no backing Notes class (scope
+  variables, partial refresh, managed beans…) → `coversIsland: xpages`
+  + `apiLang: ssjs`.
+- Cross-cutting concept with no single class (threading, recycle /
+  memory, exception handling) → set neither; the post stays off the map.
+
+Gotchas:
+
+- **The value is the catalogue node id, LS-style, even for Java**:
+  `lotus.domino.Stream` → `NotesStream`, `Session` → `NotesSession`.
+  A wrong id still builds — it just silently shows no flag. Check it:
+  `grep '"id": "NotesStream"' data/ls_classes.json`. Once the post is
+  in `src/content/posts/`, `npm run map-lang-report` also lists unknown
+  ids (exits 1) — but it doesn't scan `_pending/`, so for staged posts
+  use the grep.
+- **The flag appears on release day**, when the post is promoted from
+  `_pending/` into `posts/` — not when it's staged.
+- **Not the same as `relatedJava` / `relatedSsjs`**: those go on LS
+  posts and name the counterpart; the map fields go on the Java / SSJS
+  post itself and point at the node.
+- The build enforces: at most one of `coversClass` / `coversIsland`,
+  and `apiLang` is required when either is set.
+
+(OpenNTF / community posts use `coversHarbour: openntf` instead —
+they go through the news flow, not this skill.)
 
 ---
 
@@ -766,6 +804,10 @@ clean at the end.
 - **Missing `relatedJava` / `relatedSsjs`** — easy to skip when the
   class has no Java counterpart. Always set `[]` explicitly so the
   absence is intentional, not "we forgot."
+- **Java / SSJS post with no map field** — it publishes fine but never
+  shows on `/map/`. Set `coversClass` + `apiLang` (or `coversIsland:
+  xpages`), using the LS-style node id (`NotesStream`, not `Stream`).
+  See Step 4 "Map fields".
 - **Inline-link diversity miss** — using the same class doc URL
   4+ times in one body. Spread across class page + method page +
   sibling class page. Run `npm run build` to catch this early; the
