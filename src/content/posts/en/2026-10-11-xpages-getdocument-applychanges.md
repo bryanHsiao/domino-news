@@ -13,7 +13,7 @@ sources:
   - title: "DominoDocument (getDocument(boolean applyChanges): Apply any changes to the wrapped document before returning it) — HCL/IBM JavaDocs (official)"
     url: "https://public.dhe.ibm.com/software/dw/lotus/Domino-Designer/JavaDocs/DesignerAPIs/com/ibm/xsp/model/domino/wrapped/DominoDocument.html"
   - title: "NotesXspDocument (the XPages document data source; getting the inner Document, getValue/replaceItemValue) — HCL/IBM Knowledge Center (official)"
-    url: "https://www.ibm.com/docs/en/SSVRGU_9.0.1/reference/r_wpdr_xsp_xspdocument_r.html"
+    url: "https://help.hcl-software.com/dom_designer/9.0.1/reference/r_wpdr_xsp_xspdocument_r.html"
 relatedJava: []
 relatedSsjs: []
 coversIsland: "xpages"
@@ -38,7 +38,7 @@ It's worth getting straight, because both sides bite: **omit it** and you might 
 
 ## How getDocument() and getDocument(true) differ
 
-The XPages document data source is a [`NotesXspDocument`](https://www.ibm.com/docs/en/SSVRGU_9.0.1/reference/r_wpdr_xsp_xspdocument_r.html) (default variable names `document1`, …), and it wraps a real `lotus.domino.Document` inside. Both methods hand you that inner document; the only difference is whether it flushes pending changes in first ([official getDocument](https://help.hcl-software.com/dom_designer/9.0.1/reference/r_wpdr_xsp_xspdocument_getdocument_r.html), [DominoDocument JavaDoc](https://public.dhe.ibm.com/software/dw/lotus/Domino-Designer/JavaDocs/DesignerAPIs/com/ibm/xsp/model/domino/wrapped/DominoDocument.html)):
+The XPages document data source is a [`NotesXspDocument`](https://help.hcl-software.com/dom_designer/9.0.1/reference/r_wpdr_xsp_xspdocument_r.html) (default variable names `document1`, …), and it wraps a real `lotus.domino.Document` inside. Both methods hand you that inner document; the only difference is whether it flushes pending changes in first ([official getDocument](https://help.hcl-software.com/dom_designer/9.0.1/reference/r_wpdr_xsp_xspdocument_getdocument_r.html), [DominoDocument JavaDoc](https://public.dhe.ibm.com/software/dw/lotus/Domino-Designer/JavaDocs/DesignerAPIs/com/ibm/xsp/model/domino/wrapped/DominoDocument.html)):
 
 - `getDocument()` / `getDocument(false)`: returns the document **as it currently is**, without proactively applying changes the data source is still holding.
 - `getDocument(true)`: the JavaDoc puts it plainly — "**Apply any changes to the wrapped document before returning it**." Flush the changes into the inner document, then return it.

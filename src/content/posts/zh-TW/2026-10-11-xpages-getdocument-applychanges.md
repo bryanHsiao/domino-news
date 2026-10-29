@@ -13,7 +13,7 @@ sources:
   - title: "DominoDocument（getDocument(boolean applyChanges)：Apply any changes to the wrapped document before returning it）— HCL/IBM JavaDocs（官方）"
     url: "https://public.dhe.ibm.com/software/dw/lotus/Domino-Designer/JavaDocs/DesignerAPIs/com/ibm/xsp/model/domino/wrapped/DominoDocument.html"
   - title: "NotesXspDocument（XPages 的 document data source、取內層 Document 與 getValue/replaceItemValue）— HCL/IBM Knowledge Center（官方）"
-    url: "https://www.ibm.com/docs/en/SSVRGU_9.0.1/reference/r_wpdr_xsp_xspdocument_r.html"
+    url: "https://help.hcl-software.com/dom_designer/9.0.1/reference/r_wpdr_xsp_xspdocument_r.html"
 relatedJava: []
 relatedSsjs: []
 coversIsland: "xpages"
@@ -38,7 +38,7 @@ coverStyle: "photoreal-3d"
 
 ## `getDocument()` 和 `getDocument(true)` 差在哪
 
-XPages 的 document data source 是一個 [`NotesXspDocument`](https://www.ibm.com/docs/en/SSVRGU_9.0.1/reference/r_wpdr_xsp_xspdocument_r.html)（預設變數名 `document1`…），它內層包著一份真正的 `lotus.domino.Document`。兩個方法都是把那份內層文件拿出來，差別只在「拿之前先不先把待套的改動灌進去」（[官方 getDocument](https://help.hcl-software.com/dom_designer/9.0.1/reference/r_wpdr_xsp_xspdocument_getdocument_r.html)、[DominoDocument JavaDoc](https://public.dhe.ibm.com/software/dw/lotus/Domino-Designer/JavaDocs/DesignerAPIs/com/ibm/xsp/model/domino/wrapped/DominoDocument.html)）：
+XPages 的 document data source 是一個 [`NotesXspDocument`](https://help.hcl-software.com/dom_designer/9.0.1/reference/r_wpdr_xsp_xspdocument_r.html)（預設變數名 `document1`…），它內層包著一份真正的 `lotus.domino.Document`。兩個方法都是把那份內層文件拿出來，差別只在「拿之前先不先把待套的改動灌進去」（[官方 getDocument](https://help.hcl-software.com/dom_designer/9.0.1/reference/r_wpdr_xsp_xspdocument_getdocument_r.html)、[DominoDocument JavaDoc](https://public.dhe.ibm.com/software/dw/lotus/Domino-Designer/JavaDocs/DesignerAPIs/com/ibm/xsp/model/domino/wrapped/DominoDocument.html)）：
 
 - `getDocument()`／`getDocument(false)`：回那份 Document **現在的樣子**，不主動套用 data source 手上還沒 flush 的改動。
 - `getDocument(true)`：JavaDoc 寫得最直白——「**Apply any changes to the wrapped document before returning it**」。先把改動套進內層文件、再回給你。
