@@ -205,8 +205,9 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
     if (isHeart) buildLandmark(theme.landmark, decor, t.x, t.z);
     t.nodes.forEach((n, i) => {
       const x = t.x + slots[i][0], z = t.z + slots[i][1];
-      anchors.set(n.id, { x, y: house(buildings, n, theme, x, z, isHeart ? 0.92 : 1), z });
-      residents(n, t, x, z, rnd);
+      const h = house(buildings, n, theme, x, z, isHeart ? 0.92 : 1);
+      anchors.set(n.id, { x, y: h.top, z });
+      residents(n, t, x, z, rnd, h.depth);
     });
     for (let i = t.nodes.length; i < slots.length; i++) {
       const sx = t.x + slots[i][0] + (rnd() - 0.5) * 0.2;
@@ -229,21 +230,17 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
     }
   }
 
-  // One sign in front of a class's house per article written about it
-  // (up to three), side by side on the side facing away from the tile's
-  // centre, looking out at the visitor.
-  function residents(n, t, x, z, rnd) {
+  // One sign per article written about the class, at the house's entrance:
+  // every house faces +z with its door centred on that face (house()), so
+  // the signs stand just in front of it, flanking the door (right, left,
+  // then further out) and facing the visitor.
+  function residents(n, t, x, z, rnd, depth) {
     const m = (n.articles || []).length;
     if (!m) return;
-    let dx = x - t.x, dz = z - t.z;
-    const L = Math.hypot(dx, dz);
-    if (L < 0.01) (dx = 0), (dz = 1);
-    else (dx /= L), (dz /= L);
-    const out = classKind(n) === 'key' ? 0.56 : 0.5;
+    const front = z + depth / 2 + 0.15;
     for (let k = 0; k < m; k++) {
-      const off = (k - (m - 1) / 2) * 0.21;
-      const px = x + dx * out + dz * off, pz = z + dz * out - dx * off;
-      props.person(px, pz, Math.atan2(dx, dz) + (rnd() - 0.5) * 0.6, TOP, { node: n.id, article: k });
+      const off = (k % 2 ? -1 : 1) * 0.21 * (Math.floor(k / 2) + 1);
+      props.person(x + off, front, (rnd() - 0.5) * 0.25, TOP, { node: n.id, article: k });
     }
   }
 
@@ -345,7 +342,8 @@ function buildBridge(kit, br) {
 // One class = one small house in its island's architecture. The class decides
 // floors and roof colour (key → three floors, gold roof and a flag;
 // uncovered → one floor, flat grey roof); the theme decides walls, body and
-// roof shape and proportions. Returns the height of the roof top.
+// roof shape and proportions. Returns the height of the roof top and the
+// body's depth (its door is centred on the +z face).
 function house(kit, n, theme, x, z, scale) {
   const h0 = hashString(n.id);
   const kind = classKind(n);
@@ -451,5 +449,5 @@ function house(kit, n, theme, x, z, scale) {
       P('box', fx + 0.15, base + poleH - 0.1 - i * 0.22, z, 0.3, 0.18, 0.016, c);
     });
   }
-  return roofTop;
+  return { top: roofTop, depth: d };
 }
