@@ -734,6 +734,7 @@ const statTip =
           onSelect: renderPanel,
           onClass: showClass,
           onArticle: showArticle,
+          onTime: syncModes, // the light followed the clock into another time of day
         });
         loadingEl.hidden = true;
         if (q.value) api.filter(q.value);

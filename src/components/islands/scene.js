@@ -10,6 +10,7 @@ import { buildWorld, classKind } from './world.js';
 import { createEnvironment, TIMES } from './environment.js';
 import { createCrowd } from './people.js';
 import { createLinks } from './links.js';
+import { createFerries } from './ferry.js';
 
 const FOV = 32;
 const HOME_POLAR = THREE.MathUtils.degToRad(57);
@@ -17,9 +18,16 @@ const POLAR_MIN = THREE.MathUtils.degToRad(25);
 const POLAR_MAX = THREE.MathUtils.degToRad(70);
 const BIRD_POLAR = 0.1; // bird's-eye: almost straight down
 const TIME_ORDER = ['dawn', 'day', 'dusk', 'night'];
+// the visitor's local clock → time of day (05–08 dawn, 08–17 day, 17–19 dusk)
+function clockTime(d = new Date()) {
+  const h = d.getHours();
+  return h >= 5 && h < 8 ? 'dawn' : h >= 8 && h < 17 ? 'day' : h >= 17 && h < 19 ? 'dusk' : 'night';
+}
 const WALKERS = 54;
 const PERSON = 0.3; // world units per character unit (a person is ~0.32 tall)
 const STRIDE = 0.15; // distance covered per walk cycle
+const PEDAL = 0.4; // distance a cyclist covers per pedal turn
+const CYCLISTS = 0.3; // share of the walkers (not porters) who ride a bicycle
 const PALE = new THREE.Color(0xe9e4da);
 const CORAL = new THREE.Color(0xdb6a41);
 
@@ -40,7 +48,7 @@ function esc(s) {
  * @param {(node: any, index: number) => void} o.onArticle  a person was
  *   clicked: preview article `index` of that class
  */
-export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, strings, onSelect, onClass, onArticle }) {
+export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, strings, onSelect, onClass, onArticle, onTime }) {
   const reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const layout = layoutArchipelago(data);
   const clusterByCat = new Map(layout.clusters.map((c) => [c.cat, c]));
@@ -81,6 +89,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   // windows, lamps and beacons: lit by the night factor of the time of day
   const glowMat = new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0, emissive: 0xffd28a, emissiveIntensity: 0 });
   const glowing = { glass: glowMat, bulb: glowMat };
+  const ferries = createFerries(THREE, scene, decorKit, layout, partMat, glowing);
   const buildingMeshes = buildingKit.build(scene, partMat, glowing);
   const bridgeMeshes = bridgeKit.build(scene, partMat);
   const bridgeById = new Map(layout.bridges.map((b) => [b.id, b]));
@@ -128,8 +137,11 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     return c;
   };
   const PRESETS = Object.fromEntries(TIME_ORDER.map((k) => [k, toLight(TIMES[k])]));
-  const light = copyLight(PRESETS.day);
-  let timeName = 'day';
+  // The light starts at the visitor's local time of day and follows the
+  // clock until a time is picked by hand.
+  let timeName = clockTime();
+  let followClock = true;
+  const light = copyLight(PRESETS[timeName]);
   let timeAnim = null;
   function blendLight(from, to, k) {
     for (const key of COLOR_KEYS) light[key].copy(from[key]).lerp(to[key], k);
@@ -147,6 +159,17 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     timeAnim = { from: copyLight(light), to: PRESETS[name], t: reduced ? 1 : 0 };
     return timeName;
   }
+  blendLight(light, PRESETS[timeName], 1);
+  let clockCheck = 0;
+  function followTheClock(dt) {
+    if (!followClock || (clockCheck += dt) < 20) return;
+    clockCheck = 0;
+    const now = clockTime();
+    if (now !== timeName) {
+      setTime(now);
+      if (onTime) onTime(now);
+    }
+  }
 
   // ---- walkers: people strolling the walk network (tile rings, the land
   // between an island's tiles, and the bridges, following their arch).
@@ -161,7 +184,21 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     nodesOf.get(n.cat).push(i);
   });
   const walkCats = [...nodesOf.keys()];
-  const crowd = createCrowd(THREE, scene, partMat, WALKERS, { rnd: wrnd, carry: 0.4 });
+  // which part of the network each node is on: an off-shore island is reached
+  // by ferry, so strollers there stay on it and the others stay ashore
+  const region = new Array(walk.nodes.length).fill(-1);
+  walk.nodes.forEach((_, i) => {
+    if (region[i] >= 0) return;
+    const todo = [i];
+    region[i] = i;
+    while (todo.length)
+      for (const [v] of walk.adj[todo.pop()])
+        if (region[v] < 0) {
+          region[v] = i;
+          todo.push(v);
+        }
+  });
+  const crowd = createCrowd(THREE, scene, partMat, WALKERS, { rnd: wrnd, carry: 0.4, bike: CYCLISTS });
   const walkers = [];
   const relations = layout.relations.filter((r) => nodesOf.has(r.a) && nodesOf.has(r.b));
   function pickRelation(list) {
@@ -191,8 +228,9 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       }
       cat = w.rel.a === here ? w.rel.b : w.rel.a;
     } else {
-      cat = walkCats[Math.floor(wrnd() * walkCats.length)];
-      if (cat === here) cat = walkCats[(walkCats.indexOf(cat) + 1) % walkCats.length];
+      const reach = walkCats.filter((c) => region[nodesOf.get(c)[0]] === region[w.at]);
+      cat = reach[Math.floor(wrnd() * reach.length)];
+      if (cat === here && reach.length > 1) cat = reach[(reach.indexOf(cat) + 1) % reach.length];
     }
     const path = walkPath(walk, w.at, randomNode(cat));
     w.path = path.length > 1 ? path : [w.at, walk.adj[w.at][0][0]];
@@ -201,7 +239,8 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     setSegment(w);
   }
   for (let i = 0; i < WALKERS; i++) {
-    const w = { at: Math.floor(wrnd() * walk.nodes.length), speed: 0.24 + wrnd() * 0.12, side: (wrnd() - 0.5) * 0.22, gait: wrnd() * 6.28, rel: null, runs: 0 };
+    const bike = crowd.people[i].bike;
+    const w = { at: Math.floor(wrnd() * walk.nodes.length), speed: bike ? 0.5 + wrnd() * 0.15 : 0.24 + wrnd() * 0.12, side: (wrnd() - 0.5) * 0.22, gait: wrnd() * 6.28, rel: null, runs: 0, stride: bike ? PEDAL : STRIDE };
     if (crowd.people[i].carry && relations.length) {
       w.rel = pickRelation(relations);
       w.at = randomNode(w.rel.a);
@@ -213,7 +252,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   function updateWalkers(dt) {
     walkers.forEach((w, i) => {
       w.t += (w.speed * dt) / w.len;
-      w.gait += ((w.speed * dt) / STRIDE) * Math.PI * 2;
+      w.gait += ((w.speed * dt) / w.stride) * Math.PI * 2;
       while (w.t >= 1) {
         w.t -= 1;
         w.seg++;
@@ -594,8 +633,10 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       env.update(dt);
       updateWalkers(dt);
       updateBoats(motion);
+      ferries.update(motion);
       links.update(dt);
     }
+    followTheClock(dt);
     if (timeAnim) {
       timeAnim.t = Math.min(1, timeAnim.t + dt / 1.2);
       const k = timeAnim.t * timeAnim.t * (3 - 2 * timeAnim.t);
@@ -625,7 +666,11 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     select: (cat) => select(cat, true),
     reset,
     filter,
-    setTime,
+    // picking a time by hand stops the light following the clock
+    setTime: (name) => {
+      followClock = false;
+      return setTime(name);
+    },
     getTime: () => timeName,
     setBird,
     isBird: () => bird,
