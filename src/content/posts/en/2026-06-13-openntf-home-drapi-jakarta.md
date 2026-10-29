@@ -3,6 +3,7 @@ title: "OpenNTF Runs Its Home App Outside Domino — Purely on DRAPI, on Open Li
 description: "Jesse Gallagher rebuilt OpenNTF's home app from XPages into a Jakarta EE application, with DRAPI (the Domino REST API) as its entire data layer, then packaged it as a WAR and deployed it to Open Liberty — running outside Domino. The point isn't 'another rewrite': it validates a path where a Jakarta EE app written for Domino is genuinely portable — the data stays in NSF, but the runtime isn't tied to Domino. This piece covers what he did, the stack, why it matters, and the rough edges he flags himself."
 pubDate: 2026-06-13T07:30:00+08:00
 lang: en
+coversHarbour: "openntf"
 slug: openntf-home-drapi-jakarta
 tags:
   - "Domino"

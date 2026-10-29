@@ -3,6 +3,7 @@ title: "OpenNTF LotusScript Class Map：97 個類別一張圖，資料開源可�
 description: "OpenNTF 在 2026 年釋出了基於 HCL Domino 14.5.1 的 LotusScript Class Map — 97 個 class、1001 個 property、997 個 method、72 個 event 全部攤在一張可互動的視覺地圖上，點任一節點就跳到 HCL 官方文件。本文介紹這個工具的功能、開源授權、底層 JSON 資料怎麼取，以及對開發者選題、學習、API 探索的價值。"
 pubDate: 2026-05-08T07:30:00+08:00
 lang: zh-TW
+coversHarbour: "openntf"
 slug: openntf-lotusscript-class-map
 tags:
   - "Community"

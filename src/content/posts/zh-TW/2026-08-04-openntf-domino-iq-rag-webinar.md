@@ -3,6 +3,7 @@ title: "OpenNTF Domino IQ RAG webinar 筆記：30 字元的坑、向量化三步
 description: "OpenNTF 請到 HCL 的 Brian Arnold 做了一場 Domino IQ RAG 深入 webinar。站上已寫過這條管線的技術原理，這篇補上「實戰層」——把短欄位資料 RAG 化的 30 字元限制與 concat 欄位解法、向量化的三個步驟、三個要調的旋鈕、Readers/Authors 欄位安全在 Domino 2026 FP1 才真正修好，以及開發中的 citations、側邊面板與 MCP。"
 pubDate: 2026-08-04T15:00:00+08:00
 lang: zh-TW
+coversHarbour: "openntf"
 slug: openntf-domino-iq-rag-webinar
 tags:
   - "Domino IQ"

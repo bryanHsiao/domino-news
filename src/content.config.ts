@@ -40,6 +40,10 @@ const posts = defineCollection({
     // Web-layer concept post with no backing Notes class → the XPages island.
     // Currently the only value is "xpages".
     coversIsland: z.string().optional(),
+    // Community post shown at a harbour on the /map/ islands view's shore
+    // (not an island: the community supplies tools, it isn't part of the
+    // API). Currently the only value is "openntf". Needs no apiLang.
+    coversHarbour: z.enum(['openntf']).optional(),
     // Which programming language this post is written in. LS posts leave it
     // unset. Required whenever coversClass or coversIsland is set.
     apiLang: z.enum(['java', 'ssjs']).optional(),

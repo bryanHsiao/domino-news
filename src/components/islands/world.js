@@ -128,7 +128,8 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
   // ---- per-island look
   const looks = new Map();
   layout.clusters.forEach((c, i) => {
-    const style = STYLES[STYLE_ORDER[i % STYLE_ORDER.length]];
+    // the harbour town on the shore is always boarded like a quay
+    const style = c.members.some((n) => n.harbour) ? STYLES.boardwalk : STYLES[STYLE_ORDER[i % STYLE_ORDER.length]];
     const seed = hashString(c.cat);
     const shallow = new THREE.Color(style.tone).lerp(new THREE.Color(WATER_TONE), 0.55);
     const ringMat = new THREE.MeshStandardMaterial({ map: ringTex, color: style.ring, roughness: 0.9, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 });
@@ -228,7 +229,7 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
     }
   }
 
-  // One person in front of a class's house per article written about it
+  // One sign in front of a class's house per article written about it
   // (up to three), side by side on the side facing away from the tile's
   // centre, looking out at the visitor.
   function residents(n, t, x, z, rnd) {
@@ -240,7 +241,7 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
     else (dx /= L), (dz /= L);
     const out = classKind(n) === 'key' ? 0.56 : 0.5;
     for (let k = 0; k < m; k++) {
-      const off = (k - (m - 1) / 2) * 0.17;
+      const off = (k - (m - 1) / 2) * 0.21;
       const px = x + dx * out + dz * off, pz = z + dz * out - dx * off;
       props.person(px, pz, Math.atan2(dx, dz) + (rnd() - 0.5) * 0.6, TOP, { node: n.id, article: k });
     }
@@ -275,8 +276,10 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
 
 // Bridge look by relation strength: 4+ links a wide stone bridge, 2–3 a wooden
 // one, a single link a narrow footbridge; a plain walkway (no relation, only
-// there so every island can be reached) is a rope bridge.
-function bridgeStyle(n) {
+// there so every island can be reached) is a rope bridge; the long bridge out
+// to an off-shore island is a plain wooden causeway.
+function bridgeStyle(n, long = false) {
+  if (!n && long) return { deck: [0xc9a27c, 0xb8916b], width: 0.42, thick: 0.04, post: 0xfff8f4, rail: 0x9a7454, arch: 0.09, walls: false };
   if (!n) return { deck: [0xb7a993, 0xa89a84], width: 0.3, thick: 0.03, post: 0x7d6a58, rail: 0x7d6a58, arch: 0.05, walls: false };
   if (n >= 4) return { deck: [0xd6cbb8, 0xcabfab], width: 0.62, thick: 0.06, post: 0xe6dccb, rail: 0xe6dccb, arch: 0.12, walls: true };
   if (n >= 2) return { deck: [0xb48560, 0xa77a55], width: 0.46, thick: 0.04, post: 0xfff8f4, rail: 0x9a7454, arch: 0.09, walls: false };
@@ -287,7 +290,7 @@ function bridgeStyle(n) {
 // the bridge id so it can be hovered (relation tooltip) and highlighted.
 function buildBridge(kit, br) {
   const { a, b, id } = br;
-  const st = bridgeStyle(br.rel ? br.rel.n : 0);
+  const st = bridgeStyle(br.rel ? br.rel.n : 0, br.long);
   const dx = b.x - a.x, dz = b.z - a.z;
   const L = Math.hypot(dx, dz);
   const ux = dx / L, uz = dz / L;
@@ -327,9 +330,11 @@ function buildBridge(kit, br) {
       kit.part('box', [x + px * half * side, y + 0.19, z + pz * half * side], [0.022, 0.022, len / segs + 0.02], st.rail, id, [tilt(t), yaw, 0]);
     }
   }
-  // piers under long spans
+  // piers under long spans, about every 2.2 units
   if (len > 3.2) {
-    for (const t of [1 / 3, 2 / 3]) {
+    const n = Math.max(2, Math.round(len / 2.2) - 1);
+    for (let k = 1; k <= n; k++) {
+      const t = k / (n + 1);
       const [x, y, z] = at(t);
       const h = y - WATER_Y + 0.2;
       kit.part('cyl', [x, y - h / 2, z], [0.16, h, 0.16], st.walls ? 0xcabfab : 0x8a6a4e, id);

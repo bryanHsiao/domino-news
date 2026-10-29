@@ -10,10 +10,17 @@ import { buildWorld, classKind } from './world.js';
 import { createEnvironment, TIMES } from './environment.js';
 import { createCrowd } from './people.js';
 import { createLinks } from './links.js';
-import { createFerries } from './ferry.js';
+import { createHarbours } from './harbour.js';
+import { createSigns } from './signs.js';
 
 const FOV = 32;
 const HOME_POLAR = THREE.MathUtils.degToRad(57);
+// Opening distance as a share of the fit-everything distance, by stage width
+// (as the reference does): a wide stage opens close in, a small one (phones
+// included) frames the whole lake.
+const HOME_ZOOM = 0.7;
+const ZOOM_FROM = 600; // stage width (px) up to which the whole lake is framed
+const ZOOM_TO = 1150; // stage width from which the close view applies
 const POLAR_MIN = THREE.MathUtils.degToRad(25);
 const POLAR_MAX = THREE.MathUtils.degToRad(70);
 const BIRD_POLAR = 0.1; // bird's-eye: almost straight down
@@ -84,12 +91,12 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   const boatKit = createKit(THREE); // boats drift, so they get their own meshes
   const props = createProps(THREE, decorKit);
   const world = buildWorld(THREE, scene, { buildings: buildingKit, bridges: bridgeKit, decor: decorKit }, props, layout);
-  const env = createEnvironment(THREE, scene, props, decorKit, layout.bounds, createProps(THREE, boatKit));
+  const env = createEnvironment(THREE, scene, props, decorKit, layout.bounds, createProps(THREE, boatKit), layout.harbours);
   const partMat = new THREE.MeshStandardMaterial({ roughness: 0.86, metalness: 0 });
   // windows, lamps and beacons: lit by the night factor of the time of day
   const glowMat = new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0, emissive: 0xffd28a, emissiveIntensity: 0 });
   const glowing = { glass: glowMat, bulb: glowMat };
-  const ferries = createFerries(THREE, scene, decorKit, layout, partMat, glowing);
+  const harbours = createHarbours(THREE, scene, decorKit, props, layout, partMat, glowing);
   const buildingMeshes = buildingKit.build(scene, partMat, glowing);
   const bridgeMeshes = bridgeKit.build(scene, partMat);
   const bridgeById = new Map(layout.bridges.map((b) => [b.id, b]));
@@ -99,18 +106,27 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     m.frustumCulled = false; // instances move away from where the bounds were computed
     m.castShadow = false;
   }
-  // the people at the house doors: one per article written about the class.
-  // The language a house speaks is shown by its roof flags (world.js), not the
-  // resident's colour, so these keep the crowd's natural, varied look.
-  const standing = createCrowd(THREE, scene, partMat, props.people.length, { rnd: mulberry32(7), shadow: true });
-  props.people.forEach((p, i) => standing.pose(i, p.x, p.y, p.z, p.yaw, PERSON));
-  standing.commit();
+  // the article signs at the house doors: one per article written about the
+  // class, its "i" badge in the article's language colour
+  const signs = createSigns(THREE, scene, partMat, props.people, (info) => {
+    const node = info && nodeById.get(info.node);
+    const art = node && node.articles && node.articles[info.article];
+    return art && art.lang;
+  });
 
   // ---- camera framing
   const tanHalf = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
   // Frames the archipelago's bounding circle; on landscape screens it may
   // overfill vertically a little and still show every island.
   const fitDistance = (r) => r * Math.max(2.35, 1.05 / (tanHalf * camera.aspect)) * 1.05;
+  // The opening view: on a wide stage the archipelago fills most of it and
+  // the outer islets, the harbour and the off-shore island run off its edges
+  // (zoom out to see them); on a small one it frames everything.
+  let stageW = 0;
+  const homeDistance = () => {
+    const t = THREE.MathUtils.clamp((stageW - ZOOM_FROM) / (ZOOM_TO - ZOOM_FROM), 0, 1);
+    return fitDistance(radius) * (1 - (1 - HOME_ZOOM) * t * t * (3 - 2 * t));
+  };
   const homeTarget = new THREE.Vector3(cx, TOP, cz);
   const sph = new THREE.Spherical();
   const posFor = (target, dist, polar, azimuth) => {
@@ -179,8 +195,9 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     nodesOf.get(n.cat).push(i);
   });
   const walkCats = [...nodesOf.keys()];
-  // which part of the network each node is on: an off-shore island is reached
-  // by ferry, so strollers there stay on it and the others stay ashore
+  // which part of the network each node is on: the harbour on the shore is
+  // reached only by boat, so strollers there stay in town and the others stay
+  // on the islands
   const region = new Array(walk.nodes.length).fill(-1);
   walk.nodes.forEach((_, i) => {
     if (region[i] >= 0) return;
@@ -416,7 +433,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     bird = !!on;
     controls.minPolarAngle = 0;
     controls.maxPolarAngle = POLAR_MAX;
-    const pos = bird ? posFor(homeTarget, birdDistance(), BIRD_POLAR, 0) : posFor(homeTarget, fitDistance(radius), HOME_POLAR, 0);
+    const pos = bird ? posFor(homeTarget, birdDistance(), BIRD_POLAR, 0) : posFor(homeTarget, homeDistance(), HOME_POLAR, 0);
     flyTo(homeTarget.clone(), pos, () => {
       controls.minPolarAngle = bird ? 0 : POLAR_MIN;
       controls.maxPolarAngle = bird ? BIRD_POLAR + 0.05 : POLAR_MAX;
@@ -440,9 +457,8 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     flyTo(target, posFor(target, Math.max(17, fitDistance(c.radius) * 1.7), polar, sph.theta));
   }
   function home(instant) {
-    const dist = fitDistance(radius);
-    controls.maxDistance = dist * 1.8;
-    const pos = posFor(homeTarget, dist, HOME_POLAR, 0);
+    controls.maxDistance = fitDistance(radius) * 1.8;
+    const pos = posFor(homeTarget, homeDistance(), HOME_POLAR, 0);
     if (instant) {
       controls.target.copy(homeTarget);
       camera.position.copy(pos);
@@ -455,7 +471,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     else home(false);
   }
 
-  // ---- picking: the nearest of an article person, a class house, a bridge
+  // ---- picking: the nearest of an article sign, a class house, a bridge
   // or an island deck
   const ray = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
@@ -463,7 +479,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     const r = canvas.getBoundingClientRect();
     ndc.set(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(ndc, camera);
-    const pp = ray.intersectObjects(standing.pickMeshes, false)[0];
+    const pp = ray.intersectObjects(signs.pickMeshes, false)[0];
     const b = ray.intersectObjects(buildingMeshes, false)[0];
     const br = ray.intersectObjects(bridgeMeshes, false)[0];
     const t = ray.intersectObjects(world.pickTargets, false)[0];
@@ -591,6 +607,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     const w = stage.clientWidth, h = stage.clientHeight;
     if (!w || !h) return;
     renderer.setSize(w, h, false);
+    stageW = w;
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     links.resize(w, h);
@@ -628,7 +645,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       env.update(dt);
       updateWalkers(dt);
       updateBoats(motion);
-      ferries.update(motion);
+      harbours.update(motion);
       links.update(dt);
     }
     followTheClock(dt);
