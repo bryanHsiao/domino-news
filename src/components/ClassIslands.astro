@@ -671,9 +671,10 @@ const statTip =
         '<h3>' + esc(n.name) + '</h3>' +
         '<div class="ptags">' + tags + '</div>' +
         '<p class="pdesc' + (n.desc ? '' : ' none') + '">' + esc(n.desc || DS.noDesc) + '</p>' +
+        // the class's articles are listed right here, so no separate
+        // "go to article" button (the article card keeps its own)
         (arts.length
-          ? '<a class="pgo" href="' + esc(arts[0].url) + '">' + esc(DS.goArticle) + '</a>' +
-            '<div class="psec"><div class="prel-lbl">' + esc(DS.classArticles) + '</div>' + arts.map(articleRow).join('') + '</div>'
+          ? '<div class="psec"><div class="prel-lbl">' + esc(DS.classArticles) + '</div>' + arts.map(articleRow).join('') + '</div>'
           : '<p class="pdesc none">' + esc(DS.noArticle) + '</p>'),
         n
       );
