@@ -90,16 +90,11 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     m.frustumCulled = false; // instances move away from where the bounds were computed
     m.castShadow = false;
   }
-  // the people at the house doors: one per article written about the class,
-  // its shirt coloured by the article's language (the "language lamp")
-  const LANG_SHIRT = { ls: 0xdb6a41, java: 0x4f86c6, ssjs: 0x4fa36b };
+  // the people at the house doors: one per article written about the class.
+  // The language a house speaks is shown by its roof flags (world.js), not the
+  // resident's colour, so these keep the crowd's natural, varied look.
   const standing = createCrowd(THREE, scene, partMat, props.people.length, { rnd: mulberry32(7), shadow: true });
-  props.people.forEach((p, i) => {
-    standing.pose(i, p.x, p.y, p.z, p.yaw, PERSON);
-    const node = p.info && nodeById.get(p.info.node);
-    const art = node && node.articles && node.articles[p.info.article];
-    if (art && LANG_SHIRT[art.lang] != null) standing.tintShirt(i, LANG_SHIRT[art.lang]);
-  });
+  props.people.forEach((p, i) => standing.pose(i, p.x, p.y, p.z, p.yaw, PERSON));
   standing.commit();
 
   // ---- camera framing

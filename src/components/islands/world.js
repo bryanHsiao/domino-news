@@ -36,6 +36,9 @@ const STYLE_ORDER = ['plaza', 'courtyard', 'lawn', 'terracotta', 'garden', 'scho
 const ROOF = { be: 0x4f86c6, ui: 0x8b6fd1, un: 0xa8a29a, key: 0xe9b444 };
 const GLASS = 0x7fa6c2;
 const DOOR = 0x8a6a4e;
+// Roof language flags (scene legend): Java blue, SSJS green. Must stay in sync
+// with the legend swatches in ClassIslands.astro.
+const LANG_FLAG = { java: 0x4f86c6, ssjs: 0x4fa36b };
 
 // Building slots per tile: centre first, then the ring from back to front so
 // any free (tree) slots end up in the foreground. The island's landmark tile
@@ -424,6 +427,24 @@ function house(kit, n, theme, x, z, scale) {
   if (kind === 'key') {
     P('cyl', x, roofTop + 0.15, z, 0.02, 0.3, 0.02, 0x5a4a3c);
     P('box', x + 0.07, roofTop + 0.25, z, 0.13, 0.08, 0.008, 0xdb6a41);
+  }
+  // Language flags: a house with a Java / SSJS article flies a pennant in that
+  // colour (blue / green) so the rarer languages stand out from a distance —
+  // LotusScript is on nearly every house, so it gets none. They fly on a mast
+  // to the left of the ridge, clear of the key class's coral flag.
+  const langFlags = [];
+  for (const a of n.articles || []) {
+    if (a.lang === 'java' && !langFlags.includes(LANG_FLAG.java)) langFlags.push(LANG_FLAG.java);
+    if (a.lang === 'ssjs' && !langFlags.includes(LANG_FLAG.ssjs)) langFlags.push(LANG_FLAG.ssjs);
+  }
+  if (langFlags.length) {
+    const fx = x - w * 0.3;
+    const base = roofTop + 0.04;
+    const poleH = 0.26 + langFlags.length * 0.12;
+    P('cyl', fx, base + poleH / 2, z, 0.017, poleH, 0.017, 0x5a4a3c);
+    langFlags.forEach((c, i) => {
+      P('box', fx + 0.085, base + poleH - 0.06 - i * 0.13, z, 0.16, 0.1, 0.012, c);
+    });
   }
   return roofTop;
 }
