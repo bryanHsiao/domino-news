@@ -43,7 +43,7 @@ const T =
         name: '類別地圖',
         tools: '清單操作', btnSearch: '搜尋', btnList: '清單', listTitle: '所有分類',
         badge: '已寫成文章',
-        sub: 'LotusScript 類別依類別分區。點任一張卡片，看它',
+        sub: 'LotusScript · Java · SSJS 的類別與關聯，依 category 分區。點任一張卡片，看它',
         subEm: '回傳什麼、被誰回傳',
         sub2: '——已寫過的類別可直接開文章。',
         search: '搜尋類別… (例如 Database、RichText)',
@@ -57,10 +57,10 @@ const T =
         empty: '沒有符合的類別。',
       }
     : {
-        name: 'Class Directory',
+        name: 'Class Map',
         tools: 'List tools', btnSearch: 'Find', btnList: 'List', listTitle: 'All categories',
         badge: 'written up',
-        sub: 'LotusScript classes grouped by category. Click a card to see what it ',
+        sub: 'Classes and their links across LotusScript, Java and SSJS, grouped by category. Click a card to see what it ',
         subEm: 'returns and what returns it',
         sub2: ' — classes already written link to their article.',
         search: 'Search classes… (e.g. Database, RichText)',
@@ -100,7 +100,7 @@ const statTip =
        coverage pill right, then a full-width controls row. -->
   <header class="cd-head">
     <div class="cd-title">
-      <h1><span class="cd-brand">LotusScript</span> <span class="cd-name">{T.name}</span></h1>
+      <h1><span class="cd-brand">HCL Domino</span> <span class="cd-name">{T.name}</span></h1>
       <p class="cd-sub">{T.sub}<em>{T.subEm}</em>{T.sub2}</p>
     </div>
     <div class="cd-stat" title={statTip}><b>{coveredCount}</b><span>/ {total} {T.badge}</span></div>

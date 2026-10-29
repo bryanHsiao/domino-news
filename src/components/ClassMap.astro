@@ -26,12 +26,12 @@ const cats = [...new Set(data.nodes.map((n) => n.cat))].sort();
 const T =
   lang === 'zh-TW'
     ? {
-        title: 'LotusScript 類別相依地圖',
+        title: 'HCL Domino 類別相依地圖',
         name: '類別相依地圖',
         tools: '地圖操作',
         btnFit: '全景',
         btnSearch: '搜尋',
-        sub: 'HCL Domino · 節點＝類別，連線＝「A 的方法/屬性回傳 B」 · 亮起的節點可點進文章',
+        sub: 'LotusScript · Java · SSJS 的類別與關聯 · 節點＝類別，連線＝「A 的方法/屬性回傳 B」 · 亮起的節點可點進文章',
         covered: '已涵蓋',
         search: '搜尋類別…',
         allCat: '全部分類',
@@ -48,12 +48,12 @@ const T =
         hint: '雙指縮放 · 點節點看關係',
       }
     : {
-        title: 'LotusScript Class Map',
-        name: 'Class Map',
+        title: 'HCL Domino Class Dependency Map',
+        name: 'Class Dependency Map',
         tools: 'Map tools',
         btnFit: 'Fit',
         btnSearch: 'Find',
-        sub: 'HCL Domino · nodes are classes, edges mean "A returns B via a method/property" · lit nodes link to an article',
+        sub: 'Classes and their links across LotusScript, Java and SSJS · nodes are classes, edges mean "A returns B via a method/property" · lit nodes link to an article',
         covered: 'covered',
         search: 'Search classes…',
         allCat: 'All categories',
@@ -84,7 +84,7 @@ const statTip =
 >
   <header class="cm-top">
     <div class="cm-title">
-      <h1><span class="cm-brand">LotusScript</span> <span class="cm-name">{T.name}</span></h1>
+      <h1><span class="cm-brand">HCL Domino</span> <span class="cm-name">{T.name}</span></h1>
       <p class="cm-sub">{T.sub}</p>
     </div>
     <div class="cm-stat" title={statTip}><b>{coveredCount}</b><span>/ {total} {T.covered}</span></div>

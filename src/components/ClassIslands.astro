@@ -44,8 +44,14 @@ const payload = { nodes, cats, links: data.links };
 const T =
   lang === 'zh-TW'
     ? {
-        brand: 'LotusScript',
+        brand: 'HCL Domino',
         name: '類別島嶼',
+        eyebrow: '類別索引',
+        indexLabel: '類別索引',
+        langs: 'LotusScript · Java · SSJS 的類別與關聯',
+        meta: '{i} 座島／{c} 個類別',
+        btnPlates: '名牌',
+        platesTip: '顯示或隱藏島嶼名牌',
         tools: '地圖操作',
         btnHome: '全景',
         btnSearch: '搜尋',
@@ -65,7 +71,8 @@ const T =
         btnPlay: '繼續',
         pauseTip: '暫停行人、船與海面',
         listTitle: '所有島嶼',
-        sub: '每個 category 一座島，類別越多島越大；有關聯的島之間才有橋，橋越寬關聯越多，捧箱子的人在有關聯的島之間搬運 · 拖曳轉看、滾輪縮放 · 點島看清單與關聯線、點房子看類別介紹、點門口的人看文章預覽、指著房子或橋看關聯',
+        noMatch: '沒有符合的類別',
+        sub: '每個 category 一座島，類別越多島越大；有關聯的島之間才有橋，橋越寬關聯越多，捧箱子的人在有關聯的島之間搬運。拖曳轉看、滾輪縮放；點島看清單與關聯線，點房子看類別介紹，點門口的人看文章預覽，指著房子或橋看關聯。',
         covered: '已涵蓋',
         search: '搜尋類別…',
         reset: '重設視角',
@@ -104,8 +111,14 @@ const T =
         loading: '載入 3D 島嶼中…',
       }
     : {
-        brand: 'LotusScript',
+        brand: 'HCL Domino',
         name: 'Class Islands',
+        eyebrow: 'Class index',
+        indexLabel: 'Class index',
+        langs: 'Classes and their links across LotusScript, Java and SSJS',
+        meta: '{i} islands / {c} classes',
+        btnPlates: 'Labels',
+        platesTip: 'Show or hide the island name plates',
         tools: 'Map tools',
         btnHome: 'Fit',
         btnSearch: 'Find',
@@ -125,7 +138,8 @@ const T =
         btnPlay: 'Play',
         pauseTip: 'Pause the walkers, boats and water',
         listTitle: 'All islands',
-        sub: 'One island per category, bigger for more classes; bridges only join related islands, wider for more links, and porters carry boxes between related islands · drag to orbit, scroll to zoom · click an island for its list and relation lines, a house for the class overview, a person at its door for an article preview, hover a house or bridge for its links',
+        noMatch: 'No matching class',
+        sub: 'One island per category, bigger for more classes; bridges only join related islands, wider for more links, and porters carry boxes between related islands. Drag to orbit, scroll to zoom; click an island for its list and relation lines, a house for the class overview, a person at its door for an article preview; hover a house or bridge for its links.',
         covered: 'covered',
         search: 'Search classes…',
         reset: 'Reset view',
@@ -196,6 +210,7 @@ const statTip =
   data-rel-bridge={T.relBridge}
   data-rel-walk={T.relWalk}
   data-list-title={T.listTitle}
+  data-no-match={T.noMatch}
   data-times={JSON.stringify(T.times)}
   data-tip-links={T.tipLinks}
   data-pause={T.btnPause}
@@ -206,36 +221,35 @@ const statTip =
     <div id="ci-labels" class="ci-labels"></div>
     <div id="ci-tip" class="ci-tip" hidden></div>
 
-    <!-- Title card floats over the scene (like the reference's brand card) so
-         the whole frame belongs to the islands. -->
+    <!-- Brand card top-left (like the reference's), title and coverage only;
+         the view controls live in the toolbar, search and lists in the index. -->
     <div class="ci-card">
-      <div class="ci-card-head">
-        <h1><span class="ci-brand">{T.brand}</span> <span class="ci-name">{T.name}</span></h1>
-        <span class="ci-stat" title={statTip}><b>{coveredCount}</b> / {total} {T.covered}</span>
-      </div>
-      <p class="ci-sub">{T.sub}</p>
-      <div class="ci-controls">
-        <input id="ci-q" type="search" placeholder={T.search} autocomplete="off" />
-        <button id="ci-reset" type="button">{T.reset}</button>
-      </div>
-      <!-- time of day + bird's-eye (wider screens; phones use the tools column) -->
-      <div class="ci-modes">
+      <h1><span class="ci-brand">{T.brand}</span> <span class="ci-name">{T.name}</span></h1>
+      <span class="ci-stat" title={statTip}><b>{coveredCount}</b> / {total} {T.covered}</span>
+    </div>
+
+    <!-- View toolbar (wider screens): centred over the scene like the
+         reference's, time of day and relation lines on top, tools below.
+         Phones use the tools column instead. -->
+    <div class="ci-bar" role="toolbar" aria-label={T.tools}>
+      <div class="ci-bar-row">
         <div class="ci-time" role="group" aria-label={T.timeGroup}>
           {(['dawn', 'day', 'dusk', 'night'] as const).map((k) => (
             <button type="button" data-time={k} class={k === 'day' ? 'on' : undefined} title={T.times[k]}>{T.timeShort[k]}</button>
           ))}
         </div>
-        <button type="button" class="ci-bird" data-act="bird" aria-pressed="false"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1.2"></path></svg>{T.birdLong}</button>
-      </div>
-      <!-- relation lines + pause -->
-      <div class="ci-modes">
         <div class="ci-time ci-links" role="group" aria-label={T.linksGroup}>
           <span class="ci-seg-lbl">{T.linksGroup}</span>
           {(['off', 'focus', 'all'] as const).map((k) => (
             <button type="button" data-links={k} class={k === 'focus' ? 'on' : undefined} title={T.linkTips[k].replace('{n}', String(data.links.length))}>{T.linkModes[k]}</button>
           ))}
         </div>
-        <button type="button" class="ci-bird" data-act="pause" aria-pressed="false" title={T.pauseTip}><svg class="ci-pause-ic" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path class="ic-pause" d="M5 3.5v9M11 3.5v9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path><path class="ic-play" d="M5 3.2v9.6L13 8z" fill="currentColor"></path></svg><span class="ci-pause-name">{T.btnPause}</span></button>
+      </div>
+      <div class="ci-icons">
+        <button type="button" data-act="home" title={T.reset}><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 12L12 4M6.5 4H12v5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>{T.btnHome}</span></button>
+        <button type="button" data-act="plates" aria-pressed="true" title={T.platesTip}><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><rect x="2" y="4.5" width="12" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 8h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg><span>{T.btnPlates}</span></button>
+        <button type="button" data-act="pause" aria-pressed="false" title={T.pauseTip}><svg class="ci-pause-ic" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path class="ic-pause" d="M5 3.5v9M11 3.5v9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path><path class="ic-play" d="M5 3.2v9.6L13 8z" fill="currentColor"></path></svg><span class="ci-pause-name">{T.btnPause}</span></button>
+        <button type="button" data-act="bird" aria-pressed="false" title={T.birdLong}><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1.2"></path></svg><span>{T.bird}</span></button>
       </div>
     </div>
 
@@ -257,6 +271,7 @@ const statTip =
         ))}
       </div>
       <button type="button" class="ci-bird" data-act="bird" aria-pressed="false"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1.2"></path></svg>{T.birdLong}</button>
+      <button type="button" class="ci-bird" data-act="plates" aria-pressed="true"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="2" y="4.5" width="12" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 8h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>{T.btnPlates}</button>
     </div>
 
     <div id="ci-loading" class="ci-loading" hidden>{T.loading}</div>
@@ -267,8 +282,6 @@ const statTip =
       <button id="ci-fb-btn" type="button">{T.fbBtn}</button>
     </div>
 
-    <aside id="ci-panel" class="ci-panel" hidden></aside>
-
     <div id="ci-hint" class="ci-hint" data-hint={T.hint}></div>
 
     <div class="ci-legend">
@@ -278,6 +291,22 @@ const statTip =
       <span><i class="sw key"></i>{T.legKey}</span>
     </div>
   </div>
+
+  <!-- Index panel docked on the right (like the reference's policy index):
+       what the map covers, search, then the island list — which turns into
+       an island's classes, a class overview or an article preview. On phones
+       the head folds away (search opens under the brand card) and the panel
+       becomes a bottom sheet. -->
+  <aside class="ci-index" aria-label={T.indexLabel}>
+    <div class="ci-ix-head">
+      <div class="ci-eyebrow">{T.eyebrow}</div>
+      <h2>{T.langs}</h2>
+      <p class="ci-ix-meta">{T.meta.replace('{i}', String(cats.length)).replace('{c}', String(total))}</p>
+      <p class="ci-sub">{T.sub}</p>
+      <input id="ci-q" type="search" placeholder={T.search} autocomplete="off" />
+    </div>
+    <div id="ci-panel" class="ci-panel" hidden></div>
+  </aside>
 </div>
 
 <script type="application/json" id="ci-data" set:html={JSON.stringify(payload)}></script>
@@ -289,26 +318,47 @@ const statTip =
     --cbg: #faf9f6; --cpanel: #fff; --cink: #1a1a1a; --cmuted: #6b6b6b; --cline: #e2e0d8; --cgold: #d99000;
     --paper: #fff8f4; --ink: #211d1d; --ink-mut: #78685e; --coral: #db6a41; --butter: #fcea8b; --hair: rgba(33, 29, 29, 0.18);
     --roof-be: #4f86c6; --roof-ui: #8b6fd1; --roof-un: #a8a29a; --roof-key: #e9b444;
-    position: relative; height: 100%; min-height: 480px; overflow: hidden; background: var(--cbg); color: var(--cink);
+    position: relative; display: flex; height: 100%; min-height: 480px; overflow: hidden; background: var(--cbg); color: var(--cink);
   }
+  /* width of the docked index panel (map.astro keeps the view switch clear of it) */
+  :root { --ci-ix-w: clamp(270px, 24vw, 340px); }
   #ci * { box-sizing: border-box; }
 
-  #ci .ci-stage { position: absolute; inset: 0; overflow: hidden; background: linear-gradient(180deg, #cfe6ee 0%, #f4eee3 55%, #8fc3c9 100%); color: var(--ink); }
+  #ci .ci-stage { position: relative; flex: 1 1 auto; min-width: 0; height: 100%; overflow: hidden; background: linear-gradient(180deg, #cfe6ee 0%, #f4eee3 55%, #8fc3c9 100%); color: var(--ink); }
 
-  /* Floating title card: title, coverage, search, reset. */
-  #ci .ci-card { position: absolute; top: 14px; left: 14px; z-index: 7; width: 360px; max-width: calc(100% - 28px);
-    background: rgba(255, 248, 244, 0.95); border: 1px solid var(--hair); border-radius: 12px; padding: 12px 14px 13px; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.14); }
-  #ci .ci-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  #ci .ci-card h1 { margin: 0; font-size: 17px; font-weight: 720; letter-spacing: -0.01em; color: var(--ink); }
-  #ci .ci-stat { flex: none; display: inline-flex; align-items: baseline; gap: 4px; background: var(--color-brand-dark, #0a0a0a); color: #d9d4cc; padding: 4px 10px; border-radius: 999px; font-size: 11px; white-space: nowrap; }
-  #ci .ci-stat b { color: var(--color-brand, #fbbf24); font-size: 15px; font-variant-numeric: tabular-nums; }
-  #ci .ci-sub { margin: 6px 0 10px; font-size: 11.5px; line-height: 1.5; color: var(--ink-mut); }
-  #ci .ci-controls { display: flex; gap: 6px; }
-  #ci .ci-controls input { font: inherit; font-size: 12.5px; padding: 6px 10px; border: 1px solid var(--hair); border-radius: 8px; background: #fff; color: var(--ink); min-width: 0; flex: 1; }
-  #ci .ci-controls input:focus { outline: none; border-color: var(--coral); }
-  #ci .ci-controls #ci-reset { flex: none; font: inherit; font-size: 12px; padding: 6px 12px; border: 1px solid var(--hair); border-radius: 8px; background: #fff; color: var(--ink); cursor: pointer; }
-  #ci .ci-controls #ci-reset:hover { border-color: var(--coral); }
-  #ci .ci-modes { display: flex; gap: 6px; margin-top: 8px; }
+  /* Brand card top-left: big coral brand, the view's name, coverage. */
+  #ci .ci-card { position: absolute; top: 14px; left: 14px; z-index: 7; display: flex; flex-direction: column; align-items: flex-start; gap: 7px; max-width: calc(100% - 28px);
+    background: rgba(255, 248, 244, 0.95); border: 1px solid var(--hair); border-radius: 16px; padding: 11px 16px 12px; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.14); }
+  #ci .ci-card h1 { margin: 0; display: flex; flex-direction: column; line-height: 1.02; color: var(--ink); }
+  #ci .ci-brand { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; }
+  #ci .ci-name { margin-top: 3px; font-size: 14px; font-weight: 700; letter-spacing: 0.08em; }
+  #ci .ci-stat { flex: none; display: inline-flex; align-items: baseline; gap: 4px; background: var(--ink); color: #d9d4cc; padding: 4px 10px; border-radius: 999px; font-size: 11px; white-space: nowrap; }
+  #ci .ci-stat b { color: #fbbf24; font-size: 15px; font-variant-numeric: tabular-nums; }
+
+  /* View toolbar: centred over the scene on wide screens; tablets tuck it
+     under the brand card (see the media query below). */
+  #ci .ci-bar { position: absolute; z-index: 7; top: 14px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  #ci .ci-bar-row { display: flex; gap: 8px; }
+  #ci .ci-bar .ci-time { background: rgba(255, 248, 244, 0.95); border-radius: 999px; box-shadow: 0 6px 18px rgba(33, 29, 29, 0.12); }
+  #ci .ci-bar .ci-time button { padding: 6px 12px; }
+  #ci .ci-icons { display: flex; gap: 2px; padding: 5px; background: rgba(255, 248, 244, 0.95); border: 1px solid var(--hair); border-radius: 16px; box-shadow: 0 8px 22px rgba(33, 29, 29, 0.14); }
+  #ci .ci-icons button { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 54px; padding: 7px 8px 6px; border: 0; border-radius: 11px; background: transparent; color: var(--ink);
+    font: 600 11px/1 system-ui, -apple-system, 'Noto Sans TC', sans-serif; cursor: pointer; }
+  #ci .ci-icons button:hover { background: rgba(33, 29, 29, 0.07); }
+  #ci .ci-icons button[data-act='pause'][aria-pressed='true'], #ci .ci-icons button[data-act='bird'][aria-pressed='true'] { background: var(--ink); color: var(--paper); }
+  #ci .ci-icons [data-act='plates'][aria-pressed='false'] svg { opacity: 0.4; }
+  #ci.no-plates .ci-labels { display: none; }
+
+  /* Index panel docked on the right: head (what the map covers + search),
+     then the panel body (island list / island / class / article). */
+  #ci .ci-index { flex: none; position: relative; z-index: 6; width: var(--ci-ix-w); height: 100%; display: flex; flex-direction: column; background: var(--paper); color: var(--ink); border-left: 1px solid var(--hair); box-shadow: -10px 0 30px rgba(33, 29, 29, 0.08); }
+  #ci .ci-ix-head { flex: none; padding: 18px 18px 14px; border-bottom: 1px solid var(--hair); }
+  #ci .ci-eyebrow { font: 700 10.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: 0.14em; text-transform: uppercase; color: var(--coral); }
+  #ci .ci-ix-head h2 { margin: 6px 0 5px; font-size: 18px; font-weight: 760; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink); }
+  #ci .ci-ix-meta { margin: 0; font: 600 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--ink-mut); }
+  #ci .ci-sub { margin: 6px 0 12px; font-size: 11.5px; line-height: 1.55; color: var(--ink-mut); }
+  #ci #ci-q { display: block; width: 100%; font: inherit; font-size: 13px; padding: 9px 12px; border: 1px solid var(--hair); border-radius: 10px; background: #fff; color: var(--ink); }
+  #ci #ci-q:focus { outline: none; border-color: var(--coral); }
   #ci .ci-time { display: inline-flex; border: 1px solid var(--hair); border-radius: 8px; overflow: hidden; background: #fff; }
   #ci .ci-time button { font: inherit; font-size: 12px; padding: 5px 11px; border: 0; background: transparent; color: var(--ink-mut); cursor: pointer; }
   #ci .ci-time button.on { background: var(--ink); color: var(--paper); }
@@ -358,8 +408,7 @@ const statTip =
   #ci .ci-fallback p { margin: 0; color: var(--cmuted); font-size: 13.5px; max-width: 42ch; }
   #ci .ci-fallback button { margin-top: 6px; font: inherit; font-size: 13px; font-weight: 600; padding: 9px 18px; border: 0; border-radius: 9px; background: var(--color-brand-dark, #0a0a0a); color: var(--color-brand, #fbbf24); cursor: pointer; }
 
-  #ci .ci-panel { position: absolute; top: 14px; right: 14px; z-index: 6; width: 300px; max-width: calc(100% - 28px); max-height: calc(100% - 28px); overflow: auto;
-    background: var(--paper); color: var(--ink); border: 1px solid var(--hair); border-radius: 14px; padding: 15px 16px 17px; box-shadow: 0 12px 34px rgba(33, 29, 29, 0.18); }
+  #ci .ci-panel { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 14px 18px 20px; color: var(--ink); }
   #ci .ci-panel .pclose { float: right; border: 0; background: transparent; color: var(--ink-mut); cursor: pointer; font-size: 1.15rem; line-height: 1; padding: 2px 4px; }
   #ci .ci-panel .pnum { font: 700 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--coral); }
   #ci .ci-panel h3 { font-size: 1.1rem; font-weight: 720; letter-spacing: -0.01em; margin: 2px 0; color: var(--ink); }
@@ -423,36 +472,48 @@ const statTip =
   #ci .ci-tools button { display: flex; align-items: center; justify-content: center; gap: 5px; width: 68px; height: 42px; padding: 0 8px; border-radius: 12px; border: 1px solid var(--hair);
     background: rgba(255, 248, 244, 0.95); color: var(--ink); font: 600 12.5px/1 system-ui, -apple-system, 'Noto Sans TC', sans-serif; box-shadow: 0 4px 14px rgba(33, 29, 29, 0.12); cursor: pointer; }
   #ci .ci-tools button[aria-expanded='true'], #ci .ci-tools button[aria-pressed='true'] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  #ci .ci-panel .plist-isl { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
-  #ci .ci-panel .pisl { display: flex; align-items: center; gap: 8px; text-align: left; border: 1px solid var(--hair); background: #fff; border-radius: 9px; padding: 8px 10px; font: inherit; color: var(--ink); cursor: pointer; }
-  #ci .ci-panel .pisl:hover { border-color: var(--coral); }
-  #ci .ci-panel .pisl b { font: 700 10.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--coral); }
+  /* island list: the reference index's numbered rows */
+  #ci .ci-panel .plist-isl { display: flex; flex-direction: column; margin-top: 4px; }
+  #ci .ci-panel .pisl { display: flex; align-items: center; gap: 10px; text-align: left; border: 0; border-bottom: 1px solid var(--hair); background: transparent; padding: 10px 2px; font: inherit; color: var(--ink); cursor: pointer; }
+  #ci .ci-panel .pisl:hover span { color: var(--coral); }
+  #ci .ci-panel .pisl b { min-width: 30px; font: italic 600 21px/1 Georgia, 'Times New Roman', serif; color: var(--coral); }
+  #ci .ci-panel .plist-empty { margin: 12px 0 0; font-size: 0.84rem; color: var(--ink-mut); }
   #ci .ci-panel .pisl span { flex: 1; font-size: 0.88rem; font-weight: 600; }
   #ci .ci-panel .pisl i { font-style: normal; font: 600 10.5px ui-monospace, monospace; color: var(--ink-mut); }
 
-  /* Small screens: reference-style brand card (big coral LotusScript), the
+  /* Small screens: reference-style brand card (big coral brand), the
      tools column on the right, search folded into a button, no legend, and
      the island panel as a bottom sheet. */
   @media (max-width: 760px) {
-    #ci .ci-card { top: 10px; left: 10px; right: auto; width: auto; max-width: calc(100% - 100px); padding: 10px 14px 11px; border-radius: 16px; }
-    #ci .ci-card-head { display: block; }
-    #ci .ci-card h1 { display: flex; flex-direction: column; line-height: 1.02; }
-    #ci .ci-brand { font-size: 24px; font-weight: 800; letter-spacing: -0.03em; }
-    #ci .ci-name { margin-top: 3px; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; }
-    #ci .ci-stat { display: inline-flex; margin-top: 7px; padding: 3px 9px; font-size: 10.5px; }
+    #ci { display: block; }
+    #ci .ci-stage { position: absolute; inset: 0; }
+    #ci .ci-card { top: 10px; left: 10px; max-width: calc(100% - 100px); padding: 10px 14px 11px; gap: 0; }
+    #ci .ci-brand { font-size: 24px; }
+    #ci .ci-name { font-size: 13px; }
+    #ci .ci-stat { margin-top: 7px; padding: 3px 9px; font-size: 10.5px; }
     #ci .ci-stat b { font-size: 13px; }
-    #ci .ci-sub, #ci .ci-controls, #ci .ci-modes { display: none; }
-    #ci.search-open .ci-card { width: calc(100% - 100px); }
-    #ci.search-open .ci-controls { display: flex; margin-top: 9px; }
-    #ci .ci-controls #ci-reset { display: none; }
+    #ci .ci-bar { display: none; }
+    /* the index folds away: its search opens under the brand card, its
+       panel is the bottom sheet */
+    #ci .ci-index { display: contents; }
+    #ci .ci-ix-head { display: none; }
+    #ci.search-open .ci-ix-head { display: block; position: absolute; z-index: 7; top: var(--ci-q-top, 120px); left: 10px; right: 88px; padding: 0; border: 0; }
+    #ci.search-open .ci-ix-head > :not(#ci-q) { display: none; }
+    #ci.search-open #ci-q { box-shadow: 0 6px 18px rgba(33, 29, 29, 0.14); }
     #ci .ci-tools { display: flex; }
     #ci .ci-pop:not([hidden]) { display: flex; position: absolute; right: 86px; z-index: 9; flex-direction: column; align-items: stretch; gap: 7px; padding: 8px;
       background: rgba(255, 248, 244, 0.97); border: 1px solid var(--hair); border-radius: 12px; box-shadow: 0 8px 22px rgba(33, 29, 29, 0.18); }
     #ci .ci-pop .ci-time button { padding: 7px 11px; font-size: 13px; }
     #ci .ci-pop .ci-bird { justify-content: center; padding: 7px 11px; font-size: 13px; }
     #ci .ci-legend { display: none; }
-    #ci .ci-panel { top: auto; left: 0; right: 0; bottom: 0; width: 100%; max-width: 100%; border-radius: 16px 16px 0 0; max-height: 64%; z-index: 8; }
+    #ci .ci-panel { position: absolute; left: 0; right: 0; bottom: 0; z-index: 8; max-height: 64%; padding: 15px 16px 17px; background: var(--paper); border: 1px solid var(--hair); border-radius: 16px 16px 0 0; box-shadow: 0 -10px 34px rgba(33, 29, 29, 0.18); }
     #ci .ci-hint { display: block; position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 5; background: rgba(33, 29, 29, 0.82); color: #fff8f4; font-size: 11.5px; padding: 5px 12px; border-radius: 999px; pointer-events: none; transition: opacity 0.4s; white-space: nowrap; }
+  }
+  /* Tablets: not enough room beside the brand card, so the toolbar sits
+     under it, left-aligned (as the reference does at this width). */
+  @media (min-width: 761px) and (max-width: 1199px) {
+    #ci .ci-bar { top: 128px; left: 14px; transform: none; align-items: flex-start; }
+    #ci .ci-bar-row { flex-direction: column; align-items: flex-start; }
   }
   @media (max-width: 640px) {
     #ci .ci-lbl { font-size: 10px; padding: 4px 6px; gap: 4px; }
@@ -496,16 +557,30 @@ const statTip =
     var NODE = {};
     DATA.nodes.forEach(function (n) { NODE[n.id] = n; });
 
+    // Wider screens dock the panel in the index on the right, where it always
+    // shows something (the island list when nothing else); phones keep it as
+    // a bottom sheet that closes.
+    var dockMQ = window.matchMedia('(min-width: 761px)');
+    function docked() { return dockMQ.matches; }
+    var panelMode = null; // 'list' | 'island' | 'card'
+    var curCluster = null;
+    function showHome() {
+      if (docked()) renderIslandList();
+      else { panel.hidden = true; panel.innerHTML = ''; panelMode = null; }
+    }
+
     // Class overview and article preview: the same panel, showing the basics
     // first; the article itself is one more click away ("Open article →").
     function closeCard() {
-      panel.hidden = true;
-      panel.innerHTML = '';
       if (api) api.focusClass(null);
+      // back to the island it came from, else home
+      if (curCluster) renderPanel(curCluster);
+      else showHome();
     }
     function openCard(html, node) {
       panel.innerHTML = '<button class="pclose" aria-label="' + esc(DS.close) + '">×</button>' + html;
       panel.hidden = false;
+      panelMode = 'card';
       panel.scrollTop = 0;
       panel.querySelector('.pclose').addEventListener('click', closeCard);
       Array.prototype.forEach.call(panel.querySelectorAll('[data-cat]'), function (b) {
@@ -561,7 +636,9 @@ const statTip =
     // Right-hand panel listing the selected island's classes.
     function renderPanel(cluster) {
       if (api) api.focusClass(null);
-      if (!cluster) { panel.hidden = true; panel.innerHTML = ''; return; }
+      curCluster = cluster || null;
+      if (!cluster) { showHome(); return; }
+      panelMode = 'island';
       var rows = cluster.members.map(function (n) {
         var k = kindOf(n);
         return '<button class="pcls' + (n.url ? '' : ' un') + '" data-id="' + esc(n.id) + '">' +
@@ -581,6 +658,7 @@ const statTip =
         '<div class="plist">' + rows + '</div>' +
         (rel ? '<div class="prel"><div class="prel-lbl">' + esc(DS.relTitle) + '</div><div class="prel-key">⇄ ' + esc(DS.relBridge) + ' · ⋯ ' + esc(DS.relWalk) + '</div><div class="prel-chips">' + rel + '</div></div>' : '');
       panel.hidden = false;
+      panel.scrollTop = 0;
       panel.querySelector('.pclose').addEventListener('click', doReset);
       Array.prototype.forEach.call(panel.querySelectorAll('.prel-chip'), function (chip) {
         chip.addEventListener('click', function () { if (api) api.select(chip.dataset.cat); });
@@ -617,6 +695,8 @@ const statTip =
         });
         loadingEl.hidden = true;
         if (q.value) api.filter(q.value);
+        syncModes();
+        if (docked() && panel.hidden) showHome();
         if (hint && hint.dataset.hint && window.matchMedia && window.matchMedia('(max-width:640px)').matches) {
           hint.textContent = hint.dataset.hint;
           setTimeout(function () { hint.style.opacity = '0'; }, 4200);
@@ -628,25 +708,45 @@ const statTip =
       });
     }
 
-    q.addEventListener('input', function () { if (api) api.filter(q.value); });
+    q.addEventListener('input', function () {
+      if (!api) return;
+      api.filter(q.value);
+      if (panelMode === 'list') renderIslandList();
+    });
 
     // Small-screen tools column: overview, search (folds the search field open
     // under the title card; closing it clears the search) and the island list.
     var searchBtn = root.querySelector('.ci-tools [data-act="search"]');
+    var card = root.querySelector('.ci-card');
     function setSearch(open) {
+      // the field opens just under the brand card
+      if (open) root.style.setProperty('--ci-q-top', (card.offsetTop + card.offsetHeight + 8) + 'px');
       root.classList.toggle('search-open', open);
       searchBtn.setAttribute('aria-expanded', String(open));
       if (open) q.focus();
-      else if (q.value) { q.value = ''; if (api) api.filter(''); }
+      else if (q.value) {
+        q.value = '';
+        if (api) api.filter('');
+        if (panelMode === 'list') renderIslandList();
+      }
     }
     function renderIslandList() {
       if (!api) return;
-      var rows = api.clusters.map(function (c) {
+      // a search narrows the list to islands with a matching class
+      var term = q.value.trim().toLowerCase();
+      var rows = api.clusters.filter(function (c) {
+        return !term || c.cat.toLowerCase().indexOf(term) >= 0 || c.members.some(function (m) { return m.name.toLowerCase().indexOf(term) >= 0 || m.id.toLowerCase().indexOf(term) >= 0; });
+      }).map(function (c) {
         return '<button class="pisl" data-cat="' + esc(c.cat) + '"><b>' + String(c.num).padStart(2, '0') + '</b><span>' + esc(c.cat) + '</span><i>' + c.count + '</i></button>';
       }).join('');
-      panel.innerHTML = '<button class="pclose" aria-label="' + esc(DS.close) + '">×</button><h3>' + esc(DS.listTitle) + '</h3><div class="plist-isl">' + rows + '</div>';
+      // docked, the list is the panel's home and has nothing to close
+      panel.innerHTML = (docked() ? '' : '<button class="pclose" aria-label="' + esc(DS.close) + '">×</button>') +
+        '<h3>' + esc(DS.listTitle) + '</h3>' +
+        (rows ? '<div class="plist-isl">' + rows + '</div>' : '<p class="plist-empty">' + esc(DS.noMatch) + '</p>');
       panel.hidden = false;
-      panel.querySelector('.pclose').addEventListener('click', function () { panel.hidden = true; panel.innerHTML = ''; });
+      panelMode = 'list';
+      var x = panel.querySelector('.pclose');
+      if (x) x.addEventListener('click', function () { panel.hidden = true; panel.innerHTML = ''; panelMode = null; });
       Array.prototype.forEach.call(panel.querySelectorAll('.pisl'), function (b) {
         b.addEventListener('click', function () { api.select(b.dataset.cat); });
       });
@@ -672,7 +772,20 @@ const statTip =
         else if (b.dataset.act === 'links') { if (api) { api.setLinks(api.getLinks() === 'all' ? 'focus' : 'all'); syncModes(); } }
       });
     });
-    document.getElementById('ci-reset').addEventListener('click', doReset);
+    // wide-screen toolbar: overview and name plates (time of day, relation
+    // lines, pause and bird's-eye are bound below with their phone twins)
+    root.querySelector('.ci-icons [data-act="home"]').addEventListener('click', doReset);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-act="plates"]'), function (btn) {
+      btn.addEventListener('click', function () {
+        root.classList.toggle('no-plates');
+        syncModes();
+      });
+    });
+    // crossing the phone/tablet breakpoint: dock or fold the panel
+    dockMQ.addEventListener('change', function () {
+      if (docked()) { root.classList.remove('search-open'); if (panel.hidden) showHome(); else if (panelMode === 'list') renderIslandList(); }
+      else if (panelMode === 'list') showHome();
+    });
 
     // Time of day and bird's-eye: card controls (wider screens) and tools
     // column (phones) drive the same scene state; syncModes mirrors it back.
@@ -691,6 +804,8 @@ const statTip =
         btn.setAttribute('aria-pressed', String(btn.dataset.links === lm));
       });
       root.querySelector('.ci-tools [data-act="links"]').setAttribute('aria-pressed', String(lm === 'all'));
+      var plates = !root.classList.contains('no-plates');
+      Array.prototype.forEach.call(root.querySelectorAll('[data-act="plates"]'), function (btn) { btn.setAttribute('aria-pressed', String(plates)); });
       Array.prototype.forEach.call(root.querySelectorAll('[data-act="pause"]'), function (btn) {
         btn.setAttribute('aria-pressed', String(p));
         btn.querySelector('.ci-pause-name').textContent = p ? DS.play : DS.pause;
