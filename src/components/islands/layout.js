@@ -22,7 +22,7 @@ const MIN_CHANNEL = 1.3;
 const WALK_RING = 1.8; // radius of the walking ring painted on each tile
 // Off-shore islands sit this much open water away from the archipelago, in
 // this direction (radians in the x/z plane; +z faces the default camera).
-const OFFSHORE_GAP = 6;
+const OFFSHORE_GAP = 3;
 const OFFSHORE_ANGLE = 1.1;
 // The harbour town stands on the lake shore in this direction (back left,
 // where the far shore is in view on every screen), its centre this far
