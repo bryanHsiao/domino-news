@@ -42,6 +42,23 @@ const SPA_404_TITLE_PATTERNS: RegExp[] = [
   /Page\s*Not\s*Found/i,
 ];
 
+/**
+ * Hosts behind bot protection (e.g. StackOverflow via Cloudflare) that
+ * refuse non-browser requests with 403/429 no matter the User-Agent — the
+ * page is fine for real visitors, but an automated checker can never see it.
+ * For these hosts a 403/429 is treated as reachable instead of broken. A 404
+ * is still broken, so a genuinely deleted page (e.g. a removed SO question)
+ * is still caught. Match is exact-host or any subdomain.
+ */
+const BOT_BLOCKED_HOSTS = new Set(['stackoverflow.com']);
+const BOT_BLOCK_STATUSES = new Set([403, 429]);
+
+function isBotBlockedHost(host: string): boolean {
+  return [...BOT_BLOCKED_HOSTS].some(
+    (h) => host === h || host.endsWith(`.${h}`)
+  );
+}
+
 async function deepCheckSpa404(url: string): Promise<UrlCheckResult | null> {
   const headers = { 'User-Agent': UA, Accept: 'text/html,*/*' };
   try {
@@ -104,10 +121,22 @@ export async function verifyUrl(url: string): Promise<UrlCheckResult> {
         headers: { ...headers, Range: 'bytes=0-1023' },
       });
     }
+    const ok = res.status >= 200 && res.status < 400;
+    // Bot-protected hosts return 403/429 to any non-browser fetch; can't be
+    // verified programmatically, so treat those statuses as reachable. A 404
+    // from them is still a real broken link and falls through to ok=false.
+    if (!ok && BOT_BLOCK_STATUSES.has(res.status) && isBotBlockedHost(host)) {
+      return {
+        url,
+        status: res.status,
+        ok: true,
+        reason: `${res.status} from bot-protected host; not machine-verifiable, assumed reachable`,
+      };
+    }
     return {
       url,
       status: res.status,
-      ok: res.status >= 200 && res.status < 400,
+      ok,
     };
   } catch (err) {
     return {
