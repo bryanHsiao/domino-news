@@ -438,12 +438,12 @@ function house(kit, n, theme, x, z, scale) {
     if (a.lang === 'ssjs' && !langFlags.includes(LANG_FLAG.ssjs)) langFlags.push(LANG_FLAG.ssjs);
   }
   if (langFlags.length) {
-    const fx = x - w * 0.3;
+    const fx = x - w * 0.34;
     const base = roofTop + 0.04;
-    const poleH = 0.26 + langFlags.length * 0.12;
-    P('cyl', fx, base + poleH / 2, z, 0.017, poleH, 0.017, 0x5a4a3c);
+    const poleH = 0.46 + langFlags.length * 0.19;
+    P('cyl', fx, base + poleH / 2, z, 0.024, poleH, 0.024, 0x5a4a3c);
     langFlags.forEach((c, i) => {
-      P('box', fx + 0.085, base + poleH - 0.06 - i * 0.13, z, 0.16, 0.1, 0.012, c);
+      P('box', fx + 0.15, base + poleH - 0.1 - i * 0.22, z, 0.3, 0.18, 0.016, c);
     });
   }
   return roofTop;
