@@ -416,6 +416,8 @@ const statTip =
   #ci .ci-lbl.sel { background: var(--ink); color: var(--paper); border-color: var(--coral); }
   #ci .ci-lbl.sel b { color: var(--butter); } #ci .ci-lbl.sel i { color: #cfc6bf; }
   #ci .ci-lbl.dim { opacity: 0.28; }
+  /* near the brand card, toolbar, tabs or legend: fade out (scene.js) */
+  #ci .ci-lbl.tucked { opacity: 0; pointer-events: none; }
 
   #ci .ci-tip { position: absolute; left: 0; top: 0; z-index: 8; pointer-events: none; display: flex; flex-direction: column; gap: 2px; max-width: 260px;
     background: rgba(255, 248, 244, 0.97); border: 1px solid var(--hair); border-radius: 8px; padding: 7px 10px; box-shadow: 0 6px 18px rgba(33, 29, 29, 0.16); font-size: 12px; line-height: 1.35; }
@@ -758,6 +760,7 @@ const statTip =
           onClass: showClass,
           onArticle: showArticle,
           onTime: syncModes, // the light followed the clock into another time of day
+          chrome: chromeRects, // name plates fade out near these
         });
         loadingEl.hidden = true;
         if (q.value) api.filter(q.value);
@@ -898,6 +901,20 @@ const statTip =
       var dirTab = document.querySelector('.map-tab[data-view="dir"]');
       if (dirTab) dirTab.click();
     });
+
+    // The interface laid over the scene, as screen rects; the scene fades
+    // out the name plates that come near any of them.
+    var chromeEls = ['.ci-card', '.ci-bar', '.ci-tools', '#ci-viewpop', '.ci-legend', '#ci-panel'].map(function (s) { return root.querySelector(s); });
+    var tabsEl = document.querySelector('.map-tabs');
+    function chromeRects() {
+      var out = [];
+      chromeEls.concat(tabsEl).forEach(function (el) {
+        if (!el || el.hidden || (el.classList.contains('ci-bar') && root.classList.contains('bar-col'))) return;
+        var r = el.getBoundingClientRect();
+        if (r.width && r.height) out.push(r);
+      });
+      return out;
+    }
 
     // Docked layouts: keep the one-row toolbar only while it clears the view
     // tabs; otherwise switch to the column of buttons (.bar-col).
