@@ -202,6 +202,7 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
     t.nodes.forEach((n, i) => {
       const x = t.x + slots[i][0], z = t.z + slots[i][1];
       anchors.set(n.id, { x, y: house(buildings, n, theme, x, z, isHeart ? 0.92 : 1), z });
+      residents(n, t, x, z, rnd);
     });
     for (let i = t.nodes.length; i < slots.length; i++) {
       const sx = t.x + slots[i][0] + (rnd() - 0.5) * 0.2;
@@ -217,15 +218,28 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
         props.bush(bx, bz, 0.2 + rnd() * 0.1, rnd, TOP);
       }
     }
-    // lamps on the curb and a couple of people on the grass, clear of the
-    // walking ring the walkers use
+    // lamps on the curb, clear of the walking ring the walkers use
     for (const k of [1, 4]) {
       const [lx, lz] = hexVertex(t.x, t.z, 1.98, k);
       props.lamp(lx, lz, TOP);
     }
-    for (let p = 0; p < 2; p++) {
-      const a = rnd() * Math.PI * 2;
-      props.person(t.x + Math.cos(a) * 1.55, t.z + Math.sin(a) * 1.55 * 0.95, rnd, TOP);
+  }
+
+  // One person in front of a class's house per article written about it
+  // (up to three), side by side on the side facing away from the tile's
+  // centre, looking out at the visitor.
+  function residents(n, t, x, z, rnd) {
+    const m = (n.articles || []).length;
+    if (!m) return;
+    let dx = x - t.x, dz = z - t.z;
+    const L = Math.hypot(dx, dz);
+    if (L < 0.01) (dx = 0), (dz = 1);
+    else (dx /= L), (dz /= L);
+    const out = classKind(n) === 'key' ? 0.56 : 0.5;
+    for (let k = 0; k < m; k++) {
+      const off = (k - (m - 1) / 2) * 0.17;
+      const px = x + dx * out + dz * off, pz = z + dz * out - dx * off;
+      props.person(px, pz, Math.atan2(dx, dz) + (rnd() - 0.5) * 0.6, TOP, { node: n.id, article: k });
     }
   }
 

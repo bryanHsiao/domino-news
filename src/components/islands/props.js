@@ -60,10 +60,11 @@ export function createProps(THREE, kit) {
   }
 
   // People standing about are only recorded here; the scene draws them with
-  // the walkers' character model (people.js).
+  // the walkers' character model (people.js). `info` ties a person to what
+  // it stands for (an article of a class).
   const people = [];
-  function person(x, z, rnd, y) {
-    people.push({ x, y, z, yaw: rnd() * Math.PI * 2 });
+  function person(x, z, yaw, y, info = null) {
+    people.push({ x, y, z, yaw, info });
   }
 
   function boat(x, z, yaw, rnd, y) {
