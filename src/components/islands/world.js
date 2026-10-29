@@ -76,6 +76,7 @@ export const ROOF_COLORS = ROOF;
 export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, layout) {
   const pickTargets = [];
   const outlines = new Map();
+  const anchors = new Map(); // class id -> roof top of its house, where relation lines start and end
   const tileAt = new Map(layout.tiles.map((t) => [t.q + ',' + t.r, t]));
   const add = (geo, mat, { cast = false, receive = true, cat = null, x = 0, y = 0, z = 0 } = {}) => {
     const m = new THREE.Mesh(geo, mat);
@@ -198,7 +199,10 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
     const rnd = mulberry32(hashString(t.q + ':' + t.r));
     const slots = isHeart ? LANDMARK_SLOTS : SLOTS;
     if (isHeart) buildLandmark(theme.landmark, decor, t.x, t.z);
-    t.nodes.forEach((n, i) => house(buildings, n, theme, t.x + slots[i][0], t.z + slots[i][1], isHeart ? 0.92 : 1));
+    t.nodes.forEach((n, i) => {
+      const x = t.x + slots[i][0], z = t.z + slots[i][1];
+      anchors.set(n.id, { x, y: house(buildings, n, theme, x, z, isHeart ? 0.92 : 1), z });
+    });
     for (let i = t.nodes.length; i < slots.length; i++) {
       const sx = t.x + slots[i][0] + (rnd() - 0.5) * 0.2;
       const sz = t.z + slots[i][1] + (rnd() - 0.5) * 0.2;
@@ -249,7 +253,7 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
     outlines.set(c.cat, m);
   }
 
-  return { pickTargets, outlines };
+  return { pickTargets, outlines, anchors };
 }
 
 // Bridge look by relation strength: 4+ links a wide stone bridge, 2–3 a wooden
@@ -319,7 +323,7 @@ function buildBridge(kit, br) {
 // One class = one small house in its island's architecture. The class decides
 // floors and roof colour (key → three floors, gold roof and a flag;
 // uncovered → one floor, flat grey roof); the theme decides walls, body and
-// roof shape and proportions.
+// roof shape and proportions. Returns the height of the roof top.
 function house(kit, n, theme, x, z, scale) {
   const h0 = hashString(n.id);
   const kind = classKind(n);
@@ -369,7 +373,7 @@ function house(kit, n, theme, x, z, scale) {
   switch (roof) {
     case 'none':
       P('rbox', x, yTop + 0.025, z, w + 0.05, 0.05, d + 0.05, ROOF.un);
-      return;
+      return yTop + 0.05;
     case 'gable':
       P('box', x, yTop + 0.015, z, w + 0.09, 0.03, d + 0.09, 0xefe6da);
       P('gable', x, yTop + 0.03 + rh / 2, z, w + 0.08, rh, d + 0.1, rc);
@@ -407,4 +411,5 @@ function house(kit, n, theme, x, z, scale) {
     P('cyl', x, roofTop + 0.15, z, 0.02, 0.3, 0.02, 0x5a4a3c);
     P('box', x + 0.07, roofTop + 0.25, z, 0.13, 0.08, 0.008, 0xdb6a41);
   }
+  return roofTop;
 }

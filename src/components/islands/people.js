@@ -158,5 +158,11 @@ export function createCrowd(THREE, scene, material, count, { rnd, shadow = false
     for (const m of Object.values(meshes)) m.instanceMatrix.needsUpdate = true;
   }
 
-  return { pose, commit, people, meshes: Object.values(meshes) };
+  // recolour person i's box (e.g. to mark the porters of a selected island)
+  function tintBox(i, hex) {
+    meshes.box.setColorAt(i, c.set(hex == null ? BOX : hex));
+    meshes.box.instanceColor.needsUpdate = true;
+  }
+
+  return { pose, commit, tintBox, people, meshes: Object.values(meshes) };
 }
