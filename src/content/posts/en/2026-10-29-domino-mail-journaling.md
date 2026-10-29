@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/10.0.1/conf_managingthemailjournalingdatabase_c.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-mail-journaling.webp"
+coverStyle: "paper-craft"
 ---
 
 Audit and compliance often carry one requirement: "keep a copy of every message, in and out." Domino can do this built in — **mail journaling**: as the router **delivers** a message normally, it also **copies** it into a dedicated database for the record. It doesn't affect delivery — the user still gets their mail; the server just keeps an extra copy. But it's **off by default**, and its **encryption has two easy traps**. This piece lays it out.

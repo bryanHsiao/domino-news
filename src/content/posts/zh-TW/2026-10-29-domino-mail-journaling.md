@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/10.0.1/conf_managingthemailjournalingdatabase_c.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-mail-journaling.webp"
+coverStyle: "paper-craft"
 ---
 
 稽核或法遵常有一條要求:「所有進出的信都要留一份備查」。Domino 內建就能做——**mail journaling(郵件側錄)**:在 router **正常投遞**一封信的同時,**複製一份**到一個專門的資料庫存底。它不影響送達,使用者照收他的信;只是伺服器額外留了一份。但它**預設是關的**,而且**加密有兩個很容易踩的坑**,這篇講清楚。
