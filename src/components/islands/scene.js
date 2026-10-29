@@ -90,9 +90,16 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     m.frustumCulled = false; // instances move away from where the bounds were computed
     m.castShadow = false;
   }
-  // the people at the house doors: one per article written about the class
+  // the people at the house doors: one per article written about the class,
+  // its shirt coloured by the article's language (the "language lamp")
+  const LANG_SHIRT = { ls: 0xdb6a41, java: 0x4f86c6, ssjs: 0x4fa36b };
   const standing = createCrowd(THREE, scene, partMat, props.people.length, { rnd: mulberry32(7), shadow: true });
-  props.people.forEach((p, i) => standing.pose(i, p.x, p.y, p.z, p.yaw, PERSON));
+  props.people.forEach((p, i) => {
+    standing.pose(i, p.x, p.y, p.z, p.yaw, PERSON);
+    const node = p.info && nodeById.get(p.info.node);
+    const art = node && node.articles && node.articles[p.info.article];
+    if (art && LANG_SHIRT[art.lang] != null) standing.tintShirt(i, LANG_SHIRT[art.lang]);
+  });
   standing.commit();
 
   // ---- camera framing
@@ -506,7 +513,9 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       if (key !== hoverId) {
         hoverId = key;
         const a = node.articles[index];
-        tipEl.innerHTML = '<b>' + esc(a.title) + '</b><span>' + esc(strings.article) + ' · ' + esc(node.name) + '</span><em>' + esc(strings.preview) + '</em>';
+        const ll = (strings.langLabels && strings.langLabels[a.lang]) || '';
+        const sub = esc(strings.article) + (ll ? ' · ' + esc(ll) : '') + (node.island ? '' : ' · ' + esc(node.name));
+        tipEl.innerHTML = '<b>' + esc(a.title) + '</b><span>' + sub + '</span><em>' + esc(strings.preview) + '</em>';
         tipEl.dataset.kind = 'article';
       }
     } else if (hit.bridge) {

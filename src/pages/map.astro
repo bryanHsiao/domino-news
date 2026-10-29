@@ -5,7 +5,7 @@ import ClassDirectory from '../components/ClassDirectory.astro';
 import ClassIslands from '../components/ClassIslands.astro';
 import { useTranslations, localizedPath } from '../i18n/ui';
 import { buildCoverageReport } from '../../scripts/lib/coverage';
-import { classArticles } from '../lib/classArticles';
+import { islandArticles } from '../lib/classArticles';
 import rawData from '../../data/ls_classes.json';
 
 const lang = 'zh-TW' as const;
@@ -39,8 +39,9 @@ const links = raw.links.map((l) => ({
 }));
 const data = { nodes, links };
 const coveredCount = nodes.filter((n) => n.url).length;
-// main articles per class, for the islands view's article previews
-const articles = await classArticles(report, lang);
+// per-class articles (LS + Java/SSJS language lamps) + the XPages island,
+// for the islands view's previews
+const { articles, xpages } = await islandArticles(report, lang);
 ---
 
 <BaseLayout lang={lang} title={t('nav.map')} description="HCL Domino 類別地圖：LotusScript · Java · SSJS 的類別與關聯 —— 依類別分區的可讀卡片，點卡片看它回傳什麼、被誰回傳；已寫過的類別可直接點進文章。也可切換成關係圖或 3D 島嶼。">
@@ -57,7 +58,7 @@ const articles = await classArticles(report, lang);
     <ClassMap lang={lang} data={data} coveredCount={coveredCount} total={nodes.length} />
   </div>
   <div id="mv-islands" hidden>
-    <ClassIslands lang={lang} data={data} articles={articles} coveredCount={coveredCount} total={nodes.length} />
+    <ClassIslands lang={lang} data={data} articles={articles} xpages={xpages} coveredCount={coveredCount} total={nodes.length} />
   </div>
 </BaseLayout>
 
