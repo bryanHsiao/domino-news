@@ -253,7 +253,8 @@ const statTip =
          the view controls live in the toolbar, search and lists in the index. -->
     <div class="ci-card">
       <h1><span class="ci-brand">{T.brand}</span> <span class="ci-name">{T.name}</span></h1>
-      <span class="ci-stat" title={statTip}><b>{coveredCount}</b> / {total} {T.covered}</span>
+      {/* shown only while some classes are still unwritten; at full coverage it would only ever read N / N */}
+      {coveredCount < total && <span class="ci-stat" title={statTip}><b>{coveredCount}</b> / {total} {T.covered}</span>}
     </div>
 
     <!-- View toolbar (wider screens): centred over the scene like the
@@ -316,7 +317,7 @@ const statTip =
     <div class="ci-legend">
       <span><i class="sw be"></i>{T.legBe}</span>
       <span><i class="sw ui"></i>{T.legUi}</span>
-      <span><i class="sw un"></i>{T.legUn}</span>
+      {coveredCount < total && <span><i class="sw un"></i>{T.legUn}</span>}
       <span><i class="sw key"></i>{T.legKey}</span>
       <span class="ci-leg-sep" aria-hidden="true"></span>
       <span title={T.legFlagTip}><i class="sw flag java"></i>Java</span>

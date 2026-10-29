@@ -87,7 +87,8 @@ const statTip =
       <h1><span class="cm-brand">HCL Domino</span> <span class="cm-name">{T.name}</span></h1>
       <p class="cm-sub"><span class="cm-langs">LotusScript · Java · SSJS</span>{T.sub}</p>
     </div>
-    <div class="cm-stat" title={statTip}><b>{coveredCount}</b><span>/ {total} {T.covered}</span></div>
+    {/* shown only while some classes are still unwritten; at full coverage it would only ever read N / N */}
+    {coveredCount < total && <div class="cm-stat" title={statTip}><b>{coveredCount}</b><span>/ {total} {T.covered}</span></div>}
   </header>
   <div class="cm-controls">
     <input id="cm-q" type="search" placeholder={T.search} autocomplete="off" />
@@ -119,7 +120,7 @@ const statTip =
     <div class="cm-legend">
       <span><i class="sw be"></i>{T.legBe}</span>
       <span><i class="sw ui"></i>{T.legUi}</span>
-      <span><i class="sw un"></i>{T.legUn}</span>
+      {coveredCount < total && <span><i class="sw un"></i>{T.legUn}</span>}
       <span><i class="sw ky"></i>{T.legKey}</span>
     </div>
   </div>
