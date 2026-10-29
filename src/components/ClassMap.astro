@@ -31,7 +31,7 @@ const T =
         tools: '地圖操作',
         btnFit: '全景',
         btnSearch: '搜尋',
-        sub: 'LotusScript · Java · SSJS 的類別與關聯 · 節點＝類別，連線＝「A 的方法/屬性回傳 B」 · 亮起的節點可點進文章',
+        sub: '節點＝類別，連線＝「A 的方法/屬性回傳 B」',
         covered: '已涵蓋',
         search: '搜尋類別…',
         allCat: '全部分類',
@@ -53,7 +53,7 @@ const T =
         tools: 'Map tools',
         btnFit: 'Fit',
         btnSearch: 'Find',
-        sub: 'Classes and their links across LotusScript, Java and SSJS · nodes are classes, edges mean "A returns B via a method/property" · lit nodes link to an article',
+        sub: 'Nodes are classes; an edge means A returns B',
         covered: 'covered',
         search: 'Search classes…',
         allCat: 'All categories',
@@ -85,7 +85,7 @@ const statTip =
   <header class="cm-top">
     <div class="cm-title">
       <h1><span class="cm-brand">HCL Domino</span> <span class="cm-name">{T.name}</span></h1>
-      <p class="cm-sub">{T.sub}</p>
+      <p class="cm-sub"><span class="cm-langs">LotusScript · Java · SSJS</span>{T.sub}</p>
     </div>
     <div class="cm-stat" title={statTip}><b>{coveredCount}</b><span>/ {total} {T.covered}</span></div>
   </header>
@@ -137,7 +137,9 @@ const statTip =
   #cm * { box-sizing: border-box; }
   #cm .cm-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--cline); flex-wrap: wrap; }
   #cm .cm-title h1 { margin: 0; font-size: 18px; font-weight: 600; }
-  #cm .cm-sub { margin: 3px 0 0; font-size: 12px; color: var(--cmuted); }
+  #cm .cm-sub { margin: 3px 0 0; font-size: 12px; color: var(--cmuted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* the languages the map spans: a short chip, not a sentence */
+  #cm .cm-langs { display: inline-block; margin-right: 6px; padding: 1px 7px; border: 1px solid #db6a41; border-radius: 999px; color: #db6a41; font: 600 10.5px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: nowrap; vertical-align: 1px; }
   #cm .cm-stat { display: flex; align-items: baseline; gap: 6px; background: var(--color-brand-dark, #0a0a0a); color: var(--color-brand, #fbbf24); padding: 6px 14px; border-radius: 999px; }
   #cm .cm-stat b { font-size: 20px; font-variant-numeric: tabular-nums; } #cm .cm-stat span { font-size: 12px; opacity: 0.85; }
   #cm .cm-controls { display: flex; gap: 8px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--cline); flex-wrap: wrap; background: var(--cpanel); }

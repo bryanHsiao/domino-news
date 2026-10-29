@@ -127,6 +127,10 @@ const articles = await classArticles(report, lang);
     main:has(> .map-tabs) { padding-top: 0; }
     .map-tabs { position: absolute; z-index: 30; top: calc(var(--map-hdr, 64px) + 14px); left: 50%; transform: translateX(-50%); margin: 0; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.16); }
     #cd .cd-head, #cm .cm-top { min-height: 74px; }
+    /* the title block never runs under the floating view switch: the
+       subtitle gives way (one line, cut short) */
+    #cd .cd-title, #cm .cm-title { max-width: calc(50vw - 170px); }
+    #cd .cd-sub, #cm .cm-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   }
   /* Islands view, tablets and wider: the scene shares the width with the
      index docked on the right (ClassIslands sets --ci-ix-w), and its view
