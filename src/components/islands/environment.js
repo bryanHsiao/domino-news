@@ -1,5 +1,7 @@
 // Scenery around the archipelago: sky, light, water, a basin of hills that
-// rings the islands, satellite islets, boats and clouds. Purely decorative.
+// rings the islands, satellite islets, boats and clouds, and the life along
+// the shore and out on the water (piers, parasols, floating platforms, buoys).
+// Purely decorative.
 // The light follows one of four times of day (TIMES); scene.js blends between
 // them and applies the result with applyTime().
 import { SimplexNoise } from 'three/examples/jsm/math/SimplexNoise.js';
@@ -197,7 +199,8 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, 
     homes++;
   }
 
-  // ---- satellite islets, a lighthouse, boats
+  // ---- satellite islets (a lighthouse, wind turbines, a picnic spot), boats
+  const islets = [];
   for (let i = 0; i < 6; i++) {
     const a = (i / 6) * Math.PI * 2 + 0.4 + rnd() * 0.5;
     const d = radius + 2 + rnd() * 3.5;
@@ -205,8 +208,16 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, 
     const r = 0.8 + rnd() * 0.7;
     kit.part('cyl', [x, WATER_Y + 0.12, z], [r * 2, 0.4, r * 2], 0xe3d3b0);
     kit.part('sphere', [x, WATER_Y + 0.3, z], [r * 1.8, 0.35, r * 1.8], 0xa9c48a);
+    islets.push({ x, z, r: r + 0.6 });
     if (i === 0) props.lighthouse(x, z, WATER_Y + 0.4);
-    else {
+    else if (i === 2) {
+      turbine(x - r * 0.35, z, WATER_Y + 0.38, 1);
+      turbine(x + r * 0.4, z - r * 0.3, WATER_Y + 0.38, 0.8);
+    } else if (i === 4) {
+      parasol(x - 0.25, z + 0.1, WATER_Y + 0.42, 0xdb6a41, rnd);
+      parasol(x + 0.35, z - 0.15, WATER_Y + 0.42, 0xe9b444, rnd);
+      props.tree(x, z - r * 0.5, 0.45, rnd, WATER_Y + 0.4);
+    } else {
       props.tree(x + (rnd() - 0.5) * r * 0.6, z + (rnd() - 0.5) * r * 0.6, 0.55 + rnd() * 0.25, rnd, WATER_Y + 0.4);
       if (rnd() < 0.5) props.tree(x + (rnd() - 0.5) * r, z + (rnd() - 0.5) * r, 0.4, rnd, WATER_Y + 0.4);
     }
@@ -228,6 +239,150 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, 
       const s = 2.4 + rnd() * 2.2;
       kit.part('leaf', [x + (k - n / 2) * 1.7 + rnd(), y + rnd() * 0.8, z + (rnd() - 0.5) * 1.5], [s, s * 0.6, s], 0xffffff, null, [0, rnd() * 6, 0]);
     }
+  }
+
+  // ---- along the shore and out on the water
+  const lrnd = mulberry32(23);
+  const spots = [...islets]; // keep the new things clear of each other
+  const clear = (x, z, r) => spots.every((s) => Math.hypot(s.x - x, s.z - z) > s.r + r);
+  const at = (a, d) => [cx + Math.cos(a) * d, cz + (Math.sin(a) * d) / 0.92];
+  // first point out from the centre along angle a where land rises out of the water
+  const shoreAt = (a, lift = 0.05) => {
+    for (let d = rimA - 2; d < rimB + 25; d += 0.15) {
+      const [x, z] = at(a, d);
+      if (heightAt(x, z) > WATER_Y + lift) return { x, z, d };
+    }
+    return null;
+  };
+  // local (u along, v across) -> world, for things laid out on a yawed footprint
+  const frame = (x, z, yaw) => {
+    const s = Math.sin(yaw), c = Math.cos(yaw);
+    return (u, v) => [x + s * u + c * v, z + c * u - s * v];
+  };
+
+  // wooden piers reaching in from the shore, a boat moored at most of them
+  let piers = 0;
+  for (let k = 0; k < 12 && piers < 5; k++) {
+    const a = (k / 12) * Math.PI * 2 + 0.25;
+    if (Math.sin(a) > 0.7) continue; // the near shore is the beach
+    const sh = shoreAt(a);
+    if (!sh) continue;
+    const ux = cx - sh.x, uz = cz - sh.z;
+    const ul = Math.hypot(ux, uz);
+    const len = Math.min(2.2, ul - radius - 0.8);
+    if (len < 1.2) continue;
+    const yaw = Math.atan2(ux / ul, uz / ul);
+    const f = frame(sh.x, sh.z, yaw);
+    const [mx, mz] = f(len / 2 - 0.3, 0);
+    if (!clear(mx, mz, len / 2 + 0.4)) continue;
+    spots.push({ x: mx, z: mz, r: len / 2 + 0.4 });
+    piers++;
+    const y = WATER_Y + 0.26;
+    kit.part('box', [mx, y, mz], [0.5, 0.06, len + 0.6], 0xb98a5c, null, [0, yaw, 0]);
+    for (let u = -0.2; u < len; u += 0.7)
+      for (const v of [-0.22, 0.22]) {
+        const [px, pz] = f(u, v);
+        kit.part('cyl', [px, WATER_Y + 0.02, pz], [0.06, 0.5, 0.06], 0x7a5d44);
+      }
+    const [lx, lz] = f(len - 0.4, 0.2);
+    props.lamp(lx, lz, y);
+    if (lrnd() < 0.75) {
+      const [bx, bz] = f(len - 0.6, 0.55);
+      props.boat(bx, bz, yaw + (lrnd() - 0.5) * 0.3, lrnd, WATER_Y);
+    }
+  }
+
+  // parasols and towels on the near beach
+  const BEACH = [0xdb6a41, 0xe9b444, 0x58a6a6, 0xf4efe6, 0xf2b5c6];
+  for (const a of [Math.PI / 2 - 0.5, Math.PI / 2 + 0.08, Math.PI / 2 + 0.55]) {
+    const sh = shoreAt(a, 0.1);
+    if (!sh) continue;
+    for (let n = 0; n < 3; n++) {
+      const [x, z] = at(a + (n - 1) * 0.045, sh.d + 0.3 + lrnd() * 0.6);
+      const h = heightAt(x, z);
+      if (h < WATER_Y + 0.05 || h > 0.6) continue;
+      parasol(x, z, h, BEACH[Math.floor(lrnd() * BEACH.length)], lrnd);
+    }
+  }
+
+  // floating platforms stacked with colourful crates, out in the water
+  const CRATES = [0xdb6a41, 0xe9b444, 0x58a6a6, 0xf2b5c6, 0xf4efe6, 0x4f86c6];
+  for (let n = 0, tries = 0; n < 2 && tries < 40; tries++) {
+    const a = lrnd() * Math.PI * 2;
+    const [x, z] = at(a, radius + 2.2 + lrnd() * 2);
+    if (!clear(x, z, 1.6)) continue;
+    spots.push({ x, z, r: 1.6 });
+    n++;
+    const yaw = a + Math.PI / 2;
+    const f = frame(x, z, yaw);
+    kit.part('rbox', [x, WATER_Y + 0.04, z], [1.1, 0.1, 2.3], 0xdfe9ea, null, [0, yaw, 0]);
+    for (let i = 0; i < 5; i++)
+      for (const v of [-0.22, 0.22]) {
+        if (lrnd() < 0.15) continue;
+        const [bx, bz] = f(-0.84 + i * 0.42, v);
+        const hh = 0.24 + lrnd() * 0.12;
+        kit.part('rbox', [bx, WATER_Y + 0.09 + hh / 2, bz], [0.36, hh, 0.38], CRATES[Math.floor(lrnd() * CRATES.length)], null, [0, yaw, 0]);
+      }
+  }
+
+  // a floating cycle deck: green lane, dashed centre line, rails, a stair
+  for (let tries = 0; tries < 40; tries++) {
+    const a = Math.PI / 2 + 0.9 + lrnd() * 1.2;
+    const [x, z] = at(a, radius + 2.8 + lrnd() * 1.5);
+    if (!clear(x, z, 2.1)) continue;
+    spots.push({ x, z, r: 2.1 });
+    const yaw = a + Math.PI / 2;
+    const f = frame(x, z, yaw);
+    const y = WATER_Y + 0.12;
+    kit.part('rbox', [x, y, z], [1.0, 0.18, 3.6], 0xbab3a6, null, [0, yaw, 0]);
+    kit.part('box', [x, y + 0.095, z], [0.5, 0.012, 3.2], 0x8fb59a, null, [0, yaw, 0]);
+    for (let u = -1.4; u <= 1.41; u += 0.4) {
+      const [dx, dz] = f(u, 0);
+      kit.part('box', [dx, y + 0.104, dz], [0.03, 0.006, 0.18], 0xf7f3ec, null, [0, yaw, 0]);
+    }
+    for (let u = -1.6; u <= 1.61; u += 0.53)
+      for (const v of [-0.46, 0.46]) {
+        const [px, pz] = f(u, v);
+        kit.part('cyl', [px, y + 0.2, pz], [0.025, 0.22, 0.025], 0x4a4744);
+      }
+    for (const v of [-0.46, 0.46]) {
+      const [rx, rz] = f(0, v);
+      kit.part('box', [rx, y + 0.31, rz], [0.025, 0.025, 3.2], 0x4a4744, null, [0, yaw, 0]);
+    }
+    for (let st = 0; st < 4; st++) {
+      const [sx, sz] = f(1.55 - st * 0.06, 0);
+      kit.part('box', [sx, y + 0.12 + st * 0.11, sz], [0.9, 0.11, 0.14 + st * 0.12], 0xd8cfc0, null, [0, yaw, 0]);
+    }
+    const [fx, fz] = f(-1.6, 0.36);
+    kit.part('cyl', [fx, y + 0.45, fz], [0.025, 0.7, 0.025], 0x4a4744);
+    kit.part('box', [fx, y + 0.72, fz], [0.01, 0.13, 0.2], 0xdb6a41, null, [0, yaw + Math.PI / 2, 0]);
+    break;
+  }
+
+  // buoys: red with a white band and a little light on top
+  for (let n = 0, tries = 0; n < 12 && tries < 120; tries++) {
+    const [x, z] = at(lrnd() * Math.PI * 2, radius + 0.6 + lrnd() * 4);
+    if (!clear(x, z, 0.3)) continue;
+    n++;
+    kit.part('cyl', [x, WATER_Y + 0.08, z], [0.16, 0.22, 0.16], 0xdb6a41);
+    kit.part('cyl', [x, WATER_Y + 0.12, z], [0.17, 0.05, 0.17], 0xf4efe6);
+    kit.part('bulb', [x, WATER_Y + 0.23, z], [0.06, 0.06, 0.06], 0xffb08a);
+  }
+
+  // a wind turbine, rotor facing the default camera (+z)
+  function turbine(x, z, y, s) {
+    kit.part('cyl', [x, y + 0.8 * s, z], [0.07 * s, 1.6 * s, 0.07 * s], 0xf4efe6);
+    kit.part('rbox', [x, y + 1.62 * s, z + 0.02], [0.1 * s, 0.1 * s, 0.24 * s], 0xf4efe6);
+    for (let b = 0; b < 3; b++) {
+      const t = (b / 3) * Math.PI * 2 + 0.3;
+      kit.part('box', [x + Math.sin(t) * 0.33 * s, y + 1.62 * s + Math.cos(t) * 0.33 * s, z + 0.15 * s], [0.045 * s, 0.66 * s, 0.02 * s], 0xf7f3ec, null, [0, 0, -t]);
+    }
+  }
+  // a beach parasol with a towel beside it
+  function parasol(x, z, y, color, r) {
+    kit.part('cyl', [x, y + 0.3, z], [0.03, 0.6, 0.03], 0xf4efe6);
+    kit.part('cone', [x, y + 0.6, z], [0.62, 0.18, 0.62], color);
+    kit.part('box', [x + 0.22, y + 0.01, z + 0.1], [0.22, 0.015, 0.42], r() < 0.5 ? 0xf2b5c6 : 0x58a6a6, null, [0, r() * Math.PI, 0]);
   }
 
   return {

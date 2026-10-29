@@ -19,7 +19,11 @@ export const PER_TILE = 6; // class buildings per tile
 // MIN_CHANNEL (tiles of one island stay joined).
 export const SPREAD = 1.25;
 const MIN_CHANNEL = 1.3;
-const WALK_RING = 1.8; // radius of the walking ring painted on each tile
+const WALK_RING = 1.8;
+// Off-shore islands sit this much open water away from the archipelago, in
+// this direction (radians in the x/z plane; +z faces the default camera).
+const OFFSHORE_GAP = 6;
+const OFFSHORE_ANGLE = 1.1; // radius of the walking ring painted on each tile
 
 const SQ3 = Math.sqrt(3);
 
@@ -118,9 +122,14 @@ export function layoutArchipelago(data) {
   // whose relations are most fully covered goes first — a small island that
   // only relates to the hub claims a spot beside it before one that has
   // other partners to sit next to.
+  // Off-shore islands (the XPages / web-layer posts: not Notes classes, no
+  // class links) are packed on their own and set apart across open water, so
+  // they never read as part of the class archipelago.
+  const offshore = new Set(data.cats.filter((c) => data.nodes.some((n) => n.cat === c && n.island)));
+  const coreCats = data.cats.filter((c) => !offshore.has(c));
   const total = (c) => data.cats.reduce((s, o) => s + (o === c ? 0 : weight(c, o)), 0);
   const order = [];
-  const left = [...data.cats];
+  const left = [...coreCats];
   while (left.length) {
     let pick = 0;
     let pickKey = null;
@@ -166,15 +175,18 @@ export function layoutArchipelago(data) {
     return a;
   };
   const cellsOf = new Map();
-  for (const cat of order) {
+  for (const cat of [...order, ...offshore]) {
     const want = Math.max(1, Math.ceil(counts.get(cat) / PER_TILE));
     const cells = [];
     const take = (c) => {
       cells.push(c);
       taken.set(keyOf(c[0], c[1]), cat);
     };
-    const placed = [...cellsOf.values()].flat();
-    take(placed.length ? pickBest(freeAround(placed), (c) => spread(c[0], c[1]) - 6 * affinity(cat, c[0], c[1])) : [0, 0]);
+    const placed = coreCats.flatMap((c) => cellsOf.get(c) || []);
+    // an off-shore island starts far out on the grid, where it has no
+    // neighbours (and so no bridges); it is moved into place below
+    if (offshore.has(cat)) take([1000 + 40 * cellsOf.size, 0]);
+    else take(placed.length ? pickBest(freeAround(placed), (c) => spread(c[0], c[1]) - 6 * affinity(cat, c[0], c[1])) : [0, 0]);
     while (cells.length < want) {
       let mx = 0;
       let mz = 0;
@@ -198,7 +210,7 @@ export function layoutArchipelago(data) {
   // Push the islands apart: first away from the packed centre, then pairwise
   // until every channel between two islands is at least MIN_CHANNEL wide
   // (each island moves rigidly, so its own tiles stay joined).
-  const packed = [...cellsOf.values()].flat().map(([q, r]) => axialToXZ(q, r));
+  const packed = coreCats.flatMap((c) => cellsOf.get(c)).map(([q, r]) => axialToXZ(q, r));
   const gx = packed.reduce((s, p) => s + p[0], 0) / packed.length;
   const gz = packed.reduce((s, p) => s + p[1], 0) / packed.length;
   const home = new Map(data.cats.map((cat) => [cat, cellsOf.get(cat).map(([q, r]) => axialToXZ(q, r))]));
@@ -213,9 +225,9 @@ export function layoutArchipelago(data) {
   const INR = R * 0.866;
   for (let it = 0; it < 300; it++) {
     let moved = false;
-    for (let i = 0; i < data.cats.length; i++)
-      for (let j = i + 1; j < data.cats.length; j++) {
-        const A = data.cats[i], B = data.cats[j];
+    for (let i = 0; i < coreCats.length; i++)
+      for (let j = i + 1; j < coreCats.length; j++) {
+        const A = coreCats[i], B = coreCats[j];
         const oa = off.get(A), ob = off.get(B);
         let bd = Infinity, ux = 0, uz = 0;
         for (const [ax, az] of home.get(A))
@@ -240,6 +252,24 @@ export function layoutArchipelago(data) {
       }
     if (!moved) break;
   }
+
+  // Off-shore islands: out along OFFSHORE_ANGLE from the archipelago's
+  // centre, with at least OFFSHORE_GAP of water between them and the nearest
+  // class island (measured along that direction, so it holds for every tile).
+  const coreXZ = coreCats.flatMap((cat) => home.get(cat).map(([x, z]) => [x + off.get(cat)[0], z + off.get(cat)[1]]));
+  const ccx = coreXZ.reduce((s, p) => s + p[0], 0) / coreXZ.length;
+  const ccz = coreXZ.reduce((s, p) => s + p[1], 0) / coreXZ.length;
+  [...offshore].forEach((cat, k) => {
+    const a = OFFSHORE_ANGLE + k * 0.7;
+    const ux = Math.cos(a), uz = Math.sin(a);
+    const ps = home.get(cat);
+    const ox = ps.reduce((s, p) => s + p[0], 0) / ps.length;
+    const oz = ps.reduce((s, p) => s + p[1], 0) / ps.length;
+    const reachCore = Math.max(...coreXZ.map(([x, z]) => (x - ccx) * ux + (z - ccz) * uz));
+    const reachOwn = Math.max(...ps.map(([x, z]) => -((x - ox) * ux + (z - oz) * uz)));
+    const d = reachCore + reachOwn + 2 * INR + OFFSHORE_GAP;
+    off.set(cat, [ccx + ux * d - ox, ccz + uz * d - oz]);
+  });
 
   const clusters = data.cats.map((cat, i) => {
     // Key classes first so they land on the island's back tile.
@@ -376,10 +406,28 @@ export function layoutArchipelago(data) {
 
   const walk = buildWalkGraph(tiles, fused, bridges);
 
+  // An off-shore island is reached by ferry, not a bridge: a pier on the
+  // nearest class island and one on the off-shore island, facing each other.
+  const ferries = [...offshore].map((cat) => {
+    let best = null;
+    let bd = Infinity;
+    for (const a of tiles)
+      if (!offshore.has(a.cat))
+        for (const b of byCat.get(cat).tiles) {
+          const d = Math.hypot(a.x - b.x, a.z - b.z);
+          if (d < bd) {
+            bd = d;
+            best = [a, b];
+          }
+        }
+    const [a, b] = best;
+    return { cat, a: { x: a.x, z: a.z, cat: a.cat }, b: { x: b.x, z: b.z } };
+  });
+
   const bx = tiles.reduce((s, t) => s + t.x, 0) / tiles.length;
   const bz = tiles.reduce((s, t) => s + t.z, 0) / tiles.length;
   const radius = Math.max(...tiles.map((t) => Math.hypot(t.x - bx, t.z - bz))) + R;
-  return { clusters, tiles, fused, junctions, bridges, relations: [...rel.values()], walk, bounds: { cx: bx, cz: bz, radius } };
+  return { clusters, tiles, fused, junctions, bridges, relations: [...rel.values()], walk, ferries, offshore: [...offshore], bounds: { cx: bx, cz: bz, radius } };
 }
 
 // Pedestrian network for future walkers: 12 nodes on each tile's walking ring
