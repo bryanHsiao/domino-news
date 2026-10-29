@@ -9,6 +9,7 @@ import { createProps } from './props.js';
 import { buildWorld, classKind } from './world.js';
 import { createEnvironment, TIMES } from './environment.js';
 import { createCrowd } from './people.js';
+import { createLinks } from './links.js';
 
 const FOV = 32;
 const HOME_POLAR = THREE.MathUtils.degToRad(57);
@@ -16,7 +17,7 @@ const POLAR_MIN = THREE.MathUtils.degToRad(25);
 const POLAR_MAX = THREE.MathUtils.degToRad(70);
 const BIRD_POLAR = 0.1; // bird's-eye: almost straight down
 const TIME_ORDER = ['dawn', 'day', 'dusk', 'night'];
-const WALKERS = 42;
+const WALKERS = 54;
 const PERSON = 0.3; // world units per character unit (a person is ~0.32 tall)
 const STRIDE = 0.15; // distance covered per walk cycle
 const PALE = new THREE.Color(0xe9e4da);
@@ -139,7 +140,10 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   }
 
   // ---- walkers: people strolling the walk network (tile rings, the land
-  // between an island's tiles, and the bridges, following their arch)
+  // between an island's tiles, and the bridges, following their arch).
+  // Porters (the ones holding a box) shuttle between two related islands;
+  // a pair is picked in proportion to its number of class links, so the
+  // strongest relations see the busiest traffic.
   const walk = layout.walk;
   const wrnd = mulberry32(2026);
   const nodesOf = new Map(); // category -> walk-node ids
@@ -148,26 +152,51 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     nodesOf.get(n.cat).push(i);
   });
   const walkCats = [...nodesOf.keys()];
-  const crowd = createCrowd(THREE, scene, partMat, WALKERS, { rnd: wrnd, carry: 0.3 });
+  const crowd = createCrowd(THREE, scene, partMat, WALKERS, { rnd: wrnd, carry: 0.4 });
   const walkers = [];
+  const relations = layout.relations.filter((r) => nodesOf.has(r.a) && nodesOf.has(r.b));
+  function pickRelation(list) {
+    let k = wrnd() * list.reduce((s, r) => s + r.n, 0);
+    for (const r of list) if ((k -= r.n) < 0) return r;
+    return list[list.length - 1];
+  }
+  const randomNode = (cat) => {
+    const ids = nodesOf.get(cat);
+    return ids[Math.floor(wrnd() * ids.length)];
+  };
   function setSegment(w) {
     const e = walk.adj[w.path[w.seg]].find((x) => x[0] === w.path[w.seg + 1]);
     w.len = e ? Math.max(e[1], 0.05) : 1;
     w.arch = e ? e[2] : 0;
   }
-  // a new trip: from where the walker stands to a random spot on another island
+  // a new trip: a stroller heads for a random spot on another island; a
+  // porter crosses to the other end of its relation, and every few runs
+  // takes up another relation of the island it stands on
   function planTrip(w) {
-    let cat = walkCats[Math.floor(wrnd() * walkCats.length)];
-    if (cat === walk.nodes[w.at].cat) cat = walkCats[(walkCats.indexOf(cat) + 1) % walkCats.length];
-    const ids = nodesOf.get(cat);
-    const path = walkPath(walk, w.at, ids[Math.floor(wrnd() * ids.length)]);
+    const here = walk.nodes[w.at].cat;
+    let cat;
+    if (w.rel) {
+      if (++w.runs % 3 === 0) {
+        const mine = relations.filter((r) => r.a === here || r.b === here);
+        if (mine.length) w.rel = pickRelation(mine);
+      }
+      cat = w.rel.a === here ? w.rel.b : w.rel.a;
+    } else {
+      cat = walkCats[Math.floor(wrnd() * walkCats.length)];
+      if (cat === here) cat = walkCats[(walkCats.indexOf(cat) + 1) % walkCats.length];
+    }
+    const path = walkPath(walk, w.at, randomNode(cat));
     w.path = path.length > 1 ? path : [w.at, walk.adj[w.at][0][0]];
     w.seg = 0;
     w.t = 0;
     setSegment(w);
   }
   for (let i = 0; i < WALKERS; i++) {
-    const w = { at: Math.floor(wrnd() * walk.nodes.length), speed: 0.24 + wrnd() * 0.12, side: (wrnd() - 0.5) * 0.22, gait: wrnd() * 6.28 };
+    const w = { at: Math.floor(wrnd() * walk.nodes.length), speed: 0.24 + wrnd() * 0.12, side: (wrnd() - 0.5) * 0.22, gait: wrnd() * 6.28, rel: null, runs: 0 };
+    if (crowd.people[i].carry && relations.length) {
+      w.rel = pickRelation(relations);
+      w.at = randomNode(w.rel.a);
+    }
     planTrip(w);
     w.t = wrnd(); // spread them out along their first stretch
     walkers.push(w);
@@ -198,6 +227,18 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     crowd.commit();
   }
   updateWalkers(0); // place them (with reduced motion they stay put)
+  // a selected island's porters carry coral boxes
+  function markPorters(cat) {
+    walkers.forEach((w, i) => {
+      if (w.rel) crowd.tintBox(i, cat && (w.rel.a === cat || w.rel.b === cat) ? 0xdb6a41 : null);
+    });
+  }
+
+  // ---- relation lines between the class houses
+  const links = createLinks(THREE, scene, data, world.anchors);
+  let hoverNode = null; // class under the mouse
+  let panelNode = null; // class row hovered in the panel
+  const refreshFocus = () => links.setFocus(hoverNode || panelNode, selected);
 
   // ---- boats: slow circles and a gentle bob; every part of a boat shares
   // its x/z, which keys the boat's own phase
@@ -295,6 +336,8 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     // light up the selected island's bridges: its direct routes
     for (const b of layout.bridges) bridgeKit.tint(b.id, CORAL, selected && (b.a.cat === selected || b.b.cat === selected) ? 0.55 : 0);
     refreshLabels();
+    markPorters(selected);
+    refreshFocus();
     if (selected && fly) flyToCluster(clusterByCat.get(selected));
     onSelect && onSelect(selected ? clusterByCat.get(selected) : null);
   }
@@ -429,6 +472,12 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     tipEl.hidden = true;
     hoverId = null;
     canvas.style.cursor = '';
+    setHoverNode(null);
+  }
+  function setHoverNode(id) {
+    if (id === hoverNode) return;
+    hoverNode = id;
+    refreshFocus();
   }
   function updateHover() {
     if (!hoverAt) return;
@@ -436,6 +485,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     hoverAt = null;
     const hit = pickAt(at.x, at.y);
     canvas.style.cursor = hit && !hit.bridge ? 'pointer' : '';
+    setHoverNode(hit && hit.node ? hit.node.id : null);
     if (!hit || (!hit.node && !hit.bridge)) {
       tipEl.hidden = true;
       hoverId = null;
@@ -464,7 +514,9 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
         const tags = [n.ui ? strings.ui : strings.be];
         if (n.key) tags.push(strings.key);
         if (!n.url) tags.push(strings.un);
-        tipEl.innerHTML = '<b>' + esc(n.name) + '</b><span>' + esc(n.cat) + ' · ' + esc(tags.join(' · ')) + '</span>' + (n.url ? '<em>' + esc(strings.open) + '</em>' : '');
+        const nl = links.countFor(n.id);
+        const lk = nl ? '<span>' + esc(strings.links.replace('{n}', nl)) + '</span>' : '';
+        tipEl.innerHTML = '<b>' + esc(n.name) + '</b><span>' + esc(n.cat) + ' · ' + esc(tags.join(' · ')) + '</span>' + lk + (n.url ? '<em>' + esc(strings.open) + '</em>' : '');
         tipEl.dataset.kind = kind;
       }
     }
@@ -480,6 +532,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    links.resize(w, h);
     measured = false; // plate font size can change at the mobile breakpoint
     // Portrait screens frame the islands from farther away; keep the haze
     // behind them so they never look washed out.
@@ -494,6 +547,10 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
 
   const clock = new THREE.Clock();
   let raf = 0;
+  // pause freezes walkers, boats, water, clouds and the line dashes; the
+  // camera stays free
+  let paused = false;
+  let motion = 0; // seconds of unpaused animation (boats are keyed on it)
   function frame() {
     if (!canvas.isConnected) {
       // the page navigated away (Astro view transition): release the GPU
@@ -505,11 +562,12 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     raf = requestAnimationFrame(frame);
     if (!canvas.offsetParent) return; // tab hidden
     const dt = Math.min(clock.getDelta(), 0.05);
-    const time = clock.elapsedTime;
-    if (!reduced) {
+    if (!reduced && !paused) {
+      motion += dt;
       env.update(dt);
       updateWalkers(dt);
-      updateBoats(time);
+      updateBoats(motion);
+      links.update(dt);
     }
     if (timeAnim) {
       timeAnim.t = Math.min(1, timeAnim.t + dt / 1.2);
@@ -541,11 +599,22 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     reset,
     filter,
     setTime,
-    // step to the next time of day (dawn → day → dusk → night → dawn)
-    nextTime: () => setTime(TIME_ORDER[(TIME_ORDER.indexOf(timeName) + 1) % TIME_ORDER.length]),
     getTime: () => timeName,
     setBird,
     isBird: () => bird,
+    // relation lines: 'off' | 'focus' (selected island / pointed class) | 'all'
+    setLinks: (m) => links.setMode(m),
+    getLinks: () => links.getMode(),
+    // light up one class's links from outside (the panel's class rows)
+    focusClass(id) {
+      panelNode = id || null;
+      refreshFocus();
+    },
+    setPaused(on) {
+      paused = !!on;
+      return paused;
+    },
+    isPaused: () => paused,
     clusters: layout.clusters,
     walk: layout.walk,
   };
