@@ -52,10 +52,13 @@ function esc(s) {
  * @param {Record<string,string>} o.strings  kind words for the tooltip
  * @param {(cluster: any|null) => void} o.onSelect
  * @param {(node: any) => void} o.onClass    a house was clicked: show the class
+ * @param {() => Array<{left:number,top:number,right:number,bottom:number}>} [o.chrome]
+ *   screen rects of the interface laid over the scene (brand card, toolbar,
+ *   view tabs, legend…); name plates fade out where they would run under one
  * @param {(node: any, index: number) => void} o.onArticle  a person was
  *   clicked: preview article `index` of that class
  */
-export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, strings, onSelect, onClass, onArticle, onTime }) {
+export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, strings, onSelect, onClass, onArticle, onTime, chrome }) {
   const reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const layout = layoutArchipelago(data);
   const clusterByCat = new Map(layout.clusters.map((c) => [c.cat, c]));
@@ -337,6 +340,9 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   // Plates are decluttered every frame: in priority order (selected island,
   // then bigger islands, then nearer ones) a plate that would overlap one
   // already placed shrinks to its number; hovering it shows the name again.
+  // As in the reference, a plate that comes near the interface laid over
+  // the scene (brand card, toolbar, view tabs, legend…) fades out instead of
+  // sliding underneath it, and comes back once it is clear again.
   let measured = false;
   function measureLabels() {
     for (const L of labels) {
@@ -349,8 +355,15 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     }
     measured = labels.every((L) => L.full[0] > 0);
   }
+  const CHROME_GAP = 10; // px kept clear around the interface
   function placeLabels(w, h) {
     if (!measured) measureLabels();
+    let blocks = [];
+    if (chrome) {
+      const o = labelsEl.getBoundingClientRect();
+      blocks = chrome().map((r) => ({ l: r.left - o.left - CHROME_GAP, t: r.top - o.top - CHROME_GAP, r: r.right - o.left + CHROME_GAP, b: r.bottom - o.top + CHROME_GAP }));
+    }
+    const underChrome = (x, y, [bw, bh]) => blocks.some((k) => x + bw / 2 > k.l && x - bw / 2 < k.r && y + bh / 2 > k.t && y - bh / 2 < k.b);
     const visible = [];
     for (const L of labels) {
       v.copy(L.p).project(camera);
@@ -365,8 +378,14 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     const overlaps = (x, y, [bw, bh]) => placed.some((r) => Math.abs(r.x - x) * 2 < r.w + bw + 4 && Math.abs(r.y - y) * 2 < r.h + bh + 2);
     for (const L of visible) {
       const compact = L.c.cat !== selected && overlaps(L.sx, L.sy, L.full);
-      const [bw, bh] = compact ? L.small : L.full;
-      placed.push({ x: L.sx, y: L.sy, w: bw, h: bh });
+      const size = compact ? L.small : L.full;
+      // a plate tucked away under the interface doesn't crowd the others
+      const tucked = underChrome(L.sx, L.sy, size);
+      if (tucked !== !!L.tucked) {
+        L.tucked = tucked;
+        L.el.classList.toggle('tucked', tucked);
+      }
+      if (!tucked) placed.push({ x: L.sx, y: L.sy, w: size[0], h: size[1] });
       if (compact !== !!L.compact) {
         L.compact = compact;
         L.el.classList.toggle('compact', compact);
