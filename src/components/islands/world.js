@@ -36,9 +36,13 @@ const STYLE_ORDER = ['plaza', 'courtyard', 'lawn', 'terracotta', 'garden', 'scho
 const ROOF = { be: 0x4f86c6, ui: 0x8b6fd1, un: 0xa8a29a, key: 0xe9b444 };
 const GLASS = 0x7fa6c2;
 const DOOR = 0x8a6a4e;
-// Roof language flags (scene legend): Java blue, SSJS green. Must stay in sync
-// with the legend swatches in ClassIslands.astro.
-const LANG_FLAG = { java: 0x4f86c6, ssjs: 0x4fa36b };
+// Roof language flags (scene legend): Java charcoal, SSJS green. Must stay in
+// sync with the legend swatches in ClassIslands.astro. Java was blue until it
+// proved indistinguishable from the back-end roof (ROOF.be); charcoal stays
+// apart from every other map colour, colour-blind views included. A dark flag
+// sinks into the night scene, so it gets a light rim (FLAG_RIM).
+const LANG_FLAG = { java: 0x2d2d3a, ssjs: 0x4fa36b };
+const FLAG_RIM = 0xf4efe6;
 
 // Building slots per tile: centre first, then the ring from back to front so
 // any free (tree) slots end up in the foreground. The island's landmark tile
@@ -458,7 +462,7 @@ function house(kit, n, theme, x, z, scale, yaw = 0) {
     P('box', x + 0.07, roofTop + 0.25, z, 0.13, 0.08, 0.008, 0xdb6a41);
   }
   // Language flags: a house with a Java / SSJS article flies a pennant in that
-  // colour (blue / green) so the rarer languages stand out from a distance —
+  // colour (charcoal / green) so the rarer languages stand out from a distance —
   // LotusScript is on nearly every house, so it gets none. They fly on a mast
   // to the left of the ridge, clear of the key class's coral flag.
   const langFlags = [];
@@ -472,7 +476,11 @@ function house(kit, n, theme, x, z, scale, yaw = 0) {
     const poleH = 0.46 + langFlags.length * 0.19;
     P('cyl', fx, base + poleH / 2, z, 0.024, poleH, 0.024, 0x5a4a3c);
     langFlags.forEach((c, i) => {
-      P('box', fx + 0.15, base + poleH - 0.1 - i * 0.22, z, 0.3, 0.18, 0.016, c);
+      const fy = base + poleH - 0.1 - i * 0.22;
+      P('box', fx + 0.15, fy, z, 0.3, 0.18, 0.016, c);
+      // the dark Java flag: a slightly larger, thinner light panel behind it
+      // shows as a rim on both faces
+      if (c === LANG_FLAG.java) P('box', fx + 0.15, fy, z, 0.34, 0.22, 0.01, FLAG_RIM);
     });
   }
   return { top: roofTop, depth: d };

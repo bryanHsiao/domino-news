@@ -223,7 +223,8 @@ Internal anchors (`/domino-news/posts/...`) don't count — only
 
 ### `/map/` 多語言地圖標記（coversClass / coversIsland / apiLang）
 
-定於 2026-10-29。`/map/` 的語言燈與 XPages 島直接讀**文章自己的
+定於 2026-10-29（2026-10-30 加 Java 執行環境島與名稱換算）。`/map/`
+的語言旗與外海島（XPages、Java 執行環境）直接讀**文章自己的
 frontmatter**，寫新語言文時加幾行就自動長燈／進島，不必改中央 JSON。
 完整架構與決策見 [`docs/map-3d-island-brief.md`](docs/map-3d-island-brief.md)
 的「多語言架構」一節；三個欄位已加進 `src/content.config.ts` schema。
@@ -231,13 +232,25 @@ frontmatter**，寫新語言文時加幾行就自動長燈／進島，不必改�
 一句話決策規則：
 
 > **這篇在講一個現有 Notes 類別嗎？** → `coversClass`（值＝
-> `data/ls_classes.json` 的節點 id，如 `NotesSession`）＋ `apiLang`。
+> `data/ls_classes.json` 的節點 id 如 `NotesStream`，或直接寫 Java 原名
+> 如 `Stream`，會自動換算）＋ `apiLang`。
 > **在講 XPages／網頁層、沒有對應類別嗎？**（scope variables、partial
 > refresh、managed beans、sessionAsSigner、binding 生命週期…）→
 > `coversIsland: "xpages"` ＋ `apiLang`。
-> **純跨切面概念**（threading／memory／error handling）**無單一類別又
-> 非 XPages** → 兩個都不設，先不上地圖。
+> **在講 Java 專屬執行環境嗎？**（Factory／Thread／Exception／
+> AgentContext／recycle）→ `coversIsland: "java-runtime"` ＋
+> `apiLang: "java"`。
+> **純跨切面概念、以上皆非** → 兩個都不設，先不上地圖。
 
+- **名稱換算**（`scripts/lib/mapLanguages.ts` 的 `resolveClassId`）：
+  不分大小寫，依序比對節點 id → `"Notes"`＋值 → 例外表（`LLMReq` →
+  `NotesLLMRequest`、`LLMRes` → `NotesLLMResponse`）。所以 `Stream`、
+  `DxlExporter`、`RichTextDoclink`、`NotesStream` 都對得到。
+- **檢查方式**：stage 前跑 `npm run map-lang-report`。它也掃
+  `_pending/{en,zh-TW}`，列出每個 Java 原名換算成哪個節點；有任何
+  coversClass／coversIsland 值對不到就 exit 1。**刻意不在 content
+  schema 擋**：build 不讀 `_pending/`，在 schema 擋會變成發布當天 deploy
+  才失敗（同 YAML 空字串那次事故）。
 - `apiLang` 是 `"java"` 或 `"ssjs"`；LS 文不設、維持現狀。一篇最多設
   `coversClass` 或 `coversIsland` 其一，只要設了其一就必須有 `apiLang`
   （schema 的 `superRefine` 會擋，違反時 build 直接失敗）。

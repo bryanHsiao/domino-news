@@ -5,8 +5,9 @@
 // props.people[i]), so picking maps straight back to the article.
 
 // badge colour per article language; keep in sync with the legend / panel
-// dots in ClassIslands.astro
-const LANG_BADGE = { ls: 0xdb6a41, java: 0x4f86c6, ssjs: 0x4fa36b, other: 0x9a958c };
+// dots in ClassIslands.astro (Java charcoal: it sits on the cream board, which
+// is its light rim)
+const LANG_BADGE = { ls: 0xdb6a41, java: 0x2d2d3a, ssjs: 0x4fa36b, other: 0x9a958c };
 
 const POST_H = 0.26;
 const BOARD = [0.17, 0.19, 0.03]; // w, h, d

@@ -8,7 +8,7 @@
 // it is about. Only LotusScript today; Java / SSJS articles can join later
 // as more entries with their own `lang`.
 import type { CoverageReport } from '../../scripts/lib/coverage';
-import { loadMapPosts, computeMapLanguages } from '../../scripts/lib/mapLanguages';
+import { loadMapPosts, computeMapLanguages, MAP_ISLANDS, type MapIsland } from '../../scripts/lib/mapLanguages';
 import { getPostsByLang, type Post } from './posts';
 import { localizedPath, type Lang } from '../i18n/ui';
 
@@ -24,8 +24,8 @@ export interface ClassArticle {
   date: string; // YYYY-MM-DD, Taipei time
 }
 
-/** A building on the XPages / web-layer island (one web-layer concept post),
- * or in the OpenNTF harbour (one community post). */
+/** A building on an off-shore island (one XPages / web-layer or Java runtime
+ * post), or in the OpenNTF harbour (one community post). */
 export interface XPagesMember {
   slug: string;
   name: string; // house name (the post title)
@@ -71,14 +71,15 @@ export async function classArticles(report: CoverageReport, lang: Lang, max = 3)
  *     ones from classArticles above; Java / SSJS from each post's coversClass +
  *     apiLang frontmatter, via scripts/lib/mapLanguages). Each carries its own
  *     `lang` so the scene can colour its door sign's badge.
- *   - `xpages`: the XPages / web-layer island's buildings (coversIsland posts).
+ *   - `islands`: per off-shore island (XPages / web layer, Java runtime), its
+ *     buildings (coversIsland posts).
  *   - `harbour`: the OpenNTF harbour's buildings (coversHarbour posts).
  * Slugs that resolve to no published post in `lang` are dropped.
  */
 export async function islandArticles(
   report: CoverageReport,
   lang: Lang,
-): Promise<{ articles: Record<string, ClassArticle[]>; xpages: XPagesMember[]; harbour: XPagesMember[] }> {
+): Promise<{ articles: Record<string, ClassArticle[]>; islands: Record<MapIsland, XPagesMember[]>; harbour: XPagesMember[] }> {
   const published = new Map((await getPostsByLang(lang)).map((p) => [p.data.slug, p]));
   const taipeiDate = (p: Post) => p.data.pubDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Taipei' });
   const toArticle = (slug: string, articleLang: ArticleLang): ClassArticle | null => {
@@ -98,7 +99,7 @@ export async function islandArticles(
 
   // Java / SSJS layer: light each node's lamp from the posts' own frontmatter.
   const classIds = new Set(report.classes.map((c) => c.id));
-  const { lamps, xpages } = computeMapLanguages(await loadMapPosts(), classIds);
+  const { lamps, islands: islandSlugs } = computeMapLanguages(await loadMapPosts(), classIds);
   for (const [id, lamp] of lamps) {
     const extra = [
       ...lamp.java.map((s) => toArticle(s, 'java')),
@@ -107,15 +108,18 @@ export async function islandArticles(
     if (extra.length) articles[id] = [...(articles[id] ?? []), ...extra];
   }
 
-  // XPages island: one building per web-layer concept post, newest first.
-  const members: XPagesMember[] = [];
-  for (const m of xpages) {
-    const post = published.get(m.slug);
-    const article = toArticle(m.slug, m.apiLang);
-    if (!post || !article) continue;
-    members.push({ slug: m.slug, name: post.data.title, desc: post.data.description, url: article.url, article });
+  // Off-shore islands: one building per post, newest first.
+  const islands = {} as Record<MapIsland, XPagesMember[]>;
+  for (const island of MAP_ISLANDS) {
+    const members: XPagesMember[] = [];
+    for (const m of islandSlugs[island]) {
+      const post = published.get(m.slug);
+      const article = toArticle(m.slug, m.apiLang);
+      if (!post || !article) continue;
+      members.push({ slug: m.slug, name: post.data.title, desc: post.data.description, url: article.url, article });
+    }
+    islands[island] = members.sort((a, b) => b.article.date.localeCompare(a.article.date));
   }
-  members.sort((a, b) => b.article.date.localeCompare(a.article.date));
 
   // OpenNTF harbour: one building per community post, newest first.
   const harbour: XPagesMember[] = [];
@@ -126,5 +130,5 @@ export async function islandArticles(
   }
   harbour.sort((a, b) => b.article.date.localeCompare(a.article.date));
 
-  return { articles, xpages: members, harbour };
+  return { articles, islands, harbour };
 }

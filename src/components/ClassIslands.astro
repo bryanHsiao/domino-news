@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../i18n/ui';
 import type { ClassArticle, XPagesMember } from '../lib/classArticles';
+import type { MapIsland } from '../../scripts/lib/mapLanguages';
 
 interface IslandNode {
   id: string;
@@ -20,20 +21,26 @@ interface Props {
   data: IslandData;
   /** class id -> its articles, LS → Java → SSJS (src/lib/classArticles.ts) */
   articles: Record<string, ClassArticle[]>;
-  /** buildings on the XPages / web-layer island */
-  xpages: XPagesMember[];
+  /** buildings on each off-shore island (XPages / web layer, Java runtime) */
+  islands: Record<MapIsland, XPagesMember[]>;
   /** buildings in the OpenNTF harbour on the shore */
   harbour: XPagesMember[];
   coveredCount: number;
   total: number;
 }
-const { lang, data, articles, xpages, harbour, coveredCount, total } = Astro.props;
+const { lang, data, articles, islands, harbour, coveredCount, total } = Astro.props;
 
 // The class houses carry their articles (LS plus any Java / SSJS residents,
-// one door sign each). The XPages / web-layer posts become a separate island:
-// one building per post, standing only in this view — the shared class data
-// (directory / graph) stays the 97 LotusScript classes, untouched.
-const ISLAND = 'XPages';
+// one door sign each). Posts with no backing Notes class become off-shore
+// islands — XPages / web-layer concepts, and the Java-only runtime topics
+// (NotesFactory / NotesThread / NotesException / recycle): one building per
+// post, standing only in this view — the shared class data (directory /
+// graph) stays the 97 LotusScript classes, untouched. `ui` picks the roof
+// colour: the web layer is UI, the Java runtime is back end.
+const OFFSHORE: { id: MapIsland; name: string; ui: boolean }[] = [
+  { id: 'xpages', name: 'XPages', ui: true },
+  { id: 'java-runtime', name: lang === 'zh-TW' ? 'Java 執行環境' : 'Java runtime', ui: false },
+];
 // each class's number of links (in + out): the scene builds its house that
 // many storeys tall, on a curve (islands/world.js floorsFor)
 const deg: Record<string, number> = {};
@@ -42,19 +49,21 @@ for (const l of data.links) {
   deg[l.t] = (deg[l.t] || 0) + 1;
 }
 const classNodes = data.nodes.map(({ id, name, cat, ui, key, url, desc }) => ({ id, name, cat, ui, key, url, desc: desc || '', articles: articles[id] || [], deg: deg[id] || 0 }));
-const xpagesNodes = xpages.map((m) => ({ id: 'xpages:' + m.slug, name: m.name, cat: ISLAND, ui: true, key: false, url: m.url, desc: m.desc || '', articles: [m.article], island: true }));
+const offshoreNodes = OFFSHORE.flatMap((o) =>
+  islands[o.id].map((m) => ({ id: o.id + ':' + m.slug, name: m.name, cat: o.name, ui: o.ui, key: false, url: m.url, desc: m.desc || '', articles: [m.article], island: true })),
+);
 // The OpenNTF community posts stand in a harbour town on the lake shore, not
 // on an island: the community supplies tools, it isn't part of the API.
 const HARBOUR = 'OpenNTF';
 const harbourNodes = harbour.map((m) => ({ id: 'openntf:' + m.slug, name: m.name, cat: HARBOUR, ui: false, key: false, url: m.url, desc: m.desc || '', articles: [m.article], island: true, harbour: true }));
-const nodes = [...classNodes, ...xpagesNodes, ...harbourNodes];
+const nodes = [...classNodes, ...offshoreNodes, ...harbourNodes];
 
 // Island numbering: the six core-containment categories first (fixed spine
 // order, same as ClassDirectory), then the rest by class count descending.
 // Where the islands go is decided in ./islands/layout.js from the class links
-// (related categories sit a bridge apart); the XPages island has no class
-// links, so it stands out at sea at the end of a long bridge, and the OpenNTF
-// harbour (numbered last) sits on the shore, linked by boats.
+// (related categories sit a bridge apart); the off-shore islands have no class
+// links, so each stands out at sea at the end of a long bridge, and the
+// OpenNTF harbour (numbered last) sits on the shore, linked by boats.
 const CORE = ['Session', 'Database', 'View', 'Document', 'Item', 'Rich Text'];
 const counts: Record<string, number> = {};
 nodes.forEach((n) => (counts[n.cat] = (counts[n.cat] || 0) + 1));
@@ -100,7 +109,7 @@ const T =
         listTitle: '所有島嶼',
         noMatch: '沒有符合的類別',
         langOther: '社群',
-        sub: '每個 category 一座島，類別越多島越大；房子越高，跟它有關聯的類別越多（NotesSession 有 43 條，是摩天樓）；有關聯的島之間才有橋，橋越寬關聯越多，捧箱子的人在有關聯的島之間搬運。有 Java／SSJS 文章的房子屋頂插一支對應顏色的旗（藍＝Java、綠＝SSJS）；門口的「i」告示牌一面代表一篇文章（圓章顏色＝文章語言）；XPages／網頁層概念文另成一座外海島，靠長橋連過去；OpenNTF 社群文在岸邊的港口，船從那裡開往各島。拖曳轉看、滾輪縮放；點島看清單與關聯線，點房子看類別介紹，點告示牌看文章預覽，指著房子或橋看關聯。',
+        sub: '每個 category 一座島，類別越多島越大；房子越高，跟它有關聯的類別越多（NotesSession 有 43 條，是摩天樓）；有關聯的島之間才有橋，橋越寬關聯越多，捧箱子的人在有關聯的島之間搬運。有 Java／SSJS 文章的房子屋頂插一支對應顏色的旗（炭墨黑＝Java、綠＝SSJS）；門口的「i」告示牌一面代表一篇文章（圓章顏色＝文章語言）；XPages／網頁層概念文、Java 專屬的執行環境文（NotesFactory／NotesThread／例外／recycle）各成一座外海島，靠長橋連過去；OpenNTF 社群文在岸邊的港口，船從那裡開往各島。拖曳轉看、滾輪縮放；點島看清單與關聯線，點房子看類別介紹，點告示牌看文章預覽，指著房子或橋看關聯。',
         covered: '已涵蓋',
         search: '搜尋類別…',
         reset: '重設視角',
@@ -109,7 +118,7 @@ const T =
         legUn: '尚未寫成文章',
         legKey: 'key class',
         legHeight: '樓越高＝關聯越多',
-        legFlagTip: '有 Java／SSJS 文章的房子，屋頂插一支對應顏色的旗',
+        legFlagTip: '有 Java／SSJS 文章的房子，屋頂插一支對應顏色的旗（炭墨黑＝Java、綠＝SSJS）',
         hint: '拖曳轉看 · 點島看清單',
         panelCount: ' 個類別',
         panelCountIsland: ' 篇文章',
@@ -171,7 +180,7 @@ const T =
         listTitle: 'All islands',
         noMatch: 'No matching class',
         langOther: 'Community',
-        sub: 'One island per category, bigger for more classes; the taller a house, the more classes it links to (NotesSession’s 43 make a tower); bridges only join related islands, wider for more links, and porters carry boxes between related islands. A house with a Java / SSJS article flies a roof flag in that colour (blue = Java, green = SSJS); each “i” sign at a door is one article (its badge in the article’s language colour); the web-layer XPages posts form their own island out at sea, reached by a long bridge; the OpenNTF community posts stand in a harbour on the shore, its boats sailing out to the islands. Drag to orbit, scroll to zoom; click an island for its list and relation lines, a house for the class overview, a sign at its door for an article preview; hover a house or bridge for its links.',
+        sub: 'One island per category, bigger for more classes; the taller a house, the more classes it links to (NotesSession’s 43 make a tower); bridges only join related islands, wider for more links, and porters carry boxes between related islands. A house with a Java / SSJS article flies a roof flag in that colour (charcoal = Java, green = SSJS); each “i” sign at a door is one article (its badge in the article’s language colour); the web-layer XPages posts and the Java-only runtime posts (NotesFactory / NotesThread / exceptions / recycle) each form an island out at sea, reached by a long bridge; the OpenNTF community posts stand in a harbour on the shore, its boats sailing out to the islands. Drag to orbit, scroll to zoom; click an island for its list and relation lines, a house for the class overview, a sign at its door for an article preview; hover a house or bridge for its links.',
         covered: 'covered',
         search: 'Search classes…',
         reset: 'Reset view',
@@ -180,7 +189,7 @@ const T =
         legUn: 'Not written yet',
         legKey: 'Key class',
         legHeight: 'Taller = more links',
-        legFlagTip: 'A house with a Java / SSJS article flies a flag in that colour',
+        legFlagTip: 'A house with a Java / SSJS article flies a flag in that colour (charcoal = Java, green = SSJS)',
         hint: 'Drag to orbit · tap an island',
         panelCount: ' classes',
         panelCountIsland: ' posts',
@@ -502,7 +511,10 @@ const statTip =
      the panel, there as a small round dot (.pdot). The `.ci-legend` scope is
      needed so the pennant shape wins over the `.ci-legend .sw` triangle below. */
   #ci .ci-legend .sw.flag { clip-path: polygon(0 0, 100% 42%, 0 72%); border-radius: 0; width: 12px; height: 12px; vertical-align: -1px; }
-  #ci .sw.flag.java, #ci .pdot.java { background: #4f86c6; }
+  /* Java is charcoal (blue matched the back-end roof); its light ring keeps it
+     visible on the dark-mode panel and is invisible on light backgrounds. */
+  #ci .sw.flag.java, #ci .pdot.java { background: #2d2d3a; }
+  #ci .pdot.java { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6); }
   #ci .sw.flag.ssjs, #ci .pdot.ssjs { background: #4fa36b; }
   #ci .pdot.ls { background: #db6a41; }
   #ci .pdot.other { background: #9a958c; }
