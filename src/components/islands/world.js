@@ -344,10 +344,19 @@ function buildBridge(kit, br) {
   }
 }
 
-// One class = one small house in its island's architecture. The class decides
-// floors and roof colour (key → three floors, gold roof and a flag;
-// uncovered → one floor, flat grey roof); the theme decides walls, body and
-// roof shape and proportions. The house is laid out facing +z (door centred
+// Height = how connected the class is: floors grow with its number of class
+// links (in + out, the "N links" on its card), on a soft curve so the hubs
+// stand out without the rest flattening — NotesSession's 43 make a ten-storey
+// tower, 24 → 7, 12 → 5, 3 → 2. Six storeys and up read as a tower: flat
+// roof and an antenna. Posts without class links (XPages / harbour) keep a
+// small house.
+const floorsFor = (deg) => Math.max(1, Math.round(Math.pow(deg, 0.62)));
+const TOWER = 6;
+
+// One class = one small house in its island's architecture. Its links decide
+// the floors (above); the class decides the roof colour (key → gold roof and a
+// flag; uncovered → flat grey roof); the theme decides walls, body and roof
+// shape and proportions. The house is laid out facing +z (door centred
 // on that face) and then turned by `yaw` about its centre. Returns the height
 // of the roof top and the body's depth.
 function house(kit, n, theme, x, z, scale, yaw = 0) {
@@ -361,9 +370,8 @@ function house(kit, n, theme, x, z, scale, yaw = 0) {
     kit.part(k, [x + lx * cs + lz * sn, py, z - lx * sn + lz * cs], [sx, sy, sz], color, id, rot);
   };
   const FH = 0.32;
-  let floors = kind === 'key' ? 3 : kind === 'un' ? 1 : 1 + (h0 % 2);
-  if (theme.tall && kind !== 'un') floors += 1;
-  if (theme.wide && kind !== 'key') floors = 1;
+  const floors = n.deg != null ? floorsFor(n.deg) : 1 + (h0 % 2);
+  const tower = floors >= TOWER;
   let w = (kind === 'key' ? 0.72 : 0.6 + (h0 % 3) * 0.03) * scale;
   let d = (kind === 'key' ? 0.68 : 0.57 + ((h0 >>> 3) % 3) * 0.03) * scale;
   if (theme.wide) (w *= 1.2), (d *= 0.92);
@@ -402,7 +410,7 @@ function house(kit, n, theme, x, z, scale, yaw = 0) {
   const rc = ROOF[kind];
   const rh = 0.22 + 0.04 * floors;
   let roofTop;
-  const roof = kind === 'un' ? 'none' : theme.roof;
+  const roof = kind === 'un' ? 'none' : tower ? 'flat' : theme.roof;
   switch (roof) {
     case 'none':
       P('rbox', x, yTop + 0.025, z, w + 0.05, 0.05, d + 0.05, ROOF.un);
@@ -439,6 +447,11 @@ function house(kit, n, theme, x, z, scale, yaw = 0) {
       P('box', x, yTop + 0.015, z, w + 0.09, 0.03, d + 0.09, 0xefe6da);
       P('hip', x, yTop + 0.03 + rh / 2, z, w + 0.06, rh, d + 0.06, rc);
       roofTop = yTop + 0.03 + rh;
+  }
+  if (tower) {
+    // a tower's antenna, its tip lit at night
+    P('cyl', x + w * 0.22, roofTop + 0.32, z + d * 0.18, 0.03, 0.64, 0.03, 0xd9d2c6);
+    P('bulb', x + w * 0.22, roofTop + 0.66, z + d * 0.18, 0.06, 0.06, 0.06, 0xff8a6a);
   }
   if (kind === 'key') {
     P('cyl', x, roofTop + 0.15, z, 0.02, 0.3, 0.02, 0x5a4a3c);
