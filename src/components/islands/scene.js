@@ -13,13 +13,15 @@ import { createLinks } from './links.js';
 import { createHarbours } from './harbour.js';
 import { createSigns } from './signs.js';
 
-// Opening angle, picked by measuring a person's on-screen height with every
-// lake island fitted in (2026-10-30, docs/map-3d-island-brief.md): a lower,
-// slightly turned camera and a narrower lens draw the archipelago larger
-// than 57° / 0° / 32° did, without houses hiding each other.
-const FOV = 24;
-const HOME_POLAR = THREE.MathUtils.degToRad(68);
-const HOME_AZIMUTH = THREE.MathUtils.degToRad(10);
+// Opening angle: the view the user turned to and liked on the live site
+// (2026-10-30) — the camera as low as the controls allow, turned a touch so
+// the two off-shore islands sit in the front corners and the archipelago
+// fills the middle; every lake island is then fitted in. Measured against
+// 57° / 0° (docs/map-3d-island-brief.md) it draws the houses and people
+// larger.
+const FOV = 32;
+const HOME_POLAR = THREE.MathUtils.degToRad(70);
+const HOME_AZIMUTH = THREE.MathUtils.degToRad(3);
 // The opening view fits every island in the lake (off-shore ones included)
 // into the part of the stage the interface leaves clear, at least this many
 // px from its edges.
@@ -199,7 +201,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     const up = new THREE.Vector3(-Math.sin(homeAzimuth), 0, -Math.cos(homeAzimuth));
     // a few rounds of: project, re-centre the target on the clear area, then
     // scale the distance to the spare room
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 40; i++) {
       frameCam.position.copy(posFor(target, dist, homePolar, homeAzimuth));
       frameCam.lookAt(target);
       frameCam.updateMatrixWorld();
@@ -214,9 +216,9 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       // shift the target along screen right / up on the ground (up is
       // stretched by the camera's slant)
       const k = dist * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-      target.addScaledVector(right, (((x0 + x1) - (a.x0 + a.x1)) / 2) * k * camera.aspect);
-      target.addScaledVector(up, (((y0 + y1) - (a.y0 + a.y1)) / 2) * k / Math.cos(homePolar));
-      dist *= Math.max((x1 - x0) / (a.x1 - a.x0), (y1 - y0) / (a.y1 - a.y0));
+      target.addScaledVector(right, 0.6 * (((x0 + x1) - (a.x0 + a.x1)) / 2) * k * camera.aspect);
+      target.addScaledVector(up, 0.6 * (((y0 + y1) - (a.y0 + a.y1)) / 2) * k / Math.cos(homePolar));
+      dist *= Math.pow(Math.max((x1 - x0) / (a.x1 - a.x0), (y1 - y0) / (a.y1 - a.y0)), 0.6);
     }
     homeTarget.copy(target);
     homeDist = dist;
