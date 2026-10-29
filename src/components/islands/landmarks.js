@@ -6,6 +6,9 @@
 // not written / key class) on every island.
 import { TOP } from './layout.js';
 
+// window glass, same tone as the class houses' (world.js); glows at night
+const GLASS = 0x7fa6c2;
+
 const BLOSSOM = [0xf2b5c6, 0xf6c9d4, 0xe9a3b8];
 const AUTUMN = [0xe0a050, 0xd98a3a, 0xe8b860];
 const LIME = [0xb3cf8e, 0xc4d98f, 0xa9c98a];
@@ -13,7 +16,7 @@ const LIME = [0xb3cf8e, 0xc4d98f, 0xa9c98a];
 // roof: hip | gable | flat | saw | dome | cone   body: box | round
 // tall / wide tweak the proportions; flora picks what fills free slots.
 export const THEMES = {
-  Session: { walls: [0xf4ede2, 0xf7f1e8], roof: 'gable', body: 'box', flora: 'tree', landmark: 'civic' },
+  Session: { walls: [0xf4ede2, 0xf7f1e8], roof: 'gable', body: 'box', flora: 'tree', landmark: 'skytower' },
   Database: { walls: [0xd8d2c6, 0xcfc8ba], roof: 'flat', body: 'box', flora: 'tree', landmark: 'dbstack' },
   View: { walls: [0xeef3f6, 0xe2ebef], roof: 'flat', body: 'box', tall: true, flora: 'pine', landmark: 'lookout' },
   Document: { walls: [0xfbf7ee, 0xf3ecdc], roof: 'gable', body: 'box', flora: 'tree', landmark: 'paper' },
@@ -55,20 +58,44 @@ export function buildLandmark(kind, kit, x, z) {
   const FACE_X = [0, 0, Math.PI / 2]; // disc facing +x
 
   switch (kind) {
-    case 'civic': {
-      // Session — the city hall every other object starts from
-      P('rbox', x, y + 0.03, z, 1.35, 0.06, 1.05, 0xe4d6c3);
-      P('rbox', x, y + 0.09, z, 1.25, 0.06, 0.95, 0xece2d2);
-      P('rbox', x, y + 0.39, z - 0.05, 1.1, 0.54, 0.7, 0xf3ece0);
-      for (let i = 0; i < 5; i++) P('cyl', x - 0.4 + i * 0.2, y + 0.36, z + 0.36, 0.08, 0.48, 0.08, 0xfbf7f0);
-      P('box', x, y + 0.62, z + 0.3, 1.2, 0.05, 0.16, 0xece2d2);
-      P('gable', x, y + 0.79, z - 0.02, 1.2, 0.26, 0.86, 0xdb6a41);
-      P('rbox', x, y + 1.01, z - 0.25, 0.32, 0.7, 0.32, 0xf3ece0);
-      disc(x, y + 1.15, z - 0.08, 0.2, 0xfffaf0, FACE_Z);
-      P('box', x, y + 1.18, z - 0.065, 0.015, 0.08, 0.01, 0x3b3a42);
-      P('hip', x, y + 1.51, z - 0.25, 0.4, 0.3, 0.4, 0xdb6a41);
-      P('cyl', x, y + 1.78, z - 0.25, 0.02, 0.24, 0.02, 0x5a4a3c);
-      P('box', x + 0.07, y + 1.85, z - 0.25, 0.13, 0.08, 0.01, 0xe9b444);
+    case 'skytower': {
+      // Session — the island linked to the most others (14 of 16) gets the
+      // skyline: twin towers stacked in flared 101-style sections, joined
+      // by a sky bridge, windows that light up at night, a gold-tipped spire
+      P('rbox', x, y + 0.05, z, 1.32, 0.1, 0.92, 0xe4d6c3);
+      P('rbox', x, y + 0.2, z, 1.16, 0.22, 0.76, 0xf3ece0);
+      P('glass', x, y + 0.2, z + 0.385, 0.9, 0.1, 0.012, GLASS);
+      const SEG = 10, SH = 0.4, W = 0.38;
+      const top = y + 0.31 + SEG * SH;
+      for (const s of [-1, 1]) {
+        const tx = x + s * 0.31;
+        P('box', tx, y + 0.42, z, W + 0.06, 0.22, W + 0.06, 0xf7f3ea);
+        for (let i = 0; i < SEG; i++) {
+          // each section widens a little towards its top, like a stack of
+          // upturned boxes; a pale ledge caps it
+          const b = y + 0.53 + i * SH;
+          P('box', tx, b + SH * 0.3, z, W, SH * 0.6, W, 0xdfe7e6);
+          P('box', tx, b + SH * 0.75, z, W + 0.04, SH * 0.3, W + 0.04, 0xdfe7e6);
+          P('box', tx, b + SH * 0.94, z, W + 0.07, 0.035, W + 0.07, 0xf7f3ea);
+          // window bands on all four faces (glass glows after dusk)
+          P('glass', tx, b + SH * 0.45, z + W / 2 + 0.008, W * 0.72, SH * 0.5, 0.012, GLASS);
+          P('glass', tx, b + SH * 0.45, z - W / 2 - 0.008, W * 0.72, SH * 0.5, 0.012, GLASS);
+          P('glass', tx + W / 2 + 0.008, b + SH * 0.45, z, 0.012, SH * 0.5, W * 0.72, GLASS);
+          P('glass', tx - W / 2 - 0.008, b + SH * 0.45, z, 0.012, SH * 0.5, W * 0.72, GLASS);
+        }
+        // crown: two narrowing tiers, a coral cap and a tall spire
+        P('box', tx, top + 0.08, z, W * 0.8, 0.16, W * 0.8, 0xdfe7e6);
+        P('box', tx, top + 0.22, z, W * 0.55, 0.14, W * 0.55, 0xf7f3ea);
+        P('hip', tx, top + 0.36, z, W * 0.55, 0.14, W * 0.55, 0xdb6a41);
+        P('cone', tx, top + 0.93, z, 0.08, 1.06, 0.08, 0xd9d2c6);
+        P('bulb', tx, top + 1.48, z, 0.07, 0.07, 0.07, 0xe9b444);
+      }
+      // sky bridge between the towers, held up by a V of struts
+      const by = y + 0.53 + 5.5 * SH;
+      P('box', x, by, z, 0.26, 0.11, 0.18, 0xf7f3ea);
+      P('glass', x, by, z + 0.095, 0.24, 0.06, 0.012, GLASS);
+      P('glass', x, by, z - 0.095, 0.24, 0.06, 0.012, GLASS);
+      for (const s of [-1, 1]) rod(x, by - 0.06, x + s * 0.12, by - 0.7, z, 0.03, 0xd9d2c6);
       break;
     }
     case 'dbstack': {
