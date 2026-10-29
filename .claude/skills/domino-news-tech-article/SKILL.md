@@ -563,8 +563,8 @@ relatedJava: ["Session", "Document"]    # Java counterpart class names — [] if
                                         # no Domino-API equivalent exists
 relatedSsjs: ["Session", "Document"]    # Same for SSJS
 # --- Java / SSJS posts only (LS posts omit all three) — see "Map fields" ---
-# coversClass: NotesStream              # /map/ node id — LS-style full name
-# coversIsland: xpages                  # OR this, for XPages web-layer concepts
+# coversClass: Stream                   # /map/ class — Java name or node id (NotesStream)
+# coversIsland: xpages                  # OR this: xpages | java-runtime
 # apiLang: java                         # java | ssjs — required with either
 ---
 ```
@@ -586,25 +586,29 @@ Domino-API counterpart in that language.
 SSJS posts only; LS posts leave all three unset (LS coverage comes
 from the `sources` URLs). These put the post on the `/map/` islands
 view: a class post plants a language flag on that class's building
-(Java blue / SSJS green), an XPages post joins the XPages island. Set
-them in **both** the zh-TW and en files. Which one:
+(Java charcoal / SSJS green), an island post joins that off-shore island.
+Set them in **both** the zh-TW and en files. Which one:
 
-- Teaches a specific Notes class → `coversClass: <node id>` + `apiLang`.
+- Teaches a specific Notes class → `coversClass: <class>` + `apiLang`.
 - XPages / web-layer concept with no backing Notes class (scope
   variables, partial refresh, managed beans…) → `coversIsland: xpages`
   + `apiLang: ssjs`.
-- Cross-cutting concept with no single class (threading, recycle /
-  memory, exception handling) → set neither; the post stays off the map.
+- Java-only runtime topic with no backing Notes class (NotesFactory /
+  NotesThread / NotesException / AgentContext / recycle) →
+  `coversIsland: java-runtime` + `apiLang: java`.
+- Cross-cutting concept that is neither (no single class, not XPages,
+  not the Java runtime) → set neither; the post stays off the map.
 
 Gotchas:
 
-- **The value is the catalogue node id, LS-style, even for Java**:
-  `lotus.domino.Stream` → `NotesStream`, `Session` → `NotesSession`.
-  A wrong id still builds — it just silently shows no flag. Check it:
-  `grep '"id": "NotesStream"' data/ls_classes.json`. Once the post is
-  in `src/content/posts/`, `npm run map-lang-report` also lists unknown
-  ids (exits 1) — but it doesn't scan `_pending/`, so for staged posts
-  use the grep.
+- **The Java class name works as-is** — it is converted automatically:
+  `coversClass: Stream`, `DxlExporter`, `LLMReq` resolve to
+  `NotesStream`, `NotesDXLExporter`, `NotesLLMRequest` (case doesn't
+  matter; the LS-style node id `NotesStream` works too). A value that
+  resolves to nothing still **builds** — it just silently shows no
+  flag — so **before staging, run `npm run map-lang-report`**: it
+  covers `_pending/` too, prints what each Java name resolved to, and
+  exits 1 on any coversClass / coversIsland value it can't resolve.
 - **The flag appears on release day**, when the post is promoted from
   `_pending/` into `posts/` — not when it's staged.
 - **Not the same as `relatedJava` / `relatedSsjs`**: those go on LS
@@ -806,7 +810,9 @@ clean at the end.
   absence is intentional, not "we forgot."
 - **Java / SSJS post with no map field** — it publishes fine but never
   shows on `/map/`. Set `coversClass` + `apiLang` (or `coversIsland:
-  xpages`), using the LS-style node id (`NotesStream`, not `Stream`).
+  xpages` / `java-runtime`); the Java class name (`Stream`) is fine, it
+  resolves to the node. Run `npm run map-lang-report` before staging —
+  it checks `_pending/` too and exits 1 on a value it can't resolve.
   See Step 4 "Map fields".
 - **Inline-link diversity miss** — using the same class doc URL
   4+ times in one body. Spread across class page + method page +

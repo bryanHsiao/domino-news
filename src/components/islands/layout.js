@@ -129,8 +129,8 @@ export function layoutArchipelago(data) {
   // whose relations are most fully covered goes first — a small island that
   // only relates to the hub claims a spot beside it before one that has
   // other partners to sit next to.
-  // Off-shore islands (the XPages / web-layer posts: not Notes classes, no
-  // class links) are packed on their own and set apart across open water at
+  // Off-shore islands (the XPages / web-layer and Java runtime posts: not
+  // Notes classes, no class links) are packed on their own and set apart across open water at
   // the end of a long bridge, so they never read as part of the class
   // archipelago. The harbour (the OpenNTF community posts) is packed the same
   // way but stands on the lake shore, reached only by boat.

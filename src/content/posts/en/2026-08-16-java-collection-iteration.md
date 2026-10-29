@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 cover: "/covers/java-collection-iteration.webp"
 coverStyle: "low-poly-3d"
+coversClass: ["NotesDocumentCollection", "NotesViewNavigator"]
+apiLang: "java"
 ---
 
 Looping a document collection in LotusScript probably looks like this: `Set doc = coll.GetFirstDocument()`, then `Set doc = coll.GetNextDocument(doc)` to the end, without a single thought about memory. The same logic in the Java `lotus.domino` API looks almost identical — but if the collection holds tens of thousands of documents, that loop exhausts the agent's memory.

@@ -33,12 +33,17 @@ const posts = defineCollection({
     // "多語言架構"). These drive language lamps / the XPages island straight
     // from a post's own frontmatter — distinct from relatedJava/relatedSsjs,
     // which live on LS posts and point back at LS posts. ---
-    // One or more data/ls_classes.json node ids (full class names, e.g.
-    // "NotesSession"): this post teaches that Notes class, so light its lamp
-    // for `apiLang`.
+    // One or more Notes classes this post teaches, so light their lamp for
+    // `apiLang`: the data/ls_classes.json node id ("NotesStream") or the Java
+    // name ("Stream", "DxlExporter", "LLMReq") — scripts/lib/mapLanguages.ts
+    // resolves either. Values are deliberately NOT checked here (a _pending/
+    // post would only fail on release day); `npm run map-lang-report` checks
+    // them, _pending/ included.
     coversClass: z.union([z.string(), z.array(z.string())]).optional(),
-    // Web-layer concept post with no backing Notes class → the XPages island.
-    // Currently the only value is "xpages".
+    // Post with no backing Notes class → an off-shore island: "xpages"
+    // (XPages / web layer) or "java-runtime" (Java-only runtime topics:
+    // NotesFactory / NotesThread / NotesException / AgentContext / recycle).
+    // Same deal: map-lang-report flags an unknown value.
     coversIsland: z.string().optional(),
     // Community post shown at a harbour on the /map/ islands view's shore
     // (not an island: the community supplies tools, it isn't part of the
