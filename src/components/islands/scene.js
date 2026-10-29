@@ -13,8 +13,13 @@ import { createLinks } from './links.js';
 import { createHarbours } from './harbour.js';
 import { createSigns } from './signs.js';
 
-const FOV = 32;
-const HOME_POLAR = THREE.MathUtils.degToRad(57);
+// Opening angle, picked by measuring a person's on-screen height with every
+// lake island fitted in (2026-10-30, docs/map-3d-island-brief.md): a lower,
+// slightly turned camera and a narrower lens draw the archipelago larger
+// than 57° / 0° / 32° did, without houses hiding each other.
+const FOV = 24;
+const HOME_POLAR = THREE.MathUtils.degToRad(68);
+const HOME_AZIMUTH = THREE.MathUtils.degToRad(10);
 // The opening view fits every island in the lake (off-shore ones included)
 // into the part of the stage the interface leaves clear, at least this many
 // px from its edges.
@@ -142,6 +147,17 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       [t.x, t.z + R],
     ])
     .map(([x, z]) => new THREE.Vector3(x, TOP, z));
+  // ...and what stands on them, so a tall roof or the Session towers don't
+  // run up under the toolbar: every class house's roof top and each
+  // landmark's top (the Session towers ~5.8 high, the rest under ~2)
+  const harbourCats = new Set(layout.harbours.map((h) => h.cat));
+  for (const n of data.nodes) {
+    const a = world.anchors.get(n.id);
+    if (a && !harbourCats.has(n.cat)) framePts.push(new THREE.Vector3(a.x, a.y, a.z));
+  }
+  for (const l of world.landmarks)
+    if (!layout.harbours.some((h) => Math.hypot(h.x - l.x, h.z - l.z) < h.r))
+      framePts.push(new THREE.Vector3(l.x, TOP + (l.kind === 'skytower' ? 6 : 2), l.z));
   const homeTarget = new THREE.Vector3(cx, TOP, cz);
   let homeDist = 0;
   const frameCam = new THREE.PerspectiveCamera(FOV, 1, 0.3, 600);
@@ -169,16 +185,22 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       y1: 1 - (2 * (m.t + HOME_PAD)) / h,
     };
   }
+  let homePolar = HOME_POLAR;
+  let homeAzimuth = HOME_AZIMUTH;
   function fitHome(w, h) {
     const a = clearArea(w, h);
+    frameCam.fov = camera.fov;
     frameCam.aspect = camera.aspect;
     frameCam.updateProjectionMatrix();
     const target = new THREE.Vector3(cx, TOP, cz);
     let dist = fitDistance(radius);
+    // screen right and screen up, as directions on the ground
+    const right = new THREE.Vector3(Math.cos(homeAzimuth), 0, -Math.sin(homeAzimuth));
+    const up = new THREE.Vector3(-Math.sin(homeAzimuth), 0, -Math.cos(homeAzimuth));
     // a few rounds of: project, re-centre the target on the clear area, then
     // scale the distance to the spare room
     for (let i = 0; i < 8; i++) {
-      frameCam.position.copy(posFor(target, dist, HOME_POLAR, 0));
+      frameCam.position.copy(posFor(target, dist, homePolar, homeAzimuth));
       frameCam.lookAt(target);
       frameCam.updateMatrixWorld();
       let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
@@ -189,11 +211,11 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
         y0 = Math.min(y0, pv.y);
         y1 = Math.max(y1, pv.y);
       }
-      // screen x runs along +x; screen up runs along −z on the ground (the
-      // opening view looks north), stretched by the camera's slant
-      const k = dist * tanHalf;
-      target.x += (((x0 + x1) - (a.x0 + a.x1)) / 2) * k * camera.aspect;
-      target.z -= (((y0 + y1) - (a.y0 + a.y1)) / 2) * k / Math.cos(HOME_POLAR);
+      // shift the target along screen right / up on the ground (up is
+      // stretched by the camera's slant)
+      const k = dist * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      target.addScaledVector(right, (((x0 + x1) - (a.x0 + a.x1)) / 2) * k * camera.aspect);
+      target.addScaledVector(up, (((y0 + y1) - (a.y0 + a.y1)) / 2) * k / Math.cos(homePolar));
       dist *= Math.max((x1 - x0) / (a.x1 - a.x0), (y1 - y0) / (a.y1 - a.y0));
     }
     homeTarget.copy(target);
@@ -516,7 +538,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     bird = !!on;
     controls.minPolarAngle = 0;
     controls.maxPolarAngle = POLAR_MAX;
-    const pos = bird ? posFor(homeTarget, birdDistance(), BIRD_POLAR, 0) : posFor(homeTarget, homeDistance(), HOME_POLAR, 0);
+    const pos = bird ? posFor(homeTarget, birdDistance(), BIRD_POLAR, 0) : posFor(homeTarget, homeDistance(), homePolar, homeAzimuth);
     flyTo(homeTarget.clone(), pos, () => {
       controls.minPolarAngle = bird ? 0 : POLAR_MIN;
       controls.maxPolarAngle = bird ? BIRD_POLAR + 0.05 : POLAR_MAX;
@@ -541,7 +563,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   }
   function home(instant) {
     controls.maxDistance = fitDistance(radius) * 1.8;
-    const pos = posFor(homeTarget, homeDistance(), HOME_POLAR, 0);
+    const pos = posFor(homeTarget, homeDistance(), homePolar, homeAzimuth);
     if (instant) {
       controls.target.copy(homeTarget);
       camera.position.copy(pos);
