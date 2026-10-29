@@ -109,7 +109,7 @@ const T =
         listTitle: '所有島嶼',
         noMatch: '沒有符合的類別',
         langOther: '社群',
-        sub: '每個 category 一座島，類別越多島越大；房子越高，跟它有關聯的類別越多（NotesSession 有 43 條，是摩天樓）；有關聯的島之間才有橋，橋越寬關聯越多，捧箱子的人在有關聯的島之間搬運。有 Java／SSJS 文章的房子屋頂插一支對應顏色的旗（藍＝Java、綠＝SSJS）；門口的「i」告示牌一面代表一篇文章（圓章顏色＝文章語言）；XPages／網頁層概念文、Java 專屬的執行環境文（NotesFactory／NotesThread／例外／recycle）各成一座外海島，靠長橋連過去；OpenNTF 社群文在岸邊的港口，船從那裡開往各島。拖曳轉看、滾輪縮放；點島看清單與關聯線，點房子看類別介紹，點告示牌看文章預覽，指著房子或橋看關聯。',
+        sub: '每個 category 一座島，類別越多島越大；房子越高，跟它有關聯的類別越多（NotesSession 有 43 條，是摩天樓）；有關聯的島之間才有橋，橋越寬關聯越多，捧箱子的人在有關聯的島之間搬運。有 Java／SSJS 文章的房子屋頂插一支對應顏色的旗（炭墨黑＝Java、綠＝SSJS）；門口的「i」告示牌一面代表一篇文章（圓章顏色＝文章語言）；XPages／網頁層概念文、Java 專屬的執行環境文（NotesFactory／NotesThread／例外／recycle）各成一座外海島，靠長橋連過去；OpenNTF 社群文在岸邊的港口，船從那裡開往各島。拖曳轉看、滾輪縮放；點島看清單與關聯線，點房子看類別介紹，點告示牌看文章預覽，指著房子或橋看關聯。',
         covered: '已涵蓋',
         search: '搜尋類別…',
         reset: '重設視角',
@@ -118,7 +118,7 @@ const T =
         legUn: '尚未寫成文章',
         legKey: 'key class',
         legHeight: '樓越高＝關聯越多',
-        legFlagTip: '有 Java／SSJS 文章的房子，屋頂插一支對應顏色的旗',
+        legFlagTip: '有 Java／SSJS 文章的房子，屋頂插一支對應顏色的旗（炭墨黑＝Java、綠＝SSJS）',
         hint: '拖曳轉看 · 點島看清單',
         panelCount: ' 個類別',
         panelCountIsland: ' 篇文章',
@@ -180,7 +180,7 @@ const T =
         listTitle: 'All islands',
         noMatch: 'No matching class',
         langOther: 'Community',
-        sub: 'One island per category, bigger for more classes; the taller a house, the more classes it links to (NotesSession’s 43 make a tower); bridges only join related islands, wider for more links, and porters carry boxes between related islands. A house with a Java / SSJS article flies a roof flag in that colour (blue = Java, green = SSJS); each “i” sign at a door is one article (its badge in the article’s language colour); the web-layer XPages posts and the Java-only runtime posts (NotesFactory / NotesThread / exceptions / recycle) each form an island out at sea, reached by a long bridge; the OpenNTF community posts stand in a harbour on the shore, its boats sailing out to the islands. Drag to orbit, scroll to zoom; click an island for its list and relation lines, a house for the class overview, a sign at its door for an article preview; hover a house or bridge for its links.',
+        sub: 'One island per category, bigger for more classes; the taller a house, the more classes it links to (NotesSession’s 43 make a tower); bridges only join related islands, wider for more links, and porters carry boxes between related islands. A house with a Java / SSJS article flies a roof flag in that colour (charcoal = Java, green = SSJS); each “i” sign at a door is one article (its badge in the article’s language colour); the web-layer XPages posts and the Java-only runtime posts (NotesFactory / NotesThread / exceptions / recycle) each form an island out at sea, reached by a long bridge; the OpenNTF community posts stand in a harbour on the shore, its boats sailing out to the islands. Drag to orbit, scroll to zoom; click an island for its list and relation lines, a house for the class overview, a sign at its door for an article preview; hover a house or bridge for its links.',
         covered: 'covered',
         search: 'Search classes…',
         reset: 'Reset view',
@@ -189,7 +189,7 @@ const T =
         legUn: 'Not written yet',
         legKey: 'Key class',
         legHeight: 'Taller = more links',
-        legFlagTip: 'A house with a Java / SSJS article flies a flag in that colour',
+        legFlagTip: 'A house with a Java / SSJS article flies a flag in that colour (charcoal = Java, green = SSJS)',
         hint: 'Drag to orbit · tap an island',
         panelCount: ' classes',
         panelCountIsland: ' posts',
@@ -511,7 +511,10 @@ const statTip =
      the panel, there as a small round dot (.pdot). The `.ci-legend` scope is
      needed so the pennant shape wins over the `.ci-legend .sw` triangle below. */
   #ci .ci-legend .sw.flag { clip-path: polygon(0 0, 100% 42%, 0 72%); border-radius: 0; width: 12px; height: 12px; vertical-align: -1px; }
-  #ci .sw.flag.java, #ci .pdot.java { background: #4f86c6; }
+  /* Java is charcoal (blue matched the back-end roof); its light ring keeps it
+     visible on the dark-mode panel and is invisible on light backgrounds. */
+  #ci .sw.flag.java, #ci .pdot.java { background: #2d2d3a; }
+  #ci .pdot.java { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6); }
   #ci .sw.flag.ssjs, #ci .pdot.ssjs { background: #4fa36b; }
   #ci .pdot.ls { background: #db6a41; }
   #ci .pdot.other { background: #9a958c; }

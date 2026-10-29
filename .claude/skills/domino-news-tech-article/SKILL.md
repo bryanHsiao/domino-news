@@ -586,7 +586,7 @@ Domino-API counterpart in that language.
 SSJS posts only; LS posts leave all three unset (LS coverage comes
 from the `sources` URLs). These put the post on the `/map/` islands
 view: a class post plants a language flag on that class's building
-(Java blue / SSJS green), an island post joins that off-shore island.
+(Java charcoal / SSJS green), an island post joins that off-shore island.
 Set them in **both** the zh-TW and en files. Which one:
 
 - Teaches a specific Notes class → `coversClass: <class>` + `apiLang`.

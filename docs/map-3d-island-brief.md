@@ -511,7 +511,7 @@ XPages 島 **10 個成員**。`NotesSession` 同時有 Java 與 SSJS 燈（分�
 **2. Java 執行環境島（`coversIsland: "java-runtime"`）。** 比照 XPages 島做成
 外海島：一篇文章一棟房子，靠長橋連到最近的類別島，點房子會先顯示文章預覽。島名
 中文是「Java 執行環境」，英文是「Java runtime」。屋頂用後端藍（XPages 是 UI 紫），
-每棟都插 Java 藍旗。資料層把 `xpages` 改成泛化的 `islands`（`MAP_ISLANDS`），
+每棟都插 Java 旗（炭墨色，見下方「Java 語言色改炭墨」）。資料層把 `xpages` 改成泛化的 `islands`（`MAP_ISLANDS`），
 `ClassIslands.astro` 用 `OFFSHORE` 表列出這兩座島，`layout.js` 不用改：第二座
 外海島本來就會沿 `OFFSHORE_ANGLE + 0.7` 放出去，落在群島左前方。
 
@@ -533,6 +533,17 @@ XPages 島 **10 個成員**。`NotesSession` 同時有 Java 與 SSJS 燈（分�
 
 結果（`npm run map-lang-report`）：Java 旗 10 個節點（新增 `NotesDocumentCollection`、
 `NotesViewNavigator`）、SSJS 旗 2 個、XPages 島 10 篇、Java 執行環境島 3 篇。
+
+**3. Java 語言色改炭墨（`#2d2d3a`）。** 原本 Java 用藍色 `#4f86c6`，跟後端屋頂
+（`ROOF.be`／`--roof-be`）是同一個色碼，右側清單的後端藍點和 Java 旗完全分不出來。母 session
+做過色差評估（含綠色弱、紅色弱模擬），炭墨是唯一在三種視覺下都能跟現有顏色（後端藍、UI 紫、
+核心金、LS 珊瑚、SSJS 綠、島內關聯線青綠、未寫灰）拉開距離的候選色。改的地方：`world.js` 的
+`LANG_FLAG.java`、`signs.js` 的 `LANG_BADGE.java`、`ClassIslands.astro` 的 `.sw.flag.java`／
+`.pdot.java` 和說明文字。後端屋頂的藍色不動。深色旗在夜景容易隱沒，所以處理如下：
+- Java 旗後面墊一片稍大、較薄的米白板（`FLAG_RIM`），旗面兩側看起來都有一圈淺色邊。
+- 門口告示牌的圓章本來就貼在米白底板上，底板就是它的淺色框。
+- 清單裡的 `.pdot.java` 加一圈 1px 半透明白環，深色模式的面板上才看得到；淺色背景上看不出這圈環。
+
 
 ## 島外風景、外海 XPages 島、自行車、時段跟時鐘（2026-10-29）
 
@@ -586,7 +597,7 @@ OpenNTF 才用船。另外門口的「人」改成帶「i」圖示的告示牌�
 - **XPages 長橋**：外海島改用一座長木橋，從最近的類別島連過去（`bridge.long`，
   `bridgeStyle(0, true)`，橋寬 0.42，每約 2.2 單位一根橋墩）。行人可以走上 XPages 島。
 - **門口告示牌**（`signs.js`）：一篇文章一面告示牌，白底板加一個依文章語言上色的圓章
-  （LS 珊瑚、Java 藍、SSJS 綠、社群灰），圓章裡是白色「i」。點牌子會開文章預覽，
+  （LS 珊瑚、Java 炭墨〔2026-10-30 前為藍〕、SSJS 綠、社群灰），圓章裡是白色「i」。點牌子會開文章預覽，
   跟原本點人一樣。原本站在門口的人已經移除，路上走的行人和騎車的人還在。
   告示牌位置：使用者要求放在門口那一側，所以改成站在房子正面（每棟房子的門都在 +z
   面中央）的門前，依序放在門右、門左，再往外排，不會擋到門（`world.js residents()`；
