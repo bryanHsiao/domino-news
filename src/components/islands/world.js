@@ -84,6 +84,7 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
   const pickTargets = [];
   const outlines = new Map();
   const anchors = new Map(); // class id -> roof top of its house, where relation lines start and end
+  const landmarks = []; // { x, z, kind } of each island's landmark (the camera framing keeps them in view)
   const tileAt = new Map(layout.tiles.map((t) => [t.q + ',' + t.r, t]));
   const add = (geo, mat, { cast = false, receive = true, cat = null, x = 0, y = 0, z = 0 } = {}) => {
     const m = new THREE.Mesh(geo, mat);
@@ -206,7 +207,10 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
   function dressTile(t, theme, isHeart) {
     const rnd = mulberry32(hashString(t.q + ':' + t.r));
     const slots = isHeart ? LANDMARK_SLOTS : SLOTS;
-    if (isHeart) buildLandmark(theme.landmark, decor, t.x, t.z);
+    if (isHeart) {
+      buildLandmark(theme.landmark, decor, t.x, t.z);
+      landmarks.push({ x: t.x, z: t.z, kind: theme.landmark });
+    }
     t.nodes.forEach((n, i) => {
       const [ox, oz] = slots[i];
       const x = t.x + ox, z = t.z + oz;
@@ -277,7 +281,7 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
     outlines.set(c.cat, m);
   }
 
-  return { pickTargets, outlines, anchors };
+  return { pickTargets, outlines, anchors, landmarks };
 }
 
 // Bridge look by relation strength: 4+ links a wide stone bridge, 2–3 a wooden
