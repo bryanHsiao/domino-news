@@ -13,9 +13,11 @@ interface Props {
   ogType?: 'article' | 'website';
   /** Optional JSON-LD object (e.g. BlogPosting). Will be JSON.stringify'd. */
   jsonLd?: unknown;
+  /** false drops the site header: /map/ puts its own bar there (MapBar.astro). */
+  siteHeader?: boolean;
 }
 
-const { lang, title, description, cover, ogType = 'website', jsonLd } = Astro.props;
+const { lang, title, description, cover, ogType = 'website', jsonLd, siteHeader = true } = Astro.props;
 const t = useTranslations(lang);
 const siteTitle = t('site.title');
 const pageTitle = title ? `${title} · ${siteTitle}` : `${siteTitle} — ${t('site.tagline')}`;
@@ -118,7 +120,7 @@ const otherLangUrl = new URL(localizedPath(otherLang, otherLangPath), Astro.site
     )}
   </head>
   <body>
-    <header class="site-header">
+    {siteHeader && (<header class="site-header">
       <div class="inner">
         <a href={localizedPath(lang, '/')} class="brand">
           <span class="brand-mark">D</span>
@@ -135,7 +137,7 @@ const otherLangUrl = new URL(localizedPath(otherLang, otherLangPath), Astro.site
           </div>
         </nav>
       </div>
-    </header>
+    </header>)}
 
     <main>
       <slot />
