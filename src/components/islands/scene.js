@@ -8,6 +8,7 @@ import { createKit } from './kit.js';
 import { createProps } from './props.js';
 import { buildWorld, classKind } from './world.js';
 import { createEnvironment, TIMES } from './environment.js';
+import { createCrowd } from './people.js';
 
 const FOV = 32;
 const HOME_POLAR = THREE.MathUtils.degToRad(57);
@@ -16,8 +17,8 @@ const POLAR_MAX = THREE.MathUtils.degToRad(70);
 const BIRD_POLAR = 0.1; // bird's-eye: almost straight down
 const TIME_ORDER = ['dawn', 'day', 'dusk', 'night'];
 const WALKERS = 42;
-const SHIRTS = [0xdb6a41, 0x4f86c6, 0xe9b444, 0x58a6a6, 0x8b6fd1, 0x3b3a42, 0xf2b5c6, 0x9cc27a];
-const SKIN = [0xf1c9a5, 0xd9a27e, 0xb27b57];
+const PERSON = 0.3; // world units per character unit (a person is ~0.32 tall)
+const STRIDE = 0.15; // distance covered per walk cycle
 const PALE = new THREE.Color(0xe9e4da);
 const CORAL = new THREE.Color(0xdb6a41);
 
@@ -63,7 +64,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   controls.enablePan = false;
   controls.minPolarAngle = POLAR_MIN;
   controls.maxPolarAngle = POLAR_MAX;
-  controls.minDistance = 5;
+  controls.minDistance = 2.2; // close enough to see the people
 
   // ---- world
   const buildingKit = createKit(THREE);
@@ -86,6 +87,10 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     m.frustumCulled = false; // instances move away from where the bounds were computed
     m.castShadow = false;
   }
+  // people standing about the islands, in the walkers' character model
+  const standing = createCrowd(THREE, scene, partMat, props.people.length, { rnd: mulberry32(7), shadow: true });
+  props.people.forEach((p, i) => standing.pose(i, p.x, p.y, p.z, p.yaw, PERSON));
+  standing.commit();
 
   // ---- camera framing
   const tanHalf = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
@@ -143,14 +148,8 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     nodesOf.get(n.cat).push(i);
   });
   const walkCats = [...nodesOf.keys()];
-  const bodyMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.5, 0.42, 1, 8), partMat, WALKERS);
-  const headMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(0.5, 10, 8), partMat, WALKERS);
-  for (const m of [bodyMesh, headMesh]) {
-    m.frustumCulled = false;
-    m.receiveShadow = true;
-  }
+  const crowd = createCrowd(THREE, scene, partMat, WALKERS, { rnd: wrnd, carry: 0.3 });
   const walkers = [];
-  const tint = new THREE.Color();
   function setSegment(w) {
     const e = walk.adj[w.path[w.seg]].find((x) => x[0] === w.path[w.seg + 1]);
     w.len = e ? Math.max(e[1], 0.05) : 1;
@@ -168,19 +167,15 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     setSegment(w);
   }
   for (let i = 0; i < WALKERS; i++) {
-    const w = { at: Math.floor(wrnd() * walk.nodes.length), speed: 0.3 + wrnd() * 0.2, side: (wrnd() - 0.5) * 0.22, phase: wrnd() * 6.28 };
+    const w = { at: Math.floor(wrnd() * walk.nodes.length), speed: 0.24 + wrnd() * 0.12, side: (wrnd() - 0.5) * 0.22, gait: wrnd() * 6.28 };
     planTrip(w);
     w.t = wrnd(); // spread them out along their first stretch
-    bodyMesh.setColorAt(i, tint.set(SHIRTS[i % SHIRTS.length]));
-    headMesh.setColorAt(i, tint.set(SKIN[Math.floor(wrnd() * SKIN.length)]));
     walkers.push(w);
   }
-  scene.add(bodyMesh, headMesh);
-  const dummy = new THREE.Object3D();
-  dummy.rotation.order = 'YXZ';
-  function updateWalkers(dt, time) {
+  function updateWalkers(dt) {
     walkers.forEach((w, i) => {
       w.t += (w.speed * dt) / w.len;
+      w.gait += ((w.speed * dt) / STRIDE) * Math.PI * 2;
       while (w.t >= 1) {
         w.t -= 1;
         w.seg++;
@@ -197,24 +192,17 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       const L = Math.hypot(dx, dz) || 1;
       const x = a.x + dx * w.t - (dz / L) * w.side;
       const z = a.z + dz * w.t + (dx / L) * w.side;
-      const y = TOP + (w.arch ? 0.05 + Math.sin(w.t * Math.PI) * w.arch : 0) + Math.abs(Math.sin(time * 7 + w.phase)) * 0.012;
-      dummy.rotation.set(0, Math.atan2(dx, dz), 0);
-      dummy.position.set(x, y + 0.09, z);
-      dummy.scale.set(0.1, 0.16, 0.1);
-      dummy.updateMatrix();
-      bodyMesh.setMatrixAt(i, dummy.matrix);
-      dummy.position.set(x, y + 0.21, z);
-      dummy.scale.set(0.085, 0.085, 0.085);
-      dummy.updateMatrix();
-      headMesh.setMatrixAt(i, dummy.matrix);
+      const y = TOP + (w.arch ? 0.05 + Math.sin(w.t * Math.PI) * w.arch : 0);
+      crowd.pose(i, x, y, z, Math.atan2(dx, dz), PERSON, w.gait, reduced ? 0 : 1);
     });
-    bodyMesh.instanceMatrix.needsUpdate = true;
-    headMesh.instanceMatrix.needsUpdate = true;
+    crowd.commit();
   }
-  updateWalkers(0, 0); // place them (with reduced motion they stay put)
+  updateWalkers(0); // place them (with reduced motion they stay put)
 
   // ---- boats: slow circles and a gentle bob; every part of a boat shares
   // its x/z, which keys the boat's own phase
+  const dummy = new THREE.Object3D();
+  dummy.rotation.order = 'YXZ';
   function updateBoats(time) {
     for (const m of boatMeshes) {
       m.userData.items.forEach((p, i) => {
@@ -520,7 +508,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     const time = clock.elapsedTime;
     if (!reduced) {
       env.update(dt);
-      updateWalkers(dt, time);
+      updateWalkers(dt);
       updateBoats(time);
     }
     if (timeAnim) {

@@ -3,8 +3,6 @@
 const GREENS = [0x9cc27a, 0xa9c98a, 0x8db86f, 0xb3cf8e, 0x86ad6a];
 const PINES = [0x6f8a62, 0x5d7656, 0x7d9a6a];
 const ROOFS = [0xdb6a41, 0xc77b5c, 0xd08a64];
-const SHIRTS = [0xdb6a41, 0x4f86c6, 0xe9b444, 0x58a6a6, 0x8b6fd1, 0x3b3a42, 0xf2b5c6];
-const SKIN = [0xf1c9a5, 0xd9a27e, 0xb27b57];
 
 export function createProps(THREE, kit) {
   const c = new THREE.Color();
@@ -61,9 +59,11 @@ export function createProps(THREE, kit) {
     kit.part('bulb', [x, y + 0.46, z], [0.08, 0.08, 0.08], 0xfff0c2);
   }
 
+  // People standing about are only recorded here; the scene draws them with
+  // the walkers' character model (people.js).
+  const people = [];
   function person(x, z, rnd, y) {
-    kit.part('cyl', [x, y + 0.09, z], [0.1, 0.16, 0.1], pick(SHIRTS, rnd));
-    kit.part('sphere', [x, y + 0.21, z], [0.085, 0.085, 0.085], pick(SKIN, rnd));
+    people.push({ x, y, z, yaw: rnd() * Math.PI * 2 });
   }
 
   function boat(x, z, yaw, rnd, y) {
@@ -88,5 +88,5 @@ export function createProps(THREE, kit) {
     kit.part('cone', [x, y + 2.36, z], [0.4, 0.3, 0.4], 0xdb6a41);
   }
 
-  return { tree, conifer, bush, crates, cottage, lamp, person, boat, lighthouse };
+  return { tree, conifer, bush, crates, cottage, lamp, person, people, boat, lighthouse };
 }
