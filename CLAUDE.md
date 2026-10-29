@@ -268,11 +268,38 @@ Built 2026-05-07.
   match the catalogue's `14.5.1/...` paths.
 - **`scripts/coverage-report.ts`** — CLI that wraps the module and
   emits `docs/coverage.md` (committed). Run with `npm run coverage`.
-- **Cross-language matrix**: same module also reads `relatedJava` /
-  `relatedSsjs` from frontmatter, builds parallel mention maps so
-  the report shows which Java / SSJS class has been "linked from
-  an LS post but not yet written about" — that's the natural pool
-  of "topics worth a single-language deep-dive next."
+- **Cross-language tracker** (rewritten 2026-10-29 — the old version
+  was inaccurate): the report now separates two distinct things, so
+  the "gap" stays correct as single-language articles land.
+  - **Dedicated articles** = a class that has its own Java / SSJS
+    deep-dive, read from **`coversClass` + `apiLang` frontmatter** via
+    `scripts/lib/mapLanguages.ts`. This is the authoritative "already
+    written" signal (node-keyed, same data that lights the `/map/`
+    islands' language lamps).
+  - **Gap** = Java / SSJS counterparts an LS post points to via
+    `relatedJava` / `relatedSsjs` (`coverage.ts`'s `javaMentions` /
+    `ssjsMentions`) **minus** the dedicated ones — the natural pool of
+    "topics worth a single-language deep-dive next." A `relatedJava`
+    pointer alone is NOT an article; only `coversClass` + `apiLang`
+    counts as written. (Counterpart names map to node ids by stripping
+    the `Notes` prefix, case-insensitive, plus a tiny alias map in
+    `coverage-report.ts` for the un-derivable ones like
+    `LLMReq → NotesLLMRequest`.)
+  - **The one maintenance rule**: when you write a Java / SSJS article,
+    tag its frontmatter with `coversClass: "<node id>"` + `apiLang:
+    java|ssjs` (or `coversIsland: "xpages"` + `apiLang` for a web-layer
+    post with no back-end class). Do that and the tracker self-updates
+    — the piece drops out of the gap on the next `npm run coverage`, no
+    manual bookkeeping. Mistype a node id and the report flags it with a
+    ⚠️. (Snapshot the day this landed: Java 8 written / 48 gap, SSJS 2
+    written / 42 gap, 10 XPages-layer posts. Biggest single gaps:
+    Java `Database`/`RichTextItem`/`EmbeddedObject`/`View`, SSJS
+    `document`/`DominoQuery`/`database`.)
+  - **Why it was wrong before**: the old matrix labelled *every*
+    `relatedJava` / `relatedSsjs` mention "not yet written," so it kept
+    listing `Session`, `Document`, `DateTime`, `DominoQuery`… as gaps
+    long after those got their own Java articles — and topic selection
+    reads this file, so the inflated gap actively misled it.
 
 **Topic-selection workflow** — moved to the
 `domino-news-tech-article` skill. The skill is mandatory reading
