@@ -14,7 +14,7 @@ sources:
   - title: "data — Data Source（dominoDocument, 含 concurrencyMode）— HCL Domino Designer（官方）"
     url: "https://help.hcl-software.com/dom_designer/12.0.2/xpageuser/wpd_controls_pref_data.html"
   - title: "Creating save conflicts mixing DominoDocument and Document methods（社群，2013）— assono"
-    url: "https://www.assono.de/en/blog/xpages-save-conflicts-mixing-methods"
+    url: "https://blog.assono.de/xpages-save-conflicts-mixing-methods"
 relatedJava: []
 relatedSsjs: []
 coversIsland: "xpages"
@@ -25,7 +25,7 @@ coverStyle: "collage"
 
 存檔按下去，畫面跳出「Document has been saved by another user - Save created a new document as a response to that modified document」。你愣了一下：**這份文件根本只有你在動**，沒有同事、沒有另一個分頁，怎麼會「被別人存檔」？打開資料庫一看，還真的多出一份 conflict（衝突）文件。而且它**偶爾才發作**，最難查。
 
-這是 XPages 一個很少被講清楚的老坑：在同一份文件上，**混用了 `dominoDocument` 資料來源的存檔和後端 `Document` 的存檔**。這篇從 Domino 怎麼判定衝突講起，拆解 [assono 在 2013 年那個經典重現](https://www.assono.de/en/blog/xpages-save-conflicts-mixing-methods)，並因為那篇年代久遠，實際在 **Domino 12.0.2 與 14.5.1** 各跑一次，看這坑現在還在不在。
+這是 XPages 一個很少被講清楚的老坑：在同一份文件上，**混用了 `dominoDocument` 資料來源的存檔和後端 `Document` 的存檔**。這篇從 Domino 怎麼判定衝突講起，拆解 [assono 在 2013 年那個經典重現](https://blog.assono.de/xpages-save-conflicts-mixing-methods)，並因為那篇年代久遠，實際在 **Domino 12.0.2 與 14.5.1** 各跑一次，看這坑現在還在不在。
 
 ## 重點摘要
 

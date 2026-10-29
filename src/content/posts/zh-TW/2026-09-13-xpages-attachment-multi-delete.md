@@ -16,7 +16,7 @@ sources:
   - title: "File Download control allowDelete property — HCL Domino Designer（官方）"
     url: "https://help.hcl-software.com/dom_designer/12.0.0/xpageuser/wpd_controls_pref_allowdelete.html"
   - title: "Creating save conflicts mixing DominoDocument and Document methods（社群）— assono"
-    url: "https://www.assono.de/en/blog/xpages-save-conflicts-mixing-methods"
+    url: "https://blog.assono.de/xpages-save-conflicts-mixing-methods"
 relatedJava: ["EmbeddedObject", "RichTextItem"]
 relatedSsjs: []
 coversIsland: "xpages"
@@ -64,7 +64,7 @@ doc.removeAttachment("Body", "report.pdf");   // 要 doc.save() 才真的落地
 
 看到那句「must save … to take effect」了嗎？這正是我們要的：`removeAttachment` **本來就存檔才生效**，跟原生刪除、跟傳統 web 的 `%%Detach` 是同一個「commit on save」語義。用它補多選，等於延續原生的好性質，而不是打破它。
 
-**一個要避開的坑**：不要為了方便掉到後端 `doc.getDocument().getAttachment(name).remove()` 去刪。[assono 有一篇](https://www.assono.de/en/blog/xpages-save-conflicts-mixing-methods)講得很清楚——在同一份文件上**混用 XPages 資料來源的 save 與後端 `Document` 的寫入**，XPages runtime 靠時間戳比對差異，會把它存成**存檔衝突文件**。留在資料來源這層用 `removeAttachment`，就不會製造衝突。
+**一個要避開的坑**：不要為了方便掉到後端 `doc.getDocument().getAttachment(name).remove()` 去刪。[assono 有一篇](https://blog.assono.de/xpages-save-conflicts-mixing-methods)講得很清楚——在同一份文件上**混用 XPages 資料來源的 save 與後端 `Document` 的寫入**，XPages runtime 靠時間戳比對差異，會把它存成**存檔衝突文件**。留在資料來源這層用 `removeAttachment`，就不會製造衝突。
 
 ## 動手做：勾選多個、存檔一次刪
 
