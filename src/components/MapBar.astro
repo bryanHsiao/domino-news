@@ -1,0 +1,249 @@
+---
+// The one thin bar the three /map/ views share, in place of the site header
+// (the page passes siteHeader={false} to BaseLayout): back to the site and the
+// page title on the left, the view switch, language switch and the site menu
+// on the right — in the same place for every view, so switching views never
+// moves the buttons. The graph and the islands fill the window below it like
+// the reference site's map; the grouped cards scroll under it.
+import { useTranslations, localizedPath, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const otherLang: Lang = lang === 'zh-TW' ? 'en' : 'zh-TW';
+
+const T =
+  lang === 'zh-TW'
+    ? {
+        homeAria: '回到 HCL Domino 日報首頁',
+        switchAria: '檢視切換',
+        views: { dir: ['分類檢視', '分類'], graph: ['關係圖', '關係'], islands: ['島嶼檢視', '島嶼'] },
+        langAria: 'Switch to English',
+        langGroup: '語言切換',
+        menu: '網站選單',
+      }
+    : {
+        homeAria: 'Back to the HCL Domino Daily home page',
+        switchAria: 'View switch',
+        views: { dir: ['Grouped', 'Cards'], graph: ['Graph', 'Graph'], islands: ['Islands', 'Isles'] },
+        langAria: '切換成中文',
+        langGroup: 'Language switch',
+        menu: 'Site menu',
+      };
+const ICON = {
+  dir: '<path d="M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z" fill="none" stroke="currentColor" stroke-width="1.5"></path>',
+  graph:
+    '<path d="M5.2 5.4l1.9 5M10.8 5.4l-1.9 5M5.6 3.8h4.8" stroke="currentColor" stroke-width="1.4"></path><circle cx="3.6" cy="3.8" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle><circle cx="12.4" cy="3.8" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle><circle cx="8" cy="12.4" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle>',
+  islands: '<path d="M8 1.8l5.4 3.1v6.2L8 14.2l-5.4-3.1V4.9z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>',
+};
+// the islands are the default view (the tab marked .on)
+const views = ['dir', 'graph', 'islands'] as const;
+---
+
+<div class="map-bar">
+  <a class="mb-home" href={localizedPath(lang, '/')} aria-label={T.homeAria}>
+    <span class="mb-arrow" aria-hidden="true">←</span>
+    <span class="mb-mark" aria-hidden="true">D</span>
+    <span class="mb-site">{t('site.title')}</span>
+  </a>
+  <span class="mb-sep" aria-hidden="true"></span>
+  <h1 class="mb-title">{t('nav.map')}</h1>
+  <span class="mb-langs">LotusScript · Java · SSJS</span>
+  <span class="mb-gap"></span>
+  <div class="map-tabs" role="tablist" aria-label={T.switchAria}>
+    {views.map((v) => (
+      <button class={v === 'islands' ? 'map-tab on' : 'map-tab'} data-view={v} type="button" title={T.views[v][0]}>
+        <span class="mt-ic" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15" set:html={ICON[v]} /></span>
+        <span class="mt-short">{T.views[v][1]}</span>
+      </button>
+    ))}
+  </div>
+  <div class="mb-lang" role="group" aria-label={T.langGroup}>
+    <span class="mb-lang-cur" aria-current="true">{t('lang.current')}</span>
+    <a href={localizedPath(otherLang, '/map/')} data-lang-switch data-map-lang aria-label={T.langAria}>{t('lang.switch')}</a>
+  </div>
+  <details class="mb-menu">
+    <summary aria-label={T.menu} title={T.menu}><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M2.5 4h11M2.5 8h11M2.5 12h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg></summary>
+    <nav aria-label={T.menu}>
+      <a href={localizedPath(lang, '/')}>{t('nav.home')}</a>
+      <a href={localizedPath(lang, '/posts')}>{t('nav.posts')}</a>
+      <a href={localizedPath(lang, '/search')}>{t('nav.search')}</a>
+      <a href={localizedPath(lang, '/map')} aria-current="page">{t('nav.map')}</a>
+      <a href={localizedPath(lang, '/posts/welcome')}>{t('nav.about')}</a>
+    </nav>
+  </details>
+</div>
+
+<style is:global>
+  /* ---- the bar: the site header's look (theme colours, blur), one thin row */
+  .map-bar {
+    position: sticky; top: 0; z-index: 50; box-sizing: border-box;
+    display: flex; align-items: center; gap: 12px; height: 50px; padding: 0 14px;
+    width: var(--map-page-w, 100vw); margin-left: calc(50% - var(--map-page-w, 100vw) / 2);
+    background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .map-bar .mb-home { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; color: var(--color-fg-strong); white-space: nowrap; border-radius: 8px; }
+  .map-bar .mb-home:hover { color: var(--color-accent); }
+  .map-bar .mb-arrow { opacity: 0.7; }
+  .map-bar .mb-mark { width: 24px; height: 24px; border-radius: 6px; background: var(--color-brand-dark); color: var(--color-brand-gold); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; }
+  .map-bar .mb-sep { width: 1px; height: 20px; background: var(--color-border); }
+  .map-bar .mb-title { margin: 0; font-size: 1rem; font-weight: 700; color: var(--color-fg-strong); white-space: nowrap; }
+  .map-bar .mb-langs { padding: 1px 8px; border: 1px solid #db6a41; border-radius: 999px; color: #db6a41; font: 600 11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
+  .map-bar .mb-gap { flex: 1; }
+  .map-bar .map-tabs { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--color-border); border-radius: 10px; }
+  .map-bar .map-tab { display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; color: var(--color-fg); opacity: 0.75; font: 600 13px/1 system-ui, -apple-system, 'Noto Sans TC', sans-serif; cursor: pointer; }
+  .map-bar .map-tab:hover { opacity: 1; }
+  /* ink on cream, as the islands' own controls: readable in both themes */
+  .map-bar .map-tab.on { background: #fff8f4; color: #211d1d; opacity: 1; box-shadow: 0 0 0 1px rgba(33, 29, 29, 0.18); }
+  .map-bar .mt-ic { display: inline-flex; }
+  .map-bar .mb-lang { display: inline-flex; padding: 3px; border: 1px solid var(--color-border); border-radius: 10px; font-weight: 700; font-size: 13px; }
+  .map-bar .mb-lang > * { display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; border-radius: 7px; color: var(--color-fg); }
+  .map-bar .mb-lang-cur { background: var(--color-brand-gold, #fbbf24); color: #211d1d !important; }
+  .map-bar .mb-lang a:hover { color: var(--color-accent); }
+  .map-bar .mb-menu { position: relative; }
+  .map-bar .mb-menu summary { list-style: none; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border: 1px solid var(--color-border); border-radius: 10px; color: var(--color-fg); cursor: pointer; }
+  .map-bar .mb-menu summary::-webkit-details-marker { display: none; }
+  .map-bar .mb-menu nav { position: absolute; right: 0; top: calc(100% + 6px); min-width: 150px; display: flex; flex-direction: column; padding: 6px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18); }
+  .map-bar .mb-menu nav a { padding: 8px 10px; border-radius: 8px; color: var(--color-fg); white-space: nowrap; }
+  .map-bar .mb-menu nav a:hover { background: color-mix(in srgb, var(--color-fg) 8%, transparent); }
+  .map-bar .mb-menu nav a[aria-current='page'] { color: var(--color-accent); font-weight: 700; }
+  .map-bar a:focus-visible, .map-bar button:focus-visible, .map-bar summary:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  /* phones: just the arrow, the title, the view icons, language and menu */
+  @media (max-width: 760px) {
+    .map-bar { gap: 8px; height: 46px; padding: 0 10px; }
+    .map-bar .mb-site, .map-bar .mb-mark, .map-bar .mb-sep, .map-bar .mb-langs, .map-bar .mt-short { display: none; }
+    .map-bar .mb-arrow { opacity: 1; font-size: 18px; padding: 0 4px; }
+    .map-bar .map-tab { padding: 0 9px; }
+    .map-bar .mb-lang-cur { display: none !important; }
+  }
+  @media (max-width: 380px) {
+    .map-bar .mb-title { font-size: 0.92rem; }
+  }
+
+  /* ---- the views under the bar. The graph and the islands are immersive:
+     full page width (not the 1200px content column) and filling the window
+     below the bar. The script measures --map-page-w (viewport minus
+     scrollbar), --map-hdr (the bar) and --map-above (where the views start). */
+  main:has(> .map-bar) { padding-top: 0; }
+  #mv-dir[hidden], #mv-graph[hidden], #mv-islands[hidden] { display: none; }
+  #mv-graph, #mv-islands {
+    width: var(--map-page-w, 100vw);
+    margin-left: calc(50% - var(--map-page-w, 100vw) / 2);
+    height: calc(100dvh - var(--map-above, 50px));
+    min-height: 480px;
+  }
+  #mv-graph #cm { height: 100%; min-height: 0; border-radius: 0; border-left: 0; border-right: 0; }
+  /* The grouped directory spans the page width too (its height follows the
+     content), so all three views share the same full-width bars. */
+  #mv-dir { width: var(--map-page-w, 100vw); margin-left: calc(50% - var(--map-page-w, 100vw) / 2); }
+  @media (min-width: 721px) {
+    /* keep the sticky detail panel below the sticky bar */
+    #mv-dir #cd .cd-panel { top: calc(var(--map-hdr, 50px) + 12px); max-height: calc(100vh - var(--map-hdr, 50px) - 24px); }
+  }
+  body:has(#mv-islands) { overflow-x: clip; }
+  /* Immersive views fill the window exactly — no footer, no page scrollbar —
+     like the reference site's map. The grouped list scrolls as usual. */
+  html.map-fullscreen, html.map-fullscreen body { overflow: hidden; }
+  html.map-fullscreen main:has(> .map-bar) { padding-bottom: 0; }
+  html.map-fullscreen .site-footer { display: none; }
+  html.map-fullscreen #mv-graph, html.map-fullscreen #mv-islands, html.map-fullscreen #mv-islands #ci { min-height: 0; }
+  /* The bar carries the title, so each view's own title (the islands' brand
+     card, the graph's and the cards' title rows) gives way; a coverage pill,
+     shown only while classes are still unwritten, keeps its card / row. */
+  #cm .cm-title, #cd .cd-title, #ci .ci-card h1 { display: none; }
+  #cm .cm-top:not(:has(.cm-stat)), #cd .cd-head:not(:has(.cd-stat)), #ci .ci-card:not(:has(.ci-stat)) { display: none; }
+</style>
+
+<script is:inline>
+  (function () {
+    var VIEWS = ['dir', 'graph', 'islands'];
+    // Size the immersive views: full width without the scrollbar, and tall
+    // enough to reach the bottom of the window from wherever they start.
+    function sizeViews() {
+      var html = document.documentElement;
+      var bar = document.querySelector('.map-bar');
+      html.style.setProperty('--map-page-w', html.clientWidth + 'px');
+      if (bar) html.style.setProperty('--map-hdr', bar.offsetHeight + 'px');
+      var view = VIEWS.map(function (v) { return document.getElementById('mv-' + v); }).filter(function (el) { return el && !el.hidden; })[0];
+      if (!view) return;
+      if (view.id !== 'mv-dir') html.style.setProperty('--map-above', Math.ceil(view.getBoundingClientRect().top + window.scrollY) + 'px');
+    }
+    // The current view rides in the URL (?view=dir|graph): a reload keeps it,
+    // and the language switch opens the same view in the other language.
+    function remember(v) {
+      var url = new URL(location.href);
+      if (v === 'islands') url.searchParams.delete('view');
+      else url.searchParams.set('view', v);
+      history.replaceState(history.state, '', url);
+      var other = document.querySelector('[data-map-lang]');
+      if (other) {
+        var to = new URL(other.getAttribute('href'), location.href);
+        if (v === 'islands') to.searchParams.delete('view');
+        else to.searchParams.set('view', v);
+        other.setAttribute('href', to.pathname + to.search);
+      }
+    }
+    function show(v, tabs, boxes) {
+      Array.prototype.forEach.call(tabs, function (x) {
+        var on = x.dataset.view === v;
+        x.classList.toggle('on', on);
+        x.setAttribute('aria-selected', String(on));
+      });
+      VIEWS.forEach(function (k) { boxes[k].hidden = k !== v; });
+      document.documentElement.classList.toggle('map-fullscreen', v !== 'dir');
+      document.documentElement.dataset.mapView = v;
+      remember(v);
+    }
+    function initMapTabs() {
+      // <html> survives view-transition navigation: start every page unlocked
+      document.documentElement.classList.remove('map-fullscreen');
+      delete document.documentElement.dataset.mapView;
+      var tabs = document.querySelectorAll('.map-bar .map-tab');
+      if (!tabs.length) return;
+      var boxes = { dir: document.getElementById('mv-dir'), graph: document.getElementById('mv-graph'), islands: document.getElementById('mv-islands') };
+      if (!boxes.dir || !boxes.graph || !boxes.islands || boxes.dir.dataset.tabsReady) return;
+      boxes.dir.dataset.tabsReady = '1';
+      // the view to open: ?view= if given, else the tab marked .on (islands)
+      var asked = new URL(location.href).searchParams.get('view');
+      var active = document.querySelector('.map-bar .map-tab.on');
+      var v0 = VIEWS.indexOf(asked) >= 0 ? asked : (active && active.dataset.view) || 'islands';
+      show(v0, tabs, boxes);
+      sizeViews();
+      if (!window.__mapSizeBound) {
+        window.__mapSizeBound = true;
+        window.addEventListener('resize', sizeViews);
+      }
+      Array.prototype.forEach.call(tabs, function (b) {
+        b.addEventListener('click', function () {
+          var v = b.dataset.view;
+          show(v, tabs, boxes);
+          window.scrollTo(0, 0);
+          sizeViews();
+          if (v === 'graph' || v === 'islands') window.dispatchEvent(new Event('resize'));
+        });
+      });
+      // the immersive views size (and the islands load three.js) on resize
+      if (v0 === 'graph' || v0 === 'islands') window.dispatchEvent(new Event('resize'));
+    }
+    document.addEventListener('astro:page-load', initMapTabs);
+    // the site menu closes on a click elsewhere or Esc, like any menu
+    if (!window.__mapMenuBound) {
+      window.__mapMenuBound = true;
+      document.addEventListener('click', function (e) {
+        var m = document.querySelector('.map-bar .mb-menu[open]');
+        if (m && !m.contains(e.target)) m.open = false;
+      });
+      document.addEventListener('keydown', function (e) {
+        var m = document.querySelector('.map-bar .mb-menu[open]');
+        if (m && e.key === 'Escape') {
+          m.open = false;
+          m.querySelector('summary').focus();
+        }
+      });
+    }
+  })();
+</script>

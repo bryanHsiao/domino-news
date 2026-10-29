@@ -372,7 +372,7 @@ const statTip =
     --roof-be: #4f86c6; --roof-ui: #8b6fd1; --roof-un: #a8a29a; --roof-key: #e9b444;
     position: relative; display: flex; height: 100%; min-height: 480px; overflow: hidden; background: var(--cbg); color: var(--cink);
   }
-  /* width of the docked index panel (map.astro keeps the view switch clear of it) */
+  /* width of the docked index panel */
   :root { --ci-ix-w: clamp(270px, 24vw, 340px); }
   #ci * { box-sizing: border-box; }
 
@@ -539,9 +539,8 @@ const statTip =
 
   #ci .ci-brand { color: var(--coral); }
 
-  /* Small-screen map tools: a column of small cream buttons (shared look with
-     the page's view switch, styled in map.astro). Hidden on wider screens,
-     where the title card carries search and reset. */
+  /* Small-screen map tools: a column of small cream buttons. Hidden on wider
+     screens, where the toolbar and the index carry search and reset. */
   #ci .ci-tools { display: none; position: absolute; top: 10px; right: 10px; z-index: 7; flex-direction: column; gap: 8px; }
   #ci .ci-tools button { display: flex; align-items: center; justify-content: center; gap: 5px; width: 68px; height: 42px; padding: 0 8px; border-radius: 12px; border: 1px solid var(--hair);
     background: rgba(255, 248, 244, 0.95); color: var(--ink); font: 600 12.5px/1 system-ui, -apple-system, 'Noto Sans TC', sans-serif; box-shadow: 0 4px 14px rgba(33, 29, 29, 0.12); cursor: pointer; }
@@ -930,10 +929,9 @@ const statTip =
     // The interface laid over the scene, as screen rects; the scene fades
     // out the name plates that come near any of them.
     var chromeEls = ['.ci-card', '.ci-bar', '.ci-tools', '#ci-viewpop', '.ci-legend', '#ci-panel'].map(function (s) { return root.querySelector(s); });
-    var tabsEl = document.querySelector('.map-tabs');
     function chromeRects() {
       var out = [];
-      chromeEls.concat(tabsEl).forEach(function (el) {
+      chromeEls.forEach(function (el) {
         if (!el || el.hidden || (el.classList.contains('ci-bar') && root.classList.contains('bar-col'))) return;
         var r = el.getBoundingClientRect();
         if (r.width && r.height) out.push(r);
@@ -941,24 +939,19 @@ const statTip =
       return out;
     }
 
-    // Docked layouts: keep the one-row toolbar only while it clears the view
-    // tabs; otherwise switch to the column of buttons (.bar-col).
+    // Docked layouts: keep the one-row toolbar only while it fits the stage;
+    // otherwise switch to the column of buttons (.bar-col).
     var bar = root.querySelector('.ci-bar');
     function fitBar() {
       if (!root.offsetParent) return;
       var fits = true;
-      if (docked()) {
-        var tabs = document.querySelector('.map-tabs');
-        var tr = tabs && tabs.getBoundingClientRect();
-        var limit = tr && tr.width ? tr.left : stage.getBoundingClientRect().right;
-        fits = bar.getBoundingClientRect().right + 12 <= limit;
-      }
+      if (docked()) fits = bar.getBoundingClientRect().right + 12 <= stage.getBoundingClientRect().right;
       root.classList.toggle('bar-col', !fits);
       if (fits && docked()) setViewPop(false); // the pop-out belongs to the column
     }
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitBar);
 
-    // map.astro dispatches a synthetic resize when a tab is shown; that is our
+    // MapBar dispatches a synthetic resize when a tab is shown; that is our
     // cue to load three.js the first time the islands tab becomes visible.
     boot();
     fitBar();

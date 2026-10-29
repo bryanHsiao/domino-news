@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ClassMap from '../../components/ClassMap.astro';
 import ClassDirectory from '../../components/ClassDirectory.astro';
 import ClassIslands from '../../components/ClassIslands.astro';
+import MapBar from '../../components/MapBar.astro';
 import { useTranslations, localizedPath } from '../../i18n/ui';
 import { buildCoverageReport } from '../../../scripts/lib/coverage';
 import { islandArticles } from '../../lib/classArticles';
@@ -44,12 +45,8 @@ const coveredCount = nodes.filter((n) => n.url).length;
 const { articles, islands, harbour } = await islandArticles(report, lang);
 ---
 
-<BaseLayout lang={lang} title={t('nav.map')} description="HCL Domino Class Map: classes and their links across LotusScript, Java and SSJS — readable cards grouped by category; click a card to see what it returns and what returns it, and open the article for classes already written. Switch to a relationship graph or 3D islands too.">
-  <div class="map-tabs" role="tablist" aria-label="view switch">
-    <button class="map-tab" data-view="dir" type="button"><span class="mt-ic" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15"><path d="M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg></span><span class="mt-full">Grouped</span><span class="mt-short">Cards</span></button>
-    <button class="map-tab" data-view="graph" type="button"><span class="mt-ic" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15"><path d="M5.2 5.4l1.9 5M10.8 5.4l-1.9 5M5.6 3.8h4.8" stroke="currentColor" stroke-width="1.4"></path><circle cx="3.6" cy="3.8" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle><circle cx="12.4" cy="3.8" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle><circle cx="8" cy="12.4" r="2" fill="none" stroke="currentColor" stroke-width="1.5"></circle></svg></span><span class="mt-full">Graph</span><span class="mt-short">Graph</span></button>
-    <button class="map-tab on" data-view="islands" type="button"><span class="mt-ic" aria-hidden="true"><svg viewBox="0 0 16 16" width="15" height="15"><path d="M8 1.8l5.4 3.1v6.2L8 14.2l-5.4-3.1V4.9z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path></svg></span><span class="mt-full">Islands</span><span class="mt-short">Isles</span></button>
-  </div>
+<BaseLayout lang={lang} siteHeader={false} title={t('nav.map')} description="HCL Domino Class Map: classes and their links across LotusScript, Java and SSJS — readable cards grouped by category; click a card to see what it returns and what returns it, and open the article for classes already written. Switch to a relationship graph or 3D islands too.">
+  <MapBar lang={lang} />
 
   <div id="mv-dir" hidden>
     <ClassDirectory lang={lang} data={data} coveredCount={coveredCount} total={nodes.length} />
@@ -61,149 +58,3 @@ const { articles, islands, harbour } = await islandArticles(report, lang);
     <ClassIslands lang={lang} data={data} articles={articles} islands={islands} harbour={harbour} coveredCount={coveredCount} total={nodes.length} />
   </div>
 </BaseLayout>
-
-<style>
-  /* Segmented tab switch on tablets and wider; phones get the small-button
-     column instead (global styles below). */
-  @media (min-width: 761px) {
-    .map-tabs { display: inline-flex; gap: 4px; margin: 0 0 12px; padding: 4px; border: 1px solid var(--color-border, #e2e0d8); border-radius: 11px; background: var(--color-surface, #fff); }
-    .map-tab { font: inherit; font-size: 0.88rem; font-weight: 600; padding: 7px 16px; border: 0; border-radius: 8px; background: transparent; color: var(--color-text-muted, #6b6b6b); cursor: pointer; }
-    /* ink, not --color-brand-dark: that one turns light in dark mode */
-    .map-tab.on { background: #211d1d; color: #fff8f4; }
-    .mt-ic, .mt-short { display: none; }
-  }
-  #mv-dir[hidden], #mv-graph[hidden], #mv-islands[hidden] { display: none; }
-</style>
-
-<style is:global>
-  /* The graph and the islands are immersive views: full page width (not the
-     1200px content column) and filling the viewport below the tab row. The
-     inline script measures --map-page-w (viewport minus scrollbar) and
-     --map-above (where the views start). */
-  main:has(> .map-tabs) { padding-top: 1.25rem; }
-  #mv-graph, #mv-islands {
-    width: var(--map-page-w, 100vw);
-    margin-left: calc(50% - var(--map-page-w, 100vw) / 2);
-    height: calc(100dvh - var(--map-above, 150px));
-    min-height: 480px;
-  }
-  #mv-graph #cm { height: 100%; min-height: 0; border-radius: 0; border-left: 0; border-right: 0; }
-  /* The grouped directory spans the page width too (its height follows the
-     content), so all three views share the same full-width bars. */
-  #mv-dir { width: var(--map-page-w, 100vw); margin-left: calc(50% - var(--map-page-w, 100vw) / 2); }
-  @media (min-width: 721px) {
-    /* keep the sticky detail panel below the sticky site header */
-    #mv-dir #cd .cd-panel { top: calc(var(--map-hdr, 64px) + 12px); max-height: calc(100vh - var(--map-hdr, 64px) - 24px); }
-  }
-  body:has(#mv-islands) { overflow-x: clip; }
-  /* Immersive views fill the window exactly — no footer, no page scrollbar —
-     like the reference site's map. The grouped list scrolls as usual. */
-  html.map-fullscreen, html.map-fullscreen body { overflow: hidden; }
-  html.map-fullscreen main:has(> .map-tabs) { padding-bottom: 0; }
-  html.map-fullscreen .site-footer { display: none; }
-  html.map-fullscreen #mv-graph, html.map-fullscreen #mv-islands, html.map-fullscreen #mv-islands #ci { min-height: 0; }
-  /* Tablets: no room at the top, so in the immersive views the tab switch
-     floats at the bottom centre like an app tab bar (the scene starts right
-     under the header); legends and hints move up to clear it. */
-  @media (min-width: 761px) and (max-width: 1279px) {
-    html.map-fullscreen main:has(> .map-tabs) { padding-top: 0; }
-    html.map-fullscreen .map-tabs { position: fixed; z-index: 6; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; white-space: nowrap; margin: 0; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.22); }
-    html.map-fullscreen #cm .cm-legend { bottom: 66px; }
-  }
-  /* Phones, every view: like the reference site, each view has a brand card
-     top-left and a column of small buttons top-right (its own tools, marked
-     data-map-tools); the view switch joins that column, stacked under the
-     tools (--map-tabs-top is measured by the script). The current view's
-     button is hidden. */
-  @media (max-width: 760px) {
-    main:has(> .map-tabs) { padding-top: 0; }
-    .map-tabs { position: fixed; z-index: 6; top: var(--map-tabs-top, calc(var(--map-hdr, 64px) + 110px)); right: 10px; display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; border: 0; background: none; }
-    .map-tab { display: flex; align-items: center; justify-content: center; gap: 5px; width: 68px; height: 42px; padding: 0 8px; border-radius: 12px; border: 1px solid rgba(33, 29, 29, 0.18); background: rgba(255, 248, 244, 0.95); color: #211d1d; font: 600 12.5px/1 system-ui, -apple-system, 'Noto Sans TC', sans-serif; box-shadow: 0 4px 14px rgba(33, 29, 29, 0.12); cursor: pointer; }
-    .map-tab.on, .map-tab .mt-full { display: none; }
-    .map-tab .mt-ic { display: inline-flex; }
-  }
-  /* Wide screens: the tab switch floats top-centre over each view's title bar
-     (like the reference site's toolbar) instead of sitting in its own band. */
-  @media (min-width: 1280px) {
-    main:has(> .map-tabs) { padding-top: 0; }
-    .map-tabs { position: absolute; z-index: 30; top: calc(var(--map-hdr, 64px) + 14px); left: 50%; transform: translateX(-50%); margin: 0; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.16); }
-    #cd .cd-head, #cm .cm-top { min-height: 74px; }
-    /* the title block never runs under the floating view switch: the
-       subtitle gives way (one line, cut short) */
-    #cd .cd-title, #cm .cm-title { max-width: calc(50vw - 170px); }
-    #cd .cd-sub, #cm .cm-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  }
-  /* Islands view, tablets and wider: the scene shares the width with the
-     index docked on the right (ClassIslands sets --ci-ix-w), and its view
-     toolbar takes the top centre, so the view switch sits compact in the
-     scene's top-right corner, like the reference's corner buttons. */
-  @media (min-width: 761px) {
-    html[data-map-view='islands'] .map-tabs { position: fixed; z-index: 30; top: calc(var(--map-hdr, 64px) + 14px); right: calc(var(--ci-ix-w, 300px) + 14px); left: auto; bottom: auto; transform: none; margin: 0; box-shadow: 0 8px 26px rgba(33, 29, 29, 0.16); }
-    /* the scene is always daylight: cream and ink whatever the site theme */
-    html[data-map-view='islands'] .map-tabs { background: rgba(255, 248, 244, 0.95); border-color: rgba(33, 29, 29, 0.18); }
-    html[data-map-view='islands'] .map-tab { display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px; color: #78685e; }
-    html[data-map-view='islands'] .map-tab.on { background: #211d1d; color: #fff8f4; }
-    html[data-map-view='islands'] .map-tab .mt-full { display: none; }
-    html[data-map-view='islands'] .map-tab .mt-ic, html[data-map-view='islands'] .map-tab .mt-short { display: inline-flex; }
-  }
-</style>
-
-<script is:inline>
-  (function () {
-    // Size the immersive views: full width without the scrollbar, and tall
-    // enough to reach the bottom of the viewport from wherever they start.
-    function sizeViews() {
-      var html = document.documentElement;
-      var hdr = document.querySelector('header.site-header');
-      html.style.setProperty('--map-page-w', html.clientWidth + 'px');
-      if (hdr) html.style.setProperty('--map-hdr', hdr.offsetHeight + 'px');
-      var view = ['mv-dir', 'mv-graph', 'mv-islands'].map(function (id) { return document.getElementById(id); }).filter(function (el) { return el && !el.hidden; })[0];
-      if (!view) return;
-      if (view.id !== 'mv-dir') html.style.setProperty('--map-above', Math.ceil(view.getBoundingClientRect().top + window.scrollY) + 'px');
-      // phones: the view switch stacks under the view's own tools column
-      var anchor = view.querySelector('[data-map-tools]');
-      var ab = anchor && anchor.getBoundingClientRect();
-      if (ab && ab.height) html.style.setProperty('--map-tabs-top', Math.ceil(ab.bottom + 8) + 'px');
-    }
-    function initMapTabs() {
-      // <html> survives view-transition navigation: start every page unlocked
-      document.documentElement.classList.remove('map-fullscreen');
-      delete document.documentElement.dataset.mapView;
-      var tabs = document.querySelectorAll('.map-tab');
-      if (!tabs.length) return;
-      var dir = document.getElementById('mv-dir'), graph = document.getElementById('mv-graph'), islands = document.getElementById('mv-islands');
-      if (!dir || !graph || !islands || dir.dataset.tabsReady) return;
-      dir.dataset.tabsReady = '1';
-      // the default view is the tab marked .on in the markup (the islands):
-      // lock the immersive layout for it before measuring
-      var active = document.querySelector('.map-tab.on');
-      var v0 = (active && active.dataset.view) || 'dir';
-      if (v0 !== 'dir') {
-        document.documentElement.classList.add('map-fullscreen');
-        document.documentElement.dataset.mapView = v0;
-      }
-      sizeViews();
-      if (!window.__mapSizeBound) {
-        window.__mapSizeBound = true;
-        window.addEventListener('resize', sizeViews);
-      }
-      Array.prototype.forEach.call(tabs, function (b) {
-        b.addEventListener('click', function () {
-          Array.prototype.forEach.call(tabs, function (x) { x.classList.toggle('on', x === b); });
-          var v = b.dataset.view;
-          dir.hidden = v !== 'dir';
-          graph.hidden = v !== 'graph';
-          islands.hidden = v !== 'islands';
-          document.documentElement.classList.toggle('map-fullscreen', v !== 'dir');
-          document.documentElement.dataset.mapView = v;
-          window.scrollTo(0, 0);
-          sizeViews();
-          if (v === 'graph' || v === 'islands') window.dispatchEvent(new Event('resize'));
-        });
-      });
-      // the immersive default view sizes (and the islands load three.js) on resize
-      if (v0 === 'graph' || v0 === 'islands') window.dispatchEvent(new Event('resize'));
-    }
-    document.addEventListener('astro:page-load', initMapTabs);
-  })();
-</script>
