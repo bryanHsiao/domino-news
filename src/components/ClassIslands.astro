@@ -1,6 +1,6 @@
 ---
 import type { Lang } from '../i18n/ui';
-import type { ClassArticle } from '../lib/classArticles';
+import type { ClassArticle, XPagesMember } from '../lib/classArticles';
 
 interface IslandNode {
   id: string;
@@ -18,27 +18,38 @@ interface IslandData {
 interface Props {
   lang: Lang;
   data: IslandData;
-  /** class id -> its main articles (src/lib/classArticles.ts) */
+  /** class id -> its articles, LS → Java → SSJS (src/lib/classArticles.ts) */
   articles: Record<string, ClassArticle[]>;
+  /** buildings on the XPages / web-layer island */
+  xpages: XPagesMember[];
   coveredCount: number;
   total: number;
 }
-const { lang, data, articles, coveredCount, total } = Astro.props;
+const { lang, data, articles, xpages, coveredCount, total } = Astro.props;
+
+// The class houses carry their articles (LS plus any Java / SSJS residents,
+// one person each). The XPages / web-layer posts become a separate island:
+// one building per post, standing only in this view — the shared class data
+// (directory / graph) stays the 97 LotusScript classes, untouched.
+const ISLAND = 'XPages';
+const classNodes = data.nodes.map(({ id, name, cat, ui, key, url, desc }) => ({ id, name, cat, ui, key, url, desc: desc || '', articles: articles[id] || [] }));
+const xpagesNodes = xpages.map((m) => ({ id: 'xpages:' + m.slug, name: m.name, cat: ISLAND, ui: true, key: false, url: m.url, desc: m.desc || '', articles: [m.article], island: true }));
+const nodes = [...classNodes, ...xpagesNodes];
 
 // Island numbering: the six core-containment categories first (fixed spine
 // order, same as ClassDirectory), then the rest by class count descending.
 // Where the islands go is decided in ./islands/layout.js from the class links
-// (related categories sit a bridge apart).
+// (related categories sit a bridge apart); the XPages island has no class
+// links, so it is reached by a plain footbridge.
 const CORE = ['Session', 'Database', 'View', 'Document', 'Item', 'Rich Text'];
 const counts: Record<string, number> = {};
-data.nodes.forEach((n) => (counts[n.cat] = (counts[n.cat] || 0) + 1));
+nodes.forEach((n) => (counts[n.cat] = (counts[n.cat] || 0) + 1));
 const cats = [
   ...CORE.filter((c) => counts[c]),
   ...Object.keys(counts)
     .filter((c) => !CORE.includes(c))
     .sort((a, b) => counts[b] - counts[a] || a.localeCompare(b)),
 ];
-const nodes = data.nodes.map(({ id, name, cat, ui, key, url, desc }) => ({ id, name, cat, ui, key, url, desc: desc || '', articles: articles[id] || [] }));
 const payload = { nodes, cats, links: data.links };
 
 const T =
@@ -72,7 +83,7 @@ const T =
         pauseTip: '暫停行人、船與海面',
         listTitle: '所有島嶼',
         noMatch: '沒有符合的類別',
-        sub: '每個 category 一座島，類別越多島越大；有關聯的島之間才有橋，橋越寬關聯越多，捧箱子的人在有關聯的島之間搬運。拖曳轉看、滾輪縮放；點島看清單與關聯線，點房子看類別介紹，點門口的人看文章預覽，指著房子或橋看關聯。',
+        sub: '每個 category 一座島，類別越多島越大；有關聯的島之間才有橋，橋越寬關聯越多，捧箱子的人在有關聯的島之間搬運。門口的人一個代表一篇文章，依語言上色（LotusScript／Java／SSJS）；XPages／網頁層概念文另成一座島。拖曳轉看、滾輪縮放；點島看清單與關聯線，點房子看類別介紹，點門口的人看文章預覽，指著房子或橋看關聯。',
         covered: '已涵蓋',
         search: '搜尋類別…',
         reset: '重設視角',
@@ -80,8 +91,10 @@ const T =
         legUi: 'UI',
         legUn: '尚未寫成文章',
         legKey: 'key class',
+        legLangTip: '門口的人依文章語言上色：LotusScript／Java／SSJS',
         hint: '拖曳轉看 · 點島看清單',
         panelCount: ' 個類別',
+        panelCountIsland: ' 篇文章',
         close: '關閉',
         tipBe: '後端',
         tipUi: 'UI',
@@ -139,7 +152,7 @@ const T =
         pauseTip: 'Pause the walkers, boats and water',
         listTitle: 'All islands',
         noMatch: 'No matching class',
-        sub: 'One island per category, bigger for more classes; bridges only join related islands, wider for more links, and porters carry boxes between related islands. Drag to orbit, scroll to zoom; click an island for its list and relation lines, a house for the class overview, a person at its door for an article preview; hover a house or bridge for its links.',
+        sub: 'One island per category, bigger for more classes; bridges only join related islands, wider for more links, and porters carry boxes between related islands. Each person at a door is one article, coloured by its language (LotusScript / Java / SSJS); the web-layer XPages posts form their own island. Drag to orbit, scroll to zoom; click an island for its list and relation lines, a house for the class overview, a person at its door for an article preview; hover a house or bridge for its links.',
         covered: 'covered',
         search: 'Search classes…',
         reset: 'Reset view',
@@ -147,8 +160,10 @@ const T =
         legUi: 'UI',
         legUn: 'Not written yet',
         legKey: 'Key class',
+        legLangTip: 'Residents are coloured by their article language: LotusScript / Java / SSJS',
         hint: 'Drag to orbit · tap an island',
         panelCount: ' classes',
+        panelCountIsland: ' posts',
         close: 'Close',
         tipBe: 'Backend',
         tipUi: 'UI',
@@ -187,6 +202,7 @@ const statTip =
 <div
   id="ci"
   data-count={T.panelCount}
+  data-count-island={T.panelCountIsland}
   data-close={T.close}
   data-tip-be={T.tipBe}
   data-tip-ui={T.tipUi}
@@ -289,6 +305,10 @@ const statTip =
       <span><i class="sw ui"></i>{T.legUi}</span>
       <span><i class="sw un"></i>{T.legUn}</span>
       <span><i class="sw key"></i>{T.legKey}</span>
+      <span class="ci-leg-sep" aria-hidden="true"></span>
+      <span title={T.legLangTip}><i class="sw lang ls"></i>LotusScript</span>
+      <span title={T.legLangTip}><i class="sw lang java"></i>Java</span>
+      <span title={T.legLangTip}><i class="sw lang ssjs"></i>SSJS</span>
     </div>
   </div>
 
@@ -448,6 +468,16 @@ const statTip =
   #ci .dot.un, #ci .sw.un { background: var(--roof-un); }
   #ci .dot.key, #ci .sw.key { background: var(--roof-key); }
 
+  /* Language = the colour of a door-person (scene.js LANG_SHIRT). Shown as a
+     round swatch so it never reads as a roof colour, and as a small dot on the
+     article rows in the panel. */
+  #ci .sw.lang { clip-path: none; border-radius: 50%; width: 10px; height: 10px; }
+  #ci .sw.lang.ls, #ci .pdot.ls { background: #db6a41; }
+  #ci .sw.lang.java, #ci .pdot.java { background: #4f86c6; }
+  #ci .sw.lang.ssjs, #ci .pdot.ssjs { background: #4fa36b; }
+  #ci .ci-leg-sep { width: 1px; align-self: stretch; margin: 1px 2px; background: var(--hair); }
+  #ci .ci-panel .part i .pdot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; vertical-align: 0; }
+
   #ci .ci-legend { position: absolute; left: 14px; bottom: 12px; z-index: 5; display: flex; gap: 14px; flex-wrap: wrap; background: rgba(255, 248, 244, 0.92); border: 1px solid var(--hair); border-radius: 8px; padding: 7px 12px; font-size: 12px; color: var(--ink-mut); }
   #ci .ci-legend .sw { display: inline-block; width: 14px; height: 10px; border-radius: 2px 2px 0 0; clip-path: polygon(0 100%, 50% 0, 100% 100%); vertical-align: -1px; margin-right: 5px; }
 
@@ -545,6 +575,9 @@ const statTip =
     var hint = document.getElementById('ci-hint');
     var q = document.getElementById('ci-q');
     var api = null;
+    // Article language → label (identifiers, same in both languages). The
+    // matching door-person colour lives in scene.js (LANG_SHIRT).
+    var LANG_LABEL = { ls: 'LotusScript', java: 'Java', ssjs: 'SSJS' };
 
     function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
     function webglOK() {
@@ -597,10 +630,13 @@ const statTip =
       if (api) api.focusClass(node.id);
     }
     function articleRow(a, i) {
-      return '<button class="part" data-article="' + i + '"><b>' + esc(a.title) + '</b><i>' + esc(a.date) + '</i></button>';
+      var ll = LANG_LABEL[a.lang] || LANG_LABEL.ls;
+      return '<button class="part" data-article="' + i + '"><b>' + esc(a.title) + '</b><i><span class="pdot ' + esc(a.lang || 'ls') + '"></span>' + esc(ll) + ' · ' + esc(a.date) + '</i></button>';
     }
     function showClass(n) {
       if (!n) return;
+      // XPages island buildings are posts, not classes: show the article card.
+      if (n.island) return showArticle(n, 0);
       var arts = n.articles || [];
       var tags = '<span class="ptag"><span class="dot ' + (n.ui ? 'ui' : 'be') + '"></span>' + esc(n.ui ? DS.tipUi : DS.tipBe) + '</span>' +
         (n.key ? '<span class="ptag"><span class="dot key"></span>' + esc(DS.tipKey) + '</span>' : '');
@@ -622,13 +658,16 @@ const statTip =
       var a = n && n.articles && n.articles[i];
       if (!a) return;
       var more = n.articles.map(function (b, j) { return j === i ? '' : articleRow(b, j); }).join('');
+      var ll = LANG_LABEL[a.lang] || LANG_LABEL.ls;
       openCard(
-        '<div class="pkind">' + esc(DS.cardArticle) + ' · LotusScript</div>' +
+        '<div class="pkind">' + esc(DS.cardArticle) + ' · ' + esc(ll) + '</div>' +
         '<h3 class="ptitle">' + esc(a.title) + '</h3>' +
         '<div class="pmeta">' + esc(a.date) + '</div>' +
         '<p class="pdesc">' + esc(a.desc) + '</p>' +
         '<a class="pgo" href="' + esc(a.url) + '">' + esc(DS.goArticle) + '</a>' +
-        '<div class="pabout">' + esc(DS.about) + ' <button class="pclsbtn" data-class="' + esc(n.id) + '">' + esc(n.name) + '</button> · ' + esc(n.cat) + '</div>' +
+        (n.island
+          ? '<div class="pabout">' + esc(n.cat) + '</div>'
+          : '<div class="pabout">' + esc(DS.about) + ' <button class="pclsbtn" data-class="' + esc(n.id) + '">' + esc(n.name) + '</button> · ' + esc(n.cat) + '</div>') +
         (more ? '<div class="psec"><div class="prel-lbl">' + esc(DS.moreArticles) + '</div>' + more + '</div>' : ''),
         n
       );
@@ -655,7 +694,7 @@ const statTip =
         '<button class="pclose" aria-label="' + esc(DS.close) + '">×</button>' +
         '<div class="pnum">' + String(cluster.num).padStart(2, '0') + '</div>' +
         '<h3>' + esc(cluster.cat) + '</h3>' +
-        '<div class="pmeta">' + cluster.count + esc(DS.count) + '</div>' +
+        '<div class="pmeta">' + cluster.count + esc(cluster.members[0] && cluster.members[0].island ? DS.countIsland : DS.count) + '</div>' +
         '<div class="plist">' + rows + '</div>' +
         (rel ? '<div class="prel"><div class="prel-lbl">' + esc(DS.relTitle) + '</div><div class="prel-key">⇄ ' + esc(DS.relBridge) + ' · ⋯ ' + esc(DS.relWalk) + '</div><div class="prel-chips">' + rel + '</div></div>' : '');
       panel.hidden = false;
@@ -689,7 +728,7 @@ const statTip =
           labelsEl: document.getElementById('ci-labels'),
           tipEl: document.getElementById('ci-tip'),
           data: DATA,
-          strings: { be: DS.tipBe, ui: DS.tipUi, key: DS.tipKey, un: DS.tipUn, info: DS.tipInfo, article: DS.tipArticle, preview: DS.tipPreview, rel: DS.tipRel, path: DS.tipPath, more: DS.tipMore, links: DS.tipLinks },
+          strings: { be: DS.tipBe, ui: DS.tipUi, key: DS.tipKey, un: DS.tipUn, info: DS.tipInfo, article: DS.tipArticle, preview: DS.tipPreview, rel: DS.tipRel, path: DS.tipPath, more: DS.tipMore, links: DS.tipLinks, langLabels: LANG_LABEL },
           onSelect: renderPanel,
           onClass: showClass,
           onArticle: showArticle,
