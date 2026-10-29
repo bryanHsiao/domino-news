@@ -103,7 +103,8 @@ const statTip =
       <h1><span class="cd-brand">HCL Domino</span> <span class="cd-name">{T.name}</span></h1>
       <p class="cd-sub"><span class="cd-langs">LotusScript · Java · SSJS</span>{T.sub}<em>{T.subEm}</em>{T.sub2}</p>
     </div>
-    <div class="cd-stat" title={statTip}><b>{coveredCount}</b><span>/ {total} {T.badge}</span></div>
+    {/* shown only while some classes are still unwritten; at full coverage it would only ever read N / N */}
+    {coveredCount < total && <div class="cd-stat" title={statTip}><b>{coveredCount}</b><span>/ {total} {T.badge}</span></div>}
   </header>
 
   <div class="cd-controls">
@@ -130,7 +131,7 @@ const statTip =
     <div class="cd-legend">
       <span><i class="sw be"></i>{T.legBe}</span>
       <span><i class="sw ui"></i>{T.legUi}</span>
-      <span><i class="sw un"></i>{T.legUn}</span>
+      {coveredCount < total && <span><i class="sw un"></i>{T.legUn}</span>}
       <span><i class="sw key"></i>{T.legKey}</span>
     </div>
 
