@@ -18,6 +18,8 @@ relatedJava: []
 relatedSsjs: []
 cover: "/covers/java-notesthread.webp"
 coverStyle: "low-poly-3d"
+coversIsland: "java-runtime"
+apiLang: "java"
 ---
 
 你在 Java 裡想開一條背景執行緒,去跑一段會呼叫 Domino local API 的程式——直接 `new Thread(...)` 跑起來,卻拿不到 Notes 的執行環境、一呼叫 `lotus.domino` 就出事。

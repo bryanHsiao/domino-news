@@ -412,8 +412,8 @@ Q 版比例：大圓頭（約佔身高一半）、深色髮帽（有的綁包頭
 
 | 欄位 | 型別 | 意義 |
 |---|---|---|
-| `coversClass` | 字串或字串陣列 | 值＝`data/ls_classes.json` 的節點 id（全名，如 `NotesSession`）。表示這篇教的是哪個 Notes 類別 → 該節點點亮 `apiLang` 的燈。一篇同時教兩個類別時用陣列（如 DXL 的 `NotesDXLExporter` / `NotesDXLImporter`）。 |
-| `coversIsland` | 字串 | 目前只有 `"xpages"`。表示這篇是網頁層概念文、沒有對應類別 → 進 XPages 島。 |
+| `coversClass` | 字串或字串陣列 | 值＝`data/ls_classes.json` 的節點 id（全名，如 `NotesSession`），或 Java 原名（如 `Stream`，2026-10-30 起自動換算，見下方「Java 執行環境島與名稱換算」）。表示這篇教的是哪個 Notes 類別 → 該節點點亮 `apiLang` 的燈。一篇同時教兩個類別時用陣列（如 DXL 的 `NotesDXLExporter` / `NotesDXLImporter`）。 |
+| `coversIsland` | 字串 | `"xpages"`（網頁層概念文、沒有對應類別 → XPages 島）或 `"java-runtime"`（Java 專屬執行環境 → Java 執行環境島，2026-10-30 加）。 |
 | `apiLang` | `"java"` \| `"ssjs"` | 這篇是哪個程式語言。LS 文不設、維持現狀。 |
 
 **規則（schema 的 `superRefine` 強制，違反時 build 失敗）**：一篇最多設
@@ -423,8 +423,9 @@ Q 版比例：大圓頭（約佔身高一半）、深色髮帽（有的綁包頭
 
 > **這篇在講一個現有 Notes 類別嗎？** → `coversClass`（+`apiLang`）。
 > **在講 XPages／網頁層、沒有對應類別嗎？** → `coversIsland: "xpages"`（+`apiLang`）。
-> **純跨切面概念**（threading／memory／error handling）**無單一類別又非
-> XPages** → 兩個都不設，先不上地圖。
+> **在講 Java 專屬執行環境嗎？**（Factory／Thread／Exception／AgentContext／
+> recycle）→ `coversIsland: "java-runtime"`（+`apiLang: "java"`）。（2026-10-30 加）
+> **純跨切面概念、以上皆非** → 兩個都不設，先不上地圖。
 
 與 `relatedJava` / `relatedSsjs` 的差異見 `CLAUDE.md` 的「Cross-language
 linking strategy」一節。
@@ -469,6 +470,10 @@ XPages 島 **10 個成員**。`NotesSession` 同時有 Java 與 SSJS 燈（分�
 
 ### 判斷題（照決策規則自定，附理由）
 
+> 2026-10-30 更新：下表前四列（recycle／collection-iteration／notesexception／
+> notesthread）已改判，現行決定見下方「Java 執行環境島與名稱換算」一節；這張表
+> 保留 10-29 當時的判斷與理由。
+
 | slug | 決定 | 理由 |
 |---|---|---|
 | `java-recycle-memory` | 兩欄都不設 | 跨切面記憶體管理（`recycle()`），不教單一類別 → 先不上地圖。 |
@@ -485,6 +490,49 @@ XPages 島 **10 個成員**。`NotesSession` 同時有 Java 與 SSJS 燈（分�
   雛形，目前只印到 console 供核對）。
 - `ClassIslands.astro` 與 `src/components/islands/*` 由另一條 session 負責，
   本次未動。
+
+### Java 執行環境島與名稱換算（2026-10-30）
+
+**1. coversClass 名稱自動換算＋排程時檢查。** 以前 `coversClass` 一定要寫 LS 式
+節點 id，寫成 Java 原名（例如 `Stream`）build 照樣會過，但旗子不會出現，也不會有
+任何提示。現在由 `scripts/lib/mapLanguages.ts` 的 `resolveClassId` 換算，不分
+大小寫，依序比對：節點 id → `"Notes"`＋值 → 例外表。依據是 HCL Java A–Z 索引：
+58 個類別中有 57 個對得到節點；「Notes＋名稱、不分大小寫」能涵蓋 55 個（其中
+`DxlExporter`、`DxlImporter`、`RichTextDoclink` 三個跟節點只差大小寫）；例外只有
+`LLMReq` → `NotesLLMRequest`、`LLMRes` → `NotesLLMResponse`。SSJS 的 HCL 文件
+標題本來就是「NotesStream (JavaScript)」，跟節點 id 一樣，不需要換算。
+
+`npm run map-lang-report` 改成也掃 `_pending/{en,zh-TW}`，會列出每個 Java
+原名換算成哪個節點；只要有 coversClass 或 coversIsland 的值對不到就 exit 1。
+寫作流程是 stage 前跑一次。**刻意不在 content schema 擋**：build 不讀
+`_pending/`，若在 schema 擋，錯誤要等到發布當天 deploy 才爆出來（跟 CLAUDE.md
+記的 YAML 空字串事故是同一類）。
+
+**2. Java 執行環境島（`coversIsland: "java-runtime"`）。** 比照 XPages 島做成
+外海島：一篇文章一棟房子，靠長橋連到最近的類別島，點房子會先顯示文章預覽。島名
+中文是「Java 執行環境」，英文是「Java runtime」。屋頂用後端藍（XPages 是 UI 紫），
+每棟都插 Java 藍旗。資料層把 `xpages` 改成泛化的 `islands`（`MAP_ISLANDS`），
+`ClassIslands.astro` 用 `OFFSHORE` 表列出這兩座島，`layout.js` 不用改：第二座
+外海島本來就會沿 `OFFSHORE_ANGLE + 0.7` 放出去，落在群島左前方。
+
+- **不跟 Session 島牽橋。** 雖然 NotesFactory／NotesThread／AgentContext 都是
+  取得 session 的入口，但 Session 是群島正中央的樞紐，從外海拉一座橋過去一定會
+  穿過別的島。所以照 XPages 的做法，長橋接最近的類別島。這層關係改寫進島嶼說明
+  文字（「NotesFactory／NotesThread／例外／recycle」），不靠橋表現。
+- **回標**（en＋zh-TW 兩份）：`java-recycle-memory`、`java-notesexception`、
+  `java-notesthread` → `coversIsland: "java-runtime"` + `apiLang: "java"`，島上 3 棟。
+- **`java-collection-iteration` → `coversClass: ["NotesDocumentCollection",
+  "NotesViewNavigator"]`，不進島。** 理由：決策規則先問「在講現有 Notes 類別
+  嗎？」，這篇的答案是「是」。標題點名 DocumentCollection；sources 前兩條就是
+  `DocumentCollection` 與 `ViewNavigator` 的類別文件；正文實際教這兩個類別的走訪
+  API（`getFirstDocument`／`getNextDocument`、`isValid`、什麼時候改用
+  ViewNavigator）。recycle 的順序是套用在這兩個類別的迴圈上，不是脫離類別的
+  執行環境主題。（10-29 判「borderline 不設」，當時理由是怕過度承諾；現在有了
+  「Java 原名可用＋執行環境島」這組選項，它比較像類別文。）
+- `java-session-notesfactory` 維持 `coversClass: NotesSession`，不動。
+
+結果（`npm run map-lang-report`）：Java 旗 10 個節點（新增 `NotesDocumentCollection`、
+`NotesViewNavigator`）、SSJS 旗 2 個、XPages 島 10 篇、Java 執行環境島 3 篇。
 
 ## 島外風景、外海 XPages 島、自行車、時段跟時鐘（2026-10-29）
 
