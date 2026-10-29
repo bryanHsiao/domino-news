@@ -93,7 +93,7 @@ async function deepCheckSpa404(url: string): Promise<UrlCheckResult | null> {
   }
 }
 
-export async function verifyUrl(url: string): Promise<UrlCheckResult> {
+async function verifyUrlOnce(url: string): Promise<UrlCheckResult> {
   // SPA hosts need a body-level check because every path returns 200.
   let host = '';
   try {
@@ -146,6 +146,41 @@ export async function verifyUrl(url: string): Promise<UrlCheckResult> {
       reason: err instanceof Error ? err.message : String(err),
     };
   }
+}
+
+const MAX_ATTEMPTS = 3;
+const RETRY_BASE_MS = 500;
+
+/**
+ * A failure is transient (worth retrying) when the server never gave a
+ * definitive answer: a network/TLS error or timeout (status 0), a 5xx, or a
+ * 429 rate-limit. A real 4xx — above all a 404 — is a definitive answer and
+ * is NOT retried, so a genuinely dead link still fails fast. This is what
+ * stops slow or momentarily-flaky hosts (a 7s webinar page, an HCL SPA edge
+ * that intermittently serves its 404 shell, a rate-limited CI runner IP)
+ * from flapping the check red on links that are actually fine.
+ */
+function isTransient(r: UrlCheckResult): boolean {
+  return r.status === 0 || r.status >= 500 || r.status === 429;
+}
+
+/**
+ * Verify a URL, retrying transient failures with a short linear backoff.
+ * Returns as soon as the URL resolves or fails definitively.
+ */
+export async function verifyUrl(url: string): Promise<UrlCheckResult> {
+  let last: UrlCheckResult = { url, status: 0, ok: false };
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    last = await verifyUrlOnce(url);
+    if (last.ok || !isTransient(last)) return last;
+    if (attempt < MAX_ATTEMPTS) {
+      await new Promise((r) => setTimeout(r, RETRY_BASE_MS * attempt));
+    }
+  }
+  return {
+    ...last,
+    reason: `${last.reason ?? 'transient failure'} (after ${MAX_ATTEMPTS} attempts)`,
+  };
 }
 
 export function extractMarkdownLinks(markdown: string): string[] {

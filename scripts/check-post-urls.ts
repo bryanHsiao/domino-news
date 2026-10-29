@@ -83,7 +83,7 @@ async function main() {
   for (const b of broken) {
     console.error(
       `  [${b.o.where}] ${b.o.postFile}\n` +
-        `    ${b.o.status} ${b.o.url}` +
+        `    ${b.status} ${b.o.url}` +
         (b.reason ? `\n    reason: ${b.reason}` : '')
     );
   }

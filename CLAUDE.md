@@ -703,3 +703,62 @@ from *earlier, unrelated* questions.
   neighbours (editorial-flat / isometric-vector / risograph / paper-
   craft all collapsed visually into "flat illustration"). Replaced
   with 12 disjoint styles + sampling without replacement.
+
+---
+
+## check-urls — the link checker is structurally noisy; verify before you trust it
+
+`scripts/check-post-urls.ts` + `scripts/lib/verify-urls.ts` scan every
+external URL (`sources:` + inline) in every published post. Runs on push
+and weekly via `check-urls.yml`.
+
+**The load-bearing lesson (learned 2026-10-29): a red "N broken URLs" is
+NOT trustworthy — most of N is usually noise, but real dead links hide
+inside it, so verify every flagged URL independently before changing
+anything, and don't dismiss the whole batch either.** A run once reported
+"22 broken"; the truth was ~6 genuinely dead + the rest false positives.
+
+**Why it over-reports (four distinct false-positive modes):**
+- **SPA soft-404 flakiness** — `help.hcl-software.com` (and IBM's old docs)
+  return HTTP 200 with a "404 Page" / "cannot be displayed" title for dead
+  routes; detection is title-based and the edge **intermittently serves the
+  404 shell even for real pages**, so a local "✓ all resolve" can be a lucky
+  pass. Don't trust a single clean local run.
+- **Bot-block 403** — StackOverflow (Cloudflare) 403s every server-side
+  fetch *even with a browser User-Agent*; the page is fine for humans.
+- **Runner-IP rate-limits** — the GitHub Actions IP gets 403/429/`fetch
+  failed` from hosts that serve a desktop fine, so **CI reports more broken
+  than a local run** on the identical commit.
+- **Slow sites / transient network** — a 7s page (panagenda) or a blip
+  throws `fetch failed`.
+
+**How to verify a flagged URL (don't guess):**
+- `curl` with a real browser UA, hit it 3–5× for consistency.
+- SPA hosts (HCL / IBM): check the `<title>` for `404`/`not found`/`cannot
+  be displayed`, and have the user confirm in a real browser — a server-side
+  check can't run the SPA's client JS. (The user clicking the link is the
+  tiebreaker when curl and a local run disagree.)
+- StackOverflow: use the StackExchange API
+  (`api.stackexchange.com/2.3/questions/<id>?site=stackoverflow`), not curl.
+- **Canonical source for correct HCL LotusScript doc URLs is
+  `data/ls_classes.json`** — every class/method/prop has a `docUrl`. The
+  daily generator sometimes invents plausible-but-wrong slugs (bare
+  `H_EVALUATE_METHOD.html` vs the real `H_EVALUATE_METHOD_SESSION_COM.html`).
+
+**Mitigations already in `verify-urls.ts` (added 2026-10-29):**
+- `BOT_BLOCKED_HOSTS` set (currently `stackoverflow.com`): a 403/429 from
+  these is treated as reachable, **but a 404 still fails** so a deleted page
+  is still caught. Add more hosts here when a new Cloudflare-style blocker
+  shows up.
+- **Retry-on-transient** (`isTransient` + `verifyUrl` wrapper): status 0 /
+  5xx / 429 are retried up to 3× with linear backoff; a 4xx (esp. 404) fails
+  fast. This is what stops slow/flaky hosts from flapping the check red.
+- Also fixed a reporting bug that printed `b.o.status` (always `undefined`)
+  instead of `b.status`, so the report now shows the real HTTP status — the
+  thing that tells 404 (real) from transient (noise) apart.
+
+**Real dead links fixed that round** (examples of what hides in the noise):
+assono moved to the `blog.assono.de` subdomain and dropped `/en` (English
+version gone — the surviving page is German); 4 HCL method pages had wrong
+slugs; an IBM `SSVRGU_9.0.1/...` URL was retired (IBM sold Domino to HCL) →
+same slug lives on `help.hcl-software.com`.
