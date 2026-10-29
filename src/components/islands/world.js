@@ -204,10 +204,14 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
     const slots = isHeart ? LANDMARK_SLOTS : SLOTS;
     if (isHeart) buildLandmark(theme.landmark, decor, t.x, t.z);
     t.nodes.forEach((n, i) => {
-      const x = t.x + slots[i][0], z = t.z + slots[i][1];
-      const h = house(buildings, n, theme, x, z, isHeart ? 0.92 : 1);
+      const [ox, oz] = slots[i];
+      const x = t.x + ox, z = t.z + oz;
+      // houses on the ring face out to the walking ring (the street); the
+      // centre house faces the default camera
+      const yaw = ox || oz ? Math.atan2(ox, oz) : 0;
+      const h = house(buildings, n, theme, x, z, isHeart ? 0.92 : 1, yaw);
       anchors.set(n.id, { x, y: h.top, z });
-      residents(n, t, x, z, rnd, h.depth);
+      residents(n, x, z, rnd, h.depth, yaw);
     });
     for (let i = t.nodes.length; i < slots.length; i++) {
       const sx = t.x + slots[i][0] + (rnd() - 0.5) * 0.2;
@@ -231,16 +235,17 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
   }
 
   // One sign per article written about the class, at the house's entrance:
-  // every house faces +z with its door centred on that face (house()), so
-  // the signs stand just in front of it, flanking the door (right, left,
-  // then further out) and facing the visitor.
-  function residents(n, t, x, z, rnd, depth) {
+  // just in front of the door (centred on the house's front face, which is
+  // turned by `yaw`), flanking it (right, left, then further out) and facing
+  // the same way as the house.
+  function residents(n, x, z, rnd, depth, yaw) {
     const m = (n.articles || []).length;
     if (!m) return;
-    const front = z + depth / 2 + 0.15;
+    const cs = Math.cos(yaw), sn = Math.sin(yaw);
+    const front = depth / 2 + 0.15;
     for (let k = 0; k < m; k++) {
       const off = (k % 2 ? -1 : 1) * 0.21 * (Math.floor(k / 2) + 1);
-      props.person(x + off, front, (rnd() - 0.5) * 0.25, TOP, { node: n.id, article: k });
+      props.person(x + off * cs + front * sn, z - off * sn + front * cs, yaw + (rnd() - 0.5) * 0.25, TOP, { node: n.id, article: k });
     }
   }
 
@@ -342,13 +347,19 @@ function buildBridge(kit, br) {
 // One class = one small house in its island's architecture. The class decides
 // floors and roof colour (key → three floors, gold roof and a flag;
 // uncovered → one floor, flat grey roof); the theme decides walls, body and
-// roof shape and proportions. Returns the height of the roof top and the
-// body's depth (its door is centred on the +z face).
-function house(kit, n, theme, x, z, scale) {
+// roof shape and proportions. The house is laid out facing +z (door centred
+// on that face) and then turned by `yaw` about its centre. Returns the height
+// of the roof top and the body's depth.
+function house(kit, n, theme, x, z, scale, yaw = 0) {
   const h0 = hashString(n.id);
   const kind = classKind(n);
   const id = n.id;
-  const P = (k, px, py, pz, sx, sy, sz, color) => kit.part(k, [px, py, pz], [sx, sy, sz], color, id);
+  const cs = Math.cos(yaw), sn = Math.sin(yaw);
+  const rot = yaw ? [0, yaw, 0] : null;
+  const P = (k, px, py, pz, sx, sy, sz, color) => {
+    const lx = px - x, lz = pz - z;
+    kit.part(k, [x + lx * cs + lz * sn, py, z - lx * sn + lz * cs], [sx, sy, sz], color, id, rot);
+  };
   const FH = 0.32;
   let floors = kind === 'key' ? 3 : kind === 'un' ? 1 : 1 + (h0 % 2);
   if (theme.tall && kind !== 'un') floors += 1;
@@ -364,6 +375,7 @@ function house(kit, n, theme, x, z, scale) {
   const bodyH = floors * FH;
   const yTop = yb + bodyH;
   const fz = z + d / 2 + 0.006;
+  const bz = z - d / 2 - 0.006; // back face: windows too, now that houses turn
 
   // plinth + body + floor lines
   P(round ? 'cyl' : 'rbox', x, TOP + 0.025, z, w + 0.08, 0.05, d + 0.08, 0xd8ccb8);
@@ -383,6 +395,7 @@ function house(kit, n, theme, x, z, scale) {
     } else {
       P('glass', x, wy, fz, w * (round ? 0.5 : 0.7), FH * 0.36, 0.012, GLASS);
     }
+    P('glass', x, wy, bz + (round ? 0.05 : 0), w * (round ? 0.5 : 0.7), FH * 0.36, 0.012, GLASS);
   }
 
   // roof
@@ -393,7 +406,7 @@ function house(kit, n, theme, x, z, scale) {
   switch (roof) {
     case 'none':
       P('rbox', x, yTop + 0.025, z, w + 0.05, 0.05, d + 0.05, ROOF.un);
-      return yTop + 0.05;
+      return { top: yTop + 0.05, depth: d };
     case 'gable':
       P('box', x, yTop + 0.015, z, w + 0.09, 0.03, d + 0.09, 0xefe6da);
       P('gable', x, yTop + 0.03 + rh / 2, z, w + 0.08, rh, d + 0.1, rc);
