@@ -14,7 +14,7 @@ sources:
   - title: "data — Data Source (dominoDocument, incl. concurrencyMode) — HCL Domino Designer (official)"
     url: "https://help.hcl-software.com/dom_designer/12.0.2/xpageuser/wpd_controls_pref_data.html"
   - title: "Creating save conflicts mixing DominoDocument and Document methods (community, 2013) — assono"
-    url: "https://www.assono.de/en/blog/xpages-save-conflicts-mixing-methods"
+    url: "https://blog.assono.de/xpages-save-conflicts-mixing-methods"
 relatedJava: []
 relatedSsjs: []
 coversIsland: "xpages"
@@ -25,7 +25,7 @@ coverStyle: "collage"
 
 You hit Save and up pops "Document has been saved by another user - Save created a new document as a response to that modified document." You pause: **you're the only one touching this document** — no colleague, no second tab — so how did "another user" save it? Open the database and sure enough, there's an extra conflict document. And it only fires **now and then**, which makes it the worst kind to chase.
 
-This is a rarely-explained old XPages trap: on the same document, you've **mixed the `dominoDocument` data source's save with a back-end `Document` save**. This piece starts from how Domino decides a conflict, breaks down [assono's classic 2013 reproduction](https://www.assono.de/en/blog/xpages-save-conflicts-mixing-methods), and — because that post is old — actually re-runs it on **Domino 12.0.2 and 14.5.1** to see whether the trap still bites.
+This is a rarely-explained old XPages trap: on the same document, you've **mixed the `dominoDocument` data source's save with a back-end `Document` save**. This piece starts from how Domino decides a conflict, breaks down [assono's classic 2013 reproduction](https://blog.assono.de/xpages-save-conflicts-mixing-methods), and — because that post is old — actually re-runs it on **Domino 12.0.2 and 14.5.1** to see whether the trap still bites.
 
 ## TL;DR
 

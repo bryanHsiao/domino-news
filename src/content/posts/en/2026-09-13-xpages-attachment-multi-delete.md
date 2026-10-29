@@ -16,7 +16,7 @@ sources:
   - title: "File Download control allowDelete property — HCL Domino Designer (official)"
     url: "https://help.hcl-software.com/dom_designer/12.0.0/xpageuser/wpd_controls_pref_allowdelete.html"
   - title: "Creating save conflicts mixing DominoDocument and Document methods (community) — assono"
-    url: "https://www.assono.de/en/blog/xpages-save-conflicts-mixing-methods"
+    url: "https://blog.assono.de/xpages-save-conflicts-mixing-methods"
 relatedJava: ["EmbeddedObject", "RichTextItem"]
 relatedSsjs: []
 coversIsland: "xpages"
@@ -64,7 +64,7 @@ doc.removeAttachment("Body", "report.pdf");   // needs doc.save() to actually la
 
 See that "must save … to take effect"? That's exactly what we want: `removeAttachment` is **save-bounded by design** — the same "commit on save" semantics as the native delete and as the classic-web `%%Detach`. Using it to add multi-select extends the good property rather than breaking it.
 
-**One trap to avoid**: don't drop to the back end with `doc.getDocument().getAttachment(name).remove()` for convenience. [assono has a write-up](https://www.assono.de/en/blog/xpages-save-conflicts-mixing-methods) that spells it out — mixing the XPages **data source's save with back-end `Document` writes** on the same document lets the runtime's timestamp comparison store the difference as a **save-conflict document**. Staying at the data-source layer with `removeAttachment` avoids the conflict.
+**One trap to avoid**: don't drop to the back end with `doc.getDocument().getAttachment(name).remove()` for convenience. [assono has a write-up](https://blog.assono.de/xpages-save-conflicts-mixing-methods) that spells it out — mixing the XPages **data source's save with back-end `Document` writes** on the same document lets the runtime's timestamp comparison store the difference as a **save-conflict document**. Staying at the data-source layer with `removeAttachment` avoids the conflict.
 
 ## Building it: check several, delete on one save
 
