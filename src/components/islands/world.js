@@ -354,8 +354,8 @@ const floorsFor = (deg) => Math.max(1, Math.round(Math.pow(deg, 0.62)));
 const TOWER = 6;
 
 // One class = one small house in its island's architecture. Its links decide
-// the floors (above); the class decides the roof colour (key → gold roof and a
-// flag; uncovered → flat grey roof); the theme decides walls, body and roof
+// the floors (above); the class decides the roof colour (key → gold roof;
+// uncovered → flat grey roof); the theme decides walls, body and roof
 // shape and proportions. The house is laid out facing +z (door centred
 // on that face) and then turned by `yaw` about its centre. Returns the height
 // of the roof top and the body's depth.
@@ -453,21 +453,18 @@ function house(kit, n, theme, x, z, scale, yaw = 0) {
     P('cyl', x + w * 0.22, roofTop + 0.32, z + d * 0.18, 0.03, 0.64, 0.03, 0xd9d2c6);
     P('bulb', x + w * 0.22, roofTop + 0.66, z + d * 0.18, 0.06, 0.06, 0.06, 0xff8a6a);
   }
-  if (kind === 'key') {
-    P('cyl', x, roofTop + 0.15, z, 0.02, 0.3, 0.02, 0x5a4a3c);
-    P('box', x + 0.07, roofTop + 0.25, z, 0.13, 0.08, 0.008, 0xdb6a41);
-  }
   // Language flags: a house with a Java / SSJS article flies a pennant in that
   // colour (blue / green) so the rarer languages stand out from a distance —
-  // LotusScript is on nearly every house, so it gets none. They fly on a mast
-  // to the left of the ridge, clear of the key class's coral flag.
+  // LotusScript is on nearly every house, so it gets none. These are the only
+  // flags on the roofs (a key class is marked by its gold roof alone), so the
+  // mast stands on the middle of the ridge.
   const langFlags = [];
   for (const a of n.articles || []) {
     if (a.lang === 'java' && !langFlags.includes(LANG_FLAG.java)) langFlags.push(LANG_FLAG.java);
     if (a.lang === 'ssjs' && !langFlags.includes(LANG_FLAG.ssjs)) langFlags.push(LANG_FLAG.ssjs);
   }
   if (langFlags.length) {
-    const fx = x - w * 0.34;
+    const fx = x;
     const base = roofTop + 0.04;
     const poleH = 0.46 + langFlags.length * 0.19;
     P('cyl', fx, base + poleH / 2, z, 0.024, poleH, 0.024, 0x5a4a3c);
