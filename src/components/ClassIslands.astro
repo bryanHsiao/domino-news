@@ -469,9 +469,11 @@ const statTip =
   #ci .dot.key, #ci .sw.key { background: var(--roof-key); }
 
   /* Language = the colour of a door-person (scene.js LANG_SHIRT). Shown as a
-     round swatch so it never reads as a roof colour, and as a small dot on the
-     article rows in the panel. */
-  #ci .sw.lang { clip-path: none; border-radius: 50%; width: 10px; height: 10px; }
+     round swatch so it never reads as a roof colour (a backend roof and a Java
+     person are both blue — the shape is what tells them apart), and as a small
+     dot on the article rows in the panel. The `.ci-legend` scope is needed so
+     this wins over the roof-triangle `.ci-legend .sw` rule below. */
+  #ci .ci-legend .sw.lang { clip-path: none; border-radius: 50%; width: 10px; height: 10px; vertical-align: -1px; }
   #ci .sw.lang.ls, #ci .pdot.ls { background: #db6a41; }
   #ci .sw.lang.java, #ci .pdot.java { background: #4f86c6; }
   #ci .sw.lang.ssjs, #ci .pdot.ssjs { background: #4fa36b; }
