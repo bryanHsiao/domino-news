@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_APPENDITEMVALUE_METHOD_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+coversClass: "NotesDocument"
+apiLang: "java"
 cover: "/covers/java-document-items.webp"
 coverStyle: "paper-craft"
 ---

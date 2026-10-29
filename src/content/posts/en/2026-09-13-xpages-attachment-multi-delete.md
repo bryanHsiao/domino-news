@@ -19,6 +19,8 @@ sources:
     url: "https://www.assono.de/en/blog/xpages-save-conflicts-mixing-methods"
 relatedJava: ["EmbeddedObject", "RichTextItem"]
 relatedSsjs: []
+coversIsland: "xpages"
+apiLang: "ssjs"
 cover: "/covers/xpages-attachment-multi-delete.webp"
 coverStyle: "ukiyo-e"
 ---

@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_RECYCLE_METHOD_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+coversClass: "NotesDominoQuery"
+apiLang: "java"
 cover: "/covers/java-dql-dominoquery.webp"
 coverStyle: "oil-chiaroscuro"
 ---

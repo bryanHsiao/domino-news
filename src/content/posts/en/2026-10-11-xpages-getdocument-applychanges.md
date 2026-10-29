@@ -16,6 +16,8 @@ sources:
     url: "https://www.ibm.com/docs/en/SSVRGU_9.0.1/reference/r_wpdr_xsp_xspdocument_r.html"
 relatedJava: []
 relatedSsjs: []
+coversIsland: "xpages"
+apiLang: "ssjs"
 cover: "/covers/xpages-getdocument-applychanges.webp"
 coverStyle: "photoreal-3d"
 ---

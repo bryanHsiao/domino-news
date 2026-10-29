@@ -20,6 +20,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.0/xpageuser/wpd_overview_xpages.html"
 relatedJava: ["LLMReq", "LLMRes"]
 relatedSsjs: []
+coversClass: "NotesLLMRequest"
+apiLang: "java"
 cover: "/covers/domino-iq-timeout-java-ssjs.webp"
 coverStyle: "low-poly-3d"
 ---

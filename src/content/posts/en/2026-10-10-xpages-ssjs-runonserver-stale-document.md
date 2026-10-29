@@ -20,6 +20,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/9.0.1/appdev/H_LOTUSSCRIPT_AND_JAVA_AGENTS_WEB.html"
 relatedJava: []
 relatedSsjs: []
+coversIsland: "xpages"
+apiLang: "ssjs"
 cover: "/covers/xpages-ssjs-runonserver-stale-document.webp"
 coverStyle: "ukiyo-e"
 ---

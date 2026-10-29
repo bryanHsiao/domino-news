@@ -14,7 +14,8 @@
     "backfill:covers": "tsx scripts/backfill-covers.ts",
     "generate:hero": "tsx scripts/generate-hero-banner.ts",
     "check:urls": "tsx scripts/check-post-urls.ts",
-    "coverage": "tsx scripts/coverage-report.ts"
+    "coverage": "tsx scripts/coverage-report.ts",
+    "map-lang-report": "tsx scripts/map-lang-report.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",

@@ -17,6 +17,8 @@ sources:
     url: "https://www.assono.de/en/blog/xpages-save-conflicts-mixing-methods"
 relatedJava: []
 relatedSsjs: []
+coversIsland: "xpages"
+apiLang: "ssjs"
 cover: "/covers/xpages-save-conflicts.webp"
 coverStyle: "collage"
 ---

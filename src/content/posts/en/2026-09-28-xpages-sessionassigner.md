@@ -17,6 +17,8 @@ sources:
     url: "https://ds_infolib.hcltechsw.com/ldd/xpagesforum.nsf/xpTopicThread.xsp?documentId=4F3973ED6E5B8B338525792E00731534"
 relatedJava: []
 relatedSsjs: []
+coversIsland: "xpages"
+apiLang: "ssjs"
 cover: "/covers/xpages-sessionassigner.webp"
 coverStyle: "art-deco"
 ---

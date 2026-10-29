@@ -18,6 +18,8 @@ sources:
     url: "https://www.focul.net/categorised-view-problem-in-domino-nomad-web-1-07/"
 relatedJava: []
 relatedSsjs: []
+coversIsland: "xpages"
+apiLang: "ssjs"
 cover: "/covers/xpages-multi-column-category-document.webp"
 coverStyle: "photoreal-3d"
 ---

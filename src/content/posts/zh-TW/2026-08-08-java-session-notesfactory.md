@@ -15,6 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_COMPILING_AND_RUNNING_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+coversClass: "NotesSession"
+apiLang: "java"
 cover: "/covers/java-session-notesfactory.webp"
 coverStyle: "bw-grain"
 ---

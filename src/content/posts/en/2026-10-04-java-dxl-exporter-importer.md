@@ -16,6 +16,10 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/10.0.1/basic/H_CREATEDXLEXPORTER_METHOD_SESSION_JAVA.html"
 relatedJava: []
 relatedSsjs: []
+coversClass:
+  - "NotesDXLExporter"
+  - "NotesDXLImporter"
+apiLang: "java"
 cover: "/covers/java-dxl-exporter-importer.webp"
 coverStyle: "risograph"
 ---
