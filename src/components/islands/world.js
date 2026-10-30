@@ -43,6 +43,12 @@ const DOOR = 0x8a6a4e;
 // sinks into the night scene, so it gets a light rim (FLAG_RIM).
 const LANG_FLAG = { java: 0x2d2d3a, ssjs: 0x4fa36b };
 const FLAG_RIM = 0xf4efe6;
+// String lights along each island's outer rim, as on the reference's map:
+// small bulbs just inside the deck edge, this many per hex side; at night
+// they glow and scene.js puts a soft halo on each (world.fairy).
+const FAIRY_R = 1.93;
+const FAIRY_Y = 0.13;
+const FAIRY_PER_SIDE = 5;
 
 // Building slots per tile: centre first, then the ring from back to front so
 // any free (tree) slots end up in the foreground. The island's landmark tile
@@ -85,6 +91,7 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
   const outlines = new Map();
   const anchors = new Map(); // class id -> roof top of its house, where relation lines start and end
   const landmarks = []; // { x, z, kind } of each island's landmark (the camera framing keeps them in view)
+  const fairy = []; // [x, y, z] of every rim string light
   const tileAt = new Map(layout.tiles.map((t) => [t.q + ',' + t.r, t]));
   const add = (geo, mat, { cast = false, receive = true, cat = null, x = 0, y = 0, z = 0 } = {}) => {
     const m = new THREE.Mesh(geo, mat);
@@ -201,7 +208,10 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
       const d = Math.hypot(t.x - c.cx, t.z - c.cz), bd = Math.hypot(best.x - c.cx, best.z - c.cz);
       return d < bd - 1e-6 ? t : best;
     });
-    for (const t of c.tiles) dressTile(t, theme, t === heart);
+    for (const t of c.tiles) {
+      dressTile(t, theme, t === heart);
+      stringLights(t, c.tiles);
+    }
   });
 
   function dressTile(t, theme, isHeart) {
@@ -239,6 +249,23 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
     for (const k of [1, 4]) {
       const [lx, lz] = hexVertex(t.x, t.z, 1.98, k);
       props.lamp(lx, lz, TOP);
+    }
+  }
+
+  // String lights on the tile's outer rim: none along a side shared with
+  // another tile of the same island (that edge is inland), so the lights
+  // trace the island's shoreline.
+  function stringLights(t, islandTiles) {
+    for (let k = 0; k < 6; k++) {
+      const [ax, az] = hexVertex(t.x, t.z, FAIRY_R, k);
+      const [bx, bz] = hexVertex(t.x, t.z, FAIRY_R, k + 1);
+      for (let i = 0; i < FAIRY_PER_SIDE; i++) {
+        const f = (i + 0.5) / FAIRY_PER_SIDE;
+        const fx = ax + (bx - ax) * f, fz = az + (bz - az) * f;
+        if (islandTiles.some((o) => o !== t && Math.hypot(o.x - fx, o.z - fz) < 2.45)) continue;
+        decor.part('bulb', [fx, TOP + FAIRY_Y, fz], [0.055, 0.055, 0.055], 0xf6e7c4);
+        fairy.push([fx, TOP + FAIRY_Y, fz]);
+      }
     }
   }
 
@@ -281,7 +308,7 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
     outlines.set(c.cat, m);
   }
 
-  return { pickTargets, outlines, anchors, landmarks };
+  return { pickTargets, outlines, anchors, landmarks, fairy };
 }
 
 // Bridge look by relation strength: 4+ links a wide stone bridge, 2–3 a wooden

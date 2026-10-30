@@ -18,7 +18,9 @@ export const TIMES = {
   dawn: { top: 0xa9bde6, horizon: 0xf8d6c4, sun: 0xffcdb0, sunI: 2.1, hemiSky: 0xf4dcd6, hemiGround: 0x7a6a6e, hemiI: 1.3, shallow: 0x86bccb, deep: 0x6297ad, fog: 0xf3dfd6, dir: [0.8, 0.42, 0.45], night: 0.2 },
   day: { top: 0x9fd0ec, horizon: 0xf4eee3, sun: 0xfff1de, sunI: 2.9, hemiSky: 0xeef6fa, hemiGround: 0x8f8270, hemiI: 1.35, shallow: 0x62b2bd, deep: 0x4a96a8, fog: 0xf4eee3, dir: [-0.55, 0.85, 0.45], night: 0 },
   dusk: { top: 0x55589a, horizon: 0xf0905e, sun: 0xff8448, sunI: 1.7, hemiSky: 0xe6a88e, hemiGround: 0x5e4652, hemiI: 1.0, shallow: 0x5d85a3, deep: 0x3d5e83, fog: 0xd8957a, dir: [-0.85, 0.36, 0.4], night: 0.6 },
-  night: { top: 0x0e1836, horizon: 0x2c3b6a, sun: 0xb4c2ff, sunI: 0.75, hemiSky: 0x8090c8, hemiGround: 0x3b3444, hemiI: 1.0, shallow: 0x2f527a, deep: 0x1d3458, fog: 0x26315a, dir: [0.35, 0.8, -0.3], night: 1 },
+  // night stays readable, as on the reference's map: a bright cool moon and
+  // sky fill keep the decks near their day colours, the water a deep blue
+  night: { top: 0x0e1836, horizon: 0x34467a, sun: 0xc4d0ff, sunI: 1.5, hemiSky: 0xb8c4ee, hemiGround: 0x5c5878, hemiI: 1.75, shallow: 0x2f5f9a, deep: 0x1f4278, fog: 0x2c3a66, dir: [0.35, 0.8, -0.3], night: 1 },
 };
 
 // `boatProps` builds the boats into their own kit so scene.js can let them drift.

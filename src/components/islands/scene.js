@@ -114,6 +114,27 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     m.frustumCulled = false; // instances move away from where the bounds were computed
     m.castShadow = false;
   }
+  // a soft warm halo on every rim string light, faded in with the night
+  // (additive sprites: the scene has no bloom pass)
+  const haloTex = (() => {
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const g = c.getContext('2d');
+    const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grad.addColorStop(0, 'rgba(255,236,190,1)');
+    grad.addColorStop(0.25, 'rgba(255,214,140,0.55)');
+    grad.addColorStop(1, 'rgba(255,200,120,0)');
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 64, 64);
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+  })();
+  const haloMat = new THREE.PointsMaterial({ size: 0.85, map: haloTex, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true });
+  const halos = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(world.fairy.flat(), 3)), haloMat);
+  halos.visible = false;
+  scene.add(halos);
+
   // the article signs at the house doors: one per article written about the
   // class, its "i" badge in the article's language colour
   const signs = createSigns(THREE, scene, partMat, props.people, (info) => {
@@ -253,6 +274,8 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     light.night = from.night + (to.night - from.night) * k;
     env.applyTime(light);
     glowMat.emissiveIntensity = light.night * 1.4;
+    haloMat.opacity = light.night;
+    halos.visible = light.night > 0.02;
     renderer.shadowMap.needsUpdate = true; // the sun moved
   }
   function setTime(name) {
