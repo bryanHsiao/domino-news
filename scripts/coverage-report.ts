@@ -161,10 +161,15 @@ async function main() {
 
   const javaGap = [...r.javaMentions.entries()].filter(([name]) => !isWritten(name, writtenJavaNodes)).sort();
   const ssjsGap = [...r.ssjsMentions.entries()].filter(([name]) => !isWritten(name, writtenSsjsNodes)).sort();
+  // Off-shore islands (coversIsland): posts about a layer with no LS back-end
+  // class. computeMapLanguages returns these grouped by island id.
+  const ISLAND_LABELS: Record<string, string> = { xpages: 'XPages / web layer', 'java-runtime': 'Java runtime' };
+  const islandEntries = Object.entries(mapLang.islands).filter(([, posts]) => posts.length);
+  const offshoreCount = islandEntries.reduce((n, [, posts]) => n + posts.length, 0);
   lines.push(
     `**Summary** — Java: **${writtenJavaNodes.size}** classes have a dedicated article, **${javaGap.length}** referenced counterparts still in the gap. ` +
       `SSJS: **${writtenSsjsNodes.size}** dedicated, **${ssjsGap.length}** in the gap` +
-      (mapLang.xpages.length ? `, plus **${mapLang.xpages.length}** XPages / web-layer posts (not tied to a backend class)` : '') +
+      (offshoreCount ? `, plus **${offshoreCount}** off-shore island posts (XPages / Java-runtime, not tied to a backend class)` : '') +
       '.'
   );
   if (mapLang.unknownClassIds.length) {
@@ -189,15 +194,18 @@ async function main() {
     lines.push('');
   }
 
-  if (mapLang.xpages.length) {
-    lines.push(`### XPages / web-layer posts (${mapLang.xpages.length})`);
+  if (offshoreCount) {
+    lines.push(`### Off-shore island posts (${offshoreCount})`);
     lines.push('');
-    lines.push('These cover the XPages / web application layer, which has no LotusScript back-end class in the catalogue — so they light the map\'s XPages island, not a class node.');
+    lines.push('These cover a layer with no LotusScript back-end class in the catalogue, so they light an off-shore island on the map rather than a class node.');
     lines.push('');
-    lines.push('| Post | Lang |');
-    lines.push('|---|---|');
-    for (const { slug, apiLang } of [...mapLang.xpages].sort((a, b) => a.slug.localeCompare(b.slug))) {
-      lines.push(`| ${slugLink(slug)} | ${apiLang} |`);
+    lines.push('| Post | Island | Lang |');
+    lines.push('|---|---|---|');
+    for (const [island, posts] of islandEntries) {
+      const label = ISLAND_LABELS[island] ?? island;
+      for (const { slug, apiLang } of [...posts].sort((a, b) => a.slug.localeCompare(b.slug))) {
+        lines.push(`| ${slugLink(slug)} | ${label} | ${apiLang} |`);
+      }
     }
     lines.push('');
   }

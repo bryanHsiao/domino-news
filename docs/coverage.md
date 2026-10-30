@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-10-29 · Posts scanned: 195 · Classes catalogued: 97*
+*Generated: 2026-10-30 · Posts scanned: 196 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -143,7 +143,7 @@
 
 **Dedicated** = the class has its own Java / SSJS deep-dive (`coversClass` + `apiLang` frontmatter — the authoritative "already written" list). **Gap** = Java / SSJS counterparts that LS posts point to (via `relatedJava` / `relatedSsjs`) but that do **not** yet have a dedicated article — the natural pool of "topics worth a single-language deep-dive next." A `relatedJava` pointer alone is NOT an article; only `coversClass` + `apiLang` counts as written.
 
-**Summary** — Java: **8** classes have a dedicated article, **48** referenced counterparts still in the gap. SSJS: **2** dedicated, **42** in the gap, plus **10** XPages / web-layer posts (not tied to a backend class).
+**Summary** — Java: **10** classes have a dedicated article, **46** referenced counterparts still in the gap. SSJS: **2** dedicated, **42** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
 
 ### Dedicated Java / SSJS articles
 
@@ -152,31 +152,36 @@
 | `NotesAgent` | [java-agent-anatomy](https://bryanhsiao.github.io/domino-news/posts/java-agent-anatomy/) | — |
 | `NotesDateTime` | [java-datetime](https://bryanhsiao.github.io/domino-news/posts/java-datetime/) | — |
 | `NotesDocument` | [java-document-items](https://bryanhsiao.github.io/domino-news/posts/java-document-items/) | — |
+| `NotesDocumentCollection` | [java-collection-iteration](https://bryanhsiao.github.io/domino-news/posts/java-collection-iteration/) | — |
 | `NotesDominoQuery` | [java-dql-dominoquery](https://bryanhsiao.github.io/domino-news/posts/java-dql-dominoquery/) | — |
 | `NotesDXLExporter` | [java-dxl-exporter-importer](https://bryanhsiao.github.io/domino-news/posts/java-dxl-exporter-importer/) | — |
 | `NotesDXLImporter` | [java-dxl-exporter-importer](https://bryanhsiao.github.io/domino-news/posts/java-dxl-exporter-importer/) | — |
 | `NotesItem` | — | [ssjs-vector-multivalue](https://bryanhsiao.github.io/domino-news/posts/ssjs-vector-multivalue/) |
 | `NotesLLMRequest` | [domino-iq-timeout-java-ssjs](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-java-ssjs/) | — |
 | `NotesSession` | [java-session-notesfactory](https://bryanhsiao.github.io/domino-news/posts/java-session-notesfactory/) | [ssjs-session-evaluate-formula](https://bryanhsiao.github.io/domino-news/posts/ssjs-session-evaluate-formula/) |
+| `NotesViewNavigator` | [java-collection-iteration](https://bryanhsiao.github.io/domino-news/posts/java-collection-iteration/) | — |
 
-### XPages / web-layer posts (10)
+### Off-shore island posts (13)
 
-These cover the XPages / web application layer, which has no LotusScript back-end class in the catalogue — so they light the map's XPages island, not a class node.
+These cover a layer with no LotusScript back-end class in the catalogue, so they light an off-shore island on the map rather than a class node.
 
-| Post | Lang |
-|---|---|
-| [xpages-attachment-multi-delete](https://bryanhsiao.github.io/domino-news/posts/xpages-attachment-multi-delete/) | ssjs |
-| [xpages-binding-rendered-loaded-performance](https://bryanhsiao.github.io/domino-news/posts/xpages-binding-rendered-loaded-performance/) | ssjs |
-| [xpages-getdocument-applychanges](https://bryanhsiao.github.io/domino-news/posts/xpages-getdocument-applychanges/) | ssjs |
-| [xpages-managed-beans](https://bryanhsiao.github.io/domino-news/posts/xpages-managed-beans/) | ssjs |
-| [xpages-multi-column-category-document](https://bryanhsiao.github.io/domino-news/posts/xpages-multi-column-category-document/) | ssjs |
-| [xpages-partial-refresh-execution](https://bryanhsiao.github.io/domino-news/posts/xpages-partial-refresh-execution/) | ssjs |
-| [xpages-save-conflicts](https://bryanhsiao.github.io/domino-news/posts/xpages-save-conflicts/) | ssjs |
-| [xpages-scope-variables](https://bryanhsiao.github.io/domino-news/posts/xpages-scope-variables/) | ssjs |
-| [xpages-sessionassigner](https://bryanhsiao.github.io/domino-news/posts/xpages-sessionassigner/) | ssjs |
-| [xpages-ssjs-runonserver-stale-document](https://bryanhsiao.github.io/domino-news/posts/xpages-ssjs-runonserver-stale-document/) | ssjs |
+| Post | Island | Lang |
+|---|---|---|
+| [xpages-attachment-multi-delete](https://bryanhsiao.github.io/domino-news/posts/xpages-attachment-multi-delete/) | XPages / web layer | ssjs |
+| [xpages-binding-rendered-loaded-performance](https://bryanhsiao.github.io/domino-news/posts/xpages-binding-rendered-loaded-performance/) | XPages / web layer | ssjs |
+| [xpages-getdocument-applychanges](https://bryanhsiao.github.io/domino-news/posts/xpages-getdocument-applychanges/) | XPages / web layer | ssjs |
+| [xpages-managed-beans](https://bryanhsiao.github.io/domino-news/posts/xpages-managed-beans/) | XPages / web layer | ssjs |
+| [xpages-multi-column-category-document](https://bryanhsiao.github.io/domino-news/posts/xpages-multi-column-category-document/) | XPages / web layer | ssjs |
+| [xpages-partial-refresh-execution](https://bryanhsiao.github.io/domino-news/posts/xpages-partial-refresh-execution/) | XPages / web layer | ssjs |
+| [xpages-save-conflicts](https://bryanhsiao.github.io/domino-news/posts/xpages-save-conflicts/) | XPages / web layer | ssjs |
+| [xpages-scope-variables](https://bryanhsiao.github.io/domino-news/posts/xpages-scope-variables/) | XPages / web layer | ssjs |
+| [xpages-sessionassigner](https://bryanhsiao.github.io/domino-news/posts/xpages-sessionassigner/) | XPages / web layer | ssjs |
+| [xpages-ssjs-runonserver-stale-document](https://bryanhsiao.github.io/domino-news/posts/xpages-ssjs-runonserver-stale-document/) | XPages / web layer | ssjs |
+| [java-notesexception](https://bryanhsiao.github.io/domino-news/posts/java-notesexception/) | Java runtime | java |
+| [java-notesthread](https://bryanhsiao.github.io/domino-news/posts/java-notesthread/) | Java runtime | java |
+| [java-recycle-memory](https://bryanhsiao.github.io/domino-news/posts/java-recycle-memory/) | Java runtime | java |
 
-### Java counterparts still in the gap (48)
+### Java counterparts still in the gap (46)
 
 | Java class | LS posts that point to it |
 |---|---|
@@ -190,7 +195,6 @@ These cover the XPages / web application layer, which has no LotusScript back-en
 | `DbDirectory` | [notes-db-directory](https://bryanhsiao.github.io/domino-news/posts/notes-db-directory/) |
 | `Directory` | [notes-directory](https://bryanhsiao.github.io/domino-news/posts/notes-directory/) |
 | `DirectoryNavigator` | [notes-directory](https://bryanhsiao.github.io/domino-news/posts/notes-directory/) |
-| `DocumentCollection` | [notes-document-collection](https://bryanhsiao.github.io/domino-news/posts/notes-document-collection/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
 | `EmbeddedObject` | [xpages-attachment-multi-delete](https://bryanhsiao.github.io/domino-news/posts/xpages-attachment-multi-delete/), [domino-attachments-bulk](https://bryanhsiao.github.io/domino-news/posts/domino-attachments-bulk/), [domino-attachments-three-ways](https://bryanhsiao.github.io/domino-news/posts/domino-attachments-three-ways/), [notes-embedded-object](https://bryanhsiao.github.io/domino-news/posts/notes-embedded-object/) |
 | `Form` | [notes-form](https://bryanhsiao.github.io/domino-news/posts/notes-form/) |
 | `IDVault` | [notes-id-vault](https://bryanhsiao.github.io/domino-news/posts/notes-id-vault/) |
@@ -225,7 +229,6 @@ These cover the XPages / web application layer, which has no LotusScript back-en
 | `ViewColumn` | [notes-view-column](https://bryanhsiao.github.io/domino-news/posts/notes-view-column/) |
 | `ViewEntry` | [domino-web-view-start-parameter](https://bryanhsiao.github.io/domino-news/posts/domino-web-view-start-parameter/), [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
 | `ViewEntryCollection` | [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
-| `ViewNavigator` | [notes-view-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-view-navigator/) |
 | `XMLProcessor` | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) |
 | `XSLTransformer` | [notes-xsl-transformer](https://bryanhsiao.github.io/domino-news/posts/notes-xsl-transformer/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) |
 
@@ -280,6 +283,7 @@ These cover the XPages / web application layer, which has no LotusScript back-en
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [domino-mail-quota](https://bryanhsiao.github.io/domino-news/posts/domino-mail-quota/) | — | — | — |
 | [domino-mail-journaling](https://bryanhsiao.github.io/domino-news/posts/domino-mail-journaling/) | — | — | — |
 | [domino-server-mail-rules](https://bryanhsiao.github.io/domino-news/posts/domino-server-mail-rules/) | — | — | — |
 | [domino-out-of-office](https://bryanhsiao.github.io/domino-news/posts/domino-out-of-office/) | — | — | — |
