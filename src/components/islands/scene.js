@@ -23,6 +23,14 @@ import { createWildlife } from './wildlife.js';
 const FOV = 32;
 const HOME_POLAR = THREE.MathUtils.degToRad(70);
 const HOME_AZIMUTH = THREE.MathUtils.degToRad(3);
+// Phones held upright: the stage is tall and narrow, so fitting the whole
+// archipelago across its width left it a thin strip mid-screen with the
+// plates piled on each other. There the camera looks down more steeply
+// (the islands' depth fills the height) and the fit may run this much wider
+// than the stage, letting the outermost islands slip off the sides while
+// both off-shore islands stay in view (2026-10-30).
+const PHONE_POLAR = THREE.MathUtils.degToRad(50);
+const PHONE_X_SLACK = 1.8;
 // The opening view fits every island in the lake (off-shore ones included)
 // into the part of the stage the interface leaves clear, at least this many
 // px from its edges.
@@ -214,6 +222,10 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   let homePolar = HOME_POLAR;
   let homeAzimuth = HOME_AZIMUTH;
   function fitHome(w, h) {
+    const phone = w <= 760 && h > w * 1.15;
+    homePolar = phone ? PHONE_POLAR : HOME_POLAR;
+    homeAzimuth = phone ? 0 : HOME_AZIMUTH;
+    const xSlack = phone ? PHONE_X_SLACK : 1;
     const a = clearArea(w, h);
     frameCam.fov = camera.fov;
     frameCam.aspect = camera.aspect;
@@ -242,7 +254,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       const k = dist * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
       target.addScaledVector(right, 0.6 * (((x0 + x1) - (a.x0 + a.x1)) / 2) * k * camera.aspect);
       target.addScaledVector(up, 0.6 * (((y0 + y1) - (a.y0 + a.y1)) / 2) * k / Math.cos(homePolar));
-      dist *= Math.pow(Math.max((x1 - x0) / (a.x1 - a.x0), (y1 - y0) / (a.y1 - a.y0)), 0.6);
+      dist *= Math.pow(Math.max((x1 - x0) / ((a.x1 - a.x0) * xSlack), (y1 - y0) / (a.y1 - a.y0)), 0.6);
     }
     homeTarget.copy(target);
     homeDist = dist;
