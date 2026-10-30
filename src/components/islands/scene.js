@@ -23,6 +23,12 @@ import { createWildlife } from './wildlife.js';
 const FOV = 32;
 const HOME_POLAR = THREE.MathUtils.degToRad(70);
 const HOME_AZIMUTH = THREE.MathUtils.degToRad(3);
+// Phones held upright: the stage is tall and narrow, and at the low desktop
+// angle the archipelago became a thin strip mid-screen with the plates piled
+// on each other. There the camera looks down more steeply, so the islands'
+// depth spreads over the height and the plates apart; every island still
+// fits in (2026-10-30).
+const PHONE_POLAR = THREE.MathUtils.degToRad(50);
 // The opening view fits every island in the lake (off-shore ones included)
 // into the part of the stage the interface leaves clear, at least this many
 // px from its edges.
@@ -214,6 +220,9 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   let homePolar = HOME_POLAR;
   let homeAzimuth = HOME_AZIMUTH;
   function fitHome(w, h) {
+    const phone = w <= 760 && h > w * 1.15;
+    homePolar = phone ? PHONE_POLAR : HOME_POLAR;
+    homeAzimuth = phone ? 0 : HOME_AZIMUTH;
     const a = clearArea(w, h);
     frameCam.fov = camera.fov;
     frameCam.aspect = camera.aspect;
