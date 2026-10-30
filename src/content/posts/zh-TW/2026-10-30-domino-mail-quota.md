@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/conf_notifyinguserswhoexceedamailfilequotaorwarningt_c.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-mail-quota.webp"
+coverStyle: "watercolor"
 ---
 
 你給每個信箱設了配額,以為信箱一爆、新信就會被擋下來?**不一定**。Domino 的預設行為是 **「Deliver anyway」——配額設了,照送**。配額本身只是一個數字;真正決定「信箱爆掉之後新信會怎樣」的,是你另外選的 **over quota enforcement(超額處理方式)**。這篇把配額、預警、三種超額處理,還有一個常被忽略的「大小怎麼算」講清楚。

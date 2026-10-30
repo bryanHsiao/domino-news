@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/conf_notifyinguserswhoexceedamailfilequotaorwarningt_c.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-mail-quota.webp"
+coverStyle: "watercolor"
 ---
 
 You set a quota on each mailbox and assume that once it's full, new mail gets blocked? **Not necessarily.** Domino's default behavior is **"Deliver anyway" — the quota is set, but mail is delivered regardless.** A quota is just a number; what actually decides what happens to new mail once a mailbox is full is the **over-quota enforcement** you choose separately. This piece lays out the quota, the warning threshold, the three enforcement options, and one easily missed detail about how size is calculated.
