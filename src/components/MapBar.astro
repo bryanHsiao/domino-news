@@ -156,6 +156,13 @@ const views = ['dir', 'graph', 'islands'] as const;
      shown only while classes are still unwritten, keeps its card / row. */
   #cm .cm-title, #cd .cd-title, #ci .ci-card h1 { display: none; }
   #cm .cm-top:not(:has(.cm-stat)), #cd .cd-head:not(:has(.cd-stat)), #ci .ci-card:not(:has(.ci-stat)) { display: none; }
+  /* iOS Safari zooms the whole page into any field under 16px the moment it
+     gets focus, and stays zoomed: the tool columns slide off the screen and
+     a pinch on the islands turns the scene instead of zooming back out. On
+     touch screens the views' search fields are 16px, so it never zooms. */
+  @media (hover: none) and (pointer: coarse) {
+    html #ci #ci-q, html #cd .cd-search input, html #cm .cm-controls input, html #cm .cm-controls select { font-size: 16px; }
+  }
 </style>
 
 <script is:inline>
