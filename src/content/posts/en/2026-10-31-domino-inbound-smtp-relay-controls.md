@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/10.0.1/conf_enablingdnsblacklistfiltersforsmtpconnections_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-inbound-smtp-relay-controls.webp"
+coverStyle: "risograph"
 ---
 
 An **open relay** is a misconfigured SMTP server: it relays mail from **anyone** to **anywhere**. Spammers love these — a free waystation to blast spam through *your* server, which lands **your IP on a blocklist** so even your company's legitimate mail stops getting out. The good news: Domino **blocks** external relaying **by default**. But you should understand how it blocks, how far the enforcement reaches, and what you can add — so you never accidentally open a hole.

@@ -17,6 +17,8 @@ sources:
     url: "https://help.hcl-software.com/domino/10.0.1/conf_enablingdnsblacklistfiltersforsmtpconnections_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-inbound-smtp-relay-controls.webp"
+coverStyle: "risograph"
 ---
 
 **open relay(開放轉送)**就是一台設錯的 SMTP 伺服器:它會替**任何人**把信轉去**任何地方**。垃圾信寄送者最愛這種——拿你的伺服器當轉運站大量發垃圾信,結果**你的 IP 被列上黑名單**,連公司自己的正常信都送不出去。好消息是 Domino **預設就會擋**外部主機的 relay;但你得懂它怎麼擋、範圍到哪、還能加掛什麼,才不會哪天不小心開了洞。
