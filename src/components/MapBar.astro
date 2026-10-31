@@ -88,7 +88,8 @@ const views = ['dir', 'graph', 'islands'] as const;
   }
   .map-bar .mb-home { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; color: var(--color-fg-strong); white-space: nowrap; border-radius: 8px; }
   .map-bar .mb-home:hover { color: var(--color-accent); }
-  .map-bar .mb-arrow { opacity: 0.7; }
+  /* desktop: the logo and site name are the way home; the arrow is for phones */
+  .map-bar .mb-arrow { display: none; }
   .map-bar .mb-mark { width: 24px; height: 24px; border-radius: 6px; background: var(--color-brand-dark); color: var(--color-brand-gold); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; }
   .map-bar .mb-sep { width: 1px; height: 20px; background: var(--color-border); }
   .map-bar .mb-title { margin: 0; font-size: 1rem; font-weight: 700; color: var(--color-fg-strong); white-space: nowrap; }
@@ -118,7 +119,7 @@ const views = ['dir', 'graph', 'islands'] as const;
     .map-bar .mb-site, .map-bar .mb-mark, .map-bar .mb-sep, .map-bar .mb-langs, .map-bar .mt-short { display: none; }
     /* the arrow alone is a thumb-sized button, framed like the view switch */
     .map-bar .mb-home { flex: none; justify-content: center; width: 38px; height: 38px; border: 1px solid var(--color-border); border-radius: 10px; }
-    .map-bar .mb-arrow { opacity: 1; font-size: 20px; line-height: 1; }
+    .map-bar .mb-arrow { display: inline; font-size: 20px; line-height: 1; }
     .map-bar .map-tab { padding: 0 9px; }
     .map-bar .mb-lang-cur { display: none !important; }
   }
