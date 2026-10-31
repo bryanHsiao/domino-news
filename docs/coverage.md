@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-10-30 · Posts scanned: 196 · Classes catalogued: 97*
+*Generated: 2026-10-31 · Posts scanned: 197 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -283,6 +283,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [domino-inbound-smtp-relay-controls](https://bryanhsiao.github.io/domino-news/posts/domino-inbound-smtp-relay-controls/) | — | — | — |
 | [domino-mail-quota](https://bryanhsiao.github.io/domino-news/posts/domino-mail-quota/) | — | — | — |
 | [domino-mail-journaling](https://bryanhsiao.github.io/domino-news/posts/domino-mail-journaling/) | — | — | — |
 | [domino-server-mail-rules](https://bryanhsiao.github.io/domino-news/posts/domino-server-mail-rules/) | — | — | — |
