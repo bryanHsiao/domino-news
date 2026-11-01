@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/admn_toolsformailmonitoring_c.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-message-tracking.webp"
+coverStyle: "ukiyo-e"
 ---
 
 A user says "that message I sent this morning never arrived" — how do you find out **where it went, where it's stuck, or whether it ever left**? That's what **message tracking** is for: it records each message's handling trail — who sent it, where it went, what state it's in — so you can trace a single message in the **Message Tracking Center**. It's different from last time's [mail journaling](/domino-news/en/posts/domino-mail-journaling/): journaling keeps a **full copy** of the message, tracking keeps the **metadata about where it went** — one stores content, the other records the trail.

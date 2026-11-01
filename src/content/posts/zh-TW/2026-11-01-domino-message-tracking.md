@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/admn_toolsformailmonitoring_c.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-message-tracking.webp"
+coverStyle: "ukiyo-e"
 ---
 
 使用者說「我上午寄的那封信對方沒收到」,你怎麼查它到底**送到哪、卡在哪、還是根本沒出去**?這就是 **message tracking(郵件追蹤)** 的用途:它記下每封信的「處理軌跡」——誰寄的、往哪去、什麼狀態——讓你在 **Message Tracking Center** 追一封信的下落。它跟上一篇的 [mail journaling](/domino-news/posts/domino-mail-journaling/) 不一樣:journaling 留的是**整封信的複本**,tracking 留的是**「這封信去了哪」的 metadata**——一個是存內容,一個是記軌跡。
