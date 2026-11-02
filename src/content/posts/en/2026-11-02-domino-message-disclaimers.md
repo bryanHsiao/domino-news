@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/conf_addingadisclaimertooutgoingmessages_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-message-disclaimers.webp"
+coverStyle: "art-deco"
 ---
 
 Lots of organizations need it: every **outgoing** message gets a legal disclaimer appended at the end ("This email is intended only for the recipient…"). Domino does this built in — but the setup **spans two documents**, and there's a real trap: **adding it on the server breaks messages that are already signed or encrypted.** This piece lays out how the two documents split the work, and why HCL recommends "add it client-side wherever you can."

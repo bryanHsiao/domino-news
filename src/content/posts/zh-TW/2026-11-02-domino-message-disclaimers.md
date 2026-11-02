@@ -16,6 +16,8 @@ sources:
     url: "https://help.hcl-software.com/domino/11.0.1/admin/conf_addingadisclaimertooutgoingmessages_t.html"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-message-disclaimers.webp"
+coverStyle: "art-deco"
 ---
 
 很多公司有這個需求:每封**往外寄**的信,末尾自動補一段法律免責聲明(「本郵件僅供收件人使用…」那種)。Domino 內建就能做——但它的設定**橫跨兩份文件**,而且有一個大坑:**在伺服器端加,會弄壞已經簽章或加密的信**。這篇把兩份文件怎麼分工、以及為什麼官方建議「能用 client 加就用 client 加」講清楚。
