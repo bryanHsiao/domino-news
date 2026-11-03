@@ -391,13 +391,19 @@ const statTip =
       <span title={T.legFlagTip}><i class="sw flag java"></i>Java</span>
       <span title={T.legFlagTip}><i class="sw flag ssjs"></i>SSJS</span>
     </div>
+
+    <!-- Wide screens: an island, class, article or shore area opens in this
+         card on the left of the stage (like the reference's policy card); the
+         index on the right keeps the island list. Phones use the bottom sheet
+         (#ci-panel) instead. -->
+    <div id="ci-detail" class="ci-panel ci-detail" hidden></div>
   </div>
 
   <!-- Index panel docked on the right (like the reference's policy index):
-       what the map covers, search, then the island list — which turns into
-       an island's classes, a class overview or an article preview. On phones
-       the head folds away (search opens under the brand card) and the panel
-       becomes a bottom sheet. -->
+       what the map covers, search, then the island list, the selected island
+       highlighted (its details open in the card on the left). On phones the
+       head folds away (search opens under the brand card) and the panel
+       becomes a bottom sheet that shows the island list or the details. -->
   <aside class="ci-index" aria-label={T.indexLabel}>
     <div class="ci-ix-head">
       <div class="ci-eyebrow">{T.eyebrow}</div>
@@ -521,6 +527,16 @@ const statTip =
   #ci .ci-fallback button { margin-top: 6px; font: inherit; font-size: 13px; font-weight: 600; padding: 9px 18px; border: 0; border-radius: 9px; background: var(--color-brand-dark, #0a0a0a); color: var(--color-brand, #fbbf24); cursor: pointer; }
 
   #ci .ci-panel { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 14px 18px 20px; color: var(--ink); }
+  /* the detail card: white, rounded, nearly the stage's height, scrolling on
+     its own; it starts under the one-row toolbar (or at the top when the
+     buttons stand in a column on the right) */
+  #ci .ci-detail { position: absolute; z-index: 7; left: 14px; top: 76px; bottom: 14px; width: min(360px, calc(100% - 28px)); background: var(--paper); border: 1px solid var(--hair); border-radius: 16px; box-shadow: 0 10px 34px rgba(33, 29, 29, 0.18); }
+  #ci.bar-col .ci-detail { top: 14px; }
+  #ci .ci-detail[hidden] { display: none; }
+  /* the legend moves out from under it */
+  #ci.detail-open .ci-legend { left: calc(28px + min(360px, 100% - 28px)); }
+  #ci .ci-panel .pisl.on { background: rgba(219, 106, 65, 0.1); border-radius: 8px; }
+  #ci .ci-panel .pisl.on span { color: var(--coral); }
   #ci .ci-panel .pclose { float: right; border: 0; background: transparent; color: var(--ink-mut); cursor: pointer; font-size: 1.15rem; line-height: 1; padding: 2px 4px; }
   #ci .ci-panel .pnum { font: 700 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--coral); }
   #ci .ci-panel h3 { font-size: 1.1rem; font-weight: 720; letter-spacing: -0.01em; margin: 2px 0; color: var(--ink); }
@@ -603,7 +619,7 @@ const statTip =
   #ci .ci-panel .plist-isl { display: flex; flex-direction: column; margin-top: 4px; }
   #ci .ci-panel .pgrp { margin: 18px 0 2px; font: 700 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: 0.08em; color: var(--ink-mut); }
   #ci .ci-panel .pisl.off b { font: 400 17px/1 system-ui, sans-serif; }
-  #ci .ci-panel .pisl { display: flex; align-items: center; gap: 10px; text-align: left; border: 0; border-bottom: 1px solid var(--hair); background: transparent; padding: 10px 2px; font: inherit; color: var(--ink); cursor: pointer; }
+  #ci .ci-panel .pisl { display: flex; align-items: center; gap: 10px; text-align: left; border: 0; border-bottom: 1px solid var(--hair); background: transparent; padding: 10px 6px; font: inherit; color: var(--ink); cursor: pointer; }
   #ci .ci-panel .pisl:hover span { color: var(--coral); }
   #ci .ci-panel .pisl b { min-width: 30px; font: italic 600 21px/1 Georgia, 'Times New Roman', serif; color: var(--coral); }
   #ci .ci-panel .plist-empty { margin: 12px 0 0; font-size: 0.84rem; color: var(--ink-mut); }
@@ -676,6 +692,7 @@ const statTip =
     var stage = root.querySelector('.ci-stage');
     var canvas = document.getElementById('ci-canvas');
     var panel = document.getElementById('ci-panel');
+    var detail = document.getElementById('ci-detail');
     var loadingEl = document.getElementById('ci-loading');
     var fallbackEl = document.getElementById('ci-fallback');
     var hint = document.getElementById('ci-hint');
@@ -698,15 +715,37 @@ const statTip =
     DATA.nodes.forEach(function (n) { NODE[n.id] = n; });
 
     // Wider screens dock the panel in the index on the right, where it always
-    // shows something (the island list when nothing else); phones keep it as
-    // a bottom sheet that closes.
+    // shows the island list, and open the details (island, class, article) in
+    // the card on the left of the stage; phones keep one bottom sheet that
+    // shows either and closes.
     var dockMQ = window.matchMedia('(min-width: 761px)');
     function docked() { return dockMQ.matches; }
-    var panelMode = null; // 'list' | 'island' | 'card'
+    var panelMode = null; // 'list' | 'island' | 'card' (what the panel shows)
     var curCluster = null;
+    var reshow = null; // re-opens the details shown, when crossing the breakpoint
+    function hideDetail() {
+      detail.hidden = true;
+      detail.innerHTML = '';
+      root.classList.remove('detail-open');
+    }
     function showHome() {
-      if (docked()) renderIslandList();
+      reshow = null;
+      if (docked()) { hideDetail(); renderIslandList(); }
       else { panel.hidden = true; panel.innerHTML = ''; panelMode = null; }
+    }
+    // put details up: the card on the left when docked (the list on the
+    // right then marks the island), else the bottom sheet
+    function showDetail(html, mode) {
+      var el = docked() ? detail : panel;
+      el.innerHTML = html;
+      el.hidden = false;
+      el.scrollTop = 0;
+      if (docked()) {
+        root.classList.add('detail-open');
+        if (panelMode === 'list') markList();
+        else renderIslandList();
+      } else panelMode = mode;
+      return el;
     }
 
     // Class overview and article preview: the same panel, showing the basics
@@ -718,18 +757,15 @@ const statTip =
       else showHome();
     }
     function openCard(html, node) {
-      panel.innerHTML = '<button class="pclose" aria-label="' + esc(DS.close) + '">×</button>' + html;
-      panel.hidden = false;
-      panelMode = 'card';
-      panel.scrollTop = 0;
-      panel.querySelector('.pclose').addEventListener('click', closeCard);
-      Array.prototype.forEach.call(panel.querySelectorAll('[data-cat]'), function (b) {
+      var el = showDetail('<button class="pclose" aria-label="' + esc(DS.close) + '">×</button>' + html, 'card');
+      el.querySelector('.pclose').addEventListener('click', closeCard);
+      Array.prototype.forEach.call(el.querySelectorAll('[data-cat]'), function (b) {
         b.addEventListener('click', function () { if (api) api.select(b.dataset.cat); });
       });
-      Array.prototype.forEach.call(panel.querySelectorAll('[data-class]'), function (b) {
+      Array.prototype.forEach.call(el.querySelectorAll('[data-class]'), function (b) {
         b.addEventListener('click', function () { showClass(NODE[b.dataset.class]); });
       });
-      Array.prototype.forEach.call(panel.querySelectorAll('[data-article]'), function (b) {
+      Array.prototype.forEach.call(el.querySelectorAll('[data-article]'), function (b) {
         b.addEventListener('click', function () { showArticle(node, +b.dataset.article); });
       });
       // keep the class's relation lines lit while its card is open
@@ -743,6 +779,7 @@ const statTip =
       if (!n) return;
       // XPages island buildings are posts, not classes: show the article card.
       if (n.island) return showArticle(n, 0);
+      reshow = function () { showClass(n); };
       var arts = n.articles || [];
       var tags = '<span class="ptag"><span class="dot ' + (n.ui ? 'ui' : 'be') + '"></span>' + esc(n.ui ? DS.tipUi : DS.tipBe) + '</span>' +
         (n.key ? '<span class="ptag"><span class="dot key"></span>' + esc(DS.tipKey) + '</span>' : '');
@@ -764,6 +801,7 @@ const statTip =
     function showArticle(n, i) {
       var a = n && n.articles && n.articles[i];
       if (!a) return;
+      reshow = function () { showArticle(n, i); };
       var more = n.articles.map(function (b, j) { return j === i ? '' : articleRow(b, j); }).join('');
       var ll = LANG_LABEL[a.lang] || LANG_LABEL.ls;
       openCard(
@@ -788,12 +826,12 @@ const statTip =
     // a shore area's card says what the area is, as a class card does
     var SHORE_DESC = JSON.parse(DS.shoreDesc || '{}');
 
-    // Right-hand panel listing the selected island's classes.
+    // The selected island's card: its classes and related islands.
     function renderPanel(cluster) {
       if (api) api.focusClass(null);
       curCluster = cluster || null;
       if (!cluster) { showHome(); return; }
-      panelMode = 'island';
+      reshow = function () { renderPanel(cluster); };
       var rows = cluster.members.map(function (n) {
         var k = kindOf(n);
         return '<button class="pcls' + (n.url ? '' : ' un') + '" data-id="' + esc(n.id) + '">' +
@@ -805,21 +843,21 @@ const statTip =
         return '<button class="prel-chip' + (r.bridged ? ' br' : '') + '" data-cat="' + esc(r.cat) + '" title="' + esc(r.bridged ? DS.relBridge : DS.relWalk) + '">' +
           '<span class="ic">' + (r.bridged ? '⇄' : '⋯') + '</span>' + esc(r.cat) + '<i>' + r.n + '</i></button>';
       }).join('');
-      panel.innerHTML =
+      var el = showDetail(
         '<button class="pclose" aria-label="' + esc(DS.close) + '">×</button>' +
         '<div class="pnum">' + (isShore(cluster) ? shoreIcon(cluster) + ' ' + esc(DS.shoreTag) : String(cluster.num).padStart(2, '0')) + '</div>' +
         '<h3>' + esc(cluster.cat) + '</h3>' +
         '<div class="pmeta">' + cluster.count + esc(cluster.members[0] && cluster.members[0].island ? DS.countIsland : DS.count) + '</div>' +
         (isShore(cluster) && SHORE_DESC[cluster.members[0].shore] ? '<p class="pdesc">' + esc(SHORE_DESC[cluster.members[0].shore]) + '</p>' : '') +
         '<div class="plist">' + rows + '</div>' +
-        (rel ? '<div class="prel"><div class="prel-lbl">' + esc(DS.relTitle) + '</div><div class="prel-key">⇄ ' + esc(DS.relBridge) + ' · ⋯ ' + esc(DS.relWalk) + '</div><div class="prel-chips">' + rel + '</div></div>' : '');
-      panel.hidden = false;
-      panel.scrollTop = 0;
-      panel.querySelector('.pclose').addEventListener('click', doReset);
-      Array.prototype.forEach.call(panel.querySelectorAll('.prel-chip'), function (chip) {
+        (rel ? '<div class="prel"><div class="prel-lbl">' + esc(DS.relTitle) + '</div><div class="prel-key">⇄ ' + esc(DS.relBridge) + ' · ⋯ ' + esc(DS.relWalk) + '</div><div class="prel-chips">' + rel + '</div></div>' : ''),
+        'island'
+      );
+      el.querySelector('.pclose').addEventListener('click', doReset);
+      Array.prototype.forEach.call(el.querySelectorAll('.prel-chip'), function (chip) {
         chip.addEventListener('click', function () { if (api) api.select(chip.dataset.cat); });
       });
-      Array.prototype.forEach.call(panel.querySelectorAll('.pcls'), function (btn) {
+      Array.prototype.forEach.call(el.querySelectorAll('.pcls'), function (btn) {
         // pointing at a class row lights up that class's relation lines
         function on() { if (api) api.focusClass(btn.dataset.id); }
         function off() { if (api) api.focusClass(null); }
@@ -912,11 +950,28 @@ const statTip =
         (rows ? '<div class="plist-isl">' + rows + '</div>' : '<p class="plist-empty">' + esc(DS.noMatch) + '</p>');
       panel.hidden = false;
       panelMode = 'list';
+      if (!docked()) reshow = null; // the sheet's details gave way to the list
       var x = panel.querySelector('.pclose');
       if (x) x.addEventListener('click', function () { panel.hidden = true; panel.innerHTML = ''; panelMode = null; });
       Array.prototype.forEach.call(panel.querySelectorAll('.pisl'), function (b) {
         b.addEventListener('click', function () { api.select(b.dataset.cat); });
       });
+      markList();
+    }
+    // the list marks the island whose details are open, scrolled into view
+    function markList() {
+      var sel = docked() && curCluster ? curCluster.cat : null;
+      var on = null;
+      Array.prototype.forEach.call(panel.querySelectorAll('.pisl'), function (b) {
+        var is = b.dataset.cat === sel;
+        b.classList.toggle('on', is);
+        if (is) { b.setAttribute('aria-current', 'true'); on = b; }
+        else b.removeAttribute('aria-current');
+      });
+      if (!on) return;
+      var pr = panel.getBoundingClientRect(), r = on.getBoundingClientRect();
+      if (r.top < pr.top + 8) panel.scrollTop -= pr.top + 8 - r.top;
+      else if (r.bottom > pr.bottom - 8) panel.scrollTop += r.bottom - (pr.bottom - 8);
     }
     // 檢視: time of day + bird's-eye in a small pop-out beside the column
     var viewBtn = root.querySelector('.ci-tools [data-act="view"]');
@@ -948,10 +1003,16 @@ const statTip =
         syncModes();
       });
     });
-    // crossing the phone/tablet breakpoint: dock or fold the panel
+    // crossing the phone/tablet breakpoint: dock or fold the panel, and move
+    // the details shown (if any) to the card or the bottom sheet
     dockMQ.addEventListener('change', function () {
-      if (docked()) { root.classList.remove('search-open'); if (panel.hidden) showHome(); else if (panelMode === 'list') renderIslandList(); }
-      else if (panelMode === 'list') showHome();
+      var again = reshow;
+      hideDetail();
+      panel.hidden = true;
+      panel.innerHTML = '';
+      panelMode = null;
+      if (docked()) { root.classList.remove('search-open'); renderIslandList(); }
+      if (again) again();
     });
 
     // Time of day and bird's-eye: card controls (wider screens) and tools
@@ -1018,7 +1079,7 @@ const statTip =
 
     // The interface laid over the scene, as screen rects; the scene fades
     // out the name plates that come near any of them.
-    var chromeEls = ['.ci-card', '.ci-bar', '.ci-tools', '#ci-viewpop', '.ci-legend', '#ci-panel'].map(function (s) { return root.querySelector(s); });
+    var chromeEls = ['.ci-card', '.ci-bar', '.ci-tools', '#ci-viewpop', '.ci-legend', '#ci-panel', '#ci-detail'].map(function (s) { return root.querySelector(s); });
     function chromeRects() {
       var out = [];
       chromeEls.forEach(function (el) {
