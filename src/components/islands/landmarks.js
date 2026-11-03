@@ -44,6 +44,16 @@ const FALLBACKS = [
 export function themeFor(cat, index) {
   return THEMES[cat] || FALLBACKS[index % FALLBACKS.length];
 }
+// The off-shore platforms (where code runs, not class islands), keyed by the
+// platform id (ClassIslands.astro OFFSHORE), not by the localised name:
+// industrial walls, no greenery, and a landmark that says what runs there.
+export const OFFSHORE_THEMES = {
+  // the web layer: a glass exhibition hall and a signal tower
+  xpages: { walls: [0xeef2f6, 0xe3e9ef], roof: 'gable', body: 'box', flora: 'crates', landmark: 'glasshall' },
+  // the Java runtime: a machine room with a chimney and gears, and a
+  // recycling station (NotesFactory / NotesThread / recycle)
+  'java-runtime': { walls: [0xd8dde3, 0xcdd3da], roof: 'flat', body: 'box', flora: 'crates', landmark: 'factory' },
+};
 
 // Landmarks are built from kit parts around (x, z) on a tile deck. They fit
 // inside a ~0.7 radius (the class houses stand on a ring outside it).
@@ -311,6 +321,51 @@ export function buildLandmark(kind, kit, x, z) {
       P('rbox', x + 0.42, y + 0.14, z + 0.25, 0.3, 0.28, 0.26, 0xc9a27c);
       P('rbox', x + 0.42, y + 0.42, z + 0.25, 0.26, 0.26, 0.24, 0xd6b48c, [0, 0.2, 0]);
       P('rbox', x + 0.45, y + 0.14, z - 0.15, 0.3, 0.28, 0.26, 0xbf9771);
+      break;
+    }
+    case 'glasshall': {
+      // XPages — a glass exhibition hall on a plinth, and a signal tower
+      P('rbox', x - 0.12, y + 0.04, z, 0.9, 0.08, 0.62, 0xc9ced4);
+      P('glass', x - 0.12, y + 0.3, z, 0.82, 0.44, 0.54, GLASS);
+      for (const dx of [-0.52, 0.28]) for (const dz of [-0.26, 0.26]) P('box', x + dx, y + 0.3, z + dz, 0.035, 0.46, 0.035, 0x3b3a42);
+      for (const dx of [-0.25, 0.01]) P('box', x + dx, y + 0.3, z + 0.272, 0.025, 0.44, 0.01, 0x3b3a42);
+      P('box', x - 0.12, y + 0.54, z, 0.9, 0.04, 0.6, 0xf4f1ec);
+      P('dome', x - 0.12, y + 0.56, z, 0.34, 0.16, 0.34, GLASS);
+      // the tower: a mast with rings and a red light on top
+      const tx = x + 0.48, tz = z - 0.22;
+      P('cyl', tx, y + 0.08, tz, 0.22, 0.16, 0.22, 0x8b939b);
+      P('cyl', tx, y + 0.8, tz, 0.05, 1.45, 0.05, 0xc9ced4);
+      for (const h of [0.55, 0.95, 1.3]) P('cyl', tx, y + h, tz, 0.2 - h * 0.08, 0.025, 0.2 - h * 0.08, 0x8b6fd1);
+      P('box', tx + 0.08, y + 1.38, tz, 0.12, 0.08, 0.02, 0xdfe3e7);
+      P('bulb', tx, y + 1.56, tz, 0.08, 0.08, 0.08, 0xff6a4a);
+      break;
+    }
+    case 'factory': {
+      // Java runtime — a machine room with a chimney and a big gear, and a
+      // recycling station with three bins
+      P('rbox', x - 0.1, y + 0.24, z - 0.08, 0.66, 0.48, 0.46, 0xb9c0c8);
+      for (let i = 0; i < 3; i++) P('gable', x - 0.32 + i * 0.22, y + 0.56, z - 0.08, 0.22, 0.16, 0.46, 0x7f8a96);
+      for (const dx of [-0.28, -0.08, 0.12]) P('glass', x + dx, y + 0.28, z + 0.155, 0.12, 0.1, 0.02, GLASS);
+      P('cyl', x + 0.16, y + 0.62, z - 0.24, 0.12, 1.1, 0.12, 0xa65a43);
+      P('cyl', x + 0.16, y + 0.92, z - 0.24, 0.13, 0.06, 0.13, 0xf4efe6);
+      P('cyl', x + 0.16, y + 1.18, z - 0.24, 0.13, 0.04, 0.13, 0x3b3a42);
+      // the gear on the front wall: a disc with eight teeth
+      const gx = x - 0.12, gy = y + 0.3, gz = z + 0.17;
+      disc(gx, gy, gz, 0.15, 0xe9b444, FACE_Z);
+      for (let k = 0; k < 8; k++) {
+        const a = (k / 8) * Math.PI * 2;
+        P('box', gx + Math.cos(a) * 0.17, gy + Math.sin(a) * 0.17, gz, 0.06, 0.06, 0.02, 0xe9b444, [0, 0, a]);
+      }
+      disc(gx, gy, gz + 0.012, 0.05, 0x8a6a4e, FACE_Z);
+      // recycling station: three bins and a sign
+      const rx = x + 0.42, rz = z + 0.3;
+      [0x4fa36b, 0x4f86c6, 0xe9b444].forEach((c, i) => {
+        P('rbox', rx - 0.15 + i * 0.15, y + 0.09, rz, 0.13, 0.18, 0.13, c);
+        P('box', rx - 0.15 + i * 0.15, y + 0.185, rz, 0.14, 0.015, 0.14, 0x3b3a42);
+      });
+      P('cyl', rx + 0.22, y + 0.22, rz - 0.06, 0.02, 0.44, 0.02, 0x4a4744);
+      P('box', rx + 0.22, y + 0.42, rz - 0.06, 0.18, 0.16, 0.02, 0x4fa36b);
+      P('box', rx + 0.22, y + 0.42, rz - 0.048, 0.1, 0.02, 0.01, 0xf4efe6);
       break;
     }
     default: {

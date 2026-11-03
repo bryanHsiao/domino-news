@@ -130,9 +130,9 @@ export function layoutArchipelago(data) {
   // only relates to the hub claims a spot beside it before one that has
   // other partners to sit next to.
   // Off-shore islands (the XPages / web-layer and Java runtime posts: not
-  // Notes classes, no class links) are packed on their own and set apart across open water at
-  // the end of a long bridge, so they never read as part of the class
-  // archipelago. The harbour (the OpenNTF community posts) is packed the same
+  // Notes classes, no class links) are packed on their own and set apart
+  // across open water, reached by ferry, so they never read as part of the
+  // class archipelago. The harbour (the OpenNTF community posts) is packed the same
   // way but stands on the lake shore, reached only by boat.
   const harbourCats = new Set(data.cats.filter((c) => data.nodes.some((n) => n.cat === c && n.harbour)));
   const offshore = new Set(data.cats.filter((c) => !harbourCats.has(c) && data.nodes.some((n) => n.cat === c && n.island)));
@@ -408,7 +408,9 @@ export function layoutArchipelago(data) {
     if (!blocked) bridges.push({ a, b, rel: r });
   }
   // Every island must stay reachable on foot: a group of islands cut off from
-  // the rest gets a plain footbridge to a neighbouring island.
+  // the rest gets a line of stepping stones to a neighbouring island. Not a
+  // bridge — bridges stand only for class relations — so world.js draws it
+  // as stones in the water and it carries no relation (no hover, no tint).
   const parent = new Map(data.cats.map((c) => [c, c]));
   const find = (c) => {
     while (parent.get(c) !== c) c = parent.get(c);
@@ -418,10 +420,14 @@ export function layoutArchipelago(data) {
   for (const cands of bridgeCands.values()) {
     if (find(cands[0][0].cat) === find(cands[0][1].cat)) continue;
     const [a, b] = pickPair(cands);
-    bridges.push({ a, b, rel: null });
+    bridges.push({ a, b, rel: null, steps: true });
     parent.set(find(a.cat), find(b.cat));
   }
-  // An off-shore island gets one long bridge from the nearest class island.
+  // An off-shore island is where code runs, not a class: no bridge (bridges
+  // are class relations) but a ferry route from the nearest class island —
+  // the tile pair closest across the water (ferry.js draws the piers, the
+  // dashed route and the ferry).
+  const ferries = [];
   for (const cat of offshore) {
     let best = null;
     let bd = Infinity;
@@ -434,7 +440,7 @@ export function layoutArchipelago(data) {
             best = [a, b];
           }
         }
-    bridges.push({ a: best[0], b: best[1], rel: null, long: true });
+    ferries.push({ cat, from: best[0], to: best[1] });
   }
   bridges.forEach((b, i) => (b.id = 'bridge:' + i));
 
@@ -455,7 +461,7 @@ export function layoutArchipelago(data) {
   const bx = lakeTiles.reduce((s, t) => s + t.x, 0) / lakeTiles.length;
   const bz = lakeTiles.reduce((s, t) => s + t.z, 0) / lakeTiles.length;
   const radius = Math.max(...lakeTiles.map((t) => Math.hypot(t.x - bx, t.z - bz))) + R;
-  return { clusters, tiles, fused, junctions, bridges, relations: [...rel.values()], walk, harbours, offshore: [...offshore], bounds: { cx: bx, cz: bz, radius } };
+  return { clusters, tiles, fused, junctions, bridges, relations: [...rel.values()], walk, harbours, offshore: [...offshore], ferries, bounds: { cx: bx, cz: bz, radius } };
 }
 
 // Pedestrian network for future walkers: 12 nodes on each tile's walking ring
@@ -504,9 +510,10 @@ function buildWalkGraph(tiles, fused, bridges) {
   for (const br of bridges) {
     br.walk = [nearest(br.a, br.b.x, br.b.z), nearest(br.b, br.a.x, br.a.z)];
     // same arch as the drawn bridge (world.js bridgeStyle): stronger relation,
-    // higher arch; long spans arch up to twice as high
+    // higher arch; long spans arch up to twice as high. Stepping stones are
+    // level with the deck.
     const deck = Math.hypot(br.a.x - br.b.x, br.a.z - br.b.z) - 2 * (R * 0.866 - 0.12);
-    const base = !br.rel ? (br.long ? 0.09 : 0.05) : br.rel.n >= 4 ? 0.12 : br.rel.n >= 2 ? 0.09 : 0.07;
+    const base = br.steps ? 0 : br.rel.n >= 4 ? 0.12 : br.rel.n >= 2 ? 0.09 : 0.07;
     br.arch = base * Math.min(2, Math.max(1, deck / 2));
     link(br.walk[0], br.walk[1], br.arch);
   }

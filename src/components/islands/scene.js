@@ -11,6 +11,7 @@ import { createEnvironment, TIMES } from './environment.js';
 import { createCrowd } from './people.js';
 import { createLinks } from './links.js';
 import { createHarbours } from './harbour.js';
+import { createFerries } from './ferry.js';
 import { createSigns } from './signs.js';
 import { createWildlife } from './wildlife.js';
 
@@ -112,6 +113,8 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   const glowMat = new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0, emissive: 0xffd28a, emissiveIntensity: 0 });
   const glowing = { glass: glowMat, bulb: glowMat };
   const harbours = createHarbours(THREE, scene, decorKit, props, layout, partMat, glowing);
+  // ferries out to the off-shore platforms (they have no bridge)
+  const ferries = createFerries(THREE, scene, decorKit, layout, partMat, glowing);
   // gulls, dolphins, tuna, a bait ball now and then, drifting clouds
   const wildlife = reduced ? null : createWildlife(THREE, scene, layout);
   const buildingMeshes = buildingKit.build(scene, partMat, glowing);
@@ -452,8 +455,12 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   const labels = layout.clusters.map((c) => {
     const el = document.createElement('button');
     el.type = 'button';
-    el.className = 'ci-lbl';
-    el.innerHTML = '<b>' + String(c.num).padStart(2, '0') + '</b><span>' + esc(c.cat) + '</span><i>' + c.count + '</i>';
+    // an off-shore platform's plate carries an anchor instead of a number
+    const off = c.members[0] && c.members[0].offshore;
+    el.className = off ? 'ci-lbl off' : 'ci-lbl';
+    el.innerHTML = off
+      ? '<b>⚓</b><span>' + esc(c.cat + (strings.offshore || '')) + '</span><i>' + c.count + '</i>'
+      : '<b>' + String(c.num).padStart(2, '0') + '</b><span>' + esc(c.cat) + '</span><i>' + c.count + '</i>';
     el.setAttribute('aria-label', c.cat);
     el.addEventListener('click', () => select(c.cat, true));
     labelsEl.appendChild(el);
@@ -788,6 +795,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       updateWalkers(dt);
       updateBoats(motion);
       harbours.update(motion);
+      ferries.update(motion);
       wildlife.update(dt);
       links.update(dt);
     }
