@@ -64,7 +64,8 @@ export function createHarbours(THREE, scene, decor, props, layout, material, byK
     const [tx, tz] = at(JETTY, 0);
     const targets = [];
     for (const c of layout.clusters) {
-      if (c === home) continue;
+      // class islands only: the off-shore platforms have their own ferry
+      if (c === home || c.members.some((n) => n.offshore)) continue;
       const t = c.tiles.reduce((b, s) => (Math.hypot(s.x - tx, s.z - tz) < Math.hypot(b.x - tx, b.z - tz) ? s : b));
       const d = Math.hypot(t.x - tx, t.z - tz);
       const ex = t.x + ((tx - t.x) / d) * (INR + 0.75), ez = t.z + ((tz - t.z) / d) * (INR + 0.75);
