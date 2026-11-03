@@ -2,6 +2,7 @@
 title: "NotesDOMParser Deep Dive — Loading XML into a DOM Tree, 14 Node Classes, Walking / Modifying / Serializing"
 description: "NotesDOMParser loads the entire XML into memory as a DOM tree — with NotesDOMDocumentNode as the root and 14 Node subclasses (Element / Text / Attribute / Comment / CDATA / ...) representing XML constructs. You can walk anywhere, modify anything, and Serialize back to XML output. This guide covers the DOM tree model, CreateDOMParser, the 14 Node class relationships, NotesDOMNode's tree-walking API (FirstChild / NextSibling / NodeType), a complete parse → walk → modify → serialize example, five pitfalls, and Java/SSJS counterparts."
 pubDate: 2026-05-17T07:30:00+08:00
+updatedDate: 2026-11-03
 lang: en
 slug: notes-dom-parser
 tags:
@@ -17,8 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMNODE_CLASS.html"
   - title: "NotesXMLProcessor class (base) — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html"
-relatedJava: ["DOMParser"]
-relatedSsjs: ["DOMParser"]
+relatedJava: []
+relatedSsjs: []
 cover: "/covers/notes-dom-parser.webp"
 coverStyle: "art-deco"
 ---
@@ -338,10 +339,10 @@ You'll run into these helpers when traversing attributes or NodeLists:
 | Language | Equivalent |
 |---|---|
 | LotusScript | `NotesDOMParser` + the 14 NotesDOM*Node subclasses |
-| Java | `lotus.domino.DOMParser` — same DOM model. Java can also drop to standard `javax.xml.parsers.DocumentBuilderFactory` for the richer W3C DOM API (with `getElementsByTagName` etc.) |
-| SSJS (XPages) | Usually skips lotus.domino.DOMParser and uses javax.xml.parsers + W3C DOM directly — more powerful |
+| Java | No Domino class. There is no `DOMParser` in the [Java class index](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_10_NOTES_CLASSES_ATOZ_JAVA.html), and `Session` has no `createDOMParser`. Use the JDK's standard `javax.xml.parsers.DocumentBuilderFactory` for the full W3C DOM API (with `getElementsByTagName` etc.); for Domino data, `Item` also has a `parseXML` method |
+| SSJS (XPages) | No `NotesDOMParser` in the [SSJS Domino library](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino.html). XPages has its own [DOM (JavaScript) library](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_dom6_r.html) (`DOMDocument`, `DOMElement`, …), or you can use the standard Java API |
 
-LotusScript's NotesDOMParser is essentially "a subset of W3C DOM Level 2" — it's missing some convenience methods. On the Java/SSJS side, prefer javax.xml.parsers when you have the choice.
+LotusScript's NotesDOMParser is essentially "a subset of W3C DOM Level 2" — it's missing some convenience methods. Java and SSJS have no Domino DOM parser to pick; they go straight to a standard W3C DOM.
 
 ## Closing
 

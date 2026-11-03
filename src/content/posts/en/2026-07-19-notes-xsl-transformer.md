@@ -2,6 +2,7 @@
 title: "NotesXSLTransformer: Transforming XML and DXL with XSLT in LotusScript"
 description: "NotesXSLTransformer applies an XSLT stylesheet to XML or DXL and writes the transformed result — the last piece of Domino's XML toolkit alongside the DOM and SAX parsers. This article covers session.CreateXSLTransformer and its three sources, the stylesheet-must-be-a-stream rule, the pipelining model that chains DXL export → transform → import with no temp files, and the error handling that works through the Log property and On Error, not events."
 pubDate: 2026-07-19T07:30:00+08:00
+updatedDate: 2026-11-03
 lang: en
 slug: notes-xsl-transformer
 tags:
@@ -14,8 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATEXSLTRANSFORMER_METHOD_SESSION.html"
   - title: "Example: NotesXSLTransformer class — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_NOTESXSLTRANSFORMER_CLASS.html"
-relatedJava: ["XSLTransformer"]
-relatedSsjs: ["XSLTransformer"]
+relatedJava: []
+relatedSsjs: []
 cover: "/covers/notes-xsl-transformer.webp"
 coverStyle: "watercolor"
 ---
@@ -98,6 +99,6 @@ The field mapping lives in the declarative stylesheet, not in the flow of your c
 
 | LotusScript | Java | SSJS / XPages |
 |---|---|---|
-| `session.CreateXSLTransformer(...)` → `NotesXSLTransformer` | `session.createXSLTransformer(...)` → `XSLTransformer` | `session.createXSLTransformer(...)` |
+| `session.CreateXSLTransformer(...)` → `NotesXSLTransformer` | no `XSLTransformer` class, no `createXSLTransformer` on `Session`; use [`Document.generateXML(style, XSLTResultTarget)`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GENERATEXML_METHOD_DOCUMENT_JAVA.html) or the standard `javax.xml.transform` API | no `NotesXSLTransformer` either; [`NotesXSLTResultTarget`](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_XSLTResultTarget.html) holds the result |
 
-Java has an equivalent `lotus.domino.XSLTransformer`, but it isn't a 1:1 mirror — the Java DXL/XSLT path uses the JAXP-style result-target model (`XSLTResultTarget` built from a `FileOutputStream` or `StringWriter`) rather than the stream trio. SSJS reaches the same backend factory method through the session. The core idea — feed XML/DXL and a stylesheet, get transformed output, and prefer pipelining over temp files — carries across all three.
+Java has no counterpart to `NotesXSLTransformer`: the [Java class index](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_10_NOTES_CLASSES_ATOZ_JAVA.html) lists neither the class nor a session factory method for it. XSLT in Java goes through a JAXP-style result-target model instead of the stream trio — `generateXML` takes a stylesheet and an `XSLTResultTarget`, which wraps a `Writer`, an `OutputStream` or a file name. SSJS works on the same Java objects. The core idea — feed XML/DXL and a stylesheet, get transformed output, and prefer pipelining over temp files — carries across all three.

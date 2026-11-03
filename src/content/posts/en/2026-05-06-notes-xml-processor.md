@@ -2,6 +2,7 @@
 title: "NotesXMLProcessor: The Common Base for LotusScript XML Handling"
 description: "NotesXMLProcessor is the abstract base class behind every LotusScript XML handler — DOMParser, SAXParser, DXLExporter, DXLImporter, and XSLTransformer all inherit from it. This guide covers the role it plays, the five derived classes and when to pick which, the inherited properties, the SetInput / SetOutput / Process trio, and the Release 6 / no-COM caveats that don't make it into most quick refs."
 pubDate: 2026-05-06T07:30:00+08:00
+updatedDate: 2026-11-03
 lang: en
 slug: notes-xml-processor
 tags:
@@ -16,8 +17,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDXLEXPORTER_CLASS.html"
 cover: "/covers/notes-xml-processor.webp"
 coverStyle: "low-poly-3d"
-relatedJava: ["XMLProcessor", "DxlExporter"]
-relatedSsjs: ["XMLProcessor", "DxlExporter"]
+relatedJava: ["DxlExporter"]
+relatedSsjs: ["DxlExporter"]
 ---
 
 ## What NotesXMLProcessor actually is

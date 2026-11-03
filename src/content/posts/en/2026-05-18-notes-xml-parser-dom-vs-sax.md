@@ -2,6 +2,7 @@
 title: "Parsing XML in LotusScript — DOM or SAX? Five Questions That Pick the Right Tool"
 description: "LotusScript offers three routes for XML processing: NotesDOMParser (whole-tree load), NotesSAXParser (event-driven streaming), and NotesXMLProcessor + NotesXSLTransformer (rule-based XSLT transformation). This guide compares the three at a fundamental level, walks five decision questions (file size / modification needs / traversal direction / memory budget / transformation scenario), gives practical scenario picks, code-style side-by-side, performance numbers, and a consolidated pitfalls table. After reading you'll know exactly which tool to reach for when an XML file lands."
 pubDate: 2026-05-18T07:30:00+08:00
+updatedDate: 2026-11-03
 lang: en
 slug: notes-xml-parser-dom-vs-sax
 tags:
@@ -14,8 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXPARSER_CLASS.html"
   - title: "NotesXMLProcessor class — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html"
-relatedJava: ["DOMParser", "SAXParser", "XSLTransformer"]
-relatedSsjs: ["DOMParser", "SAXParser", "XSLTransformer"]
+relatedJava: []
+relatedSsjs: []
 cover: "/covers/notes-xml-parser-dom-vs-sax.webp"
 coverStyle: "watercolor"
 ---
@@ -252,10 +253,10 @@ The upside: learn it once, use it for ten years. Today's API runs on R6 / R8 / R
 | Language | DOM | SAX | XSLT |
 |---|---|---|---|
 | LotusScript | `NotesDOMParser` | `NotesSAXParser` | `NotesXMLProcessor` + `NotesXSLTransformer` |
-| Java | `lotus.domino.DOMParser` or standard `javax.xml.parsers.DocumentBuilderFactory` | `lotus.domino.SAXParser` or standard `javax.xml.parsers.SAXParserFactory` | `javax.xml.transform.Transformer` |
-| SSJS (XPages) | Usually uses Java's javax.xml.parsers directly | Same | Same as Java |
+| Java | standard `javax.xml.parsers.DocumentBuilderFactory` | standard `javax.xml.parsers.SAXParserFactory` | standard `javax.xml.transform.Transformer`, or Domino's [`Document.generateXML(style, XSLTResultTarget)`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GENERATEXML_METHOD_DOCUMENT_JAVA.html) |
+| SSJS (XPages) | the [DOM (JavaScript) library](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_dom6_r.html), or the Java API | the Java API | same as Java (`NotesXSLTResultTarget` holds the result) |
 
-**The Java/SSJS advantage**: you can drop down to the standard `javax.xml.parsers` API which is richer than `lotus.domino.*` (XPath, Schema validation, Streaming XPath, etc.). LotusScript is stuck with `NotesDOMParser` / `NotesSAXParser` — no choice.
+**Java and SSJS have no Domino parser classes**: neither the [Java class index](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_10_NOTES_CLASSES_ATOZ_JAVA.html) nor the [SSJS Domino library](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino.html) lists `DOMParser` / `SAXParser` / `XSLTransformer`. They use the standard `javax.xml` APIs, which go further than LotusScript's (XPath, Schema validation, etc.). LotusScript is stuck with `NotesDOMParser` / `NotesSAXParser` — no choice.
 
 If LS XML processing has become painful, **rewriting that piece as a Java agent** is often the right move — performance and capability both step up.
 

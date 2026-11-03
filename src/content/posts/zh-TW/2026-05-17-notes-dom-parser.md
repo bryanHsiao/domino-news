@@ -2,6 +2,7 @@
 title: "NotesDOMParser 全攻略 — XML 整棵樹載入記憶體、14 個 Node 類別、走訪／修改／序列化"
 description: "NotesDOMParser 把 XML 整棵載入記憶體蓋成 DOM 樹、用 NotesDOMDocumentNode 當 root、配 14 個 Node 子類別代表不同 XML 元素（Element / Text / Attribute / Comment / CDATA 等）。可任意走訪、可修改、可 Serialize 回 XML。本文整理 DOM 樹結構概念、CreateDOMParser 初始化、14 個 Node class 關係表、NotesDOMNode 的 tree-walking API（FirstChild / NextSibling / NodeType）、完整 parse → walk → modify → serialize 範例、五個踩雷點，跟 Java/SSJS 對照。"
 pubDate: 2026-05-17T07:30:00+08:00
+updatedDate: 2026-11-03
 lang: zh-TW
 slug: notes-dom-parser
 tags:
@@ -17,8 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESDOMNODE_CLASS.html"
   - title: "NotesXMLProcessor class (base) — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html"
-relatedJava: ["DOMParser"]
-relatedSsjs: ["DOMParser"]
+relatedJava: []
+relatedSsjs: []
 cover: "/covers/notes-dom-parser.webp"
 coverStyle: "art-deco"
 ---
@@ -338,10 +339,10 @@ DOM 整棵載入、檔案 1 MB → 記憶體實際佔用大約 5-20 MB（依結�
 | 語言 | 對應 class |
 |---|---|
 | LotusScript | `NotesDOMParser` + 14 個 NotesDOM*Node 子類別 |
-| Java | `lotus.domino.DOMParser` — 同 DOM model；Java 端也可以直接用 `javax.xml.parsers.DocumentBuilderFactory` 走標準 Java DOM、API 更完整（有 `getElementsByTagName` 等）|
-| SSJS（XPages） | 通常直接用 Java 的 javax.xml.parsers + W3C DOM、比 lotus.domino.DOMParser 強大 |
+| Java | 沒有對應的 Domino 類別。[Java 類別索引](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_10_NOTES_CLASSES_ATOZ_JAVA.html)裡沒有 `DOMParser`，`Session` 也沒有 `createDOMParser`。要用 JDK 標準的 `javax.xml.parsers.DocumentBuilderFactory`，走完整的 W3C DOM（有 `getElementsByTagName` 等）；處理 Domino 資料時，`Item` 也有 `parseXML` 方法 |
+| SSJS（XPages） | [SSJS Domino library](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino.html) 裡沒有 `NotesDOMParser`。XPages 有自己的 [DOM（JavaScript）library](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_dom6_r.html)（`DOMDocument`、`DOMElement`…），也可以用標準 Java API |
 
-LS 的 NotesDOMParser 設計上是「W3C DOM Level 2 的子集」、缺一些便利 method。Java/SSJS 端有得選的話建議用 javax.xml.parsers。
+LS 的 NotesDOMParser 設計上是「W3C DOM Level 2 的子集」、缺一些便利 method。Java 和 SSJS 沒有 Domino 版的 DOM parser 可選，直接用標準的 W3C DOM。
 
 ## 結論
 

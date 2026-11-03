@@ -2,6 +2,7 @@
 title: "LotusScript 解析 XML 該選 DOM 還是 SAX — 五個問題決定走哪邊"
 description: "LotusScript 處理 XML 有三條路：NotesDOMParser（整棵樹載入）、NotesSAXParser（事件驅動串流）、NotesXMLProcessor + NotesXSLTransformer（XSLT 規則式轉換）。本文整理三家本質差異對照、五個決策問題（檔案大小 / 是否修改 / 走訪方向 / 記憶體限制 / 轉換場景）、實務情境的選擇建議，附程式碼風格對照、效能比較跟踩雷集錦。讀完知道 LS 拿到一份 XML 該怎麼開動。"
 pubDate: 2026-05-18T07:30:00+08:00
+updatedDate: 2026-11-03
 lang: zh-TW
 slug: notes-xml-parser-dom-vs-sax
 tags:
@@ -14,8 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXPARSER_CLASS.html"
   - title: "NotesXMLProcessor class — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESXMLPROCESSOR_CLASS.html"
-relatedJava: ["DOMParser", "SAXParser", "XSLTransformer"]
-relatedSsjs: ["DOMParser", "SAXParser", "XSLTransformer"]
+relatedJava: []
+relatedSsjs: []
 cover: "/covers/notes-xml-parser-dom-vs-sax.webp"
 coverStyle: "watercolor"
 ---
@@ -252,10 +253,10 @@ LS XML 工具鏈這幾年沒有大改 — `NotesDOMParser` / `NotesSAXParser` / 
 | 語言 | DOM | SAX | XSLT |
 |---|---|---|---|
 | LotusScript | `NotesDOMParser` | `NotesSAXParser` | `NotesXMLProcessor` + `NotesXSLTransformer` |
-| Java | `lotus.domino.DOMParser` 或標準 `javax.xml.parsers.DocumentBuilderFactory` | `lotus.domino.SAXParser` 或標準 `javax.xml.parsers.SAXParserFactory` | `javax.xml.transform.Transformer` |
-| SSJS（XPages）| 通常直接用 Java 的 javax.xml.parsers | 同上 | 同 Java |
+| Java | 標準 `javax.xml.parsers.DocumentBuilderFactory` | 標準 `javax.xml.parsers.SAXParserFactory` | 標準 `javax.xml.transform.Transformer`，或 Domino 的 [`Document.generateXML(style, XSLTResultTarget)`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GENERATEXML_METHOD_DOCUMENT_JAVA.html) |
+| SSJS（XPages）| [DOM（JavaScript）library](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_wpdr_dom6_r.html)，或 Java API | Java API | 同 Java（結果放在 `NotesXSLTResultTarget`） |
 
-**Java/SSJS 的關鍵優勢**：可以選用 javax.xml.parsers 標準 Java API、比 lotus.domino.* 更豐富（有 XPath、Schema validation、Streaming XPath 等進階功能）。LS 卡死在 NotesDOMParser / NotesSAXParser、沒這個選擇。
+**Java 和 SSJS 沒有 Domino 版的 parser 類別**：[Java 類別索引](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_10_NOTES_CLASSES_ATOZ_JAVA.html)和 [SSJS Domino library](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino.html) 都沒有 `DOMParser`／`SAXParser`／`XSLTransformer`，用的是標準 `javax.xml` API，功能比 LS 多（有 XPath、Schema validation 等）。LS 卡死在 NotesDOMParser / NotesSAXParser、沒這個選擇。
 
 如果 LS 寫 XML 處理寫到痛苦、考慮**把那段 logic 寫成 Java agent**、效能跟功能都會升級一階。
 

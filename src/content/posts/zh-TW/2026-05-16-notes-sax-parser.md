@@ -2,6 +2,7 @@
 title: "NotesSAXParser 全攻略 — LotusScript 串流式 XML 解析、12 個 SAX 事件、On Event 綁定模式"
 description: "NotesSAXParser 用 SAX（Simple API for XML）事件驅動模式處理 XML — 不把整份檔案載入記憶體、而是邊讀邊觸發 SAX_StartElement / SAX_Characters / SAX_EndElement 等 12 個事件。大檔案 / 只讀特定 element / 記憶體吃緊場景的首選。本文整理 SAX vs DOM 的本質差異、CreateSAXParser 初始化、On Event 綁定機制、12 個事件的觸發時機、NotesSAXAttributeList 怎麼拿 attribute、完整 LotusScript 範例、五個踩雷點，跟 Java / SSJS 對照。"
 pubDate: 2026-05-16T07:30:00+08:00
+updatedDate: 2026-11-03
 lang: zh-TW
 slug: notes-sax-parser
 tags:
@@ -17,8 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_NOTESSAXPARSER_CLASS_EX.html"
   - title: "NotesSAXAttributeList class — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXATTRIBUTELIST_CLASS.html"
-relatedJava: ["SAXParser"]
-relatedSsjs: ["SAXParser"]
+relatedJava: []
+relatedSsjs: []
 cover: "/covers/notes-sax-parser.webp"
 coverStyle: "risograph"
 ---
@@ -298,10 +299,10 @@ Next i
 | 語言 | 對應 class |
 |---|---|
 | LotusScript | `NotesSAXParser` + 12 個 SAX_* event handler |
-| Java | `lotus.domino.SAXParser` — 同樣的 SAX 模式、用 javadoc 的 setHandler 系列方法綁 handler；Java 端也可以直接用 `javax.xml.parsers.SAXParserFactory` 走標準 Java SAX |
-| SSJS（XPages） | 透過 Java imports — 通常直接用 Java 的 javax.xml.parsers，比 lotus.domino.SAXParser 更彈性 |
+| Java | 沒有對應的 Domino 類別。[Java 類別索引](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_10_NOTES_CLASSES_ATOZ_JAVA.html)裡沒有 `SAXParser`，`Session` 也沒有 `createSAXParser`。要用 JDK 標準的 `javax.xml.parsers.SAXParserFactory` |
+| SSJS（XPages） | 也沒有對應類別，[SSJS Domino library](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino.html) 裡沒有它。XPages 要用 SAX 就走同一套標準 Java API，通常包在 Java 類別或 bean 裡 |
 
-**Java 端有兩條路選**：lotus.domino.SAXParser（跟 LS 同模式）或 javax.xml.parsers（標準 Java，更多 library 支援）。LS 沒這個彈性、只能用 NotesSAXParser。
+也就是說，Java 和 SSJS 根本沒有 Domino 版的 SAX parser，SAX 指的就是標準 JAXP，生態比 LS 的 12 個 handler 豐富。LS 這邊只有 `NotesSAXParser` 一條路。
 
 ## 結論
 

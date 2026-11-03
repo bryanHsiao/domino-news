@@ -2,6 +2,7 @@
 title: "NotesSAXParser Deep Dive — LotusScript Streaming XML Parsing, 12 SAX Events, On Event Binding"
 description: "NotesSAXParser processes XML in SAX (Simple API for XML) event-driven mode — instead of loading the file into memory, it fires SAX_StartElement / SAX_Characters / SAX_EndElement and other events as it reads through. The right choice for large files, read-only access, or memory-constrained scenarios. This guide covers the SAX-vs-DOM distinction, CreateSAXParser initialization, On Event binding, when each of the 12 events fires, how NotesSAXAttributeList exposes attributes, a complete LotusScript example, five common pitfalls, and the Java/SSJS counterparts."
 pubDate: 2026-05-16T07:30:00+08:00
+updatedDate: 2026-11-03
 lang: en
 slug: notes-sax-parser
 tags:
@@ -17,8 +18,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_NOTESSAXPARSER_CLASS_EX.html"
   - title: "NotesSAXAttributeList class — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSAXATTRIBUTELIST_CLASS.html"
-relatedJava: ["SAXParser"]
-relatedSsjs: ["SAXParser"]
+relatedJava: []
+relatedSsjs: []
 cover: "/covers/notes-sax-parser.webp"
 coverStyle: "risograph"
 ---
@@ -298,10 +299,10 @@ Next i
 | Language | Equivalent |
 |---|---|
 | LotusScript | `NotesSAXParser` + the 12 SAX_* event handlers |
-| Java | `lotus.domino.SAXParser` — same SAX model, but with javadoc setHandler-style binding; Java can also drop down to standard `javax.xml.parsers.SAXParserFactory` for a richer ecosystem |
-| SSJS (XPages) | Goes through Java imports — usually people skip lotus.domino.SAXParser and use javax.xml.parsers directly for the broader library support |
+| Java | No Domino class. The [Java class index](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_10_NOTES_CLASSES_ATOZ_JAVA.html) has no `SAXParser`, and `Session` has no `createSAXParser`. Use the JDK's standard `javax.xml.parsers.SAXParserFactory` |
+| SSJS (XPages) | No Domino class either — it isn't in the [SSJS Domino library](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino.html). SAX in XPages goes through the same standard Java API, usually wrapped in a Java class or bean |
 
-**Java has two paths to choose from**: lotus.domino.SAXParser (same model as LS) or javax.xml.parsers (standard Java, more libraries). LS doesn't have that flexibility — `NotesSAXParser` is the only option.
+So Java and SSJS don't have a Domino-flavoured SAX parser at all: SAX there simply means standard JAXP, a richer ecosystem than LotusScript's 12 handlers. In LotusScript, `NotesSAXParser` is the only option.
 
 ## Closing
 

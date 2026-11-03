@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-11-02 · Posts scanned: 199 · Classes catalogued: 97*
+*Generated: 2026-11-03 · Posts scanned: 199 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -143,7 +143,7 @@
 
 **Dedicated** = the class has its own Java / SSJS deep-dive (`coversClass` + `apiLang` frontmatter — the authoritative "already written" list). **Gap** = Java / SSJS counterparts that LS posts point to (via `relatedJava` / `relatedSsjs`) but that do **not** yet have a dedicated article — the natural pool of "topics worth a single-language deep-dive next." A `relatedJava` pointer alone is NOT an article; only `coversClass` + `apiLang` counts as written.
 
-**Summary** — Java: **10** classes have a dedicated article, **46** referenced counterparts still in the gap. SSJS: **2** dedicated, **42** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
+**Summary** — Java: **10** classes have a dedicated article, **42** referenced counterparts still in the gap. SSJS: **2** dedicated, **38** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
 
 ### Dedicated Java / SSJS articles
 
@@ -181,7 +181,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | [java-notesthread](https://bryanhsiao.github.io/domino-news/posts/java-notesthread/) | Java runtime | java |
 | [java-recycle-memory](https://bryanhsiao.github.io/domino-news/posts/java-recycle-memory/) | Java runtime | java |
 
-### Java counterparts still in the gap (46)
+### Java counterparts still in the gap (42)
 
 | Java class | LS posts that point to it |
 |---|---|
@@ -189,7 +189,6 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | `ACLEntry` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
 | `AdministrationProcess` | [notes-administration-process](https://bryanhsiao.github.io/domino-news/posts/notes-administration-process/) |
 | `ColorObject` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
-| `DOMParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/) |
 | `Database` | [notes-database-ft-index](https://bryanhsiao.github.io/domino-news/posts/notes-database-ft-index/), [notes-document-locking](https://bryanhsiao.github.io/domino-news/posts/notes-document-locking/), [profile-documents](https://bryanhsiao.github.io/domino-news/posts/profile-documents/), [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
 | `DateRange` | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) |
 | `DbDirectory` | [notes-db-directory](https://bryanhsiao.github.io/domino-news/posts/notes-db-directory/) |
@@ -223,16 +222,13 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | `RichTextStyle` | [notes-rich-text-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-style/) |
 | `RichTextTab` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
 | `RichTextTable` | [notes-rich-text-table](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-table/) |
-| `SAXParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/) |
 | `Stream` | [notes-stream-encoding](https://bryanhsiao.github.io/domino-news/posts/notes-stream-encoding/), [notes-stream](https://bryanhsiao.github.io/domino-news/posts/notes-stream/) |
 | `View` | [notes-view-autoupdate](https://bryanhsiao.github.io/domino-news/posts/notes-view-autoupdate/), [by-key-lookup-categorized-views](https://bryanhsiao.github.io/domino-news/posts/by-key-lookup-categorized-views/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/), [getalldocumentsbykey](https://bryanhsiao.github.io/domino-news/posts/getalldocumentsbykey/) |
 | `ViewColumn` | [notes-view-column](https://bryanhsiao.github.io/domino-news/posts/notes-view-column/) |
 | `ViewEntry` | [domino-web-view-start-parameter](https://bryanhsiao.github.io/domino-news/posts/domino-web-view-start-parameter/), [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
 | `ViewEntryCollection` | [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
-| `XMLProcessor` | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) |
-| `XSLTransformer` | [notes-xsl-transformer](https://bryanhsiao.github.io/domino-news/posts/notes-xsl-transformer/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) |
 
-### SSJS counterparts still in the gap (42)
+### SSJS counterparts still in the gap (38)
 
 | SSJS class | LS posts that point to it |
 |---|---|
@@ -240,7 +236,6 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | `ACLEntry` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
 | `Agent` | [notes-agent](https://bryanhsiao.github.io/domino-news/posts/notes-agent/) |
 | `ColorObject` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
-| `DOMParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/) |
 | `DateTime` | [notes-datetime-timezone](https://bryanhsiao.github.io/domino-news/posts/notes-datetime-timezone/) |
 | `DbDirectory` | [notes-db-directory](https://bryanhsiao.github.io/domino-news/posts/notes-db-directory/) |
 | `Document` | [notes-document-save-conflict](https://bryanhsiao.github.io/domino-news/posts/notes-document-save-conflict/) |
@@ -265,15 +260,12 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | `RichTextStyle` | [notes-rich-text-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-style/) |
 | `RichTextTab` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
 | `RichTextTable` | [notes-rich-text-table](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-table/) |
-| `SAXParser` | [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/), [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/) |
 | `Stream` | [notes-stream-encoding](https://bryanhsiao.github.io/domino-news/posts/notes-stream-encoding/), [notes-stream](https://bryanhsiao.github.io/domino-news/posts/notes-stream/) |
 | `View` | [by-key-lookup-categorized-views](https://bryanhsiao.github.io/domino-news/posts/by-key-lookup-categorized-views/), [getalldocumentsbykey](https://bryanhsiao.github.io/domino-news/posts/getalldocumentsbykey/) |
 | `ViewColumn` | [notes-view-column](https://bryanhsiao.github.io/domino-news/posts/notes-view-column/) |
 | `ViewEntry` | [domino-web-view-start-parameter](https://bryanhsiao.github.io/domino-news/posts/domino-web-view-start-parameter/), [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
 | `ViewEntryCollection` | [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
 | `ViewNavigator` | [notes-view-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-view-navigator/) |
-| `XMLProcessor` | [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) |
-| `XSLTransformer` | [notes-xsl-transformer](https://bryanhsiao.github.io/domino-news/posts/notes-xsl-transformer/), [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) |
 | `database` | [notes-database-ft-index](https://bryanhsiao.github.io/domino-news/posts/notes-database-ft-index/), [notes-document-locking](https://bryanhsiao.github.io/domino-news/posts/notes-document-locking/), [profile-documents](https://bryanhsiao.github.io/domino-news/posts/profile-documents/), [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
 | `document` | [domino-unread-marks](https://bryanhsiao.github.io/domino-news/posts/domino-unread-marks/), [notes-document-ids](https://bryanhsiao.github.io/domino-news/posts/notes-document-ids/), [notes-document-locking](https://bryanhsiao.github.io/domino-news/posts/notes-document-locking/), [notes-document-computewithform](https://bryanhsiao.github.io/domino-news/posts/notes-document-computewithform/), [notes-response-documents](https://bryanhsiao.github.io/domino-news/posts/notes-response-documents/), [notes-document-sign-encrypt](https://bryanhsiao.github.io/domino-news/posts/notes-document-sign-encrypt/), [profile-documents](https://bryanhsiao.github.io/domino-news/posts/profile-documents/), [readers-authors-fields](https://bryanhsiao.github.io/domino-news/posts/readers-authors-fields/), [notes-document](https://bryanhsiao.github.io/domino-news/posts/notes-document/) |
 | `documentCollection` | [notes-document-collection](https://bryanhsiao.github.io/domino-news/posts/notes-document-collection/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
@@ -390,7 +382,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | [notes-view-passthrough-html](https://bryanhsiao.github.io/domino-news/posts/notes-view-passthrough-html/) | — | — | — |
 | [dql-execution-error-diagnostic](https://bryanhsiao.github.io/domino-news/posts/dql-execution-error-diagnostic/) | — | `DominoQuery` | `DominoQuery` |
 | [dql-view-date-column](https://bryanhsiao.github.io/domino-news/posts/dql-view-date-column/) | — | `DominoQuery` | `DominoQuery` |
-| [notes-xsl-transformer](https://bryanhsiao.github.io/domino-news/posts/notes-xsl-transformer/) | `NotesSession`, `NotesXSLTransformer` | `XSLTransformer` | `XSLTransformer` |
+| [notes-xsl-transformer](https://bryanhsiao.github.io/domino-news/posts/notes-xsl-transformer/) | `NotesSession`, `NotesXSLTransformer` | — | — |
 | [notes-json-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-json-navigator/) | `NotesJSONNavigator`, `NotesJSONObject`, `NotesJSONArray` | — | — |
 | [notes-database-ft-index](https://bryanhsiao.github.io/domino-news/posts/notes-database-ft-index/) | `NotesDatabase` | `Database` | `database` |
 | [notes-document-locking](https://bryanhsiao.github.io/domino-news/posts/notes-document-locking/) | `NotesDocument`, `NotesDatabase` | `Document`, `Database` | `document`, `database` |
@@ -454,9 +446,9 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | [build-your-own-domino-container](https://bryanhsiao.github.io/domino-news/posts/build-your-own-domino-container/) | — | — | — |
 | [notes-outline](https://bryanhsiao.github.io/domino-news/posts/notes-outline/) | `NotesOutline`, `NotesOutlineEntry` | `Outline`, `OutlineEntry` | `Outline`, `OutlineEntry` |
 | [domino-container-lp-recipe](https://bryanhsiao.github.io/domino-news/posts/domino-container-lp-recipe/) | — | — | — |
-| [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | `NotesDOMParser`, `NotesSAXParser`, `NotesXMLProcessor` | `DOMParser`, `SAXParser`, `XSLTransformer` | `DOMParser`, `SAXParser`, `XSLTransformer` |
-| [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/) | `NotesDOMParser`, `NotesXMLProcessor`, `NotesDOMNode` | `DOMParser` | `DOMParser` |
-| [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/) | `NotesSAXParser`, `NotesSAXAttributeList` | `SAXParser` | `SAXParser` |
+| [notes-xml-parser-dom-vs-sax](https://bryanhsiao.github.io/domino-news/posts/notes-xml-parser-dom-vs-sax/) | `NotesDOMParser`, `NotesSAXParser`, `NotesXMLProcessor` | — | — |
+| [notes-dom-parser](https://bryanhsiao.github.io/domino-news/posts/notes-dom-parser/) | `NotesDOMParser`, `NotesXMLProcessor`, `NotesDOMNode` | — | — |
+| [notes-sax-parser](https://bryanhsiao.github.io/domino-news/posts/notes-sax-parser/) | `NotesSAXParser`, `NotesSAXAttributeList` | — | — |
 | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) | `NotesACLEntry`, `NotesACL` | `ACL`, `ACLEntry` | `ACL`, `ACLEntry` |
 | [notes-session](https://bryanhsiao.github.io/domino-news/posts/notes-session/) | `NotesSession` | `Session` | `session` |
 | [notes-document](https://bryanhsiao.github.io/domino-news/posts/notes-document/) | `NotesDocument` | `Document` | `document` |
@@ -466,7 +458,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | [getalldocumentsbykey](https://bryanhsiao.github.io/domino-news/posts/getalldocumentsbykey/) | `NotesView` | `View` | `View` |
 | [openntf-lotusscript-class-map](https://bryanhsiao.github.io/domino-news/posts/openntf-lotusscript-class-map/) | — | — | — |
 | [lotusscript-http-json](https://bryanhsiao.github.io/domino-news/posts/lotusscript-http-json/) | `NotesJSONNavigator`, `NotesHTTPRequest` | — | — |
-| [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | `NotesDXLExporter`, `NotesXSLTransformer`, `NotesXMLProcessor` | `XMLProcessor`, `DxlExporter` | `XMLProcessor`, `DxlExporter` |
+| [notes-xml-processor](https://bryanhsiao.github.io/domino-news/posts/notes-xml-processor/) | `NotesDXLExporter`, `NotesXSLTransformer`, `NotesXMLProcessor` | `DxlExporter` | `DxlExporter` |
 | [domino-iq-rag](https://bryanhsiao.github.io/domino-news/posts/domino-iq-rag/) | — | — | — |
 | [domino-iq](https://bryanhsiao.github.io/domino-news/posts/domino-iq/) | — | — | — |
 | [domino-rest-api-v1-1-7-release](https://bryanhsiao.github.io/domino-news/posts/domino-rest-api-v1-1-7-release/) | — | — | — |

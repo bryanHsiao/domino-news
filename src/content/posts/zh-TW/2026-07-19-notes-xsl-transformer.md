@@ -2,6 +2,7 @@
 title: "NotesXSLTransformer：用 LotusScript 以 XSLT 轉換 XML 與 DXL"
 description: "NotesXSLTransformer 把 XSLT stylesheet 套到 XML 或 DXL 上、寫出轉換結果 — 是 Domino XML 工具組裡繼 DOM 與 SAX parser 之後的最後一塊。本文說明 session.CreateXSLTransformer 與它的三種來源、stylesheet 必須是 stream 的規則、把 DXL export → 轉換 → import 串起來而不落暫存檔的 pipelining 模型、以及那個透過 Log 屬性與 On Error（而非事件）運作的錯誤處理。"
 pubDate: 2026-07-19T07:30:00+08:00
+updatedDate: 2026-11-03
 lang: zh-TW
 slug: notes-xsl-transformer
 tags:
@@ -14,8 +15,8 @@ sources:
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_CREATEXSLTRANSFORMER_METHOD_SESSION.html"
   - title: "Example: NotesXSLTransformer class — HCL Domino 14.5 Designer Help"
     url: "https://help.hcl-software.com/dom_designer/14.5.1/basic/H_EXAMPLES_NOTESXSLTRANSFORMER_CLASS.html"
-relatedJava: ["XSLTransformer"]
-relatedSsjs: ["XSLTransformer"]
+relatedJava: []
+relatedSsjs: []
 cover: "/covers/notes-xsl-transformer.webp"
 coverStyle: "watercolor"
 ---
@@ -98,6 +99,6 @@ transformer 之所以把 parser 與 DXL 物件也當作 input/output、不只是
 
 | LotusScript | Java | SSJS / XPages |
 |---|---|---|
-| `session.CreateXSLTransformer(...)` → `NotesXSLTransformer` | `session.createXSLTransformer(...)` → `XSLTransformer` | `session.createXSLTransformer(...)` |
+| `session.CreateXSLTransformer(...)` → `NotesXSLTransformer` | 沒有 `XSLTransformer` 類別，`Session` 也沒有 `createXSLTransformer`；改用 [`Document.generateXML(style, XSLTResultTarget)`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_GENERATEXML_METHOD_DOCUMENT_JAVA.html) 或標準 `javax.xml.transform` API | 同樣沒有 `NotesXSLTransformer`；結果放在 [`NotesXSLTResultTarget`](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_XSLTResultTarget.html) |
 
-Java 有一個對應的 `lotus.domino.XSLTransformer`，但它不是 1:1 鏡像 — Java 的 DXL/XSLT 路線用 JAXP 式的 result-target 模型（`XSLTResultTarget`，由 `FileOutputStream` 或 `StringWriter` 建構），而非那個 stream 三件組。SSJS 透過 session 取到同一個後端工廠方法。核心概念 — 餵 XML/DXL 與一個 stylesheet、拿到轉換後的輸出、優先用 pipelining 而非暫存檔 — 在三種語言都通用。
+Java 沒有 `NotesXSLTransformer` 的對應類別：[Java 類別索引](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_10_NOTES_CLASSES_ATOZ_JAVA.html)裡既沒有這個類別，Session 也沒有對應的工廠方法。Java 的 XSLT 走的是 JAXP 式的 result-target 模型，而非那個 stream 三件組：`generateXML` 吃一個 stylesheet 和一個 `XSLTResultTarget`，後者包住 `Writer`、`OutputStream` 或檔名。SSJS 用的是同一批 Java 物件。核心概念 — 餵 XML/DXL 與一個 stylesheet、拿到轉換後的輸出、優先用 pipelining 而非暫存檔 — 在三種語言都通用。
