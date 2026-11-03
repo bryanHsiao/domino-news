@@ -3,7 +3,7 @@
 // the per-tile greenery.
 import { R, TOP, WATER_Y, DIRS, hexVertex, edgeDir, hashString, mulberry32 } from './layout.js';
 import { groundTexture, ringTexture, bandTexture } from './textures.js';
-import { themeFor, buildLandmark, OFFSHORE_THEMES } from './landmarks.js';
+import { themeFor, buildLandmark, SHORE_THEMES } from './landmarks.js';
 
 const RING_OUT = 1.94;
 const RING_IN = 1.66;
@@ -49,15 +49,6 @@ const FLAG_RIM = 0xf4efe6;
 const FAIRY_R = 1.93;
 const FAIRY_Y = 0.13;
 const FAIRY_PER_SIDE = 5;
-// Off-shore platforms (layout.offshore): not islands but man-made decks where
-// code runs — a dark hull with a red waterline, a steel deck, railings,
-// bollards and fenders — so they never read as one more category island.
-const HULL = 0x2b3644;
-const HULL_RED = 0xb2412e;
-const STEEL = 0x9aa2ab;
-const RAIL = 0xd7dce1;
-const BOLLARD = 0x30363d;
-const FENDER = 0xe8743b;
 
 // Building slots per tile: centre first, then the ring from back to front so
 // any free (tree) slots end up in the foreground. The island's landmark tile
@@ -166,58 +157,17 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
     });
   });
 
-  // ---- off-shore platform materials and pieces
-  const offshoreCats = new Set(layout.offshore);
-  const hullMat = new THREE.MeshStandardMaterial({ color: HULL, roughness: 0.7, metalness: 0.2 });
-  const hullRedMat = new THREE.MeshStandardMaterial({ color: HULL_RED, roughness: 0.8 });
-  const steelMat = new THREE.MeshStandardMaterial({ map: plateTexture(THREE), color: STEEL, roughness: 0.55, metalness: 0.3 });
-  const walkwayMat = new THREE.MeshStandardMaterial({ color: 0x6f7882, roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 });
-  const hazardMat = new THREE.MeshStandardMaterial({ color: 0xe5b53a, roughness: 0.7, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
-  const hullH = TOP - 0.02 - (WATER_Y - 0.35);
-  const hullY = (TOP - 0.02 + WATER_Y - 0.35) / 2;
-  const hullGeo = new THREE.CylinderGeometry(R, R - 0.14, hullH, 6, 1, true);
-  const waterlineGeo = new THREE.CylinderGeometry(R - 0.1, R - 0.11, 0.07, 6, 1, true);
-  const hazardGeo = hexRing(THREE, R - 0.06, R - 0.15);
-  // the sides of a platform tile that face open water (not another tile of
-  // the same platform): railings, bollards and fenders go there
-  const outerSides = (t) => [0, 1, 2, 3, 4, 5].filter((k) => {
-    const [dq, dr] = DIRS[edgeDir(k)];
-    const nb = tileAt.get(t.q + dq + ',' + (t.r + dr));
-    return !(nb && nb.cat === t.cat);
-  });
-  function platformTile(t) {
-    const deck = new THREE.CircleGeometry(R - 0.02, 6).rotateZ(Math.PI / 6).rotateX(-Math.PI / 2).translate(t.x, TOP, t.z);
-    add(worldUV(deck), steelMat, { cat: t.cat });
-    add(ringGeo, walkwayMat, { x: t.x, y: TOP + 0.012, z: t.z });
-    add(hazardGeo, hazardMat, { x: t.x, y: TOP + 0.014, z: t.z });
-    add(hullGeo, hullMat, { cast: true, cat: t.cat, x: t.x, y: hullY, z: t.z });
-    add(waterlineGeo, hullRedMat, { x: t.x, y: WATER_Y + 0.04, z: t.z });
-    add(foamGeo, foamMat, { receive: false, x: t.x, y: WATER_Y + 0.012, z: t.z });
-    for (const k of outerSides(t)) {
-      const [ax, az] = hexVertex(t.x, t.z, R - 0.09, k);
-      const [bx, bz] = hexVertex(t.x, t.z, R - 0.09, k + 1);
-      const len = Math.hypot(bx - ax, bz - az);
-      const yaw = Math.atan2(bx - ax, bz - az);
-      // railing: posts, a top rail and a mid rail
-      for (let i = 0; i <= 5; i++) {
-        const f = i / 5;
-        decor.part('box', [ax + (bx - ax) * f, TOP + 0.11, az + (bz - az) * f], [0.025, 0.22, 0.025], RAIL);
-      }
-      for (const h of [0.21, 0.12]) decor.part('box', [(ax + bx) / 2, TOP + h, (az + bz) / 2], [0.018, 0.018, len], RAIL, null, [0, yaw, 0]);
-      // a bollard at the corner, two fenders on the hull side
-      const [cx0, cz0] = hexVertex(t.x, t.z, R - 0.2, k);
-      decor.part('cyl', [cx0, TOP + 0.05, cz0], [0.09, 0.1, 0.09], BOLLARD);
-      decor.part('cyl', [cx0, TOP + 0.105, cz0], [0.12, 0.02, 0.12], BOLLARD);
-      const [ox, oz] = hexVertex(t.x, t.z, R + 0.01, k);
-      const [px, pz] = hexVertex(t.x, t.z, R + 0.01, k + 1);
-      for (const f of [0.3, 0.7]) decor.part('cyl', [ox + (px - ox) * f, WATER_Y + 0.2, oz + (pz - oz) * f], [0.09, 0.2, 0.09], FENDER);
-    }
-  }
+  // ---- paved shore areas (the Java power plant, the XPages town): ground on
+  // the levelled shore shelf, not islands — round paved plots, no hex deck,
+  // no water skirt
+  const pavedCats = new Set(layout.harbours.filter((h) => h.kind !== 'openntf').map((h) => h.cat));
+  const pavingMat = new THREE.MeshStandardMaterial({ map: groundTexture(THREE, STYLES.street, 7), roughness: 0.9 });
+  const plotGeo = new THREE.CircleGeometry(R + 0.4, 40).rotateX(-Math.PI / 2);
 
   // ---- tiles
   for (const t of layout.tiles) {
-    if (offshoreCats.has(t.cat)) {
-      platformTile(t);
+    if (pavedCats.has(t.cat)) {
+      add(worldUV(plotGeo.clone().translate(t.x, TOP - 0.006, t.z)), pavingMat, { cat: t.cat });
       continue;
     }
     const look = looks.get(t.cat);
@@ -241,13 +191,7 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
     const yaw = Math.atan2(dx, dz);
     const len = L - 2 * R * 0.866 + 0.5;
     const mx = (a.x + b.x) / 2, mz = (a.z + b.z) / 2;
-    if (offshoreCats.has(a.cat)) {
-      // the steel deck carries on between a platform's tiles
-      const plate = new THREE.PlaneGeometry(span, len).rotateX(-Math.PI / 2).rotateY(yaw).translate(mx, TOP - 0.004, mz);
-      add(worldUV(plate), steelMat, { cat: a.cat });
-      add(new THREE.BoxGeometry(span, hullH, len).rotateY(yaw).translate(mx, hullY, mz), hullMat, { cast: true, cat: a.cat });
-      continue;
-    }
+    if (pavedCats.has(a.cat)) continue; // the round plots overlap already
     const deck = new THREE.PlaneGeometry(span, len).rotateX(-Math.PI / 2).rotateY(yaw).translate(mx, TOP - 0.004, mz);
     add(worldUV(deck), look.topMat, { cat: a.cat });
     add(new THREE.BoxGeometry(span, skirtH, len).rotateY(yaw).translate(mx, skirtY - 0.01, mz), look.wallMat, { cast: true, cat: a.cat });
@@ -258,11 +202,7 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
     }
   }
   for (const j of layout.junctions) {
-    if (offshoreCats.has(j.cat)) {
-      const plate = new THREE.CircleGeometry(0.62, 6).rotateZ(Math.PI / 6).rotateX(-Math.PI / 2).translate(j.x, TOP - 0.005, j.z);
-      add(worldUV(plate), steelMat, { cat: j.cat });
-      continue;
-    }
+    if (pavedCats.has(j.cat)) continue;
     const look = looks.get(j.cat);
     const deck = new THREE.CircleGeometry(0.62, 6).rotateZ(Math.PI / 6).rotateX(-Math.PI / 2).translate(j.x, TOP - 0.005, j.z);
     add(worldUV(deck), look.topMat, { cat: j.cat });
@@ -276,27 +216,56 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
     else buildBridge(bridges, br);
   }
 
+  // ---- the road on the shore from the power plant to the XPages town:
+  // asphalt on the levelled ground with a dashed centre line and lamps (land,
+  // not a bridge)
+  const roadMat = new THREE.MeshStandardMaterial({ color: 0x5f646b, roughness: 0.9 });
+  for (const { a, b } of layout.roads) {
+    const dx = b.x - a.x, dz = b.z - a.z;
+    const L = Math.hypot(dx, dz);
+    const ux = dx / L, uz = dz / L;
+    const yaw = Math.atan2(ux, uz);
+    const len = L - 2 * (R + 0.2) + 0.6;
+    if (len <= 0) continue;
+    const mx = (a.x + b.x) / 2, mz = (a.z + b.z) / 2;
+    add(new THREE.PlaneGeometry(0.7, len).rotateX(-Math.PI / 2).rotateY(yaw).translate(mx, TOP - 0.004, mz), roadMat);
+    for (let s = -len / 2 + 0.3; s < len / 2 - 0.2; s += 0.5) decor.part('box', [mx + ux * s, TOP + 0.001, mz + uz * s], [0.05, 0.004, 0.24], 0xf4efe6, null, [0, yaw, 0]);
+    for (let s = -len / 2 + 0.6; s < len / 2; s += 1.8) props.lamp(mx + ux * s + uz * 0.45, mz + uz * s - ux * 0.45, TOP);
+  }
+
   // ---- landmark, themed class buildings and greenery per tile
   layout.clusters.forEach((c, ci) => {
-    const off = c.members[0] && c.members[0].offshore;
-    const theme = off ? OFFSHORE_THEMES[off] : themeFor(c.cat, ci);
+    const shore = c.members[0] && c.members[0].shore;
+    const theme = SHORE_THEMES[shore] || themeFor(c.cat, ci);
     // the landmark stands on the tile nearest the island's centre
     const heart = c.tiles.reduce((best, t) => {
       const d = Math.hypot(t.x - c.cx, t.z - c.cz), bd = Math.hypot(best.x - c.cx, best.z - c.cz);
       return d < bd - 1e-6 ? t : best;
     });
     for (const t of c.tiles) {
-      dressTile(t, theme, t === heart, !!off);
-      stringLights(t, c.tiles);
+      dressTile(t, theme, t === heart);
+      // string lights trace the shoreline of an island (or the harbour quay)
+      if (!pavedCats.has(t.cat)) stringLights(t, c.tiles);
     }
   });
 
-  function dressTile(t, theme, isHeart, platform) {
+  function dressTile(t, theme, isHeart) {
     const rnd = mulberry32(hashString(t.q + ':' + t.r));
-    const slots = isHeart ? LANDMARK_SLOTS : SLOTS;
+    let slots = isHeart ? LANDMARK_SLOTS : SLOTS;
+    let lx = t.x, lz = t.z;
+    if (isHeart && theme.landmark === 'powerplant') {
+      // the power plant stands on the lake side of its plot, facing the
+      // islands (where its cables will run), its houses behind it inland
+      const ux = layout.bounds.cx - t.x, uz = layout.bounds.cz - t.z;
+      const ul = Math.hypot(ux, uz);
+      lx = t.x + (ux / ul) * 0.85;
+      lz = t.z + (uz / ul) * 0.85;
+      const land = Math.atan2(-uz, -ux);
+      slots = [0, 0.95, -0.95, 1.9, -1.9, Math.PI].map((d) => [Math.cos(land + d) * 1.25, Math.sin(land + d) * 1.25]);
+    }
     if (isHeart) {
-      buildLandmark(theme.landmark, decor, t.x, t.z);
-      landmarks.push({ x: t.x, z: t.z, kind: theme.landmark });
+      buildLandmark(theme.landmark, decor, lx, lz);
+      landmarks.push({ x: lx, z: lz, kind: theme.landmark });
     }
     t.nodes.forEach((n, i) => {
       const [ox, oz] = slots[i];
@@ -312,15 +281,11 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
       const sx = t.x + slots[i][0] + (rnd() - 0.5) * 0.2;
       const sz = t.z + slots[i][1] + (rnd() - 0.5) * 0.2;
       const flora = theme.flora === 'mixed' ? (rnd() < 0.5 ? 'pine' : 'tree') : theme.flora;
-      // a platform's free slots hold cargo, every other one left clear
-      if (platform) {
-        if (i % 2 === 0) props.crates(sx, sz, rnd, TOP);
-      } else if (flora === 'crates' && i % 2 === 0) props.crates(sx, sz, rnd, TOP);
+      if (flora === 'crates' && i % 2 === 0) props.crates(sx, sz, rnd, TOP);
       else if (flora === 'pine') props.conifer(sx, sz, 0.42 + rnd() * 0.1, rnd, TOP);
       else props.tree(sx, sz, 0.5 + rnd() * 0.15, rnd, TOP, theme.palette);
     }
-    // bushes on the islands; a platform is all steel
-    for (let k = 0; k < 6 && !platform; k++) {
+    for (let k = 0; k < 6; k++) {
       if (rnd() < 0.55) {
         const [bx, bz] = hexVertex(t.x, t.z, 1.48, k);
         props.bush(bx, bz, 0.2 + rnd() * 0.1, rnd, TOP);
@@ -366,7 +331,9 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
   }
 
   // ---- selection outline per island: only the edges facing another island
+  // (the paved shore areas have no hex edge to trace)
   for (const c of layout.clusters) {
+    if (pavedCats.has(c.cat)) continue;
     const pos = [];
     const y = TOP + 0.06;
     for (const t of c.tiles)
@@ -395,7 +362,7 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
 // Bridge look by relation strength: 4+ links a wide stone bridge, 2–3 a wooden
 // one, a single link a narrow footbridge. Bridges stand only for class
 // relations: islands joined just so every one can be reached get stepping
-// stones (steppingStones below), the off-shore platforms a ferry (ferry.js).
+// stones (steppingStones below); what isn't a class stands on the shore.
 function bridgeStyle(n) {
   if (n >= 4) return { deck: [0xd6cbb8, 0xcabfab], width: 0.62, thick: 0.06, post: 0xe6dccb, rail: 0xe6dccb, arch: 0.12, walls: true };
   if (n >= 2) return { deck: [0xb48560, 0xa77a55], width: 0.46, thick: 0.04, post: 0xfff8f4, rail: 0x9a7454, arch: 0.09, walls: false };
@@ -616,36 +583,4 @@ function steppingStones(kit, br) {
     kit.part('cyl', [x, WATER_Y - 0.3 + h / 2, z], [r * 2, h, r * 2], 0x8f897f, null, [0, rnd() * 3, 0]);
     kit.part('cyl', [x, TOP - 0.015, z], [r * 2 + 0.03, 0.03, r * 2 + 0.03], 0xc2bbae, null, [0, rnd() * 3, 0]);
   }
-}
-
-// Steel deck plates: a light grid of seams with a rivet at each corner.
-function plateTexture(THREE) {
-  const c = document.createElement('canvas');
-  c.width = c.height = 128;
-  const g = c.getContext('2d');
-  g.fillStyle = '#c3c9cf';
-  g.fillRect(0, 0, 128, 128);
-  g.strokeStyle = '#8f979f';
-  g.lineWidth = 2;
-  for (let i = 0; i <= 128; i += 64) {
-    g.beginPath();
-    g.moveTo(i, 0);
-    g.lineTo(i, 128);
-    g.stroke();
-    g.beginPath();
-    g.moveTo(0, i);
-    g.lineTo(128, i);
-    g.stroke();
-  }
-  g.fillStyle = '#7d858d';
-  for (const x of [6, 58, 70, 122])
-    for (const y of [6, 58, 70, 122]) {
-      g.beginPath();
-      g.arc(x, y, 2, 0, Math.PI * 2);
-      g.fill();
-    }
-  const tex = new THREE.CanvasTexture(c);
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
 }

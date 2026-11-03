@@ -22,7 +22,9 @@ export function createHarbours(THREE, scene, decor, props, layout, material, byK
     return Math.hypot(px - ax - t * vx, pz - az - t * vz);
   };
 
-  for (const hb of layout.harbours) {
+  // only the OpenNTF harbour has a jetty and boats; the other shore areas
+  // (the power plant, the XPages town) are on land
+  for (const hb of layout.harbours.filter((h) => h.kind === 'openntf')) {
     const home = layout.clusters.find((c) => c.cat === hb.cat);
     const { cx, cz } = layout.bounds;
     // the jetty leaves the harbour tile nearest the lake, toward the lake's centre
@@ -64,8 +66,8 @@ export function createHarbours(THREE, scene, decor, props, layout, material, byK
     const [tx, tz] = at(JETTY, 0);
     const targets = [];
     for (const c of layout.clusters) {
-      // class islands only: the off-shore platforms have their own ferry
-      if (c === home || c.members.some((n) => n.offshore)) continue;
+      // class islands only: the other shore areas are on land
+      if (c === home || c.members.some((n) => n.shore)) continue;
       const t = c.tiles.reduce((b, s) => (Math.hypot(s.x - tx, s.z - tz) < Math.hypot(b.x - tx, b.z - tz) ? s : b));
       const d = Math.hypot(t.x - tx, t.z - tz);
       const ex = t.x + ((tx - t.x) / d) * (INR + 0.75), ez = t.z + ((tz - t.z) / d) * (INR + 0.75);

@@ -11,14 +11,12 @@ import { createEnvironment, TIMES } from './environment.js';
 import { createCrowd } from './people.js';
 import { createLinks } from './links.js';
 import { createHarbours } from './harbour.js';
-import { createFerries } from './ferry.js';
 import { createSigns } from './signs.js';
 import { createWildlife } from './wildlife.js';
 
 // Opening angle: the view the user turned to and liked on the live site
-// (2026-10-30) — the camera as low as the controls allow, turned a touch so
-// the two off-shore islands sit in the front corners and the archipelago
-// fills the middle; every lake island is then fitted in. Measured against
+// (2026-10-30) — the camera as low as the controls allow, turned a touch;
+// the class islands are then fitted in. Measured against
 // 57° / 0° (docs/map-3d-island-brief.md) it draws the houses and people
 // larger.
 const FOV = 32;
@@ -27,13 +25,13 @@ const HOME_AZIMUTH = THREE.MathUtils.degToRad(3);
 // Phones held upright: the stage is tall and narrow, and at the low desktop
 // angle the archipelago became a thin strip mid-screen with the plates piled
 // on each other. There the camera looks down more steeply, so the islands'
-// depth spreads over the height and the plates apart; every island still
-// fits in (2026-10-30).
+// depth spreads over the height and the plates apart (2026-10-30).
 const PHONE_POLAR = THREE.MathUtils.degToRad(50);
-// The opening view fits every island in the lake (off-shore ones included)
-// into the part of the stage the interface leaves clear, at least this many
-// px from its edges.
+// The opening view fits the class islands into the part of the stage the
+// interface leaves clear, at least this many px from its edges.
 const HOME_PAD = 14;
+// the icon on a shore area's name plate (and in the island list)
+export const SHORE_ICON = { 'java-runtime': '🏭', xpages: '🌐', openntf: '⚓' };
 const POLAR_MIN = THREE.MathUtils.degToRad(25);
 const POLAR_MAX = THREE.MathUtils.degToRad(70);
 const BIRD_POLAR = 0.1; // bird's-eye: almost straight down
@@ -113,8 +111,6 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   const glowMat = new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0, emissive: 0xffd28a, emissiveIntensity: 0 });
   const glowing = { glass: glowMat, bulb: glowMat };
   const harbours = createHarbours(THREE, scene, decorKit, props, layout, partMat, glowing);
-  // ferries out to the off-shore platforms (they have no bridge)
-  const ferries = createFerries(THREE, scene, decorKit, layout, partMat, glowing);
   // gulls, dolphins, tuna, a bait ball now and then, drifting clouds
   const wildlife = reduced ? null : createWildlife(THREE, scene, layout);
   const buildingMeshes = buildingKit.build(scene, partMat, glowing);
@@ -165,14 +161,13 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     sph.set(dist, polar, azimuth);
     return new THREE.Vector3().setFromSpherical(sph).add(target);
   };
-  // The opening view (and 全景 / Fit): every island in the lake — the class
-  // archipelago and the off-shore islands — fitted as tightly as it goes into
-  // the clear part of the stage, measured on screen rather than with the
-  // bounding circle (which wastes the corners and pushed the off-shore
-  // islands out of a closer opening shot). The clear part leaves out the
-  // interface laid over the scene: brand card and toolbar on top, the legend
-  // below, the phones' button column on the right. The harbour and the
-  // outer islets may run off the edges.
+  // The opening view (and 全景 / Fit): the class islands — this is the class
+  // map — fitted as tightly as they go into the clear part of the stage,
+  // measured on screen rather than with the bounding circle (which wastes
+  // the corners). The clear part leaves out the interface laid over the
+  // scene: toolbar on top, the legend below, the phones' button column on
+  // the right. The shore areas (power plant, XPages town, harbour) may run
+  // off the edges.
   const framePts = layout.tiles
     .filter((t) => !layout.harbours.some((h) => h.cat === t.cat))
     .flatMap((t) => [
@@ -455,11 +450,11 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   const labels = layout.clusters.map((c) => {
     const el = document.createElement('button');
     el.type = 'button';
-    // an off-shore platform's plate carries an anchor instead of a number
-    const off = c.members[0] && c.members[0].offshore;
-    el.className = off ? 'ci-lbl off' : 'ci-lbl';
-    el.innerHTML = off
-      ? '<b>⚓</b><span>' + esc(c.cat + (strings.offshore || '')) + '</span><i>' + c.count + '</i>'
+    // a shore area (not a class) carries an icon instead of a number
+    const shore = c.members[0] && c.members[0].shore;
+    el.className = shore ? 'ci-lbl off' : 'ci-lbl';
+    el.innerHTML = shore
+      ? '<b>' + (SHORE_ICON[shore] || '⚓') + '</b><span>' + esc(c.cat) + '</span><i>' + c.count + '</i>'
       : '<b>' + String(c.num).padStart(2, '0') + '</b><span>' + esc(c.cat) + '</span><i>' + c.count + '</i>';
     el.setAttribute('aria-label', c.cat);
     el.addEventListener('click', () => select(c.cat, true));
@@ -795,7 +790,6 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       updateWalkers(dt);
       updateBoats(motion);
       harbours.update(motion);
-      ferries.update(motion);
       wildlife.update(dt);
       links.update(dt);
     }
