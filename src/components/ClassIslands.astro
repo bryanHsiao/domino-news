@@ -569,6 +569,7 @@ const statTip =
   #ci .ci-panel .psec { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--hair); }
   #ci .ci-panel .part { display: flex; flex-direction: column; gap: 2px; width: 100%; text-align: left; border: 1px solid var(--hair); background: #fff; border-radius: 9px; padding: 8px 10px; margin-top: 6px; font: inherit; color: var(--ink); cursor: pointer; }
   #ci .ci-panel .part:hover { border-color: var(--coral); }
+  #ci .ci-panel a.part { text-decoration: none; }
   #ci .ci-panel .part b { font-size: 0.84rem; font-weight: 620; line-height: 1.35; }
   #ci .ci-panel .part i { font-style: normal; font: 600 10.5px ui-monospace, monospace; color: var(--ink-mut); }
   #ci .ci-panel .pabout { font-size: 0.8rem; color: var(--ink-mut); margin-top: 12px; }
@@ -687,6 +688,7 @@ const statTip =
 
 <script>
   import { shoreIcon as shoreSvg } from './islands/shoreIcons.js';
+  import { rememberMap } from '../lib/mapReturn';
 
   function initClassIslands() {
     var root = document.getElementById('ci');
@@ -713,13 +715,30 @@ const statTip =
     function webglOK() {
       try {
         var c = document.createElement('canvas');
-        return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl')));
+        var gl = c.getContext('webgl2') || c.getContext('webgl');
+        // a probe only: give its context back right away (each visit to the
+        // map would otherwise leave one behind until garbage collection)
+        var lose = gl && gl.getExtension('WEBGL_lose_context');
+        if (lose) lose.loseContext();
+        return !!(window.WebGLRenderingContext && gl);
       } catch (e) { return false; }
     }
     function kindOf(n) { return n.key ? 'key' : !n.url ? 'un' : n.ui ? 'ui' : 'be'; }
 
     var NODE = {};
     DATA.nodes.forEach(function (n) { NODE[n.id] = n; });
+
+    // The open card rides in the address, as the lens does: ?island=<cat> for
+    // an island's card, ?cls=<node id> for a class card or an article preview
+    // (its class), neither when closed. A reload, a shared link or coming back
+    // from an article (the article page's back link, or Back) reopens it.
+    function setPick(key, val) {
+      var url = new URL(location.href);
+      url.searchParams.delete('island');
+      url.searchParams.delete('cls');
+      if (key) url.searchParams.set(key, val);
+      if (url.href !== location.href) history.replaceState(history.state, '', url);
+    }
 
     // Wider screens dock the panel in the index on the right, where it always
     // shows the island list, and open the details (island, class, article) in
@@ -737,6 +756,7 @@ const statTip =
     }
     function showHome() {
       reshow = null;
+      setPick(null);
       if (docked()) { hideDetail(); renderIslandList(); }
       else { panel.hidden = true; panel.innerHTML = ''; panelMode = null; }
     }
@@ -755,8 +775,11 @@ const statTip =
       return el;
     }
 
-    // Class overview and article preview: the same panel, showing the basics
-    // first; the article itself is one more click away ("Open article →").
+    // Class overview and article preview: the same panel. A class card's
+    // article rows (and the preview's other articles) are plain links that
+    // open the article; the preview itself comes from a door sign in the
+    // scene, where a stray click shouldn't leave the map, so the article is
+    // one more click away there ("Open article →").
     function closeCard() {
       if (api) api.focusClass(null);
       // back to the island it came from, else home
@@ -772,21 +795,19 @@ const statTip =
       Array.prototype.forEach.call(el.querySelectorAll('[data-class]'), function (b) {
         b.addEventListener('click', function () { showClass(NODE[b.dataset.class]); });
       });
-      Array.prototype.forEach.call(el.querySelectorAll('[data-article]'), function (b) {
-        b.addEventListener('click', function () { showArticle(node, +b.dataset.article); });
-      });
       // keep the class's relation lines lit while its card is open
       if (api) api.focusClass(node.id);
     }
     function articleRow(a, i) {
       var ll = LANG_LABEL[a.lang] || LANG_LABEL.ls;
-      return '<button class="part" data-article="' + i + '"><b>' + esc(a.title) + '</b><i><span class="pdot ' + esc(a.lang || 'ls') + '"></span>' + esc(ll) + ' · ' + esc(a.date) + '</i></button>';
+      return '<a class="part" href="' + esc(a.url) + '"><b>' + esc(a.title) + '</b><i><span class="pdot ' + esc(a.lang || 'ls') + '"></span>' + esc(ll) + ' · ' + esc(a.date) + '</i></a>';
     }
     function showClass(n) {
       if (!n) return;
       // XPages island buildings are posts, not classes: show the article card.
       if (n.island) return showArticle(n, 0);
       reshow = function () { showClass(n); };
+      setPick('cls', n.id);
       var arts = n.articles || [];
       var tags = '<span class="ptag"><span class="dot ' + (n.ui ? 'ui' : 'be') + '"></span>' + esc(n.ui ? DS.tipUi : DS.tipBe) + '</span>' +
         (n.key ? '<span class="ptag"><span class="dot key"></span>' + esc(DS.tipKey) + '</span>' : '');
@@ -809,6 +830,7 @@ const statTip =
       var a = n && n.articles && n.articles[i];
       if (!a) return;
       reshow = function () { showArticle(n, i); };
+      setPick('cls', n.id);
       var more = n.articles.map(function (b, j) { return j === i ? '' : articleRow(b, j); }).join('');
       var ll = LANG_LABEL[a.lang] || LANG_LABEL.ls;
       openCard(
@@ -839,6 +861,7 @@ const statTip =
       curCluster = cluster || null;
       if (!cluster) { showHome(); return; }
       reshow = function () { renderPanel(cluster); };
+      setPick('island', cluster.cat);
       var rows = cluster.members.map(function (n) {
         var k = kindOf(n);
         return '<button class="pcls' + (n.url ? '' : ' un') + '" data-id="' + esc(n.id) + '">' +
@@ -899,10 +922,18 @@ const statTip =
         });
         loadingEl.hidden = true;
         if (q.value) api.filter(q.value);
-        var askedLens = new URL(location.href).searchParams.get('lens');
-        if (askedLens) api.setLens(askedLens);
+        var asked = new URL(location.href).searchParams;
+        if (asked.get('lens')) api.setLens(asked.get('lens'));
         syncModes();
         if (docked() && panel.hidden) showHome();
+        // ?cls= / ?island=: open that card and fly to its island; unknown
+        // values just leave the opening view
+        var askCls = NODE[asked.get('cls')];
+        var askIsl = askCls ? askCls.cat : asked.get('island');
+        if (askIsl && api.clusters.some(function (c) { return c.cat === askIsl; })) {
+          api.select(askIsl);
+          if (askCls) showClass(askCls);
+        } else if (asked.has('cls') || asked.has('island')) setPick(null);
         if (hint && hint.dataset.hint && window.matchMedia && window.matchMedia('(max-width:640px)').matches) {
           hint.textContent = hint.dataset.hint;
           setTimeout(function () { hint.style.opacity = '0'; }, 4200);
@@ -913,6 +944,13 @@ const statTip =
         console.error('[ClassIslands] could not start the 3D view', err);
       });
     }
+
+    // following an article link from a card keeps this map address (with its
+    // ?cls=) for the article page's "back to the map" link
+    root.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a.part, a.pgo');
+      if (a) rememberMap(a.href);
+    });
 
     q.addEventListener('input', function () {
       if (!api) return;
@@ -958,7 +996,7 @@ const statTip =
         (rows ? '<div class="plist-isl">' + rows + '</div>' : '<p class="plist-empty">' + esc(DS.noMatch) + '</p>');
       panel.hidden = false;
       panelMode = 'list';
-      if (!docked()) reshow = null; // the sheet's details gave way to the list
+      if (!docked()) { reshow = null; setPick(null); } // the sheet's details gave way to the list
       var x = panel.querySelector('.pclose');
       if (x) x.addEventListener('click', function () { panel.hidden = true; panel.innerHTML = ''; panelMode = null; });
       Array.prototype.forEach.call(panel.querySelectorAll('.pisl'), function (b) {

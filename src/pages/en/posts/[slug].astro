@@ -1,6 +1,7 @@
 ---
 import { render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import MapBackLink from '../../../components/MapBackLink.astro';
 import { getPostsByLang, postReadingStats, getRelatedPosts } from '../../../lib/posts';
 import { tagPalette, slugGradient } from '../../../lib/tags';
 import { useTranslations, localizedPath } from '../../../i18n/ui';
@@ -130,6 +131,7 @@ const jsonLd = {
         <span class="current">{post.data.title}</span>
       </nav>
 
+      <MapBackLink lang={lang} />
       <h1>{post.data.title}</h1>
 
       <div class="meta">
