@@ -723,6 +723,17 @@ OpenNTF 才用船。另外門口的「人」改成帶「i」圖示的告示牌�
 - **手機（≤760px）**維持原本的 bottom sheet，詳細資訊和島嶼清單共用 `#ci-panel`。跨過斷點時，
   已經打開的詳細資訊會換到對應的位置（`reshow`）。
 
+### 島卡的一行說明（2026-11-03）
+
+17 座類別島的島卡原本只有編號、島名、「N 個類別」和類別清單。現在「N 個類別」下面多一段 `.pdesc`
+說明，用一到兩句話寫這組類別管什麼、什麼時候會用到。岸上三區原本就有自己的說明（`T.shoreDesc`），維持不變。
+
+- 資料放在 `data/ls_class_desc.json` 的 `categories: { zh, en }`，key 是島的 category id
+  （和 `data/ls_classes.json` 的 `category` 一致）。`ClassIslands.astro` 直接 import，依語言取一半，
+  用 `data-cat-desc` 傳給前端。
+- 寫法的限制：只根據成員類別在 `data/ls_classes.json` 裡的 `description` 和方法清單來寫，
+  不加官方文件沒提到的功能。之後如果新增 category，在兩個語言各補一條；缺了就不顯示說明。
+
 ### 湖上的生物與飄動的雲（2026-10-30）
 
 `src/components/islands/wildlife.js` 負責湖上不定時出現的動態：

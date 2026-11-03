@@ -1,5 +1,5 @@
 {
-  "_comment": "Class descriptions for /map/. `zh` = zh-TW wording of HCL's one-line class description (data/ls_classes.json `description`, from the 14.5.1 class pages). `en` overrides that description only where the catalogue's copy is cut off before its list (NotesEmbeddedObject, NotesLog). A class missing here falls back to the catalogue's English text.",
+  "_comment": "Class descriptions for /map/. `zh` = zh-TW wording of HCL's one-line class description (data/ls_classes.json `description`, from the 14.5.1 class pages). `en` overrides that description only where the catalogue's copy is cut off before its list (NotesEmbeddedObject, NotesLog). A class missing here falls back to the catalogue's English text. `categories` = one or two lines per island card (key = the category id), written only from what its member classes' descriptions and member lists in data/ls_classes.json say.",
   "zh": {
     "Button": "表單或文件上的動作、動作熱點或按鈕。",
     "Field": "表單上的一個欄位。",
@@ -102,5 +102,45 @@
   "en": {
     "NotesEmbeddedObject": "Represents any one of the following: an embedded object, an object link, or a file attachment.",
     "NotesLog": "Enables you to record actions and errors that take place during a script's execution, in a Domino® database, a mail memo, a file (for scripts that run locally) or an agent log."
+  },
+  "categories": {
+    "zh": {
+      "Session": "程式執行環境的入口：取得目前使用者、環境變數與通訊錄，也從這裡列出伺服器上的資料庫、查詢目錄、處理名稱，或記錄程式執行時的動作與錯誤。",
+      "Database": "整個資料庫層級的事：開啟資料庫、管理 ACL 和其中的項目、表單與複寫設定，或用 NotesNoteCollection 一次收集設計元素和資料元素。",
+      "View": "透過檢視或資料夾取文件：依鍵值找文件或項目、讀欄的定義，用 NotesViewEntryCollection 依檢視排序取一組項目，或用 NotesViewNavigator 逐列走訪、依分類展開。",
+      "Document": "一份文件或一組文件：讀寫 item 的值、存檔與寄送，處理依條件選出的 NotesDocumentCollection，以及文件上的附件與內嵌物件、資料庫的大綱。",
+      "Item": "文件裡的一筆筆資料：NotesItem 讀寫 item 的值，NotesDateTime／NotesDateRange 在 LotusScript 與 Domino 的日期時間格式之間轉換，MIME 內容與標頭交給 NotesMIMEEntity／NotesMIMEHeader。",
+      "Rich Text": "rich text 欄位的內容：加入段落樣式、表格、分頁與 section，用 NotesRichTextNavigator 定位到表格、doclink 等元素，再用 NotesRichTextRange 尋找取代或套用樣式。",
+      "DOM/XML": "在 LotusScript 裡處理 XML：用 DXL exporter／importer 在 Domino 資料與 DXL 之間轉換，用 DOM parser 建成節點樹或用 SAX parser 逐事件處理，也可以用 XSLT 轉換 DXL。",
+      "UI": "Notes 工作區裡使用者眼前開著的東西：工作區視窗、目前的資料庫、檢視與文件，表單上的欄位與按鈕事件，以及文件裡內嵌的排程控制項。",
+      "Admin": "從程式做管理工作：NotesAdministrationProcess 處理改名、搬信件檔、重新認證、叢集與複本異動等，NotesRegistration 註冊使用者與伺服器、建立 ID 檔，ID Vault 取得 ID、同步副本、重設密碼。",
+      "JSON": "在 LotusScript 裡解析與組 JSON：NotesJSONNavigator 解析字串，依名稱或 JSON pointer 取元素；往物件、陣列裡加元素後，再用 Stringify 輸出。",
+      "Calendar": "用程式讀寫 Domino 行事曆：用 NotesCalendar 讀一段時間的項目或建立新項目，對會議邀請接受、拒絕、委派或提議新時間，並處理收到的行事曆通知。",
+      "GPS": "在 HCL Nomad 上取得裝置位置：先請求存取權，再取目前的位置與座標。支援 iOS／Android 版 Nomad 1.0.4 起、網頁版 1.0.3 起。",
+      "Composite Apps": "組合式應用程式（Composite Applications）裡元件之間的溝通：透過 Property Broker 發布或讀取 Wiring Properties 設計元素定義的屬性，串接 Notes 元件彼此，或 Notes 與 Java 元件。",
+      "DominoIQ": "從 LotusScript 呼叫 Domino IQ：透過 Domino IQ 伺服器把請求送給大型語言模型（LLM），回應可一次取回或以串流接收，也能先查有哪些可用的 command。",
+      "DQL": "用 DQL（Domino Query Language）查文件：NotesDominoQuery 解析、執行、Explain 查詢並管理索引，NotesQueryResultsProcessor 再把結果彙總、排序，輸出成 JSON 或檢視。",
+      "HTTP": "從 LotusScript 向網頁伺服器發 HTTP 請求：GET、POST、PUT、PATCH 與 DELETE，可設定請求標頭與 proxy，並讀取回應標頭。",
+      "Session File Operations": "用 NotesStream 處理一串二進位或字元資料：開啟檔案後以位元組或文字讀寫，也可以截斷內容。"
+    },
+    "en": {
+      "Session": "The way into the script's environment: the current user, environment variables and Address Books; from here you also list a server's databases, look up directories, handle names, and log actions and errors while a script runs.",
+      "Database": "Things at the level of a whole database: opening it, its ACL and entries, its forms and replication settings, or gathering design and data elements in one go with NotesNoteCollection.",
+      "View": "Reaching documents through a view or folder: look up documents or entries by key, read the column definitions, take a set of entries in view-sorted order with NotesViewEntryCollection, or walk the rows and step through categories with NotesViewNavigator.",
+      "Document": "One document or a set of them: reading and writing item values, saving and sending, a NotesDocumentCollection selected by criteria, plus a document's attachments and embedded objects and a database's outlines.",
+      "Item": "The individual pieces of data in a document: NotesItem reads and writes item values, NotesDateTime / NotesDateRange translate dates and times between the LotusScript and Domino formats, and NotesMIMEEntity / NotesMIMEHeader handle MIME content and headers.",
+      "Rich Text": "The contents of a rich text item: add paragraph styles, tables, page breaks and sections; find elements such as tables and doclinks with NotesRichTextNavigator, then search and replace or restyle them with NotesRichTextRange.",
+      "DOM/XML": "XML in LotusScript: convert between Domino data and DXL with the DXL exporter and importer, parse XML into a DOM node tree or as a series of SAX events, or transform DXL through XSLT.",
+      "UI": "What the user has open in the Notes workspace: the workspace window, the current database, view and document, the fields and buttons on a form with their events, and an embedded scheduling control.",
+      "Admin": "Administration from code: NotesAdministrationProcess handles renames, mail-file moves, recertification, cluster and replica changes and more; NotesRegistration registers users and servers and creates ID files; the ID Vault fetches IDs, syncs copies and resets passwords.",
+      "JSON": "Parsing and building JSON in LotusScript: NotesJSONNavigator parses the string and finds elements by name or JSON pointer; append elements to objects and arrays, then Stringify the result.",
+      "Calendar": "Reading and writing a Domino calendar in code: read a date range or create entries with NotesCalendar, accept, decline, delegate or counter meeting invitations, and work through the calendar notices that arrive.",
+      "GPS": "Device location on HCL Nomad: request access, then get the current position and its coordinates. Supported on Nomad for iOS / Android from 1.0.4 and for web browsers from 1.0.3.",
+      "Composite Apps": "Communication between the components of a composite application: publish and read, through the Property Broker, the properties defined in a Wiring Properties design element, linking Notes components with each other or with Java components.",
+      "DominoIQ": "Calling Domino IQ from LotusScript: send a request to a large language model (LLM) through the Domino IQ server, take the response in one piece or as a stream, and check first which commands are available.",
+      "DQL": "Querying documents with DQL (Domino Query Language): NotesDominoQuery parses, runs and explains queries and manages their indexes; NotesQueryResultsProcessor then aggregates and sorts the results and writes them out as JSON or a view.",
+      "HTTP": "HTTP requests from LotusScript to web servers: GET, POST, PUT, PATCH and DELETE, with request headers and a proxy you can set, and the response headers to read.",
+      "Session File Operations": "NotesStream handles a stream of binary or character data: open a file, read or write it as bytes or text, or truncate it."
+    }
   }
 }

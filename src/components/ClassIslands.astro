@@ -2,6 +2,8 @@
 import type { Lang } from '../i18n/ui';
 import type { ClassArticle, XPagesMember } from '../lib/classArticles';
 import type { MapIsland } from '../../scripts/lib/mapLanguages';
+// a line or two per island, for its card (key = category id)
+import descData from '../../data/ls_class_desc.json';
 
 interface IslandNode {
   id: string;
@@ -31,6 +33,7 @@ interface Props {
   total: number;
 }
 const { lang, data, articles, islands, harbour, versions, coveredCount, total } = Astro.props;
+const catDesc = (descData as any).categories[lang === 'zh-TW' ? 'zh' : 'en'];
 
 // The class houses carry their articles (LS plus any Java / SSJS residents,
 // one door sign each). Posts with no backing Notes class stand on the lake
@@ -295,6 +298,7 @@ const statTip =
   data-list-shore={T.listShore}
   data-shore-tag={T.shoreTag}
   data-shore-desc={JSON.stringify(T.shoreDesc)}
+  data-cat-desc={JSON.stringify(catDesc)}
   data-no-match={T.noMatch}
   data-times={JSON.stringify(T.times)}
   data-tip-links={T.tipLinks}
@@ -825,6 +829,7 @@ const statTip =
 
     // a shore area's card says what the area is, as a class card does
     var SHORE_DESC = JSON.parse(DS.shoreDesc || '{}');
+    var CAT_DESC = JSON.parse(DS.catDesc || '{}');
 
     // The selected island's card: its classes and related islands.
     function renderPanel(cluster) {
@@ -843,12 +848,13 @@ const statTip =
         return '<button class="prel-chip' + (r.bridged ? ' br' : '') + '" data-cat="' + esc(r.cat) + '" title="' + esc(r.bridged ? DS.relBridge : DS.relWalk) + '">' +
           '<span class="ic">' + (r.bridged ? '⇄' : '⋯') + '</span>' + esc(r.cat) + '<i>' + r.n + '</i></button>';
       }).join('');
+      var about = isShore(cluster) ? SHORE_DESC[cluster.members[0].shore] : CAT_DESC[cluster.cat];
       var el = showDetail(
         '<button class="pclose" aria-label="' + esc(DS.close) + '">×</button>' +
         '<div class="pnum">' + (isShore(cluster) ? shoreIcon(cluster) + ' ' + esc(DS.shoreTag) : String(cluster.num).padStart(2, '0')) + '</div>' +
         '<h3>' + esc(cluster.cat) + '</h3>' +
         '<div class="pmeta">' + cluster.count + esc(cluster.members[0] && cluster.members[0].island ? DS.countIsland : DS.count) + '</div>' +
-        (isShore(cluster) && SHORE_DESC[cluster.members[0].shore] ? '<p class="pdesc">' + esc(SHORE_DESC[cluster.members[0].shore]) + '</p>' : '') +
+        (about ? '<p class="pdesc">' + esc(about) + '</p>' : '') +
         '<div class="plist">' + rows + '</div>' +
         (rel ? '<div class="prel"><div class="prel-lbl">' + esc(DS.relTitle) + '</div><div class="prel-key">⇄ ' + esc(DS.relBridge) + ' · ⋯ ' + esc(DS.relWalk) + '</div><div class="prel-chips">' + rel + '</div></div>' : ''),
         'island'
