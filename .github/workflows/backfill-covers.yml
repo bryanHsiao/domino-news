@@ -7,6 +7,10 @@ on:
         description: 'Regenerate covers for posts that already have one'
         type: boolean
         default: false
+      regen_slugs:
+        description: 'Comma-separated slugs to regenerate in place (honours each post''s coverStyle; leaves all other covers untouched)'
+        type: string
+        default: ''
 
 permissions:
   contents: write
@@ -46,6 +50,7 @@ jobs:
           OPENAI_IMAGE_MODEL: ${{ vars.OPENAI_IMAGE_MODEL || 'gpt-image-2.5-sunburst' }}
           OPENAI_IMAGE_QUALITY: ${{ vars.OPENAI_IMAGE_QUALITY || 'medium' }}
           FORCE_REGEN: ${{ inputs.force_regen && '1' || '0' }}
+          REGEN_SLUGS: ${{ inputs.regen_slugs }}
         run: npm run backfill:covers
 
       - name: Commit and push (race-safe)

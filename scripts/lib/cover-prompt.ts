@@ -174,6 +174,12 @@ ABSOLUTE bans (must NOT appear):
 - Generic "workshop with gears, cables, robot figurine, miniature figure"
 - Orange ethernet cables piled on a desk
 - Real human faces
+- Fruit, vegetables, food, or any edible object (a tech cover is never
+  about food)
+- A literal object chosen as a pun or homophone of a word in the TITLE
+  (e.g. a "date" fruit for a calendar date, a computer mouse for the
+  animal, a physical key for a database key). Render the technical IDEA,
+  never the wordplay.
 
 The scene must look like a deliberately art-directed cover for one
 specific story, not a stock image of "tech stuff".`;

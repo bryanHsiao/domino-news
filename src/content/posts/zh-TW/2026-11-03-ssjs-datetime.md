@@ -19,7 +19,7 @@ relatedSsjs: []
 coversClass: "DateTime"
 apiLang: "ssjs"
 cover: "/covers/ssjs-datetime.webp"
-coverStyle: "minimalist-mono"
+coverStyle: "oil-chiaroscuro"
 ---
 
 在 XPages 的 SSJS 裡處理日期,真正會咬你的不是哪個方法不會用,而是你沒注意到——手上同時有**三種**「日期」在流動:

@@ -19,7 +19,7 @@ relatedSsjs: []
 coversClass: "DateTime"
 apiLang: "ssjs"
 cover: "/covers/ssjs-datetime.webp"
-coverStyle: "minimalist-mono"
+coverStyle: "oil-chiaroscuro"
 ---
 
 The thing that actually bites you with dates in XPages SSJS isn't a method you can't call — it's not noticing that **three** different "dates" are flowing through your code at once:

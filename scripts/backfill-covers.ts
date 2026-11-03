@@ -37,6 +37,23 @@ const COVERS_DIR = join(ROOT, 'public', 'covers');
 
 const FORCE_REGEN = process.env.FORCE_REGEN === '1';
 
+/**
+ * Comma-separated list of slugs to regenerate IN PLACE, regardless of
+ * whether a cover already exists on disk. Unlike FORCE_REGEN (which
+ * regenerates every cover), this targets just the named posts and keeps
+ * everything else untouched. Each listed slug's frontmatter `coverStyle`
+ * is honoured as the preferred style (set it before running to swap a
+ * cover to a chosen style). Used to re-roll a single ugly cover without
+ * disturbing the rest of the site — and without deleting the live file
+ * first, so the deployed page never 404s its cover in the gap.
+ */
+const REGEN_SLUGS = new Set(
+  (process.env.REGEN_SLUGS ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+);
+
 /** How many pubDate-nearest neighbours' styles to exclude when picking. */
 const RECENT_WINDOW_HALF = 3; // ±3 = up to 6 neighbours
 
@@ -180,7 +197,19 @@ async function main() {
   // Decide what to (re)generate.
   const todoSlugs = new Set<string>();
   for (const p of posts) {
-    if (!p.hasCoverOnDisk || FORCE_REGEN) todoSlugs.add(p.slug);
+    if (!p.hasCoverOnDisk || FORCE_REGEN || REGEN_SLUGS.has(p.slug)) {
+      todoSlugs.add(p.slug);
+    }
+  }
+
+  // Warn about any requested regen slug that doesn't match a post, so a
+  // typo in the workflow input surfaces instead of silently no-op'ing.
+  if (REGEN_SLUGS.size > 0) {
+    const known = new Set(posts.map((p) => p.slug));
+    for (const s of REGEN_SLUGS) {
+      if (!known.has(s)) console.warn(`[backfill] REGEN_SLUGS: no post found for slug "${s}"`);
+    }
+    console.log(`[backfill] REGEN_SLUGS targeting: ${[...REGEN_SLUGS].join(', ')}`);
   }
 
   // In FORCE_REGEN, the existing styles are about to be discarded —
