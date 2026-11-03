@@ -498,6 +498,9 @@ const statTip =
   #ci .ci-lbl.off:not(.sel) i { color: #b9c2cc; }
   /* near the brand card, toolbar, tabs or legend: fade out (scene.js) */
   #ci .ci-lbl.tucked { opacity: 0; pointer-events: none; }
+  /* the leader line from the OpenNTF lighthouse up to its plate, with a dot on the lighthouse */
+  #ci .ci-lead { position: absolute; left: 0; top: 0; height: 1.5px; background: rgba(43, 54, 68, 0.85); transform-origin: 0 50%; pointer-events: none; }
+  #ci .ci-lead::before { content: ''; position: absolute; left: -3px; top: -2.25px; width: 6px; height: 6px; border-radius: 50%; background: #2b3644; box-shadow: 0 0 0 1.5px rgba(244, 241, 236, 0.9); }
 
   #ci .ci-tip { position: absolute; left: 0; top: 0; z-index: 8; pointer-events: none; display: flex; flex-direction: column; gap: 2px; max-width: 260px;
     background: rgba(255, 248, 244, 0.97); border: 1px solid var(--hair); border-radius: 8px; padding: 7px 10px; box-shadow: 0 6px 18px rgba(33, 29, 29, 0.16); font-size: 12px; line-height: 1.35; }

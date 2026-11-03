@@ -492,8 +492,19 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     el.setAttribute('aria-label', c.cat);
     el.addEventListener('click', () => select(c.cat, true));
     labelsEl.appendChild(el);
+    // The OpenNTF harbour's plate would sit right on its lighthouse and
+    // jetty: it hangs up and to the left of the lighthouse top instead, on a
+    // thin leader line, so the harbour itself stays in view from any angle.
+    const beacon = shore === 'openntf' && world.landmarks.find((l) => l.kind === 'beacon' && l.cat === c.cat);
+    if (beacon) {
+      const lead = document.createElement('i');
+      lead.className = 'ci-lead';
+      labelsEl.appendChild(lead);
+      return { c, el, lead, p: new THREE.Vector3(beacon.x - 0.12, TOP + 2.2, beacon.z - 0.08) };
+    }
     return { c, el, p: new THREE.Vector3(c.anchor.x, TOP - 0.2, c.anchor.z) };
   });
+  const LEAD = [-22, -26]; // the leader line, from the lighthouse top to the plate's corner (px)
   const v = new THREE.Vector3();
   // Plates are decluttered every frame: in priority order (selected island,
   // then bigger islands, then nearer ones) a plate that would overlap one
@@ -529,6 +540,15 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       L.sx = (v.x * 0.5 + 0.5) * w;
       L.sy = (-v.y * 0.5 + 0.5) * h;
       L.depth = v.z;
+      if (L.lead && L.full) {
+        // a leader plate is placed by its centre, up-left of the anchor —
+        // up-right when the left would push it off the screen (phones)
+        L.ax = L.sx;
+        L.ay = L.sy;
+        L.dx = L.sx + LEAD[0] - L.full[0] < 8 ? -LEAD[0] : LEAD[0];
+        L.sx += L.dx + Math.sign(L.dx) * (L.full[0] / 2);
+        L.sy += LEAD[1] - L.full[1] / 2;
+      }
       if (!L.off) visible.push(L);
     }
     visible.sort((a, b) => Number(b.c.cat === selected) - Number(a.c.cat === selected) || b.c.count - a.c.count || a.depth - b.depth);
@@ -551,6 +571,13 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     }
     for (const L of labels) {
       L.el.style.display = L.off ? 'none' : '';
+      if (L.lead) {
+        L.lead.style.display = L.off || L.tucked ? 'none' : '';
+        if (!L.off && L.ax != null) {
+          L.lead.style.width = Math.hypot(LEAD[0], LEAD[1]).toFixed(1) + 'px';
+          L.lead.style.transform = `translate(${L.ax.toFixed(1)}px, ${L.ay.toFixed(1)}px) rotate(${Math.atan2(LEAD[1], L.dx)}rad)`;
+        }
+      }
       if (L.off) continue;
       L.el.style.transform = `translate(${L.sx.toFixed(1)}px, ${L.sy.toFixed(1)}px) translate(-50%, -50%)`;
       L.el.style.zIndex = String(1000 - Math.round(L.depth * 1000));
