@@ -21,15 +21,16 @@ export const SPREAD = 1.25;
 const MIN_CHANNEL = 1.3;
 const WALK_RING = 1.8; // radius of the walking ring painted on each tile
 // What isn't a class stands on the lake shore rather than in it (nodes with
-// `shore`): the OpenNTF harbour on the far shore (back left, in view on every
-// screen), and on the near shore, facing the islands, the Java runtime's
+// `shore`): the OpenNTF harbour in the far left corner of the lake, set well
+// back so its plate never lands on a class island whichever way the camera
+// turns, and on the near shore, facing the islands, the Java runtime's
 // power plant with the XPages town built beside it. Each sits in its
 // direction (radians in the x/z plane; +z faces the default camera), its
 // centre this far beyond the archipelago's bounding circle. Angles and
 // distances use the basin's own measure (z stretched by 1 / 0.92), so they
 // land on the same shoreline environment.js draws.
-const SHORE_ANGLE = { openntf: -2.0, 'java-runtime': Math.PI / 2 + 0.2, xpages: Math.PI / 2 - 0.16 };
-const SHORE_OUT = 3.6;
+const SHORE_ANGLE = { openntf: -2.45, 'java-runtime': Math.PI / 2 + 0.2, xpages: Math.PI / 2 - 0.16 };
+const SHORE_OUT = { openntf: 5.2, 'java-runtime': 3.6, xpages: 3.6 };
 
 const SQ3 = Math.sqrt(3);
 
@@ -269,7 +270,7 @@ export function layoutArchipelago(data) {
   const harbours = [...harbourCats].map((cat) => {
     const kind = shoreOf.get(cat);
     const a = SHORE_ANGLE[kind] ?? SHORE_ANGLE.openntf;
-    const d = lakeR + SHORE_OUT;
+    const d = lakeR + (SHORE_OUT[kind] ?? SHORE_OUT.openntf);
     const hx = lx + Math.cos(a) * d, hz = lz + (Math.sin(a) * d) / 0.92;
     const ps = home.get(cat);
     const ox = ps.reduce((s, p) => s + p[0], 0) / ps.length;
@@ -297,9 +298,19 @@ export function layoutArchipelago(data) {
     const cx = tiles.reduce((s, t) => s + t.x, 0) / tiles.length;
     const cz = tiles.reduce((s, t) => s + t.z, 0) / tiles.length;
     const radius = Math.max(...tiles.map((t) => Math.hypot(t.x - cx, t.z - cz))) + R;
-    // Name plate hangs on the front edge of the front-most tile.
+    // Name plate hangs on the front edge of the front-most tile — a shore
+    // area's on its landward side instead, away from the lake, so it never
+    // reads as the plate of an island out on the water
     const front = tiles.reduce((f, t) => (t.z > f.z + 1e-6 || (Math.abs(t.z - f.z) < 1e-6 && Math.abs(t.x - cx) < Math.abs(f.x - cx)) ? t : f));
-    return { cat, num: i + 1, count: members.length, members, tiles, cx, cz, radius, anchor: { x: front.x, z: front.z + R * 0.94 }, relations: [] };
+    let anchor = { x: front.x, z: front.z + R * 0.94 };
+    const hb = harbours.find((h) => h.cat === cat);
+    if (hb) {
+      const ux = hb.x - lx, uz = hb.z - lz;
+      const ul = Math.hypot(ux, uz);
+      const out = tiles.reduce((f, t) => ((t.x - hb.x) * ux + (t.z - hb.z) * uz > (f.x - hb.x) * ux + (f.z - hb.z) * uz ? t : f));
+      anchor = { x: out.x + (ux / ul) * R * 0.94, z: out.z + (uz / ul) * R * 0.94 };
+    }
+    return { cat, num: i + 1, count: members.length, members, tiles, cx, cz, radius, anchor, relations: [] };
   });
 
   const tiles = clusters.flatMap((c) => c.tiles);
