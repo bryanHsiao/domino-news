@@ -66,3 +66,4 @@ NotebookLM：這次未查（純更正、以官方索引為唯一依據；索引�
 - 2026-11-03 Claude Opus 5.5：PR #40 資料核對發現 rejected 名單 → 使用者要求查證 → WebFetch 官方索引確認錯誤
 - 2026-11-03 Claude Opus 5.5：使用者要求修正 → 改 9 個檔、補本紀錄
 - 2026-11-03 Domino News[5] session 獨立查證：結論一致（四個 parser 類別不存在、DXL 在 Java 存在）。它另主張「XSLTResultTarget 也不是 lotus.domino 的東西」，與官方 `H_GENERATEXML_METHOD_DOCUMENT_JAVA.html` 的簽名 `generateXML(Object style, XSLTResultTarget result)` 矛盾（頁面另註明與 EmbeddedObject／Item／MIMEEntity／RichTextItem 的 transformXML 同參數），不採用；但 Java 版 XSLTResultTarget 類別頁（`H_NOTESXSLTRESULTTARGET_CLASS_JAVA.html`）與 generateXML 範例頁皆 404，package 與建構子無 Java 端出處 → xsl-transformer 文改為明確標註「建構子依 SSJS 參考頁」
+- 2026-11-03 Domino News[5]：**已撤回**上一條的 XSLTResultTarget 主張。它回頭抓 `H_GENERATEXML_METHOD_DOCUMENT_JAVA.html`（真頁、非 404）確認簽名與 Usage 註記，XSLTResultTarget 是 Domino Java API 的真型別，Domino Java 有自己的 XSLT 路徑（generateXML／transformXML）。其餘結論（DOM／SAX／XSLTransformer 類別不存在、DXL 保留）雙方一致，無異議
