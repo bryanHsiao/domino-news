@@ -480,6 +480,16 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   }
 
   // ---- name plates: cream pills hung on each island's front edge
+  // where a shore area's leader line starts (the top of its landmark, offset
+  // from the landmark's position): the harbour's lighthouse lantern, the
+  // power plant's chimney, the XPages glass hall's signal tower (the dome is
+  // lower than the houses round it)
+  const LEAD_AT = {
+    beacon: { x: -0.12, y: 2.2, z: -0.08 },
+    powerplant: { x: 0.22, y: 1.7, z: -0.34 },
+    glasshall: { x: 0.48, y: 1.62, z: -0.22 },
+  };
+  const LEAD = [22, -26]; // the leader line, from the landmark's top to the plate's corner (px, up and right)
   const labels = layout.clusters.map((c) => {
     const el = document.createElement('button');
     el.type = 'button';
@@ -492,19 +502,21 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     el.setAttribute('aria-label', c.cat);
     el.addEventListener('click', () => select(c.cat, true));
     labelsEl.appendChild(el);
-    // The OpenNTF harbour's plate would sit right on its lighthouse and
-    // jetty: it hangs up and to the left of the lighthouse top instead, on a
-    // thin leader line, so the harbour itself stays in view from any angle.
-    const beacon = shore === 'openntf' && world.landmarks.find((l) => l.kind === 'beacon' && l.cat === c.cat);
-    if (beacon) {
+    // A shore area's dark plate would sit right on the area: it hangs off
+    // its landmark's top instead, on a thin leader line, on the side away
+    // from the islands (placeLabels), so the area itself and the class
+    // islands stay in view from any angle.
+    const mark = shore && world.landmarks.find((l) => l.cat === c.cat && LEAD_AT[l.kind]);
+    if (mark) {
+      const at = LEAD_AT[mark.kind];
       const lead = document.createElement('i');
       lead.className = 'ci-lead';
       labelsEl.appendChild(lead);
-      return { c, el, lead, p: new THREE.Vector3(beacon.x - 0.12, TOP + 2.2, beacon.z - 0.08) };
+      // g: the area's landward edge, for a plate that has to hang below it
+      return { c, el, lead, p: new THREE.Vector3(mark.x + at.x, TOP + at.y, mark.z + at.z), g: new THREE.Vector3(c.anchor.x, TOP - 0.2, c.anchor.z) };
     }
     return { c, el, p: new THREE.Vector3(c.anchor.x, TOP - 0.2, c.anchor.z) };
   });
-  const LEAD = [-22, -26]; // the leader line, from the lighthouse top to the plate's corner (px)
   const v = new THREE.Vector3();
   // Plates are decluttered every frame: in priority order (selected island,
   // then bigger islands, then nearer ones) a plate that would overlap one
@@ -534,6 +546,9 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     }
     const underChrome = (x, y, [bw, bh]) => blocks.some((k) => x + bw / 2 > k.l && x - bw / 2 < k.r && y + bh / 2 > k.t && y - bh / 2 < k.b);
     const visible = [];
+    // the archipelago's centre on screen: a shore plate leans away from it
+    v.set(cx, TOP, cz).project(camera);
+    const midX = (v.x * 0.5 + 0.5) * w;
     for (const L of labels) {
       v.copy(L.p).project(camera);
       L.off = v.z > 1 || Math.abs(v.x) > 1.2 || Math.abs(v.y) > 1.2;
@@ -541,21 +556,45 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       L.sy = (-v.y * 0.5 + 0.5) * h;
       L.depth = v.z;
       if (L.lead && L.full) {
-        // a leader plate is placed by its centre, up-left of the anchor —
-        // up-right when the left would push it off the screen (phones)
+        // a leader plate is placed by its centre, above the anchor (the top
+        // of the area's landmark, so the area stays clear below it) and to
+        // the side away from the islands, kept on the screen; the leader
+        // runs from the anchor to the plate's nearest corner. If that spot
+        // is taken by an island's plate (placed below), it hangs under the
+        // area's landward edge instead.
         L.ax = L.sx;
         L.ay = L.sy;
-        L.dx = L.sx + LEAD[0] - L.full[0] < 8 ? -LEAD[0] : LEAD[0];
-        L.sx += L.dx + Math.sign(L.dx) * (L.full[0] / 2);
-        L.sy += LEAD[1] - L.full[1] / 2;
+        const sx = L.sx < midX ? -1 : 1;
+        const [pw, ph] = L.full;
+        const px = Math.min(Math.max(L.sx + sx * (LEAD[0] + pw / 2), 8 + pw / 2), w - 8 - pw / 2);
+        v.copy(L.g).project(camera);
+        const gy = (-v.y * 0.5 + 0.5) * h;
+        const up = L.sy + LEAD[1] - ph / 2;
+        const down = Math.max(gy, L.sy) + 10 + ph / 2;
+        L.spots = [
+          { x: px, y: up, lx: px - sx * (pw / 2) - L.ax, ly: up + ph / 2 - L.ay },
+          { x: px, y: down, lx: px - sx * (pw / 2) - L.ax, ly: down - ph / 2 - L.ay },
+        ];
+        // the landmark itself out of view: no plate dangling at the edge
+        if (L.ax < 0 || L.ax > w) L.off = true;
+        L.sx = px;
+        L.sy = up;
       }
       if (!L.off) visible.push(L);
     }
-    visible.sort((a, b) => Number(b.c.cat === selected) - Number(a.c.cat === selected) || b.c.count - a.c.count || a.depth - b.depth);
+    // the islands' plates first, the shore areas' leader plates after them
+    visible.sort((a, b) => Number(b.c.cat === selected) - Number(a.c.cat === selected) || Number(!!a.lead) - Number(!!b.lead) || b.c.count - a.c.count || a.depth - b.depth);
     const placed = [];
     const overlaps = (x, y, [bw, bh]) => placed.some((r) => Math.abs(r.x - x) * 2 < r.w + bw + 4 && Math.abs(r.y - y) * 2 < r.h + bh + 2);
     for (const L of visible) {
-      const compact = L.c.cat !== selected && overlaps(L.sx, L.sy, L.full);
+      if (L.lead) {
+        const s = L.spots.find((p) => !overlaps(p.x, p.y, L.full)) || L.spots[0];
+        L.sx = s.x;
+        L.sy = s.y;
+        L.lx = s.lx;
+        L.ly = s.ly;
+      }
+      const compact = !L.lead && L.c.cat !== selected && overlaps(L.sx, L.sy, L.full);
       const size = compact ? L.small : L.full;
       // a plate tucked away under the interface doesn't crowd the others
       const tucked = underChrome(L.sx, L.sy, size);
@@ -574,8 +613,8 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       if (L.lead) {
         L.lead.style.display = L.off || L.tucked ? 'none' : '';
         if (!L.off && L.ax != null) {
-          L.lead.style.width = Math.hypot(LEAD[0], LEAD[1]).toFixed(1) + 'px';
-          L.lead.style.transform = `translate(${L.ax.toFixed(1)}px, ${L.ay.toFixed(1)}px) rotate(${Math.atan2(LEAD[1], L.dx)}rad)`;
+          L.lead.style.width = Math.hypot(L.lx, L.ly).toFixed(1) + 'px';
+          L.lead.style.transform = `translate(${L.ax.toFixed(1)}px, ${L.ay.toFixed(1)}px) rotate(${Math.atan2(L.ly, L.lx)}rad)`;
         }
       }
       if (L.off) continue;

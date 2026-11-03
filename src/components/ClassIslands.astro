@@ -135,8 +135,6 @@ const T =
         legUi: 'UI',
         legUn: '尚未寫成文章',
         legKey: '核心類別',
-        legHeight: '樓越高＝關聯越多',
-        legShore: '岸上＝不是類別',
         shoreTag: '湖岸',
         listShore: '湖岸',
         legFlagTip: '有 Java／SSJS 文章的房子，屋頂插一支對應顏色的旗（炭墨黑＝Java、綠＝SSJS）',
@@ -219,8 +217,6 @@ const T =
         legUi: 'UI',
         legUn: 'Not written yet',
         legKey: 'Key class',
-        legHeight: 'Taller = more links',
-        legShore: 'Shore = not a class',
         shoreTag: 'Shore',
         listShore: 'Shore',
         legFlagTip: 'A house with a Java / SSJS article flies a flag in that colour (charcoal = Java, green = SSJS)',
@@ -386,8 +382,6 @@ const statTip =
       <span><i class="sw ui"></i>{T.legUi}</span>
       {coveredCount < total && <span><i class="sw un"></i>{T.legUn}</span>}
       <span><i class="sw key"></i>{T.legKey}</span>
-      <span><i class="sw tall"></i>{T.legHeight}</span>
-      <span><i class="sw off"></i>{T.legShore}</span>
       <span class="ci-leg-sep" aria-hidden="true"></span>
       <span title={T.legFlagTip}><i class="sw flag java"></i>Java</span>
       <span title={T.legFlagTip}><i class="sw flag ssjs"></i>SSJS</span>
@@ -565,10 +559,6 @@ const statTip =
   #ci .dot.ui, #ci .sw.ui { background: var(--roof-ui); }
   #ci .dot.un, #ci .sw.un { background: var(--roof-un); }
   #ci .dot.key, #ci .sw.key { background: var(--roof-key); }
-  /* shore = not a class: a strip of land along the water */
-  #ci .ci-legend .sw.off { clip-path: none; border-radius: 2px; width: 13px; background: #a3b986; box-shadow: inset 0 -3px 0 #62b2bd; }
-  /* "taller = more links": a rising staircase */
-  #ci .ci-legend .sw.tall { width: 11px; height: 11px; border-radius: 0; background: var(--ink-mut); clip-path: polygon(0 100%, 0 68%, 33% 68%, 33% 36%, 66% 36%, 66% 0, 100% 0, 100% 100%); }
 
   /* A house with a Java / SSJS article flies a roof flag in that colour
      (world.js). The legend shows them as little pennants — a shape distinct
