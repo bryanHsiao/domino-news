@@ -87,6 +87,11 @@ export function createLinks(THREE, scene, data, anchors) {
       return mode;
     },
     getMode: () => mode,
+    // under a language lens the lines step back
+    setFade(on) {
+      focusMat.opacity = on ? 0.22 : 1;
+      webMat.opacity = on ? 0.1 : 0.4;
+    },
     setFocus(cls, cat) {
       if (cls === focus.cls && cat === focus.cat) return;
       focus = { cls: cls || null, cat: cat || null };

@@ -25,10 +25,12 @@ interface Props {
   islands: Record<MapIsland, XPagesMember[]>;
   /** buildings in the OpenNTF harbour on the shore */
   harbour: XPagesMember[];
+  /** class ids that exist in Java / in SSJS at all (the language lens) */
+  versions: { java: string[]; ssjs: string[] };
   coveredCount: number;
   total: number;
 }
-const { lang, data, articles, islands, harbour, coveredCount, total } = Astro.props;
+const { lang, data, articles, islands, harbour, versions, coveredCount, total } = Astro.props;
 
 // The class houses carry their articles (LS plus any Java / SSJS residents,
 // one door sign each). Posts with no backing Notes class stand on the lake
@@ -49,7 +51,10 @@ for (const l of data.links) {
   deg[l.s] = (deg[l.s] || 0) + 1;
   deg[l.t] = (deg[l.t] || 0) + 1;
 }
-const classNodes = data.nodes.map(({ id, name, cat, ui, key, url, desc }) => ({ id, name, cat, ui, key, url, desc: desc || '', articles: articles[id] || [], deg: deg[id] || 0 }));
+// jv / sv: the class also exists in Java / SSJS (written about or not), for
+// the language lens
+const inJava = new Set(versions.java), inSsjs = new Set(versions.ssjs);
+const classNodes = data.nodes.map(({ id, name, cat, ui, key, url, desc }) => ({ id, name, cat, ui, key, url, desc: desc || '', articles: articles[id] || [], deg: deg[id] || 0, jv: inJava.has(id), sv: inSsjs.has(id) }));
 const shoreNodes = SHORE.flatMap((o) =>
   islands[o.id].map((m) => ({ id: o.id + ':' + m.slug, name: m.name, cat: o.name, ui: o.ui, key: false, url: m.url, desc: m.desc || '', articles: [m.article], island: true, harbour: true, shore: o.id })),
 );
@@ -102,6 +107,16 @@ const T =
         birdLong: '俯瞰',
         btnView: '檢視',
         viewTitle: '時段與視角',
+        lensGroup: '語言',
+        lensModes: { all: '全部', ls: 'LS', java: 'Java', ssjs: 'SSJS' },
+        lensTips: {
+          all: '一般檢視',
+          ls: '用 LotusScript 看：有 LS 文章的房子發亮；岸上的電廠和 XPages 用不到，變暗',
+          java: '用 Java 看：電廠拉電纜到有 Java 類別的島；有 Java 文章的房子發亮，沒有 Java 版本的變淡',
+          ssjs: '用 SSJS 看：XPages 經陸路接到電廠，再拉電纜到各島；有 SSJS 文章的房子發亮，沒有 SSJS 版本的變淡',
+        },
+        layerTitle: '在架構裡的位置',
+        layers: { fw: '框架（XPages）', bind: '綁定', ls: 'LS 引擎', java: 'Java', cls: '類別', core: 'Domino 核心' },
         linksGroup: '關聯線',
         linkModes: { off: '關', focus: '選取', all: '全部' },
         linkTips: { off: '不顯示關聯線', focus: '選島或指著房子時，亮出相關的關聯線', all: '顯示全部 {n} 條關聯線' },
@@ -176,6 +191,16 @@ const T =
         birdLong: 'Top view',
         btnView: 'View',
         viewTitle: 'Time and view',
+        lensGroup: 'Language',
+        lensModes: { all: 'All', ls: 'LS', java: 'Java', ssjs: 'SSJS' },
+        lensTips: {
+          all: 'The usual view',
+          ls: 'Through LotusScript: houses with an LS article glow; the power plant and XPages on the shore aren’t used, so they dim',
+          java: 'Through Java: the power plant runs a cable to every island with a Java class; houses with a Java article glow, classes with no Java version fade',
+          ssjs: 'Through SSJS: XPages reaches the power plant over land, cables run on to the islands; houses with an SSJS article glow, classes with no SSJS version fade',
+        },
+        layerTitle: 'Where it sits',
+        layers: { fw: 'Framework (XPages)', bind: 'Binding', ls: 'LS engine', java: 'Java', cls: 'Classes', core: 'Domino core' },
         linksGroup: 'Links',
         linkModes: { off: 'Off', focus: 'Selected', all: 'All' },
         linkTips: { off: 'Hide the relation lines', focus: 'Show the links of the selected island or the house under the pointer', all: 'Show all {n} relation lines' },
@@ -267,6 +292,8 @@ const statTip =
   data-list-title={T.listTitle}
   data-list-shore={T.listShore}
   data-shore-tag={T.shoreTag}
+  data-layer-title={T.layerTitle}
+  data-layers={JSON.stringify(T.layers)}
   data-no-match={T.noMatch}
   data-times={JSON.stringify(T.times)}
   data-tip-links={T.tipLinks}
@@ -298,6 +325,12 @@ const statTip =
         <button type="button" data-time="dusk" title={T.times.dusk} aria-label={T.times.dusk}><svg viewBox="0 0 16 16" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12.5h12M4.5 12.5a3.5 3.5 0 0 1 7 0M8 2.5v4M6.2 4.7L8 6.5l1.8-1.8"></path></svg></button>
         <button type="button" data-time="night" title={T.times.night} aria-label={T.times.night}><svg viewBox="0 0 16 16" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.6 10.1A5.2 5.2 0 0 1 5.9 3.4a5.2 5.2 0 1 0 6.7 6.7z"></path></svg></button>
       </div>
+      <div class="ci-time ci-lens" role="group" aria-label={T.lensGroup}>
+        <span class="ci-seg-lbl">{T.lensGroup}</span>
+        {(['all', 'ls', 'java', 'ssjs'] as const).map((k) => (
+          <button type="button" data-lens={k} class={k === 'all' ? 'on' : undefined} title={T.lensTips[k]}>{T.lensModes[k]}</button>
+        ))}
+      </div>
       <div class="ci-time ci-links" role="group" aria-label={T.linksGroup}>
         <span class="ci-seg-lbl">{T.linksGroup}</span>
         {(['off', 'focus', 'all'] as const).map((k) => (
@@ -327,6 +360,11 @@ const statTip =
       <div class="ci-time" role="group" aria-label={T.timeGroup}>
         {(['dawn', 'day', 'dusk', 'night'] as const).map((k) => (
           <button type="button" data-time={k} class={k === 'day' ? 'on' : undefined} title={T.times[k]}>{T.timeShort[k]}</button>
+        ))}
+      </div>
+      <div class="ci-time ci-lens" role="group" aria-label={T.lensGroup}>
+        {(['all', 'ls', 'java', 'ssjs'] as const).map((k) => (
+          <button type="button" data-lens={k} class={k === 'all' ? 'on' : undefined} title={T.lensTips[k]}>{T.lensModes[k]}</button>
         ))}
       </div>
       <button type="button" class="ci-bird" data-act="bird" aria-pressed="false"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1.2"></path></svg>{T.birdLong}</button>
@@ -430,6 +468,12 @@ const statTip =
   #ci .ci-time button.on { background: var(--ink); color: var(--paper); }
   #ci .ci-bird { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; padding: 5px 11px; border: 1px solid var(--hair); border-radius: 8px; background: #fff; color: var(--ink); cursor: pointer; }
   #ci .ci-bird[aria-pressed='true'] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  /* the layer sketch on a shore area's card: where XPages / Java sit */
+  #ci .ci-panel .player { margin-top: 16px; display: flex; flex-direction: column; gap: 4px; }
+  #ci .ci-panel .player .lyrs { display: flex; gap: 4px; }
+  #ci .ci-panel .player .lyr { flex: 1; padding: 6px 8px; border: 1px solid rgba(43, 54, 68, 0.18); border-radius: 6px; font-size: 12px; color: var(--ink-mut); text-align: center; background: rgba(255, 255, 255, 0.5); }
+  #ci .ci-panel .player .lyr.on { border-color: #2b3644; background: #2b3644; color: #f4f1ec; font-weight: 600; }
+  #ci .ci-panel .player .lyr small { display: block; font-size: 10px; opacity: 0.7; }
   #ci .ci-seg-lbl { align-self: center; padding: 0 4px 0 10px; font-size: 12px; color: var(--ink-mut); white-space: nowrap; }
   /* pause ⇄ play icon */
   #ci .ci-pause-ic .ic-play, #ci [aria-pressed='true'] .ci-pause-ic .ic-pause { display: none; }
@@ -749,6 +793,19 @@ const statTip =
     function isShore(c) { return !!(c.members[0] && c.members[0].shore); }
     function shoreIcon(c) { return SHORE_ICON[c.members[0].shore] || '⚓'; }
 
+    // Where the power plant (Java) / the XPages town sits, as four layers:
+    // framework / binding (LS engine beside Java) / classes / Domino core,
+    // its own layer dark
+    var LAYERS = JSON.parse(DS.layers || '{}');
+    function layerSketch(shore) {
+      if (shore !== 'xpages' && shore !== 'java-runtime') return '';
+      function lyr(k, txt) { return '<div class="lyr' + ((shore === 'xpages' && k === 'fw') || (shore === 'java-runtime' && k === 'java') ? ' on' : '') + '">' + esc(txt) + '</div>'; }
+      return '<div class="player"><div class="prel-lbl">' + esc(DS.layerTitle) + '</div>' +
+        lyr('fw', LAYERS.fw) +
+        '<div class="lyrs">' + lyr('ls', LAYERS.bind + ' · ' + LAYERS.ls) + lyr('java', LAYERS.bind + ' · ' + LAYERS.java) + '</div>' +
+        lyr('cls', LAYERS.cls) + lyr('core', LAYERS.core) + '</div>';
+    }
+
     // Right-hand panel listing the selected island's classes.
     function renderPanel(cluster) {
       if (api) api.focusClass(null);
@@ -771,6 +828,7 @@ const statTip =
         '<div class="pnum">' + (isShore(cluster) ? shoreIcon(cluster) + ' ' + esc(DS.shoreTag) : String(cluster.num).padStart(2, '0')) + '</div>' +
         '<h3>' + esc(cluster.cat) + '</h3>' +
         '<div class="pmeta">' + cluster.count + esc(cluster.members[0] && cluster.members[0].island ? DS.countIsland : DS.count) + '</div>' +
+        layerSketch(cluster.members[0] && cluster.members[0].shore) +
         '<div class="plist">' + rows + '</div>' +
         (rel ? '<div class="prel"><div class="prel-lbl">' + esc(DS.relTitle) + '</div><div class="prel-key">⇄ ' + esc(DS.relBridge) + ' · ⋯ ' + esc(DS.relWalk) + '</div><div class="prel-chips">' + rel + '</div></div>' : '');
       panel.hidden = false;
@@ -813,6 +871,8 @@ const statTip =
         });
         loadingEl.hidden = true;
         if (q.value) api.filter(q.value);
+        var askedLens = new URL(location.href).searchParams.get('lens');
+        if (askedLens) api.setLens(askedLens);
         syncModes();
         if (docked() && panel.hidden) showHome();
         if (hint && hint.dataset.hint && window.matchMedia && window.matchMedia('(max-width:640px)').matches) {
@@ -917,7 +977,11 @@ const statTip =
     var TIME_TXT = JSON.parse(DS.times || '{}');
     function syncModes() {
       if (!api) return;
-      var t = api.getTime(), b = api.isBird(), lm = api.getLinks(), p = api.isPaused();
+      var t = api.getTime(), b = api.isBird(), lm = api.getLinks(), p = api.isPaused(), ln = api.getLens();
+      Array.prototype.forEach.call(root.querySelectorAll('[data-lens]'), function (btn) {
+        btn.classList.toggle('on', btn.dataset.lens === ln);
+        btn.setAttribute('aria-pressed', String(btn.dataset.lens === ln));
+      });
       Array.prototype.forEach.call(root.querySelectorAll('.ci-time button[data-time]'), function (btn) {
         btn.classList.toggle('on', btn.dataset.time === t);
         btn.setAttribute('aria-pressed', String(btn.dataset.time === t));
@@ -946,6 +1010,18 @@ const statTip =
     });
     Array.prototype.forEach.call(root.querySelectorAll('[data-links]'), function (btn) {
       btn.addEventListener('click', function () { if (api) { api.setLinks(btn.dataset.links); syncModes(); } });
+    });
+    // language lens; the address keeps it (?lens=java) so it can be shared
+    Array.prototype.forEach.call(root.querySelectorAll('[data-lens]'), function (btn) {
+      btn.addEventListener('click', function () {
+        if (!api) return;
+        var ln = api.setLens(btn.dataset.lens);
+        var url = new URL(location.href);
+        if (ln === 'all') url.searchParams.delete('lens');
+        else url.searchParams.set('lens', ln);
+        history.replaceState(history.state, '', url);
+        syncModes();
+      });
     });
     Array.prototype.forEach.call(root.querySelectorAll('[data-act="pause"]'), function (btn) {
       btn.addEventListener('click', function () { if (api) { api.setPaused(!api.isPaused()); syncModes(); } });

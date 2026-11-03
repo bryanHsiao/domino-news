@@ -13,6 +13,7 @@ import { createLinks } from './links.js';
 import { createHarbours } from './harbour.js';
 import { createSigns } from './signs.js';
 import { createWildlife } from './wildlife.js';
+import { createLens } from './lens.js';
 
 // Opening angle: the view the user turned to and liked on the live site
 // (2026-10-30) — the camera as low as the controls allow, turned a touch;
@@ -48,6 +49,11 @@ const PEDAL = 0.4; // distance a cyclist covers per pedal turn
 const CYCLISTS = 0.3; // share of the walkers (not porters) who ride a bicycle
 const PALE = new THREE.Color(0xe9e4da);
 const CORAL = new THREE.Color(0xdb6a41);
+// language lens: a class with no version in that language fades toward the
+// haze (not grey: grey roofs already mean "no article yet"); one with an
+// article there brightens a little (and glows, lens.js)
+const HAZE = new THREE.Color(0xdde8ee);
+const WARM = new THREE.Color(0xfff3d6);
 
 function esc(s) {
   return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -411,10 +417,12 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     crowd.commit();
   }
   updateWalkers(0); // place them (with reduced motion they stay put)
-  // a selected island's porters carry coral boxes
+  // a selected island's porters carry coral boxes; under a language lens
+  // their boxes fade with the relation lines
   function markPorters(cat) {
+    const lensOn = lens && lens.get() !== 'all';
     walkers.forEach((w, i) => {
-      if (w.rel) crowd.tintBox(i, cat && (w.rel.a === cat || w.rel.b === cat) ? 0xdb6a41 : null);
+      if (w.rel) crowd.tintBox(i, lensOn ? 0xe4ebee : cat && (w.rel.a === cat || w.rel.b === cat) ? 0xdb6a41 : null);
     });
   }
 
@@ -423,6 +431,31 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   let hoverNode = null; // class under the mouse
   let panelNode = null; // class row hovered in the panel
   const refreshFocus = () => links.setFocus(hoverNode || panelNode, selected);
+
+  // ---- language lens (cables from the power plant, house states)
+  const lens = createLens(THREE, scene, { layout, world, data, heightAt: env.heightAt, haloTex });
+  let missed = null; // class ids the search leaves out (null = no search)
+  // one tint per house from the search and the lens together: a search miss
+  // pales it; otherwise the lens decides
+  function paint() {
+    for (const n of data.nodes) {
+      if (missed && missed.has(n.id)) {
+        buildingKit.tint(n.id, PALE, 0.8);
+        continue;
+      }
+      const s = lens.stateOf(n);
+      if (s === 'none') buildingKit.tint(n.id, HAZE, 0.72);
+      else buildingKit.tint(n.id, WARM, s === 'lit' && lens.get() !== 'all' ? 0.16 : 0);
+    }
+    for (const l of world.landmarks) decorKit.tint('landmark:' + l.cat, HAZE, lens.landmarkDim(l.cat) ? 0.72 : 0);
+  }
+  function setLens(name) {
+    const now = lens.set(name);
+    paint();
+    links.setFade(now !== 'all');
+    markPorters(selected);
+    return now;
+  }
 
   // ---- boats: slow circles and a gentle bob; every part of a boat shares
   // its x/z, which keys the boat's own phase
@@ -548,11 +581,13 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   function filter(term) {
     const q = (term || '').trim().toLowerCase();
     matchCats = q ? new Set() : null;
+    missed = q ? new Set() : null;
     for (const n of data.nodes) {
       const hit = !q || n.name.toLowerCase().includes(q) || n.id.toLowerCase().includes(q);
-      buildingKit.tint(n.id, PALE, hit ? 0 : 0.8);
       if (q && hit) matchCats.add(n.cat);
+      else if (q) missed.add(n.id);
     }
+    paint();
     refreshLabels();
     return matchCats ? matchCats.size : null;
   }
@@ -792,6 +827,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       harbours.update(motion);
       wildlife.update(dt);
       links.update(dt);
+      lens.update(dt);
     }
     followTheClock(dt);
     if (timeAnim) {
@@ -840,6 +876,9 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       panelNode = id || null;
       refreshFocus();
     },
+    // language lens: 'all' | 'ls' | 'java' | 'ssjs'
+    setLens,
+    getLens: () => lens.get(),
     setPaused(on) {
       paused = !!on;
       return paused;
