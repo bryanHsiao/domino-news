@@ -209,11 +209,13 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   let homeDist = 0;
   const frameCam = new THREE.PerspectiveCamera(FOV, 1, 0.3, 600);
   const pv = new THREE.Vector3();
-  function clearArea(w, h) {
+  function clearArea(w, h, left) {
     // screen margins taken by the interface: a rect at the top (or bottom)
     // pushes that edge in; a tall one on the right (the phones' column)
-    // pushes the right edge in. Each is capped so a big panel can't swallow
-    // the view.
+    // pushes the right edge in; with `left`, a tall one on the left (the
+    // detail card on wide screens) pushes the left edge in — the opening view
+    // leaves it out, as the card is only open on the way to an island. Each
+    // is capped so a big panel can't swallow the view.
     const m = { l: 0, t: 0, r: 0, b: 0 };
     if (chrome) {
       const o = stage.getBoundingClientRect();
@@ -221,7 +223,9 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
         const l = c.left - o.left, t = c.top - o.top, r = c.right - o.left, b = c.bottom - o.top;
         if (r <= 0 || l >= w || b <= 0 || t >= h) continue; // outside the stage (the docked index)
         if (b - t > h * 0.3 && l > w * 0.6) m.r = Math.max(m.r, Math.min(w * 0.3, w - l));
-        else if (t < h * 0.3) m.t = Math.max(m.t, Math.min(h * 0.3, b));
+        else if (b - t > h * 0.3 && r < w * 0.5) {
+          if (left) m.l = Math.max(m.l, Math.min(w * 0.5, r));
+        } else if (t < h * 0.3) m.t = Math.max(m.t, Math.min(h * 0.3, b));
         else if (b > h * 0.7) m.b = Math.max(m.b, Math.min(h * 0.25, h - t));
       }
     }
@@ -661,8 +665,9 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     refreshLabels();
     markPorters(selected);
     refreshFocus();
-    if (selected && fly) flyToCluster(clusterByCat.get(selected));
+    // the page opens the island's card first, so the flight can aim beside it
     onSelect && onSelect(selected ? clusterByCat.get(selected) : null);
+    if (selected && fly) flyToCluster(clusterByCat.get(selected));
   }
   function filter(term) {
     const q = (term || '').trim().toLowerCase();
@@ -707,19 +712,23 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   }
   function flyToCluster(c) {
     const target = new THREE.Vector3(c.cx, TOP, c.cz);
-    // The panel covers the right of the stage on wide screens and its bottom
-    // half on phones (bottom sheet): aim beside / in front of the island so it
-    // settles in the clear area.
-    if (!window.matchMedia('(max-width: 640px)').matches) {
-      const right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0).setY(0).normalize();
-      target.addScaledVector(right, c.radius * 0.5);
-    } else {
-      const toCamera = new THREE.Vector3().subVectors(camera.position, controls.target).setY(0).normalize();
-      target.addScaledVector(toCamera, c.radius * 1.6 + 2);
-    }
     sph.setFromVector3(v.subVectors(camera.position, controls.target));
     const polar = bird ? BIRD_POLAR : THREE.MathUtils.clamp(sph.phi, THREE.MathUtils.degToRad(40), THREE.MathUtils.degToRad(58));
-    flyTo(target, posFor(target, Math.max(17, fitDistance(c.radius) * 1.7), polar, sph.theta));
+    const dist = Math.max(17, fitDistance(c.radius) * 1.7);
+    const toCamera = new THREE.Vector3().subVectors(camera.position, controls.target).setY(0).normalize();
+    // Wide screens: the detail card stands on the left of the stage, the
+    // toolbar on top — aim so the island settles in the middle of what they
+    // leave clear (shift the target along screen right / up on the ground,
+    // as fitHome does). Phones: the bottom sheet covers the lower half, so aim
+    // in front of the island.
+    if (!window.matchMedia('(max-width: 640px)').matches) {
+      const a = clearArea(stage.clientWidth, stage.clientHeight, true);
+      const right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0).setY(0).normalize();
+      const k = dist * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      target.addScaledVector(right, (-(a.x0 + a.x1) / 2) * k * camera.aspect);
+      target.addScaledVector(toCamera, (((a.y0 + a.y1) / 2) * k) / Math.cos(polar));
+    } else target.addScaledVector(toCamera, c.radius * 1.6 + 2);
+    flyTo(target, posFor(target, dist, polar, sph.theta));
   }
   function home(instant) {
     controls.maxDistance = maxDistance();
