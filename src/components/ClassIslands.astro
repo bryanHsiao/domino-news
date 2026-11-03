@@ -21,7 +21,7 @@ interface Props {
   data: IslandData;
   /** class id -> its articles, LS → Java → SSJS (src/lib/classArticles.ts) */
   articles: Record<string, ClassArticle[]>;
-  /** buildings on each off-shore island (XPages / web layer, Java runtime) */
+  /** buildings in each non-class shore area (XPages town, Java power plant) */
   islands: Record<MapIsland, XPagesMember[]>;
   /** buildings in the OpenNTF harbour on the shore */
   harbour: XPagesMember[];
@@ -31,13 +31,14 @@ interface Props {
 const { lang, data, articles, islands, harbour, coveredCount, total } = Astro.props;
 
 // The class houses carry their articles (LS plus any Java / SSJS residents,
-// one door sign each). Posts with no backing Notes class become off-shore
-// islands — XPages / web-layer concepts, and the Java-only runtime topics
-// (NotesFactory / NotesThread / NotesException / recycle): one building per
-// post, standing only in this view — the shared class data (directory /
-// graph) stays the 97 LotusScript classes, untouched. `ui` picks the roof
-// colour: the web layer is UI, the Java runtime is back end.
-const OFFSHORE: { id: MapIsland; name: string; ui: boolean }[] = [
+// one door sign each). Posts with no backing Notes class stand on the lake
+// shore, not in it — the Java-only runtime topics (NotesFactory /
+// NotesThread / NotesException / recycle) as a power plant on the near shore,
+// the XPages / web-layer concepts as a little town built beside it: one
+// building per post, standing only in this view — the shared class data
+// (directory / graph) stays the 97 LotusScript classes, untouched. `ui` picks
+// the roof colour: the web layer is UI, the Java runtime is back end.
+const SHORE: { id: MapIsland; name: string; ui: boolean }[] = [
   { id: 'xpages', name: 'XPages', ui: true },
   { id: 'java-runtime', name: lang === 'zh-TW' ? 'Java 執行環境' : 'Java runtime', ui: false },
 ];
@@ -49,35 +50,34 @@ for (const l of data.links) {
   deg[l.t] = (deg[l.t] || 0) + 1;
 }
 const classNodes = data.nodes.map(({ id, name, cat, ui, key, url, desc }) => ({ id, name, cat, ui, key, url, desc: desc || '', articles: articles[id] || [], deg: deg[id] || 0 }));
-const offshoreNodes = OFFSHORE.flatMap((o) =>
-  islands[o.id].map((m) => ({ id: o.id + ':' + m.slug, name: m.name, cat: o.name, ui: o.ui, key: false, url: m.url, desc: m.desc || '', articles: [m.article], island: true, offshore: o.id })),
+const shoreNodes = SHORE.flatMap((o) =>
+  islands[o.id].map((m) => ({ id: o.id + ':' + m.slug, name: m.name, cat: o.name, ui: o.ui, key: false, url: m.url, desc: m.desc || '', articles: [m.article], island: true, harbour: true, shore: o.id })),
 );
 // The OpenNTF community posts stand in a harbour town on the lake shore, not
 // on an island: the community supplies tools, it isn't part of the API.
 const HARBOUR = 'OpenNTF';
-const harbourNodes = harbour.map((m) => ({ id: 'openntf:' + m.slug, name: m.name, cat: HARBOUR, ui: false, key: false, url: m.url, desc: m.desc || '', articles: [m.article], island: true, harbour: true }));
-const nodes = [...classNodes, ...offshoreNodes, ...harbourNodes];
+const harbourNodes = harbour.map((m) => ({ id: 'openntf:' + m.slug, name: m.name, cat: HARBOUR, ui: false, key: false, url: m.url, desc: m.desc || '', articles: [m.article], island: true, harbour: true, shore: 'openntf' }));
+const nodes = [...classNodes, ...shoreNodes, ...harbourNodes];
 
 // Island numbering: the six core-containment categories first (fixed spine
-// order, same as ClassDirectory), then the rest by class count descending,
-// then the OpenNTF harbour. Where the islands go is decided in
-// ./islands/layout.js from the class links (related categories sit a bridge
-// apart). The off-shore platforms come last and carry no number: they are
-// where code runs, not classes, so they stand out at sea and are reached by
-// ferry; the harbour sits on the shore, linked by its cargo boats.
+// order, same as ClassDirectory), then the rest by class count descending.
+// Where the islands go is decided in ./islands/layout.js from the class links
+// (related categories sit a bridge apart). The shore areas — power plant,
+// XPages town, OpenNTF harbour — come last and carry no number: they aren't
+// classes.
 const CORE = ['Session', 'Database', 'View', 'Document', 'Item', 'Rich Text'];
 const counts: Record<string, number> = {};
 nodes.forEach((n) => (counts[n.cat] = (counts[n.cat] || 0) + 1));
-const OFFSHORE_NAMES = OFFSHORE.map((o) => o.name);
+const SHORE_NAMES = SHORE.map((o) => o.name);
 const cats = [
   ...CORE.filter((c) => counts[c]),
   ...Object.keys(counts)
-    .filter((c) => !CORE.includes(c) && c !== HARBOUR && !OFFSHORE_NAMES.includes(c))
+    .filter((c) => !CORE.includes(c) && c !== HARBOUR && !SHORE_NAMES.includes(c))
     .sort((a, b) => counts[b] - counts[a] || a.localeCompare(b)),
+  ...SHORE_NAMES.filter((c) => counts[c]),
   ...(counts[HARBOUR] ? [HARBOUR] : []),
-  ...OFFSHORE_NAMES.filter((c) => counts[c]),
 ];
-const islandCount = cats.filter((c) => c !== HARBOUR).length;
+const islandCount = cats.filter((c) => c !== HARBOUR && !SHORE_NAMES.includes(c)).length;
 const payload = { nodes, cats, links: data.links };
 
 const T =
@@ -112,7 +112,7 @@ const T =
         listTitle: '所有島嶼',
         noMatch: '沒有符合的類別',
         langOther: '社群',
-        sub: '每個 category 一座島，類別越多島越大；房子越高，跟它有關聯的類別越多（NotesSession 有 43 條，是摩天樓）；有關聯的島之間才有橋，橋越寬關聯越多，捧箱子的人在有關聯的島之間搬運。有 Java／SSJS 文章的房子屋頂插一支對應顏色的旗（炭墨黑＝Java、綠＝SSJS）；門口的「i」告示牌一面代表一篇文章（圓章顏色＝文章語言）；XPages／網頁層概念文、Java 專屬的執行環境文（NotesFactory／NotesThread／例外／recycle）講的是程式跑在哪裡，各是一座外海平台（深色船體、鋼甲板），靠渡輪往返、不架橋；沒有關聯的島之間只鋪踏腳石讓人走過去；OpenNTF 社群文在岸邊的港口，船從那裡開往各島。拖曳轉看、滾輪縮放；點島看清單與關聯線，點房子看類別介紹，點告示牌看文章預覽，指著房子或橋看關聯。',
+        sub: '每個 category 一座島，類別越多島越大；房子越高，跟它有關聯的類別越多（NotesSession 有 43 條，是摩天樓）；有關聯的島之間才有橋，橋越寬關聯越多，捧箱子的人在有關聯的島之間搬運。有 Java／SSJS 文章的房子屋頂插一支對應顏色的旗（炭墨黑＝Java、綠＝SSJS）；門口的「i」告示牌一面代表一篇文章（圓章顏色＝文章語言）；沒有關聯的島之間只鋪踏腳石讓人走過去。不是類別的蓋在湖岸上：Java 執行環境是前方岸邊的電廠，XPages 是建在它旁邊的小城區，OpenNTF 社群是後方岸邊的港口，船從那裡開往各島。拖曳轉看、滾輪縮放；點島看清單與關聯線，點房子看類別介紹，點告示牌看文章預覽，指著房子或橋看關聯。',
         covered: '已涵蓋',
         search: '搜尋類別…',
         reset: '重設視角',
@@ -121,10 +121,9 @@ const T =
         legUn: '尚未寫成文章',
         legKey: '核心類別',
         legHeight: '樓越高＝關聯越多',
-        legOff: '外海＝執行環境',
-        offSuffix: ' · 外海',
-        offTag: '外海平台',
-        listOffshore: '外海島',
+        legShore: '岸上＝不是類別',
+        shoreTag: '湖岸',
+        listShore: '湖岸',
         legFlagTip: '有 Java／SSJS 文章的房子，屋頂插一支對應顏色的旗（炭墨黑＝Java、綠＝SSJS）',
         hint: '拖曳轉看 · 點島看清單',
         panelCount: ' 個類別',
@@ -187,7 +186,7 @@ const T =
         listTitle: 'All islands',
         noMatch: 'No matching class',
         langOther: 'Community',
-        sub: 'One island per category, bigger for more classes; the taller a house, the more classes it links to (NotesSession’s 43 make a tower); bridges only join related islands, wider for more links, and porters carry boxes between related islands. A house with a Java / SSJS article flies a roof flag in that colour (charcoal = Java, green = SSJS); each “i” sign at a door is one article (its badge in the article’s language colour); the web-layer XPages posts and the Java-only runtime posts (NotesFactory / NotesThread / exceptions / recycle) are about where code runs: each is a platform out at sea (dark hull, steel deck), reached by ferry rather than a bridge; islands with no relation are joined only by stepping stones, so people can walk across; the OpenNTF community posts stand in a harbour on the shore, its boats sailing out to the islands. Drag to orbit, scroll to zoom; click an island for its list and relation lines, a house for the class overview, a sign at its door for an article preview; hover a house or bridge for its links.',
+        sub: 'One island per category, bigger for more classes; the taller a house, the more classes it links to (NotesSession’s 43 make a tower); bridges only join related islands, wider for more links, and porters carry boxes between related islands. A house with a Java / SSJS article flies a roof flag in that colour (charcoal = Java, green = SSJS); each “i” sign at a door is one article (its badge in the article’s language colour); islands with no relation are joined only by stepping stones, so people can walk across. What isn’t a class stands on the shore: the Java runtime is the power plant on the near shore, XPages the little town built beside it, and the OpenNTF community a harbour on the far shore, its boats sailing out to the islands. Drag to orbit, scroll to zoom; click an island for its list and relation lines, a house for the class overview, a sign at its door for an article preview; hover a house or bridge for its links.',
         covered: 'covered',
         search: 'Search classes…',
         reset: 'Reset view',
@@ -196,10 +195,9 @@ const T =
         legUn: 'Not written yet',
         legKey: 'Key class',
         legHeight: 'Taller = more links',
-        legOff: 'Offshore = runtime',
-        offSuffix: ' · offshore',
-        offTag: 'Offshore platform',
-        listOffshore: 'Offshore',
+        legShore: 'Shore = not a class',
+        shoreTag: 'Shore',
+        listShore: 'Shore',
         legFlagTip: 'A house with a Java / SSJS article flies a flag in that colour (charcoal = Java, green = SSJS)',
         hint: 'Drag to orbit · tap an island',
         panelCount: ' classes',
@@ -267,9 +265,8 @@ const statTip =
   data-rel-bridge={T.relBridge}
   data-rel-walk={T.relWalk}
   data-list-title={T.listTitle}
-  data-list-offshore={T.listOffshore}
-  data-off-suffix={T.offSuffix}
-  data-off-tag={T.offTag}
+  data-list-shore={T.listShore}
+  data-shore-tag={T.shoreTag}
   data-no-match={T.noMatch}
   data-times={JSON.stringify(T.times)}
   data-tip-links={T.tipLinks}
@@ -352,7 +349,7 @@ const statTip =
       {coveredCount < total && <span><i class="sw un"></i>{T.legUn}</span>}
       <span><i class="sw key"></i>{T.legKey}</span>
       <span><i class="sw tall"></i>{T.legHeight}</span>
-      <span><i class="sw off"></i>{T.legOff}</span>
+      <span><i class="sw off"></i>{T.legShore}</span>
       <span class="ci-leg-sep" aria-hidden="true"></span>
       <span title={T.legFlagTip}><i class="sw flag java"></i>Java</span>
       <span title={T.legFlagTip}><i class="sw flag ssjs"></i>SSJS</span>
@@ -451,9 +448,9 @@ const statTip =
   #ci .ci-lbl.sel { background: var(--ink); color: var(--paper); border-color: var(--coral); }
   #ci .ci-lbl.sel b { color: var(--butter); } #ci .ci-lbl.sel i { color: #cfc6bf; }
   #ci .ci-lbl.dim { opacity: 0.28; }
-  /* an off-shore platform's plate: no number, an anchor, the colours of its hull */
+  /* a shore area's plate (not a class): no number, an icon, a dark ground */
   #ci .ci-lbl.off:not(.sel) { background: rgba(43, 54, 68, 0.94); color: #f4f1ec; border-color: rgba(244, 241, 236, 0.28); }
-  #ci .ci-lbl.off b { color: #e9b444; font-size: 11px; }
+  #ci .ci-lbl.off b { color: #e9b444; font: 400 12px/1 system-ui, sans-serif; }
   #ci .ci-lbl.off:not(.sel) i { color: #b9c2cc; }
   /* near the brand card, toolbar, tabs or legend: fade out (scene.js) */
   #ci .ci-lbl.tucked { opacity: 0; pointer-events: none; }
@@ -521,8 +518,8 @@ const statTip =
   #ci .dot.ui, #ci .sw.ui { background: var(--roof-ui); }
   #ci .dot.un, #ci .sw.un { background: var(--roof-un); }
   #ci .dot.key, #ci .sw.key { background: var(--roof-key); }
-  /* off-shore = where code runs: a dark hull with its red waterline */
-  #ci .ci-legend .sw.off { clip-path: none; border-radius: 2px; width: 13px; background: #2b3644; box-shadow: inset 0 -3px 0 #b2412e; }
+  /* shore = not a class: a strip of land along the water */
+  #ci .ci-legend .sw.off { clip-path: none; border-radius: 2px; width: 13px; background: #a3b986; box-shadow: inset 0 -3px 0 #62b2bd; }
   /* "taller = more links": a rising staircase */
   #ci .ci-legend .sw.tall { width: 11px; height: 11px; border-radius: 0; background: var(--ink-mut); clip-path: polygon(0 100%, 0 68%, 33% 68%, 33% 36%, 66% 36%, 66% 0, 100% 0, 100% 100%); }
 
@@ -569,7 +566,7 @@ const statTip =
   /* island list: the reference index's numbered rows */
   #ci .ci-panel .plist-isl { display: flex; flex-direction: column; margin-top: 4px; }
   #ci .ci-panel .pgrp { margin: 18px 0 2px; font: 700 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: 0.08em; color: var(--ink-mut); }
-  #ci .ci-panel .pisl.off b { font: 600 16px/1 system-ui, sans-serif; color: #2b3644; }
+  #ci .ci-panel .pisl.off b { font: 400 17px/1 system-ui, sans-serif; }
   #ci .ci-panel .pisl { display: flex; align-items: center; gap: 10px; text-align: left; border: 0; border-bottom: 1px solid var(--hair); background: transparent; padding: 10px 2px; font: inherit; color: var(--ink); cursor: pointer; }
   #ci .ci-panel .pisl:hover span { color: var(--coral); }
   #ci .ci-panel .pisl b { min-width: 30px; font: italic 600 21px/1 Georgia, 'Times New Roman', serif; color: var(--coral); }
@@ -747,8 +744,10 @@ const statTip =
       );
     }
 
-    // an off-shore platform (XPages, Java runtime): where code runs, not a class
-    function isOffshore(c) { return !!(c.members[0] && c.members[0].offshore); }
+    // a shore area (Java power plant, XPages town, OpenNTF harbour): not a class
+    var SHORE_ICON = { 'java-runtime': '🏭', xpages: '🌐', openntf: '⚓' };
+    function isShore(c) { return !!(c.members[0] && c.members[0].shore); }
+    function shoreIcon(c) { return SHORE_ICON[c.members[0].shore] || '⚓'; }
 
     // Right-hand panel listing the selected island's classes.
     function renderPanel(cluster) {
@@ -769,7 +768,7 @@ const statTip =
       }).join('');
       panel.innerHTML =
         '<button class="pclose" aria-label="' + esc(DS.close) + '">×</button>' +
-        '<div class="pnum">' + (isOffshore(cluster) ? '⚓ ' + esc(DS.offTag) : String(cluster.num).padStart(2, '0')) + '</div>' +
+        '<div class="pnum">' + (isShore(cluster) ? shoreIcon(cluster) + ' ' + esc(DS.shoreTag) : String(cluster.num).padStart(2, '0')) + '</div>' +
         '<h3>' + esc(cluster.cat) + '</h3>' +
         '<div class="pmeta">' + cluster.count + esc(cluster.members[0] && cluster.members[0].island ? DS.countIsland : DS.count) + '</div>' +
         '<div class="plist">' + rows + '</div>' +
@@ -805,7 +804,7 @@ const statTip =
           labelsEl: document.getElementById('ci-labels'),
           tipEl: document.getElementById('ci-tip'),
           data: DATA,
-          strings: { offshore: DS.offSuffix, be: DS.tipBe, ui: DS.tipUi, key: DS.tipKey, un: DS.tipUn, info: DS.tipInfo, article: DS.tipArticle, preview: DS.tipPreview, rel: DS.tipRel, path: DS.tipPath, more: DS.tipMore, links: DS.tipLinks, langLabels: LANG_LABEL },
+          strings: { be: DS.tipBe, ui: DS.tipUi, key: DS.tipKey, un: DS.tipUn, info: DS.tipInfo, article: DS.tipArticle, preview: DS.tipPreview, rel: DS.tipRel, path: DS.tipPath, more: DS.tipMore, links: DS.tipLinks, langLabels: LANG_LABEL },
           onSelect: renderPanel,
           onClass: showClass,
           onArticle: showArticle,
@@ -857,14 +856,14 @@ const statTip =
         return !term || c.cat.toLowerCase().indexOf(term) >= 0 || c.members.some(function (m) { return m.name.toLowerCase().indexOf(term) >= 0 || m.id.toLowerCase().indexOf(term) >= 0; });
       });
       function row(c) {
-        var off = isOffshore(c);
-        return '<button class="pisl' + (off ? ' off' : '') + '" data-cat="' + esc(c.cat) + '"><b>' + (off ? '⚓' : String(c.num).padStart(2, '0')) + '</b><span>' + esc(c.cat) + '</span><i>' + c.count + '</i></button>';
+        var off = isShore(c);
+        return '<button class="pisl' + (off ? ' off' : '') + '" data-cat="' + esc(c.cat) + '"><b>' + (off ? shoreIcon(c) : String(c.num).padStart(2, '0')) + '</b><span>' + esc(c.cat) + '</span><i>' + c.count + '</i></button>';
       }
-      // the class islands keep their numbers; the off-shore platforms (where
-      // code runs) follow in a group of their own
-      var offRows = hits.filter(isOffshore).map(row).join('');
-      var rows = hits.filter(function (c) { return !isOffshore(c); }).map(row).join('') +
-        (offRows ? '<div class="pgrp">⚓ ' + esc(DS.listOffshore) + '</div>' + offRows : '');
+      // the class islands keep their numbers; the shore areas (not classes)
+      // follow in a group of their own
+      var offRows = hits.filter(isShore).map(row).join('');
+      var rows = hits.filter(function (c) { return !isShore(c); }).map(row).join('') +
+        (offRows ? '<div class="pgrp">' + esc(DS.listShore) + '</div>' + offRows : '');
       // docked, the list is the panel's home and has nothing to close
       panel.innerHTML = (docked() ? '' : '<button class="pclose" aria-label="' + esc(DS.close) + '">×</button>') +
         '<h3>' + esc(DS.listTitle) + '</h3>' +

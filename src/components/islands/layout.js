@@ -20,17 +20,16 @@ export const PER_TILE = 6; // class buildings per tile
 export const SPREAD = 1.25;
 const MIN_CHANNEL = 1.3;
 const WALK_RING = 1.8; // radius of the walking ring painted on each tile
-// Off-shore islands sit this much open water away from the archipelago, in
-// this direction (radians in the x/z plane; +z faces the default camera).
-const OFFSHORE_GAP = 3;
-const OFFSHORE_ANGLE = 1.1;
-// The harbour town stands on the lake shore in this direction (back left,
-// where the far shore is in view on every screen), its centre this far
-// beyond the archipelago's bounding circle. Angles and distances use the
-// basin's own measure (z stretched by 1 / 0.92), so the harbour lands on the
-// same shoreline environment.js draws.
-const HARBOUR_ANGLE = -2.0;
-const HARBOUR_OUT = 3.6;
+// What isn't a class stands on the lake shore rather than in it (nodes with
+// `shore`): the OpenNTF harbour on the far shore (back left, in view on every
+// screen), and on the near shore, facing the islands, the Java runtime's
+// power plant with the XPages town built beside it. Each sits in its
+// direction (radians in the x/z plane; +z faces the default camera), its
+// centre this far beyond the archipelago's bounding circle. Angles and
+// distances use the basin's own measure (z stretched by 1 / 0.92), so they
+// land on the same shoreline environment.js draws.
+const SHORE_ANGLE = { openntf: -2.0, 'java-runtime': Math.PI / 2 + 0.2, xpages: Math.PI / 2 - 0.16 };
+const SHORE_OUT = 3.6;
 
 const SQ3 = Math.sqrt(3);
 
@@ -129,14 +128,12 @@ export function layoutArchipelago(data) {
   // whose relations are most fully covered goes first — a small island that
   // only relates to the hub claims a spot beside it before one that has
   // other partners to sit next to.
-  // Off-shore islands (the XPages / web-layer and Java runtime posts: not
-  // Notes classes, no class links) are packed on their own and set apart
-  // across open water, reached by ferry, so they never read as part of the
-  // class archipelago. The harbour (the OpenNTF community posts) is packed the same
-  // way but stands on the lake shore, reached only by boat.
-  const harbourCats = new Set(data.cats.filter((c) => data.nodes.some((n) => n.cat === c && n.harbour)));
-  const offshore = new Set(data.cats.filter((c) => !harbourCats.has(c) && data.nodes.some((n) => n.cat === c && n.island)));
-  const coreCats = data.cats.filter((c) => !offshore.has(c) && !harbourCats.has(c));
+  // What isn't a class (the OpenNTF, Java runtime and XPages posts) is
+  // packed on its own and set on the lake shore, so it never reads as part
+  // of the class archipelago.
+  const shoreOf = new Map(data.cats.map((c) => [c, (data.nodes.find((n) => n.cat === c && n.shore) || {}).shore]).filter(([, s]) => s));
+  const harbourCats = new Set(shoreOf.keys());
+  const coreCats = data.cats.filter((c) => !harbourCats.has(c));
   const total = (c) => data.cats.reduce((s, o) => s + (o === c ? 0 : weight(c, o)), 0);
   const order = [];
   const left = [...coreCats];
@@ -185,7 +182,7 @@ export function layoutArchipelago(data) {
     return a;
   };
   const cellsOf = new Map();
-  for (const cat of [...order, ...offshore, ...harbourCats]) {
+  for (const cat of [...order, ...harbourCats]) {
     const want = Math.max(1, Math.ceil(counts.get(cat) / PER_TILE));
     const cells = [];
     const take = (c) => {
@@ -193,9 +190,9 @@ export function layoutArchipelago(data) {
       taken.set(keyOf(c[0], c[1]), cat);
     };
     const placed = coreCats.flatMap((c) => cellsOf.get(c) || []);
-    // an off-shore island starts far out on the grid, where it has no
-    // neighbours (and so no bridges); it is moved into place below
-    if (offshore.has(cat) || harbourCats.has(cat)) take([1000 + 40 * cellsOf.size, 0]);
+    // a shore area starts far out on the grid, where it has no neighbours
+    // (and so no bridges); it is moved into place below
+    if (harbourCats.has(cat)) take([1000 + 40 * cellsOf.size, 0]);
     else take(placed.length ? pickBest(freeAround(placed), (c) => spread(c[0], c[1]) - 6 * affinity(cat, c[0], c[1])) : [0, 0]);
     while (cells.length < want) {
       let mx = 0;
@@ -263,40 +260,25 @@ export function layoutArchipelago(data) {
     if (!moved) break;
   }
 
-  // Off-shore islands: out along OFFSHORE_ANGLE from the archipelago's
-  // centre, with at least OFFSHORE_GAP of water between them and the nearest
-  // class island (measured along that direction, so it holds for every tile).
-  const coreXZ = coreCats.flatMap((cat) => home.get(cat).map(([x, z]) => [x + off.get(cat)[0], z + off.get(cat)[1]]));
-  const ccx = coreXZ.reduce((s, p) => s + p[0], 0) / coreXZ.length;
-  const ccz = coreXZ.reduce((s, p) => s + p[1], 0) / coreXZ.length;
-  [...offshore].forEach((cat, k) => {
-    const a = OFFSHORE_ANGLE + k * 0.7;
-    const ux = Math.cos(a), uz = Math.sin(a);
-    const ps = home.get(cat);
-    const ox = ps.reduce((s, p) => s + p[0], 0) / ps.length;
-    const oz = ps.reduce((s, p) => s + p[1], 0) / ps.length;
-    const reachCore = Math.max(...coreXZ.map(([x, z]) => (x - ccx) * ux + (z - ccz) * uz));
-    const reachOwn = Math.max(...ps.map(([x, z]) => -((x - ox) * ux + (z - oz) * uz)));
-    const d = reachCore + reachOwn + 2 * INR + OFFSHORE_GAP;
-    off.set(cat, [ccx + ux * d - ox, ccz + uz * d - oz]);
-  });
-
-  // The harbour: on the shore just past the bounding circle of everything
-  // above (which is also what frames the camera and sizes the lake).
-  const inLake = [...coreCats, ...offshore].flatMap((cat) => home.get(cat).map(([x, z]) => [x + off.get(cat)[0], z + off.get(cat)[1]]));
+  // The shore areas: just past the bounding circle of the archipelago (which
+  // is also what frames the camera and sizes the lake).
+  const inLake = coreCats.flatMap((cat) => home.get(cat).map(([x, z]) => [x + off.get(cat)[0], z + off.get(cat)[1]]));
   const lx = inLake.reduce((s, p) => s + p[0], 0) / inLake.length;
   const lz = inLake.reduce((s, p) => s + p[1], 0) / inLake.length;
   const lakeR = Math.max(...inLake.map(([x, z]) => Math.hypot(x - lx, z - lz))) + R;
-  const harbours = [...harbourCats].map((cat, k) => {
-    const a = HARBOUR_ANGLE - k * 0.5;
-    const d = lakeR + HARBOUR_OUT;
+  const harbours = [...harbourCats].map((cat) => {
+    const kind = shoreOf.get(cat);
+    const a = SHORE_ANGLE[kind] ?? SHORE_ANGLE.openntf;
+    const d = lakeR + SHORE_OUT;
     const hx = lx + Math.cos(a) * d, hz = lz + (Math.sin(a) * d) / 0.92;
     const ps = home.get(cat);
     const ox = ps.reduce((s, p) => s + p[0], 0) / ps.length;
     const oz = ps.reduce((s, p) => s + p[1], 0) / ps.length;
     off.set(cat, [hx - ox, hz - oz]);
     const extent = Math.max(...ps.map(([x, z]) => Math.hypot(x - ox, z - oz))) + R;
-    return { cat, x: hx, z: hz, r: extent };
+    // the harbour is a quay of boards; the near-shore areas are paved on the
+    // ground itself, so environment.js levels their shelf flush with the deck
+    return { cat, kind, x: hx, z: hz, r: extent, ground: kind === 'openntf' ? undefined : TOP - 0.02 };
   });
 
   const clusters = data.cats.map((cat, i) => {
@@ -423,24 +405,24 @@ export function layoutArchipelago(data) {
     bridges.push({ a, b, rel: null, steps: true });
     parent.set(find(a.cat), find(b.cat));
   }
-  // An off-shore island is where code runs, not a class: no bridge (bridges
-  // are class relations) but a ferry route from the nearest class island —
-  // the tile pair closest across the water (ferry.js draws the piers, the
-  // dashed route and the ferry).
-  const ferries = [];
-  for (const cat of offshore) {
+  // A road on land joins the Java power plant and the XPages town built
+  // beside it (a road, not a bridge: bridges stand only for class relations)
+  // — the two nearest tiles of the two areas.
+  const roads = [];
+  const areaOf = (kind) => [...shoreOf].find(([, s]) => s === kind)?.[0];
+  const javaCat = areaOf('java-runtime'), xpagesCat = areaOf('xpages');
+  if (javaCat && xpagesCat) {
     let best = null;
     let bd = Infinity;
-    for (const a of tiles)
-      if (!offshore.has(a.cat) && !harbourCats.has(a.cat))
-        for (const b of byCat.get(cat).tiles) {
-          const d = Math.hypot(a.x - b.x, a.z - b.z);
-          if (d < bd) {
-            bd = d;
-            best = [a, b];
-          }
+    for (const a of byCat.get(javaCat).tiles)
+      for (const b of byCat.get(xpagesCat).tiles) {
+        const d = Math.hypot(a.x - b.x, a.z - b.z);
+        if (d < bd) {
+          bd = d;
+          best = [a, b];
         }
-    ferries.push({ cat, from: best[0], to: best[1] });
+      }
+    roads.push({ a: best[0], b: best[1] });
   }
   bridges.forEach((b, i) => (b.id = 'bridge:' + i));
 
@@ -453,21 +435,21 @@ export function layoutArchipelago(data) {
   }
   for (const c of clusters) c.relations.sort((x, y) => y.n - x.n || x.cat.localeCompare(y.cat));
 
-  const walk = buildWalkGraph(tiles, fused, bridges);
+  const walk = buildWalkGraph(tiles, fused, bridges, roads);
 
-  // The lake and the camera frame everything but the harbour, which stands on
-  // the shore beyond.
+  // The lake and the camera frame the class islands only; the shore areas
+  // stand beyond.
   const lakeTiles = tiles.filter((t) => !harbourCats.has(t.cat));
   const bx = lakeTiles.reduce((s, t) => s + t.x, 0) / lakeTiles.length;
   const bz = lakeTiles.reduce((s, t) => s + t.z, 0) / lakeTiles.length;
   const radius = Math.max(...lakeTiles.map((t) => Math.hypot(t.x - bx, t.z - bz))) + R;
-  return { clusters, tiles, fused, junctions, bridges, relations: [...rel.values()], walk, harbours, offshore: [...offshore], ferries, bounds: { cx: bx, cz: bz, radius } };
+  return { clusters, tiles, fused, junctions, bridges, relations: [...rel.values()], walk, harbours, roads, bounds: { cx: bx, cz: bz, radius } };
 }
 
 // Pedestrian network for future walkers: 12 nodes on each tile's walking ring
 // (vertices + edge midpoints), joined across fused tiles and over bridges.
 // Not drawn in v1 — the ring paving and the bridges are its visible form.
-function buildWalkGraph(tiles, fused, bridges) {
+function buildWalkGraph(tiles, fused, bridges, roads = []) {
   const nodes = [];
   const edges = [];
   const adj = [];
@@ -517,6 +499,8 @@ function buildWalkGraph(tiles, fused, bridges) {
     br.arch = base * Math.min(2, Math.max(1, deck / 2));
     link(br.walk[0], br.walk[1], br.arch);
   }
+  // the road on the shore, walked flat
+  for (const rd of roads) link(nearest(rd.a, rd.b.x, rd.b.z), nearest(rd.b, rd.a.x, rd.a.z));
   return { nodes, edges, adj };
 }
 

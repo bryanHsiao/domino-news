@@ -44,15 +44,16 @@ const FALLBACKS = [
 export function themeFor(cat, index) {
   return THEMES[cat] || FALLBACKS[index % FALLBACKS.length];
 }
-// The off-shore platforms (where code runs, not class islands), keyed by the
-// platform id (ClassIslands.astro OFFSHORE), not by the localised name:
-// industrial walls, no greenery, and a landmark that says what runs there.
-export const OFFSHORE_THEMES = {
-  // the web layer: a glass exhibition hall and a signal tower
-  xpages: { walls: [0xeef2f6, 0xe3e9ef], roof: 'gable', body: 'box', flora: 'crates', landmark: 'glasshall' },
-  // the Java runtime: a machine room with a chimney and gears, and a
-  // recycling station (NotesFactory / NotesThread / recycle)
-  'java-runtime': { walls: [0xd8dde3, 0xcdd3da], roof: 'flat', body: 'box', flora: 'crates', landmark: 'factory' },
+// The shore areas that aren't classes, keyed by their shore id
+// (ClassIslands.astro SHORE), not by the localised name: the Java runtime's
+// power plant and the XPages town built beside it.
+export const SHORE_THEMES = {
+  // the web layer: a glass exhibition hall and a signal tower among its houses
+  xpages: { walls: [0xeef2f6, 0xe3e9ef], roof: 'gable', body: 'box', flora: 'tree', landmark: 'glasshall' },
+  // the Java runtime: a power plant — machine hall with chimney and gear, a
+  // cooling tower, a pylon, a recycling station (NotesFactory / NotesThread /
+  // recycle)
+  'java-runtime': { walls: [0xd8dde3, 0xcdd3da], roof: 'flat', body: 'box', flora: 'pine', landmark: 'powerplant' },
 };
 
 // Landmarks are built from kit parts around (x, z) on a tile deck. They fit
@@ -340,32 +341,43 @@ export function buildLandmark(kind, kit, x, z) {
       P('bulb', tx, y + 1.56, tz, 0.08, 0.08, 0.08, 0xff6a4a);
       break;
     }
-    case 'factory': {
-      // Java runtime — a machine room with a chimney and a big gear, and a
-      // recycling station with three bins
-      P('rbox', x - 0.1, y + 0.24, z - 0.08, 0.66, 0.48, 0.46, 0xb9c0c8);
-      for (let i = 0; i < 3; i++) P('gable', x - 0.32 + i * 0.22, y + 0.56, z - 0.08, 0.22, 0.16, 0.46, 0x7f8a96);
-      for (const dx of [-0.28, -0.08, 0.12]) P('glass', x + dx, y + 0.28, z + 0.155, 0.12, 0.1, 0.02, GLASS);
-      P('cyl', x + 0.16, y + 0.62, z - 0.24, 0.12, 1.1, 0.12, 0xa65a43);
-      P('cyl', x + 0.16, y + 0.92, z - 0.24, 0.13, 0.06, 0.13, 0xf4efe6);
-      P('cyl', x + 0.16, y + 1.18, z - 0.24, 0.13, 0.04, 0.13, 0x3b3a42);
+    case 'powerplant': {
+      // Java runtime — a power plant: the machine hall (sawtooth roof, a big
+      // gear on its front wall), a tall chimney, a cooling tower, a pylon and
+      // a recycling station. Built 1.4x the size of an island landmark.
+      const s = 1.4;
+      const Q = (k, dx, dy, dz, sx, sy, sz, c, rot) => P(k, x + dx * s, y + dy * s, z + dz * s, sx * s, sy * s, sz * s, c, rot);
+      Q('rbox', -0.1, 0.24, -0.08, 0.66, 0.48, 0.46, 0xb9c0c8);
+      for (let i = 0; i < 3; i++) Q('gable', -0.32 + i * 0.22, 0.56, -0.08, 0.22, 0.16, 0.46, 0x7f8a96);
+      for (const dx of [-0.28, -0.08, 0.12]) Q('glass', dx, 0.28, 0.155, 0.12, 0.1, 0.02, GLASS);
+      Q('cyl', 0.16, 0.62, -0.24, 0.12, 1.1, 0.12, 0xa65a43);
+      Q('cyl', 0.16, 0.92, -0.24, 0.13, 0.06, 0.13, 0xf4efe6);
+      Q('cyl', 0.16, 1.18, -0.24, 0.13, 0.04, 0.13, 0x3b3a42);
       // the gear on the front wall: a disc with eight teeth
-      const gx = x - 0.12, gy = y + 0.3, gz = z + 0.17;
-      disc(gx, gy, gz, 0.15, 0xe9b444, FACE_Z);
+      const gx = x - 0.12 * s, gy = y + 0.3 * s, gz = z + 0.17 * s;
+      disc(gx, gy, gz, 0.15 * s, 0xe9b444, FACE_Z);
       for (let k = 0; k < 8; k++) {
         const a = (k / 8) * Math.PI * 2;
-        P('box', gx + Math.cos(a) * 0.17, gy + Math.sin(a) * 0.17, gz, 0.06, 0.06, 0.02, 0xe9b444, [0, 0, a]);
+        P('box', gx + Math.cos(a) * 0.17 * s, gy + Math.sin(a) * 0.17 * s, gz, 0.06 * s, 0.06 * s, 0.02 * s, 0xe9b444, [0, 0, a]);
       }
-      disc(gx, gy, gz + 0.012, 0.05, 0x8a6a4e, FACE_Z);
+      disc(gx, gy, gz + 0.012 * s, 0.05 * s, 0x8a6a4e, FACE_Z);
+      // the cooling tower: a waisted drum, a little steam
+      Q('trunk', -0.62, 0.3, -0.18, 0.42, 0.6, 0.42, 0xdfe2e5);
+      Q('trunk', -0.62, 0.66, -0.18, 0.36, 0.18, 0.36, 0xd2d6da, [Math.PI, 0, 0]);
+      Q('leaf', -0.62, 0.86, -0.18, 0.3, 0.16, 0.3, 0xf7f7f5);
+      // a pylon carrying the power out
+      for (const dx of [-0.05, 0.05]) Q('box', 0.62 + dx, 0.45, -0.3, 0.025, 0.9, 0.025, 0x8b939b, [0, 0, dx * 1.6]);
+      Q('box', 0.62, 0.78, -0.3, 0.34, 0.025, 0.025, 0x8b939b);
+      Q('box', 0.62, 0.62, -0.3, 0.26, 0.025, 0.025, 0x8b939b);
       // recycling station: three bins and a sign
-      const rx = x + 0.42, rz = z + 0.3;
+      const rx = 0.42, rz = 0.3;
       [0x4fa36b, 0x4f86c6, 0xe9b444].forEach((c, i) => {
-        P('rbox', rx - 0.15 + i * 0.15, y + 0.09, rz, 0.13, 0.18, 0.13, c);
-        P('box', rx - 0.15 + i * 0.15, y + 0.185, rz, 0.14, 0.015, 0.14, 0x3b3a42);
+        Q('rbox', rx - 0.15 + i * 0.15, 0.09, rz, 0.13, 0.18, 0.13, c);
+        Q('box', rx - 0.15 + i * 0.15, 0.185, rz, 0.14, 0.015, 0.14, 0x3b3a42);
       });
-      P('cyl', rx + 0.22, y + 0.22, rz - 0.06, 0.02, 0.44, 0.02, 0x4a4744);
-      P('box', rx + 0.22, y + 0.42, rz - 0.06, 0.18, 0.16, 0.02, 0x4fa36b);
-      P('box', rx + 0.22, y + 0.42, rz - 0.048, 0.1, 0.02, 0.01, 0xf4efe6);
+      Q('cyl', rx + 0.22, 0.22, rz - 0.06, 0.02, 0.44, 0.02, 0x4a4744);
+      Q('box', rx + 0.22, 0.42, rz - 0.06, 0.18, 0.16, 0.02, 0x4fa36b);
+      Q('box', rx + 0.22, 0.42, rz - 0.048, 0.1, 0.02, 0.01, 0xf4efe6);
       break;
     }
     default: {

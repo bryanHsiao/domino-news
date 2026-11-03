@@ -148,8 +148,9 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, 
     if (h > 0) h *= 1 - 0.72 * Math.pow(front, 2.2);
     return h;
   };
-  // A harbour sits on a level shelf of land: flattened behind and under it,
-  // while in front of its quay the lake stays open.
+  // A shore area sits on a level shelf of land: flattened behind and under
+  // it, while in front of it the lake stays open. The harbour's shelf lies
+  // below its quay; a paved area's (hb.ground) is level with its paving.
   const GROUND = TOP - 0.2;
   const heightAt = (x, z) => {
     let h = rawHeight(x, z);
@@ -159,7 +160,7 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, 
       const ox = hb.x - cx, oz = hb.z - cz;
       const s = ((x - hb.x) * ox + (z - hb.z) * oz) / Math.hypot(ox, oz); // + landward
       const w = (1 - smooth(hb.r + 0.8, hb.r + 5, d)) * smooth(-hb.r - 0.2, -hb.r + 1.4, s);
-      h += (GROUND - h) * w;
+      h += ((hb.ground ?? GROUND) - h) * w;
     }
     return h;
   };
