@@ -1,0 +1,50 @@
+---
+// "← Back to the class map", above an article's title — shown only when the
+// reader opened this article from /map/ (see src/lib/mapReturn.ts).
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const label = lang === 'zh-TW' ? '← 回到類別地圖' : '← Back to the class map';
+---
+
+<a class="map-back" data-map-back href="#" hidden>{label}</a>
+
+<style>
+  .map-back {
+    display: inline-block;
+    margin: 0 0 0.6rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+  .map-back:hover {
+    text-decoration: underline;
+  }
+  .map-back[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  import { mapReturnFor, forgetMap } from '../lib/mapReturn';
+
+  // Once loaded, this keeps running on every page the reader moves on to
+  // (view transitions): on a page that is neither an article nor the map,
+  // the way back is dropped, so map → article → home → that article again
+  // shows no link.
+  function initMapBack() {
+    const el = document.querySelector<HTMLAnchorElement>('[data-map-back]');
+    if (!el) {
+      if (!/\/map\/?$/.test(location.pathname)) forgetMap();
+      return;
+    }
+    const back = mapReturnFor(location.pathname);
+    if (back) el.href = back;
+    el.hidden = !back;
+  }
+  document.addEventListener('astro:page-load', initMapBack);
+</script>

@@ -908,6 +908,9 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       window.removeEventListener('resize', resize);
       controls.dispose();
       renderer.dispose();
+      // and the WebGL context itself, so map → article → map → … never piles
+      // up contexts until the browser starts dropping the oldest
+      renderer.forceContextLoss();
       return;
     }
     raf = requestAnimationFrame(frame);

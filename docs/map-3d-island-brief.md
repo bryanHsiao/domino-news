@@ -747,6 +747,31 @@ OpenNTF 才用船。另外門口的「人」改成帶「i」圖示的告示牌�
   代表網頁層；OpenNTF＝打開的盒子（開源專案與工具）。盒子試過正面畫法，16px 下翻蓋看起來像
   波浪形的蓋子、看不出「打開」，最後用立體斜角的開盒。
 
+### 文章直開、選擇寫進網址、文章頁回地圖（2026-11-04）
+
+使用者問兩件事：為什麼點類別卡裡的文章，會先跳出簡介卡、還要再按「前往文章」；開了文章之後，也沒有路回到地圖。
+
+- **直開**：類別卡「這個類別的文章」和文章預覽卡「同類別的其他文章」的項目，改成真正的
+  `<a class="part" href>`，點了直接進文章。3D 場景裡門口人物的點擊照舊，先開文章預覽卡，
+  免得在場景裡誤點就離開地圖；預覽卡的「前往文章」也照舊。島嶼清單和搜尋結果的行為沒動。
+- **網址**：`setPick()` 沿用 `?lens=` 的做法，用 `history.replaceState(history.state, …)` 改網址，
+  保留 Astro router 的 state。開島卡寫 `?island=<cat>`，開類別卡寫 `?cls=<node id>`；
+  文章預覽卡寫它所屬類別的 `?cls=`，岸上建物就寫它自己的 node id（如 `xpages:<slug>`）。
+  關卡（`showHome`）會把兩個參數都拿掉；手機上清單蓋過詳細資訊時也算關卡。`lens` 參數保留。
+- **載入**：`boot()` 讀這兩個參數，`api.select(cat)` 先開島卡，再飛到那座島；有 `cls` 就接著
+  `showClass` 換成類別卡。參數對不到任何島或類別時，照常開場，並把參數清掉。
+  手機一樣適用，卡片開在 bottom sheet。
+- **回地圖**：從卡片點進文章時（`a.part`、`a.pgo`），`src/lib/mapReturn.ts` 的 `rememberMap()`
+  會把當下的地圖網址（含 `?cls=`、`?lens=`）連同目標文章的路徑，記進 sessionStorage。
+  文章頁的 `MapBackLink.astro`（放在麵包屑和標題之間）只有在紀錄的目標就是這篇、而且來源是
+  `/map/` 時，才顯示「← 回到類別地圖」／"← Back to the class map"。
+  這支 script 載入一次之後，透過 view transitions 會在之後每一頁執行；到了文章和地圖以外的頁面，
+  就把紀錄清掉。所以「地圖 → 文章 → 首頁 → 同一篇」不會出現連結；直接進文章的人也看不到。
+  sessionStorage 的讀寫都包了 try/catch。瀏覽器上一頁因為網址本來就帶著 `?cls=`，會回到同一張卡。
+- **WebGL context**：離開地圖時，`scene.js` 除了 `renderer.dispose()`，再加上
+  `forceContextLoss()`；`webglOK()` 的偵測 context 用完就用 `WEBGL_lose_context` 釋放。
+  實測「地圖 → 文章 → 地圖」來回四趟，任何時候都只有 1 個存活的 context。
+
 ### 湖上的生物與飄動的雲（2026-10-30）
 
 `src/components/islands/wildlife.js` 負責湖上不定時出現的動態：
