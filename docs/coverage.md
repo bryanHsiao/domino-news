@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-11-03 · Posts scanned: 199 · Classes catalogued: 97*
+*Generated: 2026-11-03 · Posts scanned: 200 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -143,14 +143,14 @@
 
 **Dedicated** = the class has its own Java / SSJS deep-dive (`coversClass` + `apiLang` frontmatter — the authoritative "already written" list). **Gap** = Java / SSJS counterparts that LS posts point to (via `relatedJava` / `relatedSsjs`) but that do **not** yet have a dedicated article — the natural pool of "topics worth a single-language deep-dive next." A `relatedJava` pointer alone is NOT an article; only `coversClass` + `apiLang` counts as written.
 
-**Summary** — Java: **10** classes have a dedicated article, **42** referenced counterparts still in the gap. SSJS: **2** dedicated, **38** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
+**Summary** — Java: **10** classes have a dedicated article, **42** referenced counterparts still in the gap. SSJS: **3** dedicated, **37** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
 
 ### Dedicated Java / SSJS articles
 
 | Class | Java | SSJS |
 |---|---|---|
 | `NotesAgent` | [java-agent-anatomy](https://bryanhsiao.github.io/domino-news/posts/java-agent-anatomy/) | — |
-| `NotesDateTime` | [java-datetime](https://bryanhsiao.github.io/domino-news/posts/java-datetime/) | — |
+| `NotesDateTime` | [java-datetime](https://bryanhsiao.github.io/domino-news/posts/java-datetime/) | [ssjs-datetime](https://bryanhsiao.github.io/domino-news/posts/ssjs-datetime/) |
 | `NotesDocument` | [java-document-items](https://bryanhsiao.github.io/domino-news/posts/java-document-items/) | — |
 | `NotesDocumentCollection` | [java-collection-iteration](https://bryanhsiao.github.io/domino-news/posts/java-collection-iteration/) | — |
 | `NotesDominoQuery` | [java-dql-dominoquery](https://bryanhsiao.github.io/domino-news/posts/java-dql-dominoquery/) | — |
@@ -228,7 +228,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | `ViewEntry` | [domino-web-view-start-parameter](https://bryanhsiao.github.io/domino-news/posts/domino-web-view-start-parameter/), [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
 | `ViewEntryCollection` | [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
 
-### SSJS counterparts still in the gap (38)
+### SSJS counterparts still in the gap (37)
 
 | SSJS class | LS posts that point to it |
 |---|---|
@@ -236,7 +236,6 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | `ACLEntry` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
 | `Agent` | [notes-agent](https://bryanhsiao.github.io/domino-news/posts/notes-agent/) |
 | `ColorObject` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
-| `DateTime` | [notes-datetime-timezone](https://bryanhsiao.github.io/domino-news/posts/notes-datetime-timezone/) |
 | `DbDirectory` | [notes-db-directory](https://bryanhsiao.github.io/domino-news/posts/notes-db-directory/) |
 | `Document` | [notes-document-save-conflict](https://bryanhsiao.github.io/domino-news/posts/notes-document-save-conflict/) |
 | `DominoQuery` | [dql-execution-error-diagnostic](https://bryanhsiao.github.io/domino-news/posts/dql-execution-error-diagnostic/), [dql-view-date-column](https://bryanhsiao.github.io/domino-news/posts/dql-view-date-column/), [dql-production](https://bryanhsiao.github.io/domino-news/posts/dql-production/), [dql-pitfalls](https://bryanhsiao.github.io/domino-news/posts/dql-pitfalls/), [dql-getting-started](https://bryanhsiao.github.io/domino-news/posts/dql-getting-started/) |
@@ -275,6 +274,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [ssjs-datetime](https://bryanhsiao.github.io/domino-news/posts/ssjs-datetime/) | — | — | — |
 | [domino-message-disclaimers](https://bryanhsiao.github.io/domino-news/posts/domino-message-disclaimers/) | — | — | — |
 | [domino-message-tracking](https://bryanhsiao.github.io/domino-news/posts/domino-message-tracking/) | — | — | — |
 | [domino-inbound-smtp-relay-controls](https://bryanhsiao.github.io/domino-news/posts/domino-inbound-smtp-relay-controls/) | — | — | — |
