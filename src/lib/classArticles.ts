@@ -9,6 +9,7 @@
 // as more entries with their own `lang`.
 import type { CoverageReport } from '../../scripts/lib/coverage';
 import { loadMapPosts, computeMapLanguages, MAP_ISLANDS, type MapIsland } from '../../scripts/lib/mapLanguages';
+import { apiVersions } from '../../scripts/lib/apiVersions';
 import { getPostsByLang, type Post } from './posts';
 import { localizedPath, type Lang } from '../i18n/ui';
 
@@ -74,12 +75,19 @@ export async function classArticles(report: CoverageReport, lang: Lang, max = 3)
  *   - `islands`: per off-shore island (XPages / web layer, Java runtime), its
  *     buildings (coversIsland posts).
  *   - `harbour`: the OpenNTF harbour's buildings (coversHarbour posts).
+ *   - `versions`: the class ids that exist in Java / in SSJS at all, written
+ *     about or not (scripts/lib/apiVersions), for the language lens.
  * Slugs that resolve to no published post in `lang` are dropped.
  */
 export async function islandArticles(
   report: CoverageReport,
   lang: Lang,
-): Promise<{ articles: Record<string, ClassArticle[]>; islands: Record<MapIsland, XPagesMember[]>; harbour: XPagesMember[] }> {
+): Promise<{
+  articles: Record<string, ClassArticle[]>;
+  islands: Record<MapIsland, XPagesMember[]>;
+  harbour: XPagesMember[];
+  versions: { java: string[]; ssjs: string[] };
+}> {
   const published = new Map((await getPostsByLang(lang)).map((p) => [p.data.slug, p]));
   const taipeiDate = (p: Post) => p.data.pubDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Taipei' });
   const toArticle = (slug: string, articleLang: ArticleLang): ClassArticle | null => {
@@ -130,5 +138,6 @@ export async function islandArticles(
   }
   harbour.sort((a, b) => b.article.date.localeCompare(a.article.date));
 
-  return { articles, islands, harbour };
+  const v = apiVersions(report, classIds, lamps);
+  return { articles, islands, harbour, versions: { java: [...v.java].sort(), ssjs: [...v.ssjs].sort() } };
 }

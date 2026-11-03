@@ -409,6 +409,8 @@ export function createEnvironment(THREE, scene, props, kit, { cx, cz, radius }, 
   }
 
   return {
+    // ground height (water level where the lake is), for anything laid on it
+    heightAt: (x, z) => Math.max(heightAt(x, z), WATER_Y),
     update(dt) {
       waterMat.uniforms.uTime.value += dt;
     },

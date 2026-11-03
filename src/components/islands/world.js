@@ -90,7 +90,7 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
   const pickTargets = [];
   const outlines = new Map();
   const anchors = new Map(); // class id -> roof top of its house, where relation lines start and end
-  const landmarks = []; // { x, z, kind } of each island's landmark (the camera framing keeps them in view)
+  const landmarks = []; // { x, z, kind, cat } of each island's landmark (the camera framing keeps them in view)
   const fairy = []; // [x, y, z] of every rim string light
   const tileAt = new Map(layout.tiles.map((t) => [t.q + ',' + t.r, t]));
   const add = (geo, mat, { cast = false, receive = true, cat = null, x = 0, y = 0, z = 0 } = {}) => {
@@ -264,8 +264,11 @@ export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, l
       slots = [0, 0.95, -0.95, 1.9, -1.9, Math.PI].map((d) => [Math.cos(land + d) * 1.25, Math.sin(land + d) * 1.25]);
     }
     if (isHeart) {
-      buildLandmark(theme.landmark, decor, lx, lz);
-      landmarks.push({ x: lx, z: lz, kind: theme.landmark });
+      // its parts are owned by 'landmark:<cat>', so the language lens can
+      // dim a whole landmark
+      const own = 'landmark:' + t.cat;
+      buildLandmark(theme.landmark, { part: (k, p, s, c, o, r) => decor.part(k, p, s, c, o || own, r) }, lx, lz);
+      landmarks.push({ x: lx, z: lz, kind: theme.landmark, cat: t.cat });
     }
     t.nodes.forEach((n, i) => {
       const [ox, oz] = slots[i];
