@@ -14,6 +14,7 @@ import { createHarbours } from './harbour.js';
 import { createSigns } from './signs.js';
 import { createWildlife } from './wildlife.js';
 import { createLens } from './lens.js';
+import { shoreIcon } from './shoreIcons.js';
 
 // Opening angle on desktop (2026-11-03): seen across a corner, from the
 // front right, and a little higher, with water left all round. The earlier
@@ -35,8 +36,6 @@ const PHONE_POLAR = THREE.MathUtils.degToRad(50);
 // The opening view fits the class islands into the part of the stage the
 // interface leaves clear, at least this many px from its edges.
 const HOME_PAD = 14;
-// the icon on a shore area's name plate (and in the island list)
-export const SHORE_ICON = { 'java-runtime': '🏭', xpages: '🌐', openntf: '⚓' };
 const POLAR_MIN = THREE.MathUtils.degToRad(25);
 const POLAR_MAX = THREE.MathUtils.degToRad(70);
 const BIRD_POLAR = 0.1; // bird's-eye: almost straight down
@@ -521,7 +520,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     const shore = c.members[0] && c.members[0].shore;
     el.className = shore ? 'ci-lbl off' : 'ci-lbl';
     el.innerHTML = shore
-      ? '<b>' + (SHORE_ICON[shore] || '⚓') + '</b><span>' + esc(c.cat) + '</span><i>' + c.count + '</i>'
+      ? '<b>' + shoreIcon(shore) + '</b><span>' + esc(c.cat) + '</span><i>' + c.count + '</i>'
       : '<b>' + String(c.num).padStart(2, '0') + '</b><span>' + esc(c.cat) + '</span><i>' + c.count + '</i>';
     el.setAttribute('aria-label', c.cat);
     el.addEventListener('click', () => select(c.cat, true));
