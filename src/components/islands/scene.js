@@ -15,14 +15,18 @@ import { createSigns } from './signs.js';
 import { createWildlife } from './wildlife.js';
 import { createLens } from './lens.js';
 
-// Opening angle: the view the user turned to and liked on the live site
-// (2026-10-30) — the camera as low as the controls allow, turned a touch;
-// the class islands are then fitted in. Measured against
-// 57° / 0° (docs/map-3d-island-brief.md) it draws the houses and people
-// larger.
+// Opening angle on desktop (2026-11-03): seen across a corner, from the
+// front right, and a little higher, with water left all round. The earlier
+// low, head-on view (70° / 3°, islands filling the stage) felt cramped.
 const FOV = 32;
-const HOME_POLAR = THREE.MathUtils.degToRad(70);
-const HOME_AZIMUTH = THREE.MathUtils.degToRad(3);
+const HOME_POLAR = THREE.MathUtils.degToRad(60);
+const HOME_AZIMUTH = THREE.MathUtils.degToRad(-30);
+// ...and the islands, shore areas included, take this share of the clear
+// area's width or height, whichever binds: the class islands come to about
+// 60% of it on a wide stage. A narrow one (a laptop, where the buttons stand
+// in a column on the right) is filled more, or the islands would be too
+// small to read.
+const HOME_FILL = [0.85, 1]; // at a stage 1400 px wide or more, 1000 px or less
 // Phones held upright: the stage is tall and narrow, and at the low desktop
 // angle the archipelago became a thin strip mid-screen with the plates piled
 // on each other. There the camera looks down more steeply, so the islands'
@@ -172,17 +176,19 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   // measured on screen rather than with the bounding circle (which wastes
   // the corners). The clear part leaves out the interface laid over the
   // scene: toolbar on top, the legend below, the phones' button column on
-  // the right. The shore areas (power plant, XPages town, harbour) may run
-  // off the edges.
-  const framePts = layout.tiles
-    .filter((t) => !layout.harbours.some((h) => h.cat === t.cat))
-    .flatMap((t) => [
-      [t.x - R, t.z],
-      [t.x + R, t.z],
-      [t.x, t.z - R],
-      [t.x, t.z + R],
-    ])
-    .map(([x, z]) => new THREE.Vector3(x, TOP, z));
+  // the right. On phones the shore areas (power plant, XPages town, harbour)
+  // may run off the edges; on desktop they're framed too (shorePts).
+  const tileEdges = (shore) =>
+    layout.tiles
+      .filter((t) => layout.harbours.some((h) => h.cat === t.cat) === shore)
+      .flatMap((t) => [
+        [t.x - R, t.z],
+        [t.x + R, t.z],
+        [t.x, t.z - R],
+        [t.x, t.z + R],
+      ])
+      .map(([x, z]) => new THREE.Vector3(x, TOP, z));
+  const framePts = tileEdges(false);
   // ...and what stands on them, so a tall roof or the Session towers don't
   // run up under the toolbar: every class house's roof top and each
   // landmark's top (the Session towers ~5.8 high, the rest under ~2)
@@ -194,6 +200,11 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   for (const l of world.landmarks)
     if (!layout.harbours.some((h) => Math.hypot(h.x - l.x, h.z - l.z) < h.r))
       framePts.push(new THREE.Vector3(l.x, TOP + (l.kind === 'skytower' ? 6 : 2), l.z));
+  // On desktop the shore areas are framed too, so they don't hang off the
+  // bottom of the slanted view: their tiles and landmarks
+  const shorePts = tileEdges(true);
+  for (const l of world.landmarks)
+    if (layout.harbours.some((h) => Math.hypot(h.x - l.x, h.z - l.z) < h.r)) shorePts.push(new THREE.Vector3(l.x, TOP + 2, l.z));
   const homeTarget = new THREE.Vector3(cx, TOP, cz);
   let homeDist = 0;
   const frameCam = new THREE.PerspectiveCamera(FOV, 1, 0.3, 600);
@@ -228,6 +239,13 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     homePolar = phone ? PHONE_POLAR : HOME_POLAR;
     homeAzimuth = phone ? 0 : HOME_AZIMUTH;
     const a = clearArea(w, h);
+    if (!phone) {
+      // shrink the clear area about its centre: water shows around the islands
+      const fill = HOME_FILL[0] + (HOME_FILL[1] - HOME_FILL[0]) * THREE.MathUtils.clamp((1400 - w) / 400, 0, 1);
+      const mx = (a.x0 + a.x1) / 2, my = (a.y0 + a.y1) / 2;
+      const hx = ((a.x1 - a.x0) / 2) * fill, hy = ((a.y1 - a.y0) / 2) * fill;
+      Object.assign(a, { x0: mx - hx, x1: mx + hx, y0: my - hy, y1: my + hy });
+    }
     frameCam.fov = camera.fov;
     frameCam.aspect = camera.aspect;
     frameCam.updateProjectionMatrix();
@@ -243,7 +261,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       frameCam.lookAt(target);
       frameCam.updateMatrixWorld();
       let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-      for (const p of framePts) {
+      for (const p of phone ? framePts : framePts.concat(shorePts)) {
         pv.copy(p).project(frameCam);
         x0 = Math.min(x0, pv.x);
         x1 = Math.max(x1, pv.x);
@@ -261,6 +279,8 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     homeDist = dist;
   }
   const homeDistance = () => homeDist;
+  // room to zoom out past the opening view, which mustn't be clamped back in
+  const maxDistance = () => Math.max(fitDistance(radius) * 1.8, homeDist * 1.4);
 
   // ---- time of day: blend from the current light to a preset over ~1.2 s;
   // the night factor lights windows, lamps and stars
@@ -702,7 +722,7 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     flyTo(target, posFor(target, Math.max(17, fitDistance(c.radius) * 1.7), polar, sph.theta));
   }
   function home(instant) {
-    controls.maxDistance = fitDistance(radius) * 1.8;
+    controls.maxDistance = maxDistance();
     const pos = posFor(homeTarget, homeDistance(), homePolar, homeAzimuth);
     if (instant) {
       controls.target.copy(homeTarget);
@@ -859,8 +879,8 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
     measured = false; // plate font size can change at the mobile breakpoint
     // Portrait screens frame the islands from farther away; keep the haze
     // behind them so they never look washed out.
-    const dist = fitDistance(radius);
-    controls.maxDistance = dist * 1.8;
+    const dist = Math.max(fitDistance(radius), homeDist);
+    controls.maxDistance = maxDistance();
     scene.fog.near = dist + radius * 0.3;
     scene.fog.far = dist + radius * 8;
   }
