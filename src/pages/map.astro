@@ -8,6 +8,8 @@ import { useTranslations, localizedPath } from '../i18n/ui';
 import { buildCoverageReport } from '../../scripts/lib/coverage';
 import { islandArticles } from '../lib/classArticles';
 import rawData from '../../data/ls_classes.json';
+// zh-TW class descriptions, and fixes for catalogue copy cut off before its list
+import descData from '../../data/ls_class_desc.json';
 
 const lang = 'zh-TW' as const;
 const t = useTranslations(lang);
@@ -30,7 +32,7 @@ const nodes = raw.nodes.map((n) => {
     x: n.x,
     y: n.y,
     url: slug ? localizedPath(lang, `/posts/${slug}`) : null,
-    desc: (n.description || '').trim(),
+    desc: ((descData as any).zh[n.id] || n.description || '').trim(),
   };
 });
 const links = raw.links.map((l) => ({
