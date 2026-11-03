@@ -497,7 +497,7 @@ const statTip =
   #ci .ci-lbl.dim { opacity: 0.28; }
   /* a shore area's plate (not a class): no number, an icon, a dark ground */
   #ci .ci-lbl.off:not(.sel) { background: rgba(43, 54, 68, 0.94); color: #f4f1ec; border-color: rgba(244, 241, 236, 0.28); }
-  #ci .ci-lbl.off b { color: #e9b444; font: 400 12px/1 system-ui, sans-serif; }
+  #ci .ci-lbl.off b { display: flex; color: #e9b444; }
   #ci .ci-lbl.off:not(.sel) i { color: #b9c2cc; }
   /* near the brand card, toolbar, tabs or legend: fade out (scene.js) */
   #ci .ci-lbl.tucked { opacity: 0; pointer-events: none; }
@@ -543,6 +543,7 @@ const statTip =
   #ci .ci-panel .pisl.on span { color: var(--coral); }
   #ci .ci-panel .pclose { float: right; border: 0; background: transparent; color: var(--ink-mut); cursor: pointer; font-size: 1.15rem; line-height: 1; padding: 2px 4px; }
   #ci .ci-panel .pnum { font: 700 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--coral); }
+  #ci .ci-panel .pnum .shore-ic { vertical-align: -4px; margin-right: 2px; }
   #ci .ci-panel h3 { font-size: 1.1rem; font-weight: 720; letter-spacing: -0.01em; margin: 2px 0; color: var(--ink); }
   #ci .ci-panel .pmeta { font-size: 0.76rem; color: var(--ink-mut); margin-bottom: 12px; font-variant-numeric: tabular-nums; }
   #ci .ci-panel .plist { display: flex; flex-direction: column; gap: 6px; }
@@ -622,7 +623,7 @@ const statTip =
   /* island list: the reference index's numbered rows */
   #ci .ci-panel .plist-isl { display: flex; flex-direction: column; margin-top: 4px; }
   #ci .ci-panel .pgrp { margin: 18px 0 2px; font: 700 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: 0.08em; color: var(--ink-mut); }
-  #ci .ci-panel .pisl.off b { font: 400 17px/1 system-ui, sans-serif; }
+  #ci .ci-panel .pisl.off b { display: flex; }
   #ci .ci-panel .pisl { display: flex; align-items: center; gap: 10px; text-align: left; border: 0; border-bottom: 1px solid var(--hair); background: transparent; padding: 10px 6px; font: inherit; color: var(--ink); cursor: pointer; }
   #ci .ci-panel .pisl:hover span { color: var(--coral); }
   #ci .ci-panel .pisl b { min-width: 30px; font: italic 600 21px/1 Georgia, 'Times New Roman', serif; color: var(--coral); }
@@ -685,6 +686,8 @@ const statTip =
 </style>
 
 <script>
+  import { shoreIcon as shoreSvg } from './islands/shoreIcons.js';
+
   function initClassIslands() {
     var root = document.getElementById('ci');
     var dataEl = document.getElementById('ci-data');
@@ -823,9 +826,8 @@ const statTip =
     }
 
     // a shore area (Java power plant, XPages town, OpenNTF harbour): not a class
-    var SHORE_ICON = { 'java-runtime': '🏭', xpages: '🌐', openntf: '⚓' };
     function isShore(c) { return !!(c.members[0] && c.members[0].shore); }
-    function shoreIcon(c) { return SHORE_ICON[c.members[0].shore] || '⚓'; }
+    function shoreIcon(c) { return shoreSvg(c.members[0].shore); }
 
     // a shore area's card says what the area is, as a class card does
     var SHORE_DESC = JSON.parse(DS.shoreDesc || '{}');
