@@ -115,8 +115,11 @@ const T =
           java: '用 Java 看：電廠拉電纜到有 Java 類別的島；有 Java 文章的房子發亮，沒有 Java 版本的變淡',
           ssjs: '用 SSJS 看：XPages 經陸路接到電廠，再拉電纜到各島；有 SSJS 文章的房子發亮，沒有 SSJS 版本的變淡',
         },
-        layerTitle: '在架構裡的位置',
-        layers: { fw: '框架（XPages）', bind: '綁定', ls: 'LS 引擎', java: 'Java', cls: '類別', core: 'Domino 核心' },
+        shoreDesc: {
+          xpages: '網頁應用框架，以 JSF 為基礎，跑在 Domino 伺服器的 HTTP 上，用 SSJS 和 Java bean 操作後端類別。這裡收的是 scope、partial refresh、managed bean 這類網頁層主題。',
+          'java-runtime': '只有用 Java 時才會碰到的接線：怎麼取得 Session（NotesFactory）、執行緒初始化（NotesThread）、例外（NotesException），以及為什麼要 recycle()。',
+          openntf: 'OpenNTF 社群的開源專案與工具，不是 HCL 官方的類別。',
+        },
         linksGroup: '關聯線',
         linkModes: { off: '關', focus: '選取', all: '全部' },
         linkTips: { off: '不顯示關聯線', focus: '選島或指著房子時，亮出相關的關聯線', all: '顯示全部 {n} 條關聯線' },
@@ -197,8 +200,11 @@ const T =
           java: 'Through Java: the power plant runs a cable to every island with a Java class; houses with a Java article glow, classes with no Java version fade',
           ssjs: 'Through SSJS: XPages reaches the power plant over land, cables run on to the islands; houses with an SSJS article glow, classes with no SSJS version fade',
         },
-        layerTitle: 'Where it sits',
-        layers: { fw: 'Framework (XPages)', bind: 'Binding', ls: 'LS engine', java: 'Java', cls: 'Classes', core: 'Domino core' },
+        shoreDesc: {
+          xpages: 'A web application framework built on JSF, running in the Domino server’s HTTP task, where SSJS and Java beans drive the back-end classes. Posts here cover web-layer topics such as scopes, partial refresh and managed beans.',
+          'java-runtime': 'The plumbing you only meet from Java: getting a Session (NotesFactory), initialising threads (NotesThread), exceptions (NotesException), and why recycle() matters.',
+          openntf: 'Open-source projects and tools from the OpenNTF community, not HCL classes.',
+        },
         linksGroup: 'Links',
         linkModes: { off: 'Off', focus: 'Selected', all: 'All' },
         linkTips: { off: 'Hide the relation lines', focus: 'Show the links of the selected island or the house under the pointer', all: 'Show all {n} relation lines' },
@@ -288,8 +294,7 @@ const statTip =
   data-list-title={T.listTitle}
   data-list-shore={T.listShore}
   data-shore-tag={T.shoreTag}
-  data-layer-title={T.layerTitle}
-  data-layers={JSON.stringify(T.layers)}
+  data-shore-desc={JSON.stringify(T.shoreDesc)}
   data-no-match={T.noMatch}
   data-times={JSON.stringify(T.times)}
   data-tip-links={T.tipLinks}
@@ -462,12 +467,6 @@ const statTip =
   #ci .ci-time button.on { background: var(--ink); color: var(--paper); }
   #ci .ci-bird { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; padding: 5px 11px; border: 1px solid var(--hair); border-radius: 8px; background: #fff; color: var(--ink); cursor: pointer; }
   #ci .ci-bird[aria-pressed='true'] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  /* the layer sketch on a shore area's card: where XPages / Java sit */
-  #ci .ci-panel .player { margin-top: 16px; display: flex; flex-direction: column; gap: 4px; }
-  #ci .ci-panel .player .lyrs { display: flex; gap: 4px; }
-  #ci .ci-panel .player .lyr { flex: 1; padding: 6px 8px; border: 1px solid rgba(43, 54, 68, 0.18); border-radius: 6px; font-size: 12px; color: var(--ink-mut); text-align: center; background: rgba(255, 255, 255, 0.5); }
-  #ci .ci-panel .player .lyr.on { border-color: #2b3644; background: #2b3644; color: #f4f1ec; font-weight: 600; }
-  #ci .ci-panel .player .lyr small { display: block; font-size: 10px; opacity: 0.7; }
   #ci .ci-seg-lbl { align-self: center; padding: 0 4px 0 10px; font-size: 12px; color: var(--ink-mut); white-space: nowrap; }
   /* pause ⇄ play icon */
   #ci .ci-pause-ic .ic-play, #ci [aria-pressed='true'] .ci-pause-ic .ic-pause { display: none; }
@@ -786,18 +785,8 @@ const statTip =
     function isShore(c) { return !!(c.members[0] && c.members[0].shore); }
     function shoreIcon(c) { return SHORE_ICON[c.members[0].shore] || '⚓'; }
 
-    // Where the power plant (Java) / the XPages town sits, as four layers:
-    // framework / binding (LS engine beside Java) / classes / Domino core,
-    // its own layer dark
-    var LAYERS = JSON.parse(DS.layers || '{}');
-    function layerSketch(shore) {
-      if (shore !== 'xpages' && shore !== 'java-runtime') return '';
-      function lyr(k, txt) { return '<div class="lyr' + ((shore === 'xpages' && k === 'fw') || (shore === 'java-runtime' && k === 'java') ? ' on' : '') + '">' + esc(txt) + '</div>'; }
-      return '<div class="player"><div class="prel-lbl">' + esc(DS.layerTitle) + '</div>' +
-        lyr('fw', LAYERS.fw) +
-        '<div class="lyrs">' + lyr('ls', LAYERS.bind + ' · ' + LAYERS.ls) + lyr('java', LAYERS.bind + ' · ' + LAYERS.java) + '</div>' +
-        lyr('cls', LAYERS.cls) + lyr('core', LAYERS.core) + '</div>';
-    }
+    // a shore area's card says what the area is, as a class card does
+    var SHORE_DESC = JSON.parse(DS.shoreDesc || '{}');
 
     // Right-hand panel listing the selected island's classes.
     function renderPanel(cluster) {
@@ -821,7 +810,7 @@ const statTip =
         '<div class="pnum">' + (isShore(cluster) ? shoreIcon(cluster) + ' ' + esc(DS.shoreTag) : String(cluster.num).padStart(2, '0')) + '</div>' +
         '<h3>' + esc(cluster.cat) + '</h3>' +
         '<div class="pmeta">' + cluster.count + esc(cluster.members[0] && cluster.members[0].island ? DS.countIsland : DS.count) + '</div>' +
-        layerSketch(cluster.members[0] && cluster.members[0].shore) +
+        (isShore(cluster) && SHORE_DESC[cluster.members[0].shore] ? '<p class="pdesc">' + esc(SHORE_DESC[cluster.members[0].shore]) + '</p>' : '') +
         '<div class="plist">' + rows + '</div>' +
         (rel ? '<div class="prel"><div class="prel-lbl">' + esc(DS.relTitle) + '</div><div class="prel-key">⇄ ' + esc(DS.relBridge) + ' · ⋯ ' + esc(DS.relWalk) + '</div><div class="prel-chips">' + rel + '</div></div>' : '');
       panel.hidden = false;
