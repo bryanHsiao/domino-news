@@ -18,6 +18,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "Document"
 apiLang: "ssjs"
+cover: "/covers/ssjs-backend-document.webp"
+coverStyle: "minimalist-mono"
 ---
 
 When you write `document1` in XPages SSJS, you think "this document." But strictly, `document1` isn't the document — it's the XPages **document data source**, a [`NotesXspDocument`](https://help.hcl-software.com/dom_designer/9.0.1/reference/r_wpdr_xsp_xspdocument_r.html) object, the wrapper that sits between the screen and the data.

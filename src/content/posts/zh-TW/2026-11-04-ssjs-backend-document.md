@@ -18,6 +18,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "Document"
 apiLang: "ssjs"
+cover: "/covers/ssjs-backend-document.webp"
+coverStyle: "minimalist-mono"
 ---
 
 你在 XPages 的 SSJS 裡寫 `document1`,心裡想的是「這份文件」。但嚴格講,`document1` 不是文件本身——它是 XPages 的 **document data source**,一個 [`NotesXspDocument`](https://help.hcl-software.com/dom_designer/9.0.1/reference/r_wpdr_xsp_xspdocument_r.html) 物件,是畫面與資料之間的那層包裝。
