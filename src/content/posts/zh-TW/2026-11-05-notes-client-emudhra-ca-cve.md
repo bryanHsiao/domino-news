@@ -1,7 +1,7 @@
 ---
 title: "Notes client 的 eMudhra 憑證:難的不是哪張,是幾千台"
 description: "伺服器端把那幾張被波及的 eMudhra / emSign / Comodo root 清掉,是一台一台、admin 自己操作;到了 Notes client,同一批憑證散在你公司每一台桌機上——你沒辦法 SSH 進五千台工作站。這篇接續 Domino Server 那篇,專講 client 端:憑證藏在哪幾個不一樣的信任庫(local names.nsf 的 Advanced > Certificates、程式目錄下的 Java cacerts、每台的 cacert.pem、macOS keychain)、為什麼沒有內建方法一次清完、怎麼用 MarvelClient 或你的軟體佈署工具把更新推到每一台,以及一個官方公告沒寫、但你最好自己查的角落:EOL 的 9.x。"
-pubDate: 2026-11-05T07:31:00+08:00
+pubDate: 2026-11-05T07:29:00+08:00
 lang: zh-TW
 slug: notes-client-emudhra-ca-cve
 tags:
