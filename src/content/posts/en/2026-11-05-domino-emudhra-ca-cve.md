@@ -77,7 +77,7 @@ The practical takeaway: **check the bundled Java `cacerts` first**, then look at
 
 ## Don't assume about EOL versions: one measured 9.0.1
 
-The instinct is "9.x is older, so it must be affected too" — but a measurement flipped that. On a 9.0.1 FP10 Domino server (a self-built container; IBM J9 Java 1.8.0_151, cacerts dated 2018, 105 entries) we checked all three trust stores:
+The instinct is "9.x is older, so it must be affected too" — but a measurement flipped that. We checked all three trust stores on a 9.0.1 FP10 Domino server — a Domino 9 container built from [our public build recipe](https://github.com/bryanHsiao/build-hcl-domino9-container) (the site has [a piece on how to build it](/domino-news/posts/build-hcl-domino-9-container/)); IBM J9 Java 1.8.0_151, cacerts dated 2018, 105 entries, which you can reproduce from the same recipe:
 
 - **The bundled JVM `cacerts` (checked with `keytool -list` — the authoritative one)**: **no emSign / eMudhra at all**; but Comodo's **AAA Certificate Services is present** (alias `comodoaaaca`, SHA-256 `D7:A7:A0:FB…69:EF:4`).
 - **`names.nsf` (Domino Directory)**: likewise **no emSign**; the AAA string does show up, but that's only a binary string scan of names.nsf — whether those are still-active Internet cross-certificate documents needs per-entry confirmation via Domino admin / DXL, and a grep isn't proof.
@@ -116,16 +116,37 @@ Two operational points that people who've done it will press on:
 
 > **A contested fifth: emSign Root CA – G1.** The four above are the HCL/Domino community (panagenda) removal list; G1 isn't on it, [Mozilla currently chooses not to remove it](https://bugzilla.mozilla.org/show_bug.cgi?id=2083449), and Chrome is still reviewing (G1's issue leans on a CRL-signature problem, not quite the same line as the eight intermediate-CA key compromises). But some Java-trust-store guidance (Ignition, Camunda) and some field fix tools take the more conservative stance and remove G1 too. If you hit G1 while cleaning a Java `cacerts`, it's not an omission — it's vendors drawing the line differently; go by your vendor's current guidance, and test the TLS chains your services depend on before removing it.
 
-## How to remediate on the server
+## How to remediate on the server: steps and syntax
 
-As of writing (2026-11), HCL's guidance is **manual steps for now, with fixed releases to follow**. For a Domino Server:
+The order is **check → back up → remove → verify**; removing is the "after you've read the report, by human decision" step, not a one-click. As of writing (2026-11) HCL's guidance is still **manual steps for now, with fixed releases to follow**.
 
-1. **Handle the bundled Java trust store.** Remove or replace those roots in the JVM's `cacerts` — this one is separate from the data-directory files and has to be done on its own.
-2. **Check `cacert.pem` / `cacerts.pem`.** If your environment still reads it (or uses the `.ini` switch back to the old behaviour), remove the matching roots by fingerprint.
-3. **Touch `certstore.nsf` and the Domino Directory only if you added these by hand** — remove any eMudhra / emSign / Comodo certifiers you imported.
-4. **Don't forget the OS certificate store**: other software on the same host (a reverse proxy, a backup tool) may keep its own trust store — handle those through your existing certificate-management process.
+**1. Check first (read-only, changes nothing)** — use Domino's **bundled** keytool to list the bundled JVM cacerts and match fingerprints to see which are present:
 
-Cross-check your exact steps, and whether a fixed release is available for your version, against HCL's Domino Server bulletin (KB0134847) and the manual-removal KB it links to.
+```
+"<Domino>\jvm\bin\keytool" -list -v -keystore "<Domino>\jvm\lib\security\cacerts" -storepass changeit | findstr /i "emSign emudhra 86:A1:EC BC:4D:80 12:56:09 40:F6:AF D7:A7:A0"
+```
+
+On Linux/AIX replace `findstr` with `grep -i`; on Domino 14.5+ you can use the shorter `keytool -list -v -cacerts` (no path or password needed). Whichever prefix shows up tells you which cert it is. For `cacert.pem` (if this box has one), open it and check each PEM block's fingerprint.
+
+**2. Back up** (a corrupted cacerts means this box's HTTPS/TLS won't start at all):
+
+```
+copy "<Domino>\jvm\lib\security\cacerts" "<Domino>\jvm\lib\security\cacerts.bak"
+```
+
+**3. Remove (decide by fingerprint, delete by alias)** — `keytool -delete` works **by alias**, and aliases differ across versions, so **identify the cert by its fingerprint from step 1, then delete that entry's alias** (AAA's alias is often `comodoaaaca`):
+
+```
+"<Domino>\jvm\bin\keytool" -delete -alias comodoaaaca -keystore "<Domino>\jvm\lib\security\cacerts" -storepass changeit
+```
+
+⚠️ **Which ones to delete is a decision against HCL's current list**; AAA especially is a broadly-used root with a large regression surface — test the TLS chains you depend on first, and keep the backup.
+
+**4. Verify**: run step 1 again — nothing should match. After changing cacerts, **restart the HTTP task** so it reloads.
+
+**5. The other stores, separately**: edit `cacert.pem` directly (remove the whole PEM block by fingerprint); `certstore.nsf`, `names.nsf` (Domino Directory) and the OS certificate store **only matter if you added these by hand**, and `names.nsf` cross-certificates are NSF documents — handle them via Domino admin / DXL, not a file tool (Nashed notes a standard Domino Directory doesn't carry these roots by default).
+
+For your exact steps and whether a fixed release exists for your version, cross-check HCL's Domino Server bulletin (KB0134847) and the manual-removal KB it links to.
 
 ## How to confirm it's actually clean
 

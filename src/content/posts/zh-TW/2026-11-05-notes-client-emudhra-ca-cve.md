@@ -57,14 +57,14 @@ coverStyle: "low-poly-3d"
 
 ## 真正的難題:規模
 
-panagenda(Christoph Adler)那篇講 client 補救講得最實在,核心就一句:**沒有內建機制能一次把這些憑證從一大批 client 清掉**,你得靠佈署工具把「乾淨的檔案」推上去。拆成三件事:
+[panagenda(Christoph Adler)那篇](https://www.panagenda.com/de/blog/remove-emudhra-certificates-hcl-notes/)把 client 補救講得最實在,核心一句:**沒有內建機制能一次把這些憑證從一大批 client 清掉**,你得靠**某種把檔案/設定推到每台的佈署機制**——不管是企業的軟體派送(SCCM、Intune、GPO 登入腳本)、你自寫的佈署腳本,還是現成的 Notes 客戶端管理工具。拆成幾件事:
 
-1. **`cacert.pem`——用更新版覆蓋全部。** [MarvelClient](https://www.panagenda.com/de/blog/remove-emudhra-certificates-hcl-notes/) 可以把一份已清乾淨的 `cacert.pem` 佈到每台的 `data` 目錄、直接覆蓋既有的。用你自己的派送工具(SCCM、Intune、GPO 登入腳本)推同一份檔也行。
-2. **local `names.nsf`——跑清除 agent。** 這個庫在每個使用者的個人通訊錄裡,手動進 Advanced > Certificates 一台一台刪不切實際。panagenda 有一支 agent 會檢查 local `names.nsf` 裡的受影響 certifier 並移除、透過 MarvelClient 無互動執行(需 MarvelClient Basic 授權,來信他們索取)。沒有這類工具的話,就得自己寫對應的派送。
-3. **內建 Java `cacerts`——換檔。** 這份在程式目錄下、要 admin,MarvelClient Upgrade 可以換成更新版,或用你的軟體佈署工具替換。
-4. **macOS——走系統更新。** Mac 版 Notes 靠 macOS keychain,panagenda 的建議是把 Mac 更新到最新、讓作業系統那層處理。
+1. **`cacert.pem`——用更新版覆蓋全部。** 把一份已清乾淨的 `cacert.pem` 推到每台的 `data` 目錄、直接覆蓋既有的。這是單純的檔案派送,任何佈署工具都能做。
+2. **local `names.nsf`——跑清除動作。** 這個庫在每個使用者的個人通訊錄裡、而且是 NSF(不是檔案),手動進 Advanced > Certificates 一台一台刪不切實際。做法是**派一支 Notes agent / 腳本到每台,檢查 local `names.nsf` 的受影響 certifier 並移除**(最好無使用者互動)。有些客戶端管理工具(例如 panagenda 的 MarvelClient)附現成的這種 agent;沒有的話就自己寫一支、再用你的佈署管道推出去。
+3. **內建 Java `cacerts`——換檔或刪項。** 這份在程式目錄下、動它要 admin:可以整個換成清乾淨的版本,或用跟 server 端一樣的 `keytool` 指令**依指紋查、照別名刪**(語法見 [Domino Server 那篇的步驟](/domino-news/posts/domino-emudhra-ca-cve/))。一樣透過你的軟體派送推到每台。
+4. **macOS——走系統更新。** Mac 版 Notes 靠 macOS keychain,把 Mac 更新到最新、讓作業系統那層處理。
 
-如果你本來就在用 MarvelClient 管客戶端,這次等於是它的主場——這也是為什麼[把客戶端管理工具養起來](/domino-news/posts/notes-httprequest-14-5-trust-store/)的團隊,遇到這種「全 fleet 推一份檔」的事會從容很多。
+說到底,這次 client 端拚的不是「會不會清一張憑證」,而是**你手上有沒有一條能對全 fleet 做同一件事的管道**——[把客戶端管理底子養起來](/domino-news/posts/notes-httprequest-14-5-trust-store/)的團隊,遇到「全 fleet 推一份檔」會從容很多;沒有的話,這條管道本身才是這次真正要補的能力。
 
 ## 別漏了 EOL 的 9.x(但別照抄清單)
 

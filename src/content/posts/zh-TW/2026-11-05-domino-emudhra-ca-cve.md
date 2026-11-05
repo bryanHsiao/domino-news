@@ -77,7 +77,7 @@ TLS 的信任是一條鏈:你的 server 連出去時,對方給一張憑證,憑�
 
 ## EOL 版本別想當然:實測一台 9.0.1
 
-直覺會想「9.x 更舊、應該也中」,但實測打臉了這假設。我們在一台 9.0.1 FP10 的 Domino server(自建容器,內建 IBM J9 Java 1.8.0_151、cacerts 檔案 2018 年、105 張)把三個信任庫都查了一遍:
+直覺會想「9.x 更舊、應該也中」,但實測打臉了這假設。我們在一台 9.0.1 FP10 的 Domino server 上把三個信任庫都查了一遍——這台是用[我們公開的 build recipe](https://github.com/bryanHsiao/build-hcl-domino9-container) build 出來的 Domino 9 容器(站上也有[怎麼 build 的那篇](/domino-news/posts/build-hcl-domino-9-container/)),內建 IBM J9 Java 1.8.0_151、cacerts 檔案 2018 年、105 張,你可以照同一份 recipe 自己重現:
 
 - **bundled JVM `cacerts`(以 `keytool -list` 實查,最權威)**:**沒有任何 emSign / eMudhra**;但 Comodo 的 **AAA Certificate Services 在**(別名 `comodoaaaca`,SHA-256 `D7:A7:A0:FB…69:EF:4`)。
 - **`names.nsf`(Domino Directory)**:同樣**沒有 emSign**;AAA 的字串有出現,但這只是對 names.nsf 做二進位字串掃描、僅供參考——那些是否為仍生效的 Internet 交叉憑證文件,得用 Domino admin / DXL 逐筆確認,grep 不算證據。
@@ -116,16 +116,37 @@ AAA Certificate Services (Comodo)
 
 > **還有一張有爭議的第 5 張:emSign Root CA – G1。** 上面四張是 HCL/Domino 社群(panagenda)的移除清單;G1 不在內,[Mozilla 目前選擇不移除](https://bugzilla.mozilla.org/show_bug.cgi?id=2083449)、Chrome 還在評估(G1 的爭點偏向一份 CRL 簽章問題,跟那 8 張中繼 CA 私鑰外洩不完全同一條線)。但部分 Java 信任庫的指引(如 Ignition、Camunda)與一些實務修復工具採較保守立場、會連 G1 一起移。你在清 Java `cacerts` 時若遇到 G1,這不是「漏列」,是各家畫線不同——以你的 vendor 當前指引為準,動前先測過你服務依賴的 TLS 鏈。
 
-## 伺服器端該怎麼補
+## 伺服器端該怎麼補:步驟與語法
 
-就目前(2026-11 寫稿時)而言,HCL 的指引是**手動步驟為主、等後續修正版釋出**。對 Domino Server:
+順序:**查 → 備份 → 移除 → 驗證**;移除是「看完報告、人工決定」那一步,不是一鍵。就目前(2026-11 寫稿時)HCL 的指引仍以**手動步驟為主、等後續修正版釋出**。
 
-1. **處理內建 Java 信任庫**。把上面那幾張 root 從 JVM 的 `cacerts` 拔掉或替換——這份要獨立處理,跟 data 目錄的檔案是兩回事。
-2. **檢查 `cacert.pem` / `cacerts.pem`**。若你的環境還讀它(或用 `.ini` 退回舊行為),依指紋移除對應的 root。
-3. **只有你手動加過時**才需要動 `certstore.nsf` 和 Domino Directory——移除你曾匯入的 eMudhra / emSign / Comodo certifier。
-4. **別忘了作業系統的憑證庫**:同一台主機上別的軟體(反向代理、備份工具)可能各自有信任庫,用你既有的憑證管理流程一起處理。
+**1. 先查(唯讀,不動任何東西)** — 用 Domino **內建的** keytool 列 bundled JVM cacerts,比對指紋看那幾張在不在:
 
-對照一下 HCL 的 Domino Server 公告(KB0134847)與它連出的手動移除 KB,確認你這版的確切步驟與是否已有修正版可裝。
+```
+"<Domino>\jvm\bin\keytool" -list -v -keystore "<Domino>\jvm\lib\security\cacerts" -storepass changeit | findstr /i "emSign emudhra 86:A1:EC BC:4D:80 12:56:09 40:F6:AF D7:A7:A0"
+```
+
+Linux/AIX 把 `findstr` 換成 `grep -i`;Domino 14.5+ 可用更短的 `keytool -list -v -cacerts`(免指路徑與密碼)。掃到哪個前綴,對照上面清單就知道是哪張。`cacert.pem`(若這台有)則打開逐段看 PEM 區塊的指紋。
+
+**2. 備份**(改壞 cacerts = 這台 HTTPS/TLS 整個起不來):
+
+```
+copy "<Domino>\jvm\lib\security\cacerts" "<Domino>\jvm\lib\security\cacerts.bak"
+```
+
+**3. 移除(依指紋決定、照別名刪)** — `keytool -delete` 是**用別名(alias)**刪的,而別名跨版本不一樣,所以**先用步驟 1 的指紋認出是哪張、再刪它那筆的別名**(例如 AAA 常見別名是 `comodoaaaca`):
+
+```
+"<Domino>\jvm\bin\keytool" -delete -alias comodoaaaca -keystore "<Domino>\jvm\lib\security\cacerts" -storepass changeit
+```
+
+⚠️ **刪哪幾張,按 HCL 當前清單決定**;尤其 **AAA 用途極廣、回歸面大**——動前務必測過你依賴的 TLS 鏈,並保留備份。
+
+**4. 驗證**:把步驟 1 再跑一次,應該**一張都掃不到**;改完 cacerts 後**重啟 HTTP task** 讓它重讀。
+
+**5. 其他庫另案**:`cacert.pem` 直接編輯(依指紋刪整段 PEM);`certstore.nsf`、`names.nsf`(Domino Directory)與 OS 憑證庫**只有你手動加過時才需要處理**,而且 `names.nsf` 的交叉憑證是 NSF 文件、要走 Domino admin / DXL、不是檔案工具(Nashed 指出標準 Domino Directory 預設不含這些 root)。
+
+確切步驟與是否已有修正版,對照 HCL 的 Domino Server 公告(KB0134847)與它連出的手動移除 KB。
 
 ## 怎麼確認真的清乾淨
 
