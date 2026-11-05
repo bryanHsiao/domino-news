@@ -22,6 +22,8 @@ sources:
     url: "https://access.redhat.com/security/cve/cve-2026-91403"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-client-emudhra-ca-cve.webp"
+coverStyle: "low-poly-3d"
 ---
 
 The server side is the simpler one: a handful of Domino boxes, you log into each, and you pull the affected eMudhra / emSign / Comodo roots out of the trust store by fingerprint ([how to tell whether you're exposed and which ones to remove is in the Domino Server piece](/domino-news/posts/domino-emudhra-ca-cve/)).

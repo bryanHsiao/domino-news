@@ -22,6 +22,8 @@ sources:
     url: "https://access.redhat.com/security/cve/cve-2026-91403"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/notes-client-emudhra-ca-cve.webp"
+coverStyle: "low-poly-3d"
 ---
 
 伺服器那關比較單純:幾台 Domino,你自己一台一台登進去,照指紋把那幾張被波及的 eMudhra / emSign / Comodo root 從信任庫清掉就好([怎麼判斷你中不中、清哪張,在 Domino Server 那篇講過](/domino-news/posts/domino-emudhra-ca-cve/))。
