@@ -152,7 +152,7 @@ copy "<Domino>\jvm\lib\security\cacerts" "<Domino>\jvm\lib\security\cacerts.bak"
 
 **最直接、每個版本都能用的:再跑一次步驟 1 的 `keytool -list`**,確認那張憑證已經不在 cacerts 裡——你改的就是這個庫,直接查它最準。**9.x 沒有下面的 LotusScript 測試,就靠這個。**
 
-要進一步測「實際連線會不會被擋」,連 Mozilla 工程師 Dennis Jackson 架的測試站 [we-have-a-problem.com](https://we-have-a-problem.com/):別連裸網域(那只是狀態頁),要連**各中繼的子網域**(例如 `dv-g3b-emudhra…` 和對應的 `dv-g3b-aaa-emudhra…`),**每個都該出現憑證錯誤、連不上**才對;若頁面載入成功=還信任著。至少各測一個 `-emudhra` 和一個 `-aaa-emudhra`(可能一條擋了、另一條還通,正好對應 emSign 與 AAA)。在 V10 以上,也可以用 Nashed 的 LotusScript 片段從 server 端打這個測試站:
+要進一步測「實際連線會不會被擋」,用 Mozilla 工程師 Dennis Jackson 與社群維護的 [emudhra.we-have-a-problem.com](https://emudhra.we-have-a-problem.com/)(開源 Apache 2.0,附檢查器、各系統緩解步驟與「誰已修補」清單)。那頁本身是檢查器/說明;實際要測的是它列出的**各中繼測試主機**,例如 `dv-g3b-emudhra.we-have-a-problem.com` 和 `dv-g3b-aaa-emudhra.we-have-a-problem.com`——**每個都該出現憑證錯誤、連不上才對**;若連得上、載入成功,代表還信任著。至少各測一個 `-emudhra` 和一個 `-aaa-emudhra`(可能一條擋了、另一條還通,正好對應 emSign 與 AAA)。在 V10 以上,也可以用 Nashed 的 LotusScript 片段從 server 端打這些測試主機:
 
 ```lotusscript
 Dim req As New NotesHTTPRequest
