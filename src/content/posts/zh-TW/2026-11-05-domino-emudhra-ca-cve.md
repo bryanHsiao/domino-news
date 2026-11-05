@@ -75,6 +75,18 @@ TLS 的信任是一條鏈:你的 server 連出去時,對方給一張憑證,憑�
 
 結論很實際:**先查內建 Java `cacerts`**,再看你是否動過 `cacert.pem`、`certstore.nsf`、Domino Directory。對一台沒客製過信任來源的 server,要清的往往就是那份 bundled Java 信任庫。這也是為什麼先搞懂[三個信任庫各自是什麼](/domino-news/posts/certstore-getting-started/)的人,這次會輕鬆很多。
 
+## EOL 版本別想當然:實測一台 9.0.1
+
+直覺會想「9.x 更舊、應該也中」,但實測打臉了這假設。我們在一台 9.0.1 FP10 的 Domino server(自建容器,內建 IBM J9 Java 1.8.0_151、cacerts 檔案 2018 年、105 張)把三個信任庫都查了一遍:
+
+- **bundled JVM `cacerts`(以 `keytool -list` 實查,最權威)**:**沒有任何 emSign / eMudhra**;但 Comodo 的 **AAA Certificate Services 在**(別名 `comodoaaaca`,SHA-256 `D7:A7:A0:FB…69:EF:4`)。
+- **`names.nsf`(Domino Directory)**:同樣**沒有 emSign**;AAA 的字串有出現,但這只是對 names.nsf 做二進位字串掃描、僅供參考——那些是否為仍生效的 Internet 交叉憑證文件,得用 Domino admin / DXL 逐筆確認,grep 不算證據。
+- **`cacert.pem`**:這台**根本沒有這個檔**(data 與程式目錄都沒有),所以鎖定 `cacert.pem` 的那類工具在這台無檔可動。
+
+為什麼 emSign 三個庫全無?這版 JVM 的 cacerts 太舊(2018 年),而 emSign 約 2018 後才被各信任庫收錄——根本沒收進來。這也跟官方只把 emSign 列到 12.0.2 / 14.x 一致。所以這台 9.0.1 要評估的**不是 emSign、而是 AAA**;而 AAA 是用途極廣的老 root,**移除回歸面大,動前務必測過你依賴的 TLS 鏈**。
+
+> 範圍聲明:這是**單一一台 9.0.1 FP10 server 容器的實測**,JVM 被手動更新過的 9.0.1 可能不同。穩的結論只有一條:**9.x 別跳過、但也別照抄 12/14 的清單——在你自己每台 9.x 上用 `keytool -list` 以指紋實查,分清哪個庫、哪張。**
+
 ## 要移除哪些憑證
 
 HCL 的手動移除指引列出了幾張要拔掉的 root。以下是社群([Nashed](https://blog.nashcom.de/nashcomblog.nsf/dx/emudhra-ca-key-compromise-how-to-remove-the-affected-certs.htm)、panagenda)轉述的清單與 SHA-256 指紋,但**請務必以 HCL 公告的當前清單為準**——這種清單 HCL 可能隨調查更新:

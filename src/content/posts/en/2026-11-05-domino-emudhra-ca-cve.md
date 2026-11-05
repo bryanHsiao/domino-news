@@ -75,6 +75,18 @@ This is where the 9.1 tempts people into overreacting. The question isn't "is Do
 
 The practical takeaway: **check the bundled Java `cacerts` first**, then look at whether you've touched `cacert.pem`, `certstore.nsf`, or the Domino Directory. On a server with an untouched trust source, the thing to clean is usually that bundled Java store. This is also why anyone who already understands [what each of the trust stores is for](/domino-news/posts/certstore-getting-started/) has an easy time here.
 
+## Don't assume about EOL versions: one measured 9.0.1
+
+The instinct is "9.x is older, so it must be affected too" — but a measurement flipped that. On a 9.0.1 FP10 Domino server (a self-built container; IBM J9 Java 1.8.0_151, cacerts dated 2018, 105 entries) we checked all three trust stores:
+
+- **The bundled JVM `cacerts` (checked with `keytool -list` — the authoritative one)**: **no emSign / eMudhra at all**; but Comodo's **AAA Certificate Services is present** (alias `comodoaaaca`, SHA-256 `D7:A7:A0:FB…69:EF:4`).
+- **`names.nsf` (Domino Directory)**: likewise **no emSign**; the AAA string does show up, but that's only a binary string scan of names.nsf — whether those are still-active Internet cross-certificate documents needs per-entry confirmation via Domino admin / DXL, and a grep isn't proof.
+- **`cacert.pem`**: this box **doesn't have the file at all** (neither the data nor the program directory), so the tools that target `cacert.pem` have nothing to act on here.
+
+Why no emSign in any of the three? This JVM's cacerts is old (2018), and emSign was only added to trust stores around 2018 onward — so it was never bundled in. That's consistent with the official lists stopping at 12.0.2 / 14.x for emSign. So on this 9.0.1 the thing to assess is **AAA, not emSign** — and AAA is a broadly-used old root, so removing it has a large regression surface; test the TLS chains you depend on before touching it.
+
+> Scope note: this is **one measured 9.0.1 FP10 server container**; a 9.0.1 whose JVM was manually updated could differ. The one solid takeaway: **don't skip 9.x, but don't copy the 12/14 list onto it either — run `keytool -list` by fingerprint on each of your own 9.x boxes and sort out which store holds what.**
+
 ## Which certificates to remove
 
 HCL's manual-remediation guidance lists several roots to pull. Below is the list and the SHA-256 fingerprints as relayed by the community ([Nashed](https://blog.nashcom.de/nashcomblog.nsf/dx/emudhra-ca-key-compromise-how-to-remove-the-affected-certs.htm), panagenda) — but **always go by the current list in HCL's bulletin**, since HCL may update it as the investigation moves:
