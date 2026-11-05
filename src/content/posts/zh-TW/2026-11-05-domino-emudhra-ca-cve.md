@@ -80,7 +80,7 @@ TLS 的信任是一條鏈:你的 server 連出去時,對方給一張憑證,憑�
 直覺會想「9.x 更舊、應該也中」,但實測結果推翻了這個假設。我們在一台 9.0.1 FP10 的 Domino server 上把三個信任庫都查了一遍——這台是用[我們公開的 build recipe](https://github.com/bryanHsiao/build-hcl-domino9-container) build 出來的 Domino 9 容器(站上也有[怎麼 build 的那篇](/domino-news/posts/build-hcl-domino-9-container/)),內建 IBM J9 Java 1.8.0_151、cacerts 檔案 2018 年、105 張,你可以照同一份 recipe 自己重現:
 
 - **bundled JVM `cacerts`(以 `keytool -list` 實查,最權威)**:**沒有任何 emSign / eMudhra**;但 Comodo 的 **AAA Certificate Services 在**(別名 `comodoaaaca`,SHA-256 `D7:A7:A0:FB…69:EF:4`)。
-- **`names.nsf`(Domino Directory)**:這一項我們只做了**二進位字串掃描、僅供參考**——掃到 AAA 的字串、沒掃到 emSign 的字串;但 grep 既不能證明 AAA 真的在(可能只是某欄位裡的文字)、也不能保證 emSign 真的不在(存法不同就可能比不中)。要定論得用 Domino admin / DXL 逐筆看,這裡不下結論。
+- **`names.nsf`(Domino Directory)**:我們沒做權威檢查,不下結論;一般標準 Domino Directory 預設不含這些公開 root,只有手動加過才需處理。
 - **`cacert.pem`**:這台**根本沒有這個檔**(data 與程式目錄都沒有),所以鎖定 `cacert.pem` 的那類工具在這台無檔可動。
 
 為什麼 emSign 三個庫全無?這版 JVM 的 cacerts 太舊(2018 年),而 emSign 約 2018 後才被各信任庫收錄——根本沒收進來。這也跟官方只把 emSign 列到 12.0.2 / 14.x 一致。所以這台 9.0.1 要評估的**不是 emSign、而是 AAA**;而 AAA 是用途極廣的老 root,**移除回歸面大,動前務必測過你依賴的 TLS 鏈**。
