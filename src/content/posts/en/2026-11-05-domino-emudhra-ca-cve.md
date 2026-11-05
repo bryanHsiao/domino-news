@@ -89,7 +89,7 @@ Why no emSign in any of the three? This JVM's cacerts is old (2018), and emSign 
 
 ## Which certificates to remove
 
-HCL's manual-remediation guidance lists several roots to pull. Below is the list and the SHA-256 fingerprints as relayed by the community ([Nashed](https://blog.nashcom.de/nashcomblog.nsf/dx/emudhra-ca-key-compromise-how-to-remove-the-affected-certs.htm), panagenda) — but **always go by the current list in HCL's bulletin**, since HCL may update it as the investigation moves:
+HCL's manual-remediation guidance lists several roots to pull. Below, **as of writing (2026-11-05)**, is the list and the SHA-256 fingerprints as relayed by the community ([Nashed](https://blog.nashcom.de/nashcomblog.nsf/dx/emudhra-ca-key-compromise-how-to-remove-the-affected-certs.htm), panagenda) — but **always go by the current list in HCL's bulletin**, since HCL may update it as the investigation moves:
 
 ```text
 emSign ECC Root CA - G3        (the main one)
@@ -114,11 +114,11 @@ Two operational points that people who've done it will press on:
 1. **Match by fingerprint, not by name.** The same root shows up under different display names across trust stores (the AAA root may read as "Comodo AAA Services root" in `cacert.pem`). Comparing by SHA-256 fingerprint is what keeps you from missing one or deleting the wrong thing.
 2. **Remove all of them, not some.** Nashed calls this out specifically: `emSign ECC Root CA - G3` and the Comodo cross-cert **both have to go** — pull only one and the chain can rebuild through the other path, which is the same as not cleaning at all.
 
-> **A contested fifth: emSign Root CA – G1.** The four above are the HCL/Domino community (panagenda) removal list; G1 isn't on it, [Mozilla currently chooses not to remove it](https://bugzilla.mozilla.org/show_bug.cgi?id=2083449), and Chrome is still reviewing (G1's issue leans on a CRL-signature problem, not quite the same line as the eight intermediate-CA key compromises). But some Java-trust-store guidance (Ignition, Camunda) and some field fix tools take the more conservative stance and remove G1 too. If you hit G1 while cleaning a Java `cacerts`, it's not an omission — it's vendors drawing the line differently; go by your vendor's current guidance, and test the TLS chains your services depend on before removing it.
+> **A contested fifth: emSign Root CA – G1.** The four above are the HCL/Domino community (panagenda) removal list; G1 isn't on it — **as of 2026-11-05**, [Mozilla chooses not to remove it](https://bugzilla.mozilla.org/show_bug.cgi?id=2083449) and Chrome is still reviewing (G1's issue leans on a CRL-signature problem, not quite the same line as the eight intermediate-CA key compromises). But some Java-trust-store guidance (Ignition, Camunda) and some field fix tools take the more conservative stance and remove G1 too. If you hit G1 while cleaning a Java `cacerts`, it's not an omission — it's vendors drawing the line differently; go by your vendor's current guidance, and test the TLS chains your services depend on before removing it.
 
 ## How to remediate on the server: steps and syntax
 
-The order is **check → back up → remove → verify**; removing is the "after you've read the report, by human decision" step, not a one-click. As of writing (2026-11) HCL's guidance is still **manual steps for now, with fixed releases to follow**.
+The order is **check → back up → remove → verify**; removing is the "after you've read the report, by human decision" step, not a one-click. As of writing (2026-11-05) HCL's guidance is still **manual steps for now, with fixed releases to follow**.
 
 **1. Check first (read-only, changes nothing)** — use Domino's **bundled** keytool to list the bundled JVM cacerts and match fingerprints to see which are present:
 

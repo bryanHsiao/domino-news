@@ -89,7 +89,7 @@ TLS 的信任是一條鏈:你的 server 連出去時,對方給一張憑證,憑�
 
 ## 要移除哪些憑證
 
-HCL 的手動移除指引列出了幾張要拔掉的 root。以下是社群([Nashed](https://blog.nashcom.de/nashcomblog.nsf/dx/emudhra-ca-key-compromise-how-to-remove-the-affected-certs.htm)、panagenda)轉述的清單與 SHA-256 指紋,但**請務必以 HCL 公告的當前清單為準**——這種清單 HCL 可能隨調查更新:
+HCL 的手動移除指引列出了幾張要拔掉的 root。以下是**截至 2026-11-05 寫稿時**、社群([Nashed](https://blog.nashcom.de/nashcomblog.nsf/dx/emudhra-ca-key-compromise-how-to-remove-the-affected-certs.htm)、panagenda)轉述的清單與 SHA-256 指紋;但**最終請以 HCL 公告的當前清單為準**——這種清單 HCL 可能隨調查更新:
 
 ```text
 emSign ECC Root CA - G3        （主要）
@@ -114,11 +114,11 @@ AAA Certificate Services (Comodo)
 1. **依指紋比對,不要依名稱**。同一張 root 在不同信任庫裡顯示的名稱不一樣(例如 AAA root 在 `cacert.pem` 裡可能叫「Comodo AAA Services root」)。用 SHA-256 指紋對,才不會漏掉或誤刪。
 2. **該移的要全部移**。Nashed 特別點名:`emSign ECC Root CA - G3` 和那張 Comodo cross-cert **兩個都要拔**——只移其中一張,憑證鏈可能從另一條路徑重新建起來,等於沒清。
 
-> **還有一張有爭議的第 5 張:emSign Root CA – G1。** 上面四張是 HCL/Domino 社群(panagenda)的移除清單;G1 不在內,[Mozilla 目前選擇不移除](https://bugzilla.mozilla.org/show_bug.cgi?id=2083449)、Chrome 還在評估(G1 的爭點偏向一份 CRL 簽章問題,跟那 8 張中繼 CA 私鑰外洩不完全同一條線)。但部分 Java 信任庫的指引(如 Ignition、Camunda)與一些實務修復工具採較保守立場、會連 G1 一起移。你在清 Java `cacerts` 時若遇到 G1,這不是「漏列」,是各家畫線不同——以你的 vendor 當前指引為準,動前先測過你服務依賴的 TLS 鏈。
+> **還有一張有爭議的第 5 張:emSign Root CA – G1。** 上面四張是 HCL/Domino 社群(panagenda)的移除清單;G1 不在內——**截至 2026-11-05**,[Mozilla 選擇不移除](https://bugzilla.mozilla.org/show_bug.cgi?id=2083449)、Chrome 還在評估(G1 的爭點偏向一份 CRL 簽章問題,跟那 8 張中繼 CA 私鑰外洩不完全同一條線)。但部分 Java 信任庫的指引(如 Ignition、Camunda)與一些實務修復工具採較保守立場、會連 G1 一起移。你在清 Java `cacerts` 時若遇到 G1,這不是「漏列」,是各家畫線不同——以你的 vendor 當前指引為準,動前先測過你服務依賴的 TLS 鏈。
 
 ## 伺服器端該怎麼補:步驟與語法
 
-順序:**查 → 備份 → 移除 → 驗證**;移除是「看完報告、人工決定」那一步,不是一鍵。就目前(2026-11 寫稿時)HCL 的指引仍以**手動步驟為主、等後續修正版釋出**。
+順序:**查 → 備份 → 移除 → 驗證**;移除是「看完報告、人工決定」那一步,不是一鍵。就目前(2026-11-05 寫稿時)HCL 的指引仍以**手動步驟為主、等後續修正版釋出**。
 
 **1. 先查(唯讀,不動任何東西)** — 用 Domino **內建的** keytool 列 bundled JVM cacerts,比對指紋看那幾張在不在:
 
