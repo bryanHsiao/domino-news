@@ -150,7 +150,9 @@ copy "<Domino>\jvm\lib\security\cacerts" "<Domino>\jvm\lib\security\cacerts.bak"
 
 ## 怎麼確認真的清乾淨
 
-Nashed 給了一段 LotusScript 測試,用 `NotesHTTPRequest` 去連一個「拿被波及 CA 簽的憑證」的測試站,看連線會不會被擋:
+**最直接、每個版本都能用的:再跑一次步驟 1 的 `keytool -list`**,確認那張憑證已經不在 cacerts 裡——你改的就是這個庫,直接查它最準。**9.x 沒有下面的 LotusScript 測試,就靠這個。**
+
+要進一步測「實際連線會不會被擋」,連 Mozilla 工程師 Dennis Jackson 架的測試站 [we-have-a-problem.com](https://we-have-a-problem.com/):別連裸網域(那只是狀態頁),要連**各中繼的子網域**(例如 `dv-g3b-emudhra…` 和對應的 `dv-g3b-aaa-emudhra…`),**每個都該出現憑證錯誤、連不上**才對;若頁面載入成功=還信任著。至少各測一個 `-emudhra` 和一個 `-aaa-emudhra`(可能一條擋了、另一條還通,正好對應 emSign 與 AAA)。在 V10 以上,也可以用 Nashed 的 LotusScript 片段從 server 端打這個測試站:
 
 ```lotusscript
 Dim req As New NotesHTTPRequest
@@ -159,7 +161,7 @@ Dim response As String
 response = req.Get(testUrl)   ' 清乾淨後:這裡應該要失敗(cert 不受信)
 ```
 
-一個很重要的但書:**這只測到 LotusScript 的 `NotesHTTPRequest` 這條路**。Domino 內嵌的瀏覽器、Java 層的 HTTP client、其他元件各自走各自的信任庫,得分開驗。Linux 上可以另外用 `curl` 打同一個測試站交叉確認。換句話說,**在一條路徑上測過不代表全部都安全**——每個會對外連線的元件都要各自確認。
+兩個關鍵:**用什麼去連,測的就是那個東西的信任庫。** `NotesHTTPRequest` 是 **Domino V10 以後才有、9.x 沒有**(9.x 要測實際連線得改用跑在 Domino JVM 上的 Java 測試);而 **`curl` 測的是作業系統(或 curl 自己)的 CA、不是 Domino 的 cacerts**——curl 過了**不代表 Domino 乾淨**。Domino 的 JVM 庫以 `keytool -list` 為準(`cacert.pem` 那個檔則可用 `curl --cacert cacert.pem <url>` 針對它測)。每個會對外連線的元件各走各的信任庫,要分開確認。
 
 ## 這一串 CVE 怎麼對應
 

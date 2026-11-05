@@ -150,7 +150,9 @@ For your exact steps and whether a fixed release exists for your version, cross-
 
 ## How to confirm it's actually clean
 
-Nashed offers a LotusScript test that uses `NotesHTTPRequest` to connect to a test site presenting a certificate signed by an affected CA, and checks whether the connection is rejected:
+**The most direct check, and one every version has: re-run the `keytool -list` from step 1** and confirm the cert is gone from cacerts — you changed this store, so checking it directly is the surest test. **9.x doesn't have the LotusScript test below, so this is the one to use there.**
+
+To go further and test an actual connection, hit Mozilla engineer Dennis Jackson's test site [we-have-a-problem.com](https://we-have-a-problem.com/): don't hit the bare domain (that's just a status page) — hit the **per-intermediate subdomains** (e.g. `dv-g3b-emudhra…` and the matching `dv-g3b-aaa-emudhra…`). **Each should fail with a certificate error**; if it loads, that runtime still trusts the bad CA. Test at least one `-emudhra` and one `-aaa-emudhra` (a store can distrust one path while still trusting the other — exactly the emSign-vs-AAA split). On V10+ you can also hit the test site from the server with Nashed's LotusScript snippet:
 
 ```lotusscript
 Dim req As New NotesHTTPRequest
@@ -159,7 +161,7 @@ Dim response As String
 response = req.Get(testUrl)   ' once clean, this should FAIL (cert not trusted)
 ```
 
-One important caveat: **this only tests the LotusScript `NotesHTTPRequest` path.** Domino's embedded browser, the Java-layer HTTP client, and other components each use their own trust store and have to be verified separately. On Linux you can cross-check with `curl` against the same test site. In other words, **passing on one path doesn't mean everything is safe** — every component that makes outbound connections needs its own confirmation.
+Two things to keep straight: **whatever makes the connection is the trust store you're testing.** `NotesHTTPRequest` only exists on **V10+ (9.x doesn't have it)** — on 9.x you'd test an actual connection with a Java test running under Domino's JVM instead; and **`curl` tests the OS's (or its own) CA store, not Domino's cacerts** — a curl pass doesn't mean Domino is clean. For Domino's JVM store go by `keytool -list` (for `cacert.pem` you can point curl at that file with `curl --cacert cacert.pem <url>`). Every component that connects out uses its own trust store, so confirm them separately.
 
 ## How this string of CVEs maps together
 
