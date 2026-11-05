@@ -1,7 +1,7 @@
 ---
 title: "eMudhra Certificates on the Notes Client: The Hard Part Isn't Which Cert — It's Thousands of Desktops"
 description: "On the server you pull the affected eMudhra / emSign / Comodo roots out of the trust store one box at a time, as the admin, by hand. On the Notes client the same certificates sit on every desktop in your company — and you can't SSH into five thousand workstations. This follows the Domino Server piece and focuses on the client side: where the certificates hide in a different set of trust stores (the local names.nsf under Advanced > Certificates, the bundled Java cacerts in the program directory, the per-workstation cacert.pem, the macOS keychain), why there's no built-in way to clean them all at once, how to push a fix to every machine with MarvelClient or your own software-deployment tool, and one corner the official bulletin doesn't list but you'd better check yourself: the EOL 9.x."
-pubDate: 2026-11-05T07:29:00+08:00
+pubDate: 2026-11-05T07:32:00+08:00
 lang: en
 slug: notes-client-emudhra-ca-cve
 tags:
