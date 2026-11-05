@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "Database"
 apiLang: "java"
+cover: "/covers/java-database.webp"
+coverStyle: "photoreal-3d"
 ---
 
 你在 LotusScript 裡開一個庫,開不到就回 `Nothing`,你習慣性 `If db Is Nothing Then` 一擋,後面就安心用。這個反射動作,搬到 Java 會害你。

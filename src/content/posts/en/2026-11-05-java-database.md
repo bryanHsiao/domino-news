@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "Database"
 apiLang: "java"
+cover: "/covers/java-database.webp"
+coverStyle: "photoreal-3d"
 ---
 
 In LotusScript you open a database, and if it fails you get `Nothing`. Your reflex `If db Is Nothing Then` catches it, and you move on. That reflex will hurt you in Java.
