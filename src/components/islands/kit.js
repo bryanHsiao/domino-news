@@ -41,8 +41,80 @@ function geometries(THREE) {
     // kept apart so they can get a material that glows at night
     glass: new THREE.BoxGeometry(1, 1, 1),
     bulb: new THREE.SphereGeometry(0.5, 12, 8),
+    // five-pointed star, flat (unit size, depth 1 before scaling), centred:
+    // the key-class marker on a roof
+    star: new THREE.ExtrudeGeometry(starShape(THREE), { depth: 1, bevelEnabled: false }).translate(0, 0, -0.5),
   };
   return sharedGeo;
+}
+
+function starShape(THREE) {
+  const pts = [];
+  for (let i = 0; i < 10; i++) {
+    const a = Math.PI / 2 + (i * Math.PI) / 5;
+    const r = i % 2 ? 0.21 : 0.5;
+    pts.push(new THREE.Vector2(Math.cos(a) * r, Math.sin(a) * r - 0.04));
+  }
+  return new THREE.Shape(pts);
+}
+
+// A banded part, for a roof in two or three colours: kind 'gable|3|1' is
+// the second of three colours. Seen from above, the shape is cut like an
+// umbrella into 2n equal sectors around its vertical axis, the colours
+// taking turns (2 colours → 4 quarters, 3 → 6 sixths), and this is the
+// sectors of colour k. Whichever side a roof is seen from, the half facing
+// the camera spans every colour. The sectors together are exactly the whole
+// shape, so only its outer surface is kept (no caps on the cuts). Every kit
+// shape is centred on its vertical axis.
+const bandCache = new Map();
+function bandGeometry(THREE, base, n, k) {
+  const g = base.index ? base.toNonIndexed() : base;
+  const names = Object.keys(g.attributes);
+  const pi = names.indexOf('position');
+  const vert = (i) => names.map((nm) => {
+    const a = g.attributes[nm];
+    return Array.from(a.array.slice(i * a.itemSize, (i + 1) * a.itemSize));
+  });
+  const mix = (a, b, t) => a.map((arr, j) => arr.map((x, c) => x + (b[j][c] - x) * t));
+  // keep the part of a polygon where side(vertex) >= 0
+  function clip(poly, side) {
+    const out = [];
+    for (let i = 0; i < poly.length; i++) {
+      const a = poly[i], b = poly[(i + 1) % poly.length];
+      const fa = side(a[pi]), fb = side(b[pi]);
+      if (fa >= 0) out.push(a);
+      if ((fa >= 0) !== (fb >= 0)) out.push(mix(a, b, fa / (fa - fb)));
+    }
+    return out;
+  }
+  // which side of the vertical half-plane at angle `at` (about y) a point is
+  const ccw = (at) => (p) => Math.cos(at) * p[2] - Math.sin(at) * p[0];
+  const sectors = 2 * n;
+  const step = (Math.PI * 2) / sectors;
+  const data = names.map(() => []);
+  const count = g.attributes.position.count;
+  for (let s = k; s < sectors; s += n) {
+    const a0 = s * step, a1 = a0 + step;
+    const from = ccw(a0), to = ccw(a1);
+    for (let t = 0; t + 2 < count; t += 3) {
+      let poly = clip([vert(t), vert(t + 1), vert(t + 2)], from);
+      if (poly.length) poly = clip(poly, (p) => -to(p));
+      for (let i = 1; i + 1 < poly.length; i++) {
+        for (const v of [poly[0], poly[i], poly[i + 1]]) v.forEach((arr, j) => data[j].push(...arr));
+      }
+    }
+  }
+  const out = new THREE.BufferGeometry();
+  names.forEach((nm, j) => out.setAttribute(nm, new THREE.Float32BufferAttribute(data[j], g.attributes[nm].itemSize)));
+  return out;
+}
+function geometryFor(THREE, geo, kind) {
+  if (geo[kind]) return geo[kind];
+  if (!bandCache.has(kind)) {
+    const [base, n, k] = kind.split('|');
+    bandCache.set(kind, bandGeometry(THREE, geo[base], +n, +k));
+  }
+  return bandCache.get(kind);
 }
 
 export function createKit(THREE) {
@@ -63,7 +135,7 @@ export function createKit(THREE) {
     dummy.rotation.order = 'YXZ';
     const meshes = [];
     for (const [kind, items] of batches) {
-      const mesh = new THREE.InstancedMesh(geo[kind], byKind[kind] || material, items.length);
+      const mesh = new THREE.InstancedMesh(geometryFor(THREE, geo, kind), byKind[kind] || material, items.length);
       mesh.castShadow = true;
       mesh.receiveShadow = true;
       items.forEach((p, i) => {

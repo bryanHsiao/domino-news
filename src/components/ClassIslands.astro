@@ -41,8 +41,8 @@ const catDesc = (descData as any).categories[lang === 'zh-TW' ? 'zh' : 'en'];
 // NotesThread / NotesException / recycle) as a power plant on the near shore,
 // the XPages / web-layer concepts as a little town built beside it: one
 // building per post, standing only in this view — the shared class data
-// (directory / graph) stays the 97 LotusScript classes, untouched. `ui` picks
-// the roof colour: the web layer is UI, the Java runtime is back end.
+// (directory / graph) stays the 97 LotusScript classes, untouched. `ui` is the
+// card's tag: the web layer is UI, the Java runtime is back end.
 const SHORE: { id: MapIsland; name: string; ui: boolean }[] = [
   { id: 'xpages', name: 'XPages', ui: true },
   { id: 'java-runtime', name: lang === 'zh-TW' ? 'Java 執行環境' : 'Java runtime', ui: false },
@@ -133,17 +133,16 @@ const T =
         listTitle: '所有島嶼',
         noMatch: '沒有符合的類別',
         langOther: '社群',
-        sub: '一個 category 一座島，類別越多島越大；樓越高、關聯越多；有關聯的島之間才有橋。屋頂旗＝有 Java／SSJS 文章，門口告示牌＝一篇文章。岸上的不是類別：Java 執行環境、XPages、OpenNTF。按「語言」看各語言怎麼接到類別。點島、房子、告示牌看介紹；拖曳轉看、滾輪縮放。',
+        sub: '一個 category 一座島，類別越多島越大；樓越高、關聯越多；有關聯的島之間才有橋。屋頂顏色＝寫過哪些語言的文章（黃 LS、黑 Java、綠 SSJS，有幾種就分幾色），★＝核心類別，門口告示牌＝一篇文章。岸上的不是類別：Java 執行環境、XPages、OpenNTF。按「語言」看各語言怎麼接到類別。點島、房子、告示牌看介紹；拖曳轉看、滾輪縮放。',
         covered: '已涵蓋',
         search: '搜尋類別…',
         reset: '重設視角',
-        legBe: '後端',
-        legUi: 'UI',
         legUn: '尚未寫成文章',
         legKey: '核心類別',
         shoreTag: '湖岸',
         listShore: '湖岸',
-        legFlagTip: '有 Java／SSJS 文章的房子，屋頂插一支對應顏色的旗（炭墨黑＝Java、綠＝SSJS）',
+        legRoofTip: '屋頂顏色＝這個類別寫過哪些語言的文章：黃＝LotusScript、炭墨黑＝Java、綠＝SSJS；兩種、三種就分成雙色、三色',
+        legKeyTip: '核心類別：房子大一號，屋頂立一顆金星',
         hint: '拖曳轉看 · 點島看清單',
         panelCount: ' 個類別',
         panelCountIsland: ' 篇文章',
@@ -218,17 +217,16 @@ const T =
         listTitle: 'All islands',
         noMatch: 'No matching class',
         langOther: 'Community',
-        sub: 'One island per category, bigger for more classes; taller houses have more links; bridges join only related islands. A roof flag = a Java / SSJS article, a door sign = one article. What stands on the shore isn’t a class: the Java runtime, XPages, OpenNTF. Pick a “Language” to see how each one reaches the classes. Click an island, house or sign for details; drag to orbit, scroll to zoom.',
+        sub: 'One island per category, bigger for more classes; taller houses have more links; bridges join only related islands. Roof colours = the languages written about (yellow LS, charcoal Java, green SSJS, one band each), ★ = a key class, a door sign = one article. What stands on the shore isn’t a class: the Java runtime, XPages, OpenNTF. Pick a “Language” to see how each one reaches the classes. Click an island, house or sign for details; drag to orbit, scroll to zoom.',
         covered: 'covered',
         search: 'Search classes…',
         reset: 'Reset view',
-        legBe: 'Backend',
-        legUi: 'UI',
         legUn: 'Not written yet',
         legKey: 'Key class',
         shoreTag: 'Shore',
         listShore: 'Shore',
-        legFlagTip: 'A house with a Java / SSJS article flies a flag in that colour (charcoal = Java, green = SSJS)',
+        legRoofTip: 'The roof shows which languages the class has articles in: yellow = LotusScript, charcoal = Java, green = SSJS; two or three, and it is striped in two or three colours',
+        legKeyTip: 'Key class: a size larger, a gold star on its roof',
         hint: 'Drag to orbit · tap an island',
         panelCount: ' classes',
         panelCountIsland: ' posts',
@@ -387,13 +385,12 @@ const statTip =
     <div id="ci-hint" class="ci-hint" data-hint={T.hint}></div>
 
     <div class="ci-legend">
-      <span><i class="sw be"></i>{T.legBe}</span>
-      <span><i class="sw ui"></i>{T.legUi}</span>
+      <span title={T.legRoofTip}><i class="sw ls"></i>LS</span>
+      <span title={T.legRoofTip}><i class="sw java"></i>Java</span>
+      <span title={T.legRoofTip}><i class="sw ssjs"></i>SSJS</span>
       {coveredCount < total && <span><i class="sw un"></i>{T.legUn}</span>}
-      <span><i class="sw key"></i>{T.legKey}</span>
       <span class="ci-leg-sep" aria-hidden="true"></span>
-      <span title={T.legFlagTip}><i class="sw flag java"></i>Java</span>
-      <span title={T.legFlagTip}><i class="sw flag ssjs"></i>SSJS</span>
+      <span title={T.legKeyTip}><i class="sw-star" aria-hidden="true">★</i>{T.legKey}</span>
     </div>
 
     <!-- Wide screens: an island, class, article or shore area opens in this
@@ -428,7 +425,8 @@ const statTip =
   #ci {
     --cbg: #faf9f6; --cpanel: #fff; --cink: #1a1a1a; --cmuted: #6b6b6b; --cline: #e2e0d8; --cgold: #d99000;
     --paper: #fff8f4; --ink: #211d1d; --ink-mut: #78685e; --coral: #db6a41; --butter: #fcea8b; --hair: rgba(33, 29, 29, 0.18);
-    --roof-be: #4f86c6; --roof-ui: #8b6fd1; --roof-un: #a8a29a; --roof-key: #e9b444;
+    --kind-be: #4f86c6; --kind-ui: #8b6fd1; --kind-un: #a8a29a; --kind-key: #e9b444;
+    --lang-ls: #f3c63f; --lang-java: #2d2d3a; --lang-ssjs: #4fa36b;
     position: relative; display: flex; height: 100%; min-height: 480px; overflow: hidden; background: var(--cbg); color: var(--cink);
   }
   /* width of the docked index panel */
@@ -552,7 +550,7 @@ const statTip =
   #ci .ci-panel .pcls.un { color: var(--ink-mut); border-style: dashed; cursor: default; }
   #ci .ci-panel .pcls .dot { width: 10px; height: 10px; border-radius: 3px; flex: none; }
   #ci .ci-panel .pcls .nm { font-size: 0.88rem; font-weight: 600; flex: 1; letter-spacing: -0.01em; }
-  #ci .ci-panel .pcls .st { color: var(--roof-key); font-size: 0.75rem; }
+  #ci .ci-panel .pcls .st { color: var(--kind-key); font-size: 0.75rem; }
   #ci .ci-panel .pcls .go { font-size: 0.72rem; color: var(--coral); }
 
   /* class overview + article preview cards (same panel) */
@@ -576,22 +574,23 @@ const statTip =
   #ci .ci-panel .pclsbtn { font: inherit; font-weight: 650; color: var(--ink); background: none; border: 0; border-bottom: 1px dashed var(--coral); padding: 0; cursor: pointer; }
   #ci .ci-panel h3.ptitle { font-size: 1rem; line-height: 1.35; margin: 4px 0; }
 
-  #ci .dot.be, #ci .sw.be { background: var(--roof-be); }
-  #ci .dot.ui, #ci .sw.ui { background: var(--roof-ui); }
-  #ci .dot.un, #ci .sw.un { background: var(--roof-un); }
-  #ci .dot.key, #ci .sw.key { background: var(--roof-key); }
+  /* the class's kind, on the cards (back end / UI / key / not written yet) */
+  #ci .dot.be { background: var(--kind-be); }
+  #ci .dot.ui { background: var(--kind-ui); }
+  #ci .dot.un, #ci .sw.un { background: var(--kind-un); }
+  #ci .dot.key { background: var(--kind-key); }
 
-  /* A house with a Java / SSJS article flies a roof flag in that colour
-     (world.js). The legend shows them as little pennants — a shape distinct
-     from the roof-meaning triangles. The same colours mark each article row in
-     the panel, there as a small round dot (.pdot). The `.ci-legend` scope is
-     needed so the pennant shape wins over the `.ci-legend .sw` triangle below. */
-  #ci .ci-legend .sw.flag { clip-path: polygon(0 0, 100% 42%, 0 72%); border-radius: 0; width: 12px; height: 12px; vertical-align: -1px; }
-  /* Java is charcoal (blue matched the back-end roof); its light ring keeps it
-     visible on the dark-mode panel and is invisible on light backgrounds. */
-  #ci .sw.flag.java, #ci .pdot.java { background: #2d2d3a; }
+  /* The roof's colours are the languages written about (world.js): the
+     legend's roof triangles. Java and SSJS also mark each article row in the
+     panel, there as a small round dot (.pdot). Java is charcoal; its light
+     ring keeps it visible on the dark-mode panel and is invisible on light
+     backgrounds. */
+  #ci .sw.ls { background: var(--lang-ls); }
+  #ci .sw.java, #ci .pdot.java { background: var(--lang-java); }
   #ci .pdot.java { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6); }
-  #ci .sw.flag.ssjs, #ci .pdot.ssjs { background: #4fa36b; }
+  #ci .sw.ssjs, #ci .pdot.ssjs { background: var(--lang-ssjs); }
+  /* the key class's gold star, with the dark rim it has on the roofs */
+  #ci .ci-legend .sw-star { font-style: normal; margin-right: 5px; color: #ffd23f; -webkit-text-stroke: 1px #3b3a42; paint-order: stroke fill; }
   #ci .pdot.ls { background: #db6a41; }
   #ci .pdot.other { background: #9a958c; }
   #ci .ci-leg-sep { width: 1px; align-self: stretch; margin: 1px 2px; background: var(--hair); }

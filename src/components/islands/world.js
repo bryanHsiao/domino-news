@@ -31,18 +31,26 @@ const STYLES = {
 };
 const STYLE_ORDER = ['plaza', 'courtyard', 'lawn', 'terracotta', 'garden', 'schoolyard', 'meadow', 'softpad', 'street', 'boardwalk', 'farmland', 'gravel', 'rubber', 'forest', 'lawn', 'terracotta', 'garden'];
 
-// Class building colours: the roof carries the meaning (legend); walls and
-// shapes come from the island's theme (landmarks.js).
-const ROOF = { be: 0x4f86c6, ui: 0x8b6fd1, un: 0xa8a29a, key: 0xe9b444 };
+// Class building colours: the roof says which languages the class has
+// articles in (legend), one equal band each along the ridge — LotusScript
+// yellow, Java charcoal, SSJS green, the same Java / SSJS colours as the
+// language lens's cables (lens.js) and the article dots in the panel; must
+// stay in sync with the legend swatches in ClassIslands.astro. Charcoal stays
+// apart from every other map colour, colour-blind views included; at night it
+// would sink into the dark, so every roof keeps a light eave under it
+// (EAVE). A class not written up yet keeps a flat grey roof; a shore building
+// whose post is in none of these languages (OpenNTF) a plain terracotta one.
+// Walls and shapes come from the island's theme (landmarks.js).
+const LANG_ROOF = { ls: 0xf3c63f, java: 0x2d2d3a, ssjs: 0x4fa36b };
+const ROOF_UN = 0xa8a29a;
+const ROOF_OTHER = 0xc77b5c;
+const EAVE = 0xefe6da;
+// the key-class marker: a gold star on a thin dark mast above the roof, its
+// dark rim parting it from a yellow roof
+const STAR = 0xffd23f;
+const STAR_RIM = 0x3b3a42;
 const GLASS = 0x7fa6c2;
 const DOOR = 0x8a6a4e;
-// Roof language flags (scene legend): Java charcoal, SSJS green. Must stay in
-// sync with the legend swatches in ClassIslands.astro. Java was blue until it
-// proved indistinguishable from the back-end roof (ROOF.be); charcoal stays
-// apart from every other map colour, colour-blind views included. A dark flag
-// sinks into the night scene, so it gets a light rim (FLAG_RIM).
-const LANG_FLAG = { java: 0x2d2d3a, ssjs: 0x4fa36b };
-const FLAG_RIM = 0xf4efe6;
 // String lights along each island's outer rim, as on the reference's map:
 // small bulbs just inside the deck edge, this many per hex side; at night
 // they glow and scene.js puts a soft halo on each (world.fairy).
@@ -84,7 +92,6 @@ export function classKind(n) {
   if (n.key) return 'key';
   return !n.url ? 'un' : n.ui ? 'ui' : 'be';
 }
-export const ROOF_COLORS = ROOF;
 
 export function buildWorld(THREE, scene, { buildings, bridges, decor }, props, layout) {
   const pickTargets = [];
@@ -437,10 +444,17 @@ function buildBridge(kit, br) {
 const floorsFor = (deg) => Math.max(1, Math.round(Math.pow(deg, 0.62)));
 const TOWER = 6;
 
+// The roof's colour bands: one per language the house's articles are in.
+function roofBands(n) {
+  const langs = new Set((n.articles || []).map((a) => a.lang));
+  const bands = ['ls', 'java', 'ssjs'].filter((l) => langs.has(l)).map((l) => LANG_ROOF[l]);
+  return bands.length ? bands : [ROOF_OTHER];
+}
+
 // One class = one small house in its island's architecture. Its links decide
-// the floors (above); the class decides the roof colour (key → gold roof;
-// uncovered → flat grey roof); the theme decides walls, body and roof
-// shape and proportions. The house is laid out facing +z (door centred
+// the floors (above); its articles' languages the roof colours (roofBands;
+// uncovered → flat grey roof); a key class is a little larger and carries a
+// star; the theme decides walls, body and roof shape and proportions. The house is laid out facing +z (door centred
 // on that face) and then turned by `yaw` about its centre. Returns the height
 // of the roof top and the body's depth.
 function house(kit, n, theme, x, z, scale, yaw = 0) {
@@ -490,46 +504,59 @@ function house(kit, n, theme, x, z, scale, yaw = 0) {
     P('glass', x, wy, bz + (round ? 0.05 : 0), w * (round ? 0.5 : 0.7), FH * 0.36, 0.012, GLASS);
   }
 
-  // roof
-  const rc = ROOF[kind];
+  // Roof. With two or three languages the roof shape is cut like an
+  // umbrella into equal sectors around its vertical axis, the colours taking
+  // turns (kit.js: 2 colours → quarters, 3 → sixths). Every shape keeps its
+  // outline, and from whichever side a house is seen (houses face every way)
+  // the half of its roof toward the camera shows every colour; bands along
+  // the ridge showed one colour to a camera facing a gable end. The saw
+  // roof's teeth are each cut the same way.
+  const bands = roofBands(n);
+  const roofPart = (k, px, py, pz, sx, sy, sz) => {
+    if (bands.length === 1) return P(k, px, py, pz, sx, sy, sz, bands[0]);
+    bands.forEach((c, i) => P(k + '|' + bands.length + '|' + i, px, py, pz, sx, sy, sz, c));
+  };
   const rh = 0.22 + 0.04 * floors;
   let roofTop;
   const roof = kind === 'un' ? 'none' : tower ? 'flat' : theme.roof;
   switch (roof) {
     case 'none':
-      P('rbox', x, yTop + 0.025, z, w + 0.05, 0.05, d + 0.05, ROOF.un);
+      P('rbox', x, yTop + 0.025, z, w + 0.05, 0.05, d + 0.05, ROOF_UN);
       return { top: yTop + 0.05, depth: d };
     case 'gable':
-      P('box', x, yTop + 0.015, z, w + 0.09, 0.03, d + 0.09, 0xefe6da);
-      P('gable', x, yTop + 0.03 + rh / 2, z, w + 0.08, rh, d + 0.1, rc);
+      P('box', x, yTop + 0.015, z, w + 0.09, 0.03, d + 0.09, EAVE);
+      roofPart('gable', x, yTop + 0.03 + rh / 2, z, w + 0.08, rh, d + 0.1);
       roofTop = yTop + 0.03 + rh;
       break;
     case 'flat':
-      P('rbox', x, yTop + 0.035, z, w + 0.06, 0.07, d + 0.06, rc);
-      P('box', x + w * 0.18, yTop + 0.12, z - d * 0.15, w * 0.3, 0.1, d * 0.3, 0xc9ced2);
-      roofTop = yTop + 0.07;
+      // a tower's roof is a deep slab, so its bands show on its sides too,
+      // not just on a top seen edge-on from the opening view
+      P('box', x, yTop + 0.012, z, w + 0.09, 0.024, d + 0.09, EAVE);
+      roofPart('rbox', x, yTop + 0.024 + 0.1, z, w + 0.06, 0.2, d + 0.06);
+      P('box', x + w * 0.18, yTop + 0.27, z - d * 0.15, w * 0.3, 0.1, d * 0.3, 0xc9ced2);
+      roofTop = yTop + 0.224;
       break;
     case 'saw':
-      P('box', x, yTop + 0.015, z, w + 0.05, 0.03, d + 0.05, 0xefe6da);
-      for (const k of [-1, 0, 1]) P('gable', x + (k * w) / 3, yTop + 0.03 + rh * 0.4, z, w / 3 + 0.01, rh * 0.8, d + 0.04, rc);
+      P('box', x, yTop + 0.015, z, w + 0.05, 0.03, d + 0.05, EAVE);
+      for (const k of [-1, 0, 1]) roofPart('gable', x + (k * w) / 3, yTop + 0.03 + rh * 0.4, z, w / 3 + 0.01, rh * 0.8, d + 0.04);
       roofTop = yTop + 0.03 + rh * 0.8;
       break;
     case 'dome': {
       const s = Math.min(w, d) * 1.02;
-      if (!round) P('box', x, yTop + 0.015, z, w + 0.04, 0.03, d + 0.04, 0xefe6da);
-      P('dome', x, yTop, z, s, rh * 1.2, s, rc);
-      roofTop = yTop + rh * 1.2;
+      P(round ? 'cyl' : 'box', x, yTop + 0.015, z, w + 0.04, 0.03, d + 0.04, EAVE);
+      roofPart('dome', x, yTop + 0.03, z, s, rh * 1.2, s);
+      roofTop = yTop + 0.03 + rh * 1.2;
       break;
     }
     case 'cone':
-      P('cyl', x, yTop + 0.015, z, w + 0.08, 0.03, w + 0.08, 0xefe6da);
-      P('cone', x, yTop + 0.03 + rh * 0.75, z, w * 1.18, rh * 1.5, w * 1.18, rc);
+      P('cyl', x, yTop + 0.015, z, w + 0.08, 0.03, w + 0.08, EAVE);
+      roofPart('cone', x, yTop + 0.03 + rh * 0.75, z, w * 1.18, rh * 1.5, w * 1.18);
       roofTop = yTop + 0.03 + rh * 1.5;
       break;
     default:
       // hip
-      P('box', x, yTop + 0.015, z, w + 0.09, 0.03, d + 0.09, 0xefe6da);
-      P('hip', x, yTop + 0.03 + rh / 2, z, w + 0.06, rh, d + 0.06, rc);
+      P('box', x, yTop + 0.015, z, w + 0.09, 0.03, d + 0.09, EAVE);
+      roofPart('hip', x, yTop + 0.03 + rh / 2, z, w + 0.06, rh, d + 0.06);
       roofTop = yTop + 0.03 + rh;
   }
   if (tower) {
@@ -537,28 +564,18 @@ function house(kit, n, theme, x, z, scale, yaw = 0) {
     P('cyl', x + w * 0.22, roofTop + 0.32, z + d * 0.18, 0.03, 0.64, 0.03, 0xd9d2c6);
     P('bulb', x + w * 0.22, roofTop + 0.66, z + d * 0.18, 0.06, 0.06, 0.06, 0xff8a6a);
   }
-  // Language flags: a house with a Java / SSJS article flies a pennant in that
-  // colour (charcoal / green) so the rarer languages stand out from a distance —
-  // LotusScript is on nearly every house, so it gets none. These are the only
-  // flags on the roofs (a key class is marked by its gold roof alone), so the
-  // mast stands on the middle of the ridge.
-  const langFlags = [];
-  for (const a of n.articles || []) {
-    if (a.lang === 'java' && !langFlags.includes(LANG_FLAG.java)) langFlags.push(LANG_FLAG.java);
-    if (a.lang === 'ssjs' && !langFlags.includes(LANG_FLAG.ssjs)) langFlags.push(LANG_FLAG.ssjs);
-  }
-  if (langFlags.length) {
-    const fx = x;
-    const base = roofTop + 0.04;
-    const poleH = 0.46 + langFlags.length * 0.19;
-    P('cyl', fx, base + poleH / 2, z, 0.024, poleH, 0.024, 0x5a4a3c);
-    langFlags.forEach((c, i) => {
-      const fy = base + poleH - 0.1 - i * 0.22;
-      P('box', fx + 0.15, fy, z, 0.3, 0.18, 0.016, c);
-      // the dark Java flag: a slightly larger, thinner light panel behind it
-      // shows as a rim on both faces
-      if (c === LANG_FLAG.java) P('box', fx + 0.15, fy, z, 0.34, 0.22, 0.01, FLAG_RIM);
-    });
+  // A key class: a gold star on a thin dark mast at the top of the roof (a
+  // tower's antenna stands off-centre, clear of it). Two stars crossed at
+  // right angles read as a star from any side; each has a slightly larger,
+  // thinner dark star behind it, showing as a rim on both faces.
+  if (kind === 'key') {
+    const mast = 0.26;
+    P('cyl', x, roofTop + mast / 2, z, 0.022, mast, 0.022, STAR_RIM);
+    const sy = roofTop + mast + 0.1;
+    for (const turn of [0, Math.PI / 2]) {
+      kit.part('star', [x, sy, z], [0.26, 0.26, 0.03], STAR, id, [0, yaw + turn, 0]);
+      kit.part('star', [x, sy, z], [0.34, 0.34, 0.016], STAR_RIM, id, [0, yaw + turn, 0]);
+    }
   }
   return { top: roofTop, depth: d };
 }

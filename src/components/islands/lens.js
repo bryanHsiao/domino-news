@@ -1,7 +1,7 @@
 // The language lens: look at the map through one language (LS / Java / SSJS).
 //   - every class house takes one of three states: 'lit' (an article in that
 //     language: brighter and, under Java / SSJS, a beam of light rising from
-//     the roof — and its flag),
+//     the roof, whose colour bands already name its languages),
 //     'has' (the class exists in that language, not written about yet: as it
 //     is) or 'none' (no such class in that language — the UI, JSON, GPS…
 //     classes: faded toward the haze, not grey, since grey already means "no
