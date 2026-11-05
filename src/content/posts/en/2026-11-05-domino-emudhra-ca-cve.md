@@ -1,7 +1,7 @@
 ---
 title: "Domino's eMudhra Certificate Alert: What the 9.1 Really Means, and Which Trust Store to Clean"
 description: "In late October HCL published a security bulletin that lists Domino Server as affected, with a CVE carrying a 9.1 CVSS. But this isn't a bug in Domino's code — it's that the private keys of a set of eMudhra intermediate CAs can be recovered, and those CAs are trusted by Java's trust store and by the trust chain Domino uses for outbound connections. Three things actually matter: how to read that 9.1 (Oracle says 9.1, Red Hat says 6.8), whether your environment is really exposed (most servers trust these CAs in the bundled Java cacerts, not in certstore.nsf), and which certificates to pull from which trust stores. This lays out how CVE-2026-91403 / 114820 / 108014 map together, the affected versions, the removal list, and how to verify."
-pubDate: 2026-11-05T07:30:00+08:00
+pubDate: 2026-11-05T07:32:00+08:00
 lang: en
 slug: domino-emudhra-ca-cve
 tags:

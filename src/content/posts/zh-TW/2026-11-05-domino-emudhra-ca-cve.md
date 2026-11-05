@@ -1,7 +1,7 @@
 ---
 title: "Domino 的 eMudhra 憑證警報:9.1 分的真相,與該清哪個信任庫"
 description: "10 月底 HCL 發了一份把 Domino Server 列為受影響的資安公告,CVE 掛著 9.1 的 CVSS。但這不是 Domino 程式碼的漏洞——是一組 eMudhra 中繼 CA 的私鑰可以被還原,而這些 CA 被 Java 的信任庫、以及 Domino 對外請求的信任鏈給信任了。真正要搞清楚的是三件事:這 9.1 到底怎麼讀(Oracle 給 9.1、Red Hat 給 6.8),你的環境是不是真的中(多數 server 中的是內建 Java cacerts、而不是 certstore.nsf),以及該把哪些憑證從哪些信任庫移掉。這篇把 CVE-2026-91403 / 114820 / 108014 的對應關係、受影響版本、移除清單與驗證方式整理清楚。"
-pubDate: 2026-11-05T07:30:00+08:00
+pubDate: 2026-11-05T07:32:00+08:00
 lang: zh-TW
 slug: domino-emudhra-ca-cve
 tags:
