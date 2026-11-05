@@ -22,6 +22,8 @@ sources:
     url: "https://blog.nashcom.de/nashcomblog.nsf/dx/emudhra-ca-key-compromise-how-to-remove-the-affected-certs.htm"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-emudhra-ca-cve.webp"
+coverStyle: "ukiyo-e"
 ---
 
 You run a few Domino servers. In late October an HCL security bulletin names Domino, and next to the CVE sits a red **9.1 / 10**. Your boss forwards the link and asks whether this is an all-nighter.

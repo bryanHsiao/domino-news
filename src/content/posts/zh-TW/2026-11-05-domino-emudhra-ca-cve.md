@@ -22,6 +22,8 @@ sources:
     url: "https://blog.nashcom.de/nashcomblog.nsf/dx/emudhra-ca-key-compromise-how-to-remove-the-affected-certs.htm"
 relatedJava: []
 relatedSsjs: []
+cover: "/covers/domino-emudhra-ca-cve.webp"
+coverStyle: "ukiyo-e"
 ---
 
 你管著幾台 Domino server。10 月底一份 HCL 資安公告點名 Domino,CVE 旁邊掛著一個紅色的 **9.1 / 10**。老闆轉了連結給你,問這是不是要連夜處理。
