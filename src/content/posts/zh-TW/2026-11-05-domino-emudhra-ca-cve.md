@@ -77,7 +77,7 @@ TLS 的信任是一條鏈:你的 server 連出去時,對方給一張憑證,憑�
 
 ## EOL 版本別想當然:實測一台 9.0.1
 
-直覺會想「9.x 更舊、應該也中」,但實測結果推翻了這個假設。我們在一台 9.0.1 FP10 的 Domino server 上把三個信任庫都查了一遍——這台是用[我們公開的 build recipe](https://github.com/bryanHsiao/build-hcl-domino9-container) build 出來的 Domino 9 容器(站上也有[怎麼 build 的那篇](/domino-news/posts/build-hcl-domino-9-container/)),內建 IBM J9 Java 1.8.0_151、cacerts 檔案 2018 年、105 張,你可以照同一份 recipe 自己重現:
+直覺會想「9.x 更舊,中的憑證應該跟 12/14 一樣」,但實測發現不是——**9.x 確實也有要處理的,只是中的不是 emSign、而是 AAA**。我們在一台 9.0.1 FP10 的 Domino server 上把三個信任庫都查了一遍——這台是用[我們公開的 build recipe](https://github.com/bryanHsiao/build-hcl-domino9-container) build 出來的 Domino 9 容器(站上也有[怎麼 build 的那篇](/domino-news/posts/build-hcl-domino-9-container/)),內建 IBM J9 Java 1.8.0_151、cacerts 檔案 2018 年、105 張,你可以照同一份 recipe 自己重現:
 
 - **bundled JVM `cacerts`(以 `keytool -list` 實查,最權威)**:**沒有任何 emSign / eMudhra**;但 Comodo 的 **AAA Certificate Services 在**(別名 `comodoaaaca`,SHA-256 `D7:A7:A0:FB…69:EF:4`)。
 - **`names.nsf`(Domino Directory)**:我們沒做權威檢查,不下結論;一般標準 Domino Directory 預設不含這些公開 root,只有手動加過才需處理。

@@ -77,7 +77,7 @@ The practical takeaway: **check the bundled Java `cacerts` first**, then look at
 
 ## Don't assume about EOL versions: one measured 9.0.1
 
-The instinct is "9.x is older, so it must be affected too" — but a measurement flipped that. We checked all three trust stores on a 9.0.1 FP10 Domino server — a Domino 9 container built from [our public build recipe](https://github.com/bryanHsiao/build-hcl-domino9-container) (the site has [a piece on how to build it](/domino-news/posts/build-hcl-domino-9-container/)); IBM J9 Java 1.8.0_151, cacerts dated 2018, 105 entries, which you can reproduce from the same recipe:
+The instinct is "9.x is older, so it must carry the same certs as 12/14" — but the measurement showed otherwise: **9.x is affected too, just by AAA rather than emSign**. We checked all three trust stores on a 9.0.1 FP10 Domino server — a Domino 9 container built from [our public build recipe](https://github.com/bryanHsiao/build-hcl-domino9-container) (the site has [a piece on how to build it](/domino-news/posts/build-hcl-domino-9-container/)); IBM J9 Java 1.8.0_151, cacerts dated 2018, 105 entries, which you can reproduce from the same recipe:
 
 - **The bundled JVM `cacerts` (checked with `keytool -list` — the authoritative one)**: **no emSign / eMudhra at all**; but Comodo's **AAA Certificate Services is present** (alias `comodoaaaca`, SHA-256 `D7:A7:A0:FB…69:EF:4`).
 - **`names.nsf` (Domino Directory)**: we didn't run an authoritative check, so we draw no conclusion; a standard Domino Directory doesn't carry these public roots by default, and only a manually-added one would need handling.
