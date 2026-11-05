@@ -102,6 +102,8 @@ Two operational points that people who've done it will press on:
 1. **Match by fingerprint, not by name.** The same root shows up under different display names across trust stores (the AAA root may read as "Comodo AAA Services root" in `cacert.pem`). Comparing by SHA-256 fingerprint is what keeps you from missing one or deleting the wrong thing.
 2. **Remove all of them, not some.** Nashed calls this out specifically: `emSign ECC Root CA - G3` and the Comodo cross-cert **both have to go** — pull only one and the chain can rebuild through the other path, which is the same as not cleaning at all.
 
+> **A contested fifth: emSign Root CA – G1.** The four above are the HCL/Domino community (panagenda) removal list; G1 isn't on it, [Mozilla currently chooses not to remove it](https://bugzilla.mozilla.org/show_bug.cgi?id=2083449), and Chrome is still reviewing (G1's issue leans on a CRL-signature problem, not quite the same line as the eight intermediate-CA key compromises). But some Java-trust-store guidance (Ignition, Camunda) and some field fix tools take the more conservative stance and remove G1 too. If you hit G1 while cleaning a Java `cacerts`, it's not an omission — it's vendors drawing the line differently; go by your vendor's current guidance, and test the TLS chains your services depend on before removing it.
+
 ## How to remediate on the server
 
 As of writing (2026-11), HCL's guidance is **manual steps for now, with fixed releases to follow**. For a Domino Server:

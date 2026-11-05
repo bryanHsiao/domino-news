@@ -102,6 +102,8 @@ AAA Certificate Services (Comodo)
 1. **依指紋比對,不要依名稱**。同一張 root 在不同信任庫裡顯示的名稱不一樣(例如 AAA root 在 `cacert.pem` 裡可能叫「Comodo AAA Services root」)。用 SHA-256 指紋對,才不會漏掉或誤刪。
 2. **該移的要全部移**。Nashed 特別點名:`emSign ECC Root CA - G3` 和那張 Comodo cross-cert **兩個都要拔**——只移其中一張,憑證鏈可能從另一條路徑重新建起來,等於沒清。
 
+> **還有一張有爭議的第 5 張:emSign Root CA – G1。** 上面四張是 HCL/Domino 社群(panagenda)的移除清單;G1 不在內,[Mozilla 目前選擇不移除](https://bugzilla.mozilla.org/show_bug.cgi?id=2083449)、Chrome 還在評估(G1 的爭點偏向一份 CRL 簽章問題,跟那 8 張中繼 CA 私鑰外洩不完全同一條線)。但部分 Java 信任庫的指引(如 Ignition、Camunda)與一些實務修復工具採較保守立場、會連 G1 一起移。你在清 Java `cacerts` 時若遇到 G1,這不是「漏列」,是各家畫線不同——以你的 vendor 當前指引為準,動前先測過你服務依賴的 TLS 鏈。
+
 ## 伺服器端該怎麼補
 
 就目前(2026-11 寫稿時)而言,HCL 的指引是**手動步驟為主、等後續修正版釋出**。對 Domino Server:
