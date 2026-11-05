@@ -49,6 +49,7 @@ The Domino Server piece lists the roots to remove and their SHA-256 fingerprints
 | Trust store | Where | Note |
 |---|---|---|
 | `cacert.pem` | each Notes `data` directory | one per workstation; no built-in way to mass-clean |
+| `cert8.db` (the embedded browser's NSS store) | `…\Notes\Data\workspace\BrowserProfile\` (Mac: Expeditor/BrowserProfile) | Comodo AAA lives here; HCL provides a clean copy to download and swap in |
 | bundled Java `cacerts` | program directory `jvm\lib\security` | writing needs admin rights |
 | local `names.nsf` | the Notes client: Advanced > Certificates | KB0134844 lists AAA Certificate Services (Comodo) as removable here |
 | macOS keychain | Notes on Mac | the Mac client relies on the keychain, not `cacert.pem` |
@@ -59,7 +60,7 @@ The rule is the same as on the server: **match by fingerprint, not by name**, an
 
 [panagenda (Christoph Adler)](https://www.panagenda.com/de/blog/remove-emudhra-certificates-hcl-notes/) has the most grounded write-up of the client remediation, and the core of it is one sentence: **there's no built-in mechanism to clean these certificates off a large fleet at once** — you need **some way to push files or config to every machine**, whether that's enterprise software distribution (SCCM, Intune, a GPO logon script), your own deployment scripts, or a dedicated Notes client-management tool. That breaks into a few jobs:
 
-1. **`cacert.pem` — overwrite with an updated copy.** Push a cleaned `cacert.pem` into each `data` directory, overwriting the existing one. This is plain file distribution — any deployment tool can do it.
+1. **`cacert.pem` (and `cert8.db`) — overwrite with clean copies.** Push a cleaned `cacert.pem` into each `data` directory, overwriting the existing one; HCL also provides a clean `cert8.db` (used by the embedded browser) to push into each `workspace\BrowserProfile\`. Both are plain file distribution — any deployment tool can do it.
 2. **local `names.nsf` — run a cleanup.** This store lives in each user's personal address book and it's an NSF (not a flat file), so walking into Advanced > Certificates on each machine by hand isn't realistic. The approach is to **ship a Notes agent/script to each client that checks the local `names.nsf` for the affected certifiers and removes them** (ideally with no user interaction). Some client-management tools (panagenda's MarvelClient, for one) ship a ready-made agent for this; without one, you write the equivalent and push it through your own pipeline.
 3. **bundled Java `cacerts` — replace or delete entries.** It sits in the program directory and needs admin: either swap in a cleaned copy, or use the same `keytool` commands as the server to **find by fingerprint and delete by alias** (syntax is in [the Domino Server piece's steps](/domino-news/posts/domino-emudhra-ca-cve/)). Either way, push it to each machine with your software distribution.
 4. **macOS — go through OS updates.** Notes on Mac relies on the macOS keychain; get the Mac current and let the OS handle that layer.

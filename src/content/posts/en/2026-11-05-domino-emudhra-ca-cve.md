@@ -80,10 +80,12 @@ The practical takeaway: **check the bundled Java `cacerts` first**, then look at
 The instinct is "9.x is older, so it must carry the same certs as 12/14" — but the measurement showed otherwise: **9.x is affected too, just by AAA rather than emSign**. We checked all three trust stores on a 9.0.1 FP10 Domino server — a Domino 9 container built from [our public build recipe](https://github.com/bryanHsiao/build-hcl-domino9-container) (the site has [a piece on how to build it](/domino-news/posts/build-hcl-domino-9-container/)); IBM J9 Java 1.8.0_151, cacerts dated 2018, 105 entries, which you can reproduce from the same recipe:
 
 - **The bundled JVM `cacerts` (checked with `keytool -list` — the authoritative one)**: **no emSign / eMudhra at all**; but Comodo's **AAA Certificate Services is present** (alias `comodoaaaca`, SHA-256 `D7:A7:A0:FB…69:EF:4`).
-- **`names.nsf` (Domino Directory)**: we didn't run an authoritative check, so we draw no conclusion; a standard Domino Directory doesn't carry these public roots by default, and only a manually-added one would need handling.
-- **`cacert.pem`**: this box **doesn't have the file at all** (neither the data nor the program directory), so the tools that target `cacert.pem` have nothing to act on here.
+- **`names.nsf` (Domino Directory)**: the grep turned up the Comodo AAA string — consistent with HCL, which says **Comodo AAA is pre-populated in names.nsf by default**. Per HCL, that's the cert you remove from names.nsf (Security→Certificates).
+- **`cacert.pem`**: this box **doesn't have the file at all**, so the tools that target `cacert.pem` have nothing to act on here.
 
-Why no emSign in any of the three? This JVM's cacerts is old (2018), and emSign was only added to trust stores around 2018 onward — so it was never bundled in. That's consistent with the official lists stopping at 12.0.2 / 14.x for emSign. So on this 9.0.1 the thing to assess is **AAA, not emSign** — and AAA is a broadly-used old root, so removing it has a large regression surface; test the TLS chains you depend on before touching it.
+Why no emSign in any of the three? This JVM's cacerts is old (2018), and emSign was only added to trust stores around 2018 onward — so it was never bundled in, consistent with the official lists stopping at 12.0.2 / 14.x for emSign.
+
+**Lining this up with HCL's steps matters**: HCL's **Java keystore step removes emSign G3** — 9.x has no emSign in the keystore, so **the Comodo AAA that shows up in the bundled JVM is not on HCL's keystore-removal list**; the Comodo AAA HCL removes lives in **`names.nsf` (pre-populated) and `cacert.pem`**. So a 9.x server done HCL's way = **leave the bundled JVM alone, delete the Comodo AAA from `names.nsf`** (and `cacert.pem` if present).
 
 > Scope note: this is **one measured 9.0.1 FP10 server container**; a 9.0.1 whose JVM was manually updated could differ. The one solid takeaway: **don't skip 9.x, but don't copy the 12/14 list onto it either — run `keytool -list` by fingerprint on each of your own 9.x boxes and sort out which store holds what.**
 
@@ -118,35 +120,37 @@ Two operational points that people who've done it will press on:
 
 ## How to remediate on the server: steps and syntax
 
-The order is **check → back up → remove → verify**; removing is the "after you've read the report, by human decision" step, not a one-click. As of writing (2026-11-05) HCL's guidance is still **manual steps for now, with fixed releases to follow**.
+The authoritative steps are **HCL KB0134844** ("What steps are required to protect HCL Notes and Domino from the eMudhra Certificate Compromise issue") — as of 2026-11-05 it's **manual steps only, no Fix Pack**. Order: **check → back up → remove per store → verify.** HCL is explicit about which store holds which cert.
 
-**1. Check first (read-only, changes nothing)** — use Domino's **bundled** keytool to list the bundled JVM cacerts and match fingerprints to see which are present:
+**1. Check first (read-only, changes nothing)** — use the bundled keytool to list the JVM cacerts and match fingerprints:
 
 ```
-"<Domino>\jvm\bin\keytool" -list -v -keystore "<Domino>\jvm\lib\security\cacerts" -storepass changeit | findstr /i "emSign emudhra 86:A1:EC BC:4D:80 12:56:09 40:F6:AF D7:A7:A0"
+"<Domino>\jvm\bin\keytool" -list -v -keystore "<Domino>\jvm\lib\security\cacerts" -storepass changeit | findstr /i "emSign emudhra 86:A1:EC BC:4D:80 12:56:09 D7:A7:A0"
 ```
 
-On Linux/AIX replace `findstr` with `grep -i`; on Domino 14.5+ you can use the shorter `keytool -list -v -cacerts` (no path or password needed). Whichever prefix shows up tells you which cert it is. For `cacert.pem` (if this box has one), open it and check each PEM block's fingerprint.
+On Linux/AIX replace `findstr` with `grep -i`; on Domino 14.5+ use `keytool -list -v -cacerts` (no path or password).
 
-**2. Back up** (a corrupted cacerts means this box's HTTPS/TLS won't start at all):
+**2. Back up** (a corrupted cacerts means this box's HTTPS/TLS won't start):
 
 ```
 copy "<Domino>\jvm\lib\security\cacerts" "<Domino>\jvm\lib\security\cacerts.bak"
 ```
 
-**3. Remove (decide by fingerprint, delete by alias)** — `keytool -delete` works **by alias**, and aliases differ across versions, so **identify the cert by its fingerprint from step 1, then delete that entry's alias** (AAA's alias is often `comodoaaaca`):
+**3. Remove per store, the way HCL maps it**:
+
+- **Java keystore `cacerts` → remove emSign ECC Root CA - G3** (bundled keytool; the alias differs by version — 12.0.2 uses the full DN with `-keystore cacerts -storepass changeit`, 14.x uses the `-cacerts` shortcut):
 
 ```
-"<Domino>\jvm\bin\keytool" -delete -alias comodoaaaca -keystore "<Domino>\jvm\lib\security\cacerts" -storepass changeit
+"<Domino>\jvm\bin\keytool" -delete -alias "cn=emsign_ecc_root_ca_-_g3,o=emudhra_technologies_limited,ou=emsign_pki,c=in" -keystore cacerts -storepass changeit
 ```
 
-⚠️ **Which ones to delete is a decision against HCL's current list**; AAA especially is a broadly-used root with a large regression surface — test the TLS chains you depend on first, and keep the backup.
+- **`cacert.pem` (data directory; libcurl uses it for LotusScript / OIDC / DominoIQ) → delete the three emSign PEM blocks (G3 / C1 / C3); on older versions also delete the Comodo AAA block**.
+- **`names.nsf` (Domino Directory) → delete the Comodo AAA cert**. HCL says it's **pre-populated in names.nsf by default**: open names.nsf → Security→Certificates → select `CN=AAA Certificate Services/O=Comodo CA Limited/…` and delete it → replicate across the domain and restart one server at a time.
+- **`certstore.nsf` / anything else**: only if you **manually added** other affected certifiers.
 
-**4. Verify**: run step 1 again — nothing should match. After changing cacerts, **restart the HTTP task** so it reloads.
+⚠️ **Comodo AAA is a broadly-used root with a large regression surface** — before removing it from `cacert.pem` / `names.nsf`, test the TLS chains you depend on (next section); restart Domino / the HTTP task after changes so they reload.
 
-**5. The other stores, separately**: edit `cacert.pem` directly (remove the whole PEM block by fingerprint); `certstore.nsf`, `names.nsf` (Domino Directory) and the OS certificate store **only matter if you added these by hand**, and `names.nsf` cross-certificates are NSF documents — handle them via Domino admin / DXL, not a file tool (Nashed notes a standard Domino Directory doesn't carry these roots by default).
-
-For your exact steps and whether a fixed release exists for your version, cross-check HCL's Domino Server bulletin (KB0134847) and the manual-removal KB it links to.
+**4. Verify**: re-run step 1 to confirm the keystore is clean; the other stores and the live-connection check are in the next section.
 
 ## How to confirm it's actually clean
 
