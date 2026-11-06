@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-11-05 · Posts scanned: 202 · Classes catalogued: 97*
+*Generated: 2026-11-06 · Posts scanned: 205 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -143,14 +143,14 @@
 
 **Dedicated** = the class has its own Java / SSJS deep-dive (`coversClass` + `apiLang` frontmatter — the authoritative "already written" list). **Gap** = Java / SSJS counterparts that LS posts point to (via `relatedJava` / `relatedSsjs`) but that do **not** yet have a dedicated article — the natural pool of "topics worth a single-language deep-dive next." A `relatedJava` pointer alone is NOT an article; only `coversClass` + `apiLang` counts as written.
 
-**Summary** — Java: **11** classes have a dedicated article, **41** referenced counterparts still in the gap. SSJS: **4** dedicated, **35** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
+**Summary** — Java: **11** classes have a dedicated article, **41** referenced counterparts still in the gap. SSJS: **5** dedicated, **34** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
 
 ### Dedicated Java / SSJS articles
 
 | Class | Java | SSJS |
 |---|---|---|
 | `NotesAgent` | [java-agent-anatomy](https://bryanhsiao.github.io/domino-news/posts/java-agent-anatomy/) | — |
-| `NotesDatabase` | [java-database](https://bryanhsiao.github.io/domino-news/posts/java-database/) | — |
+| `NotesDatabase` | [java-database](https://bryanhsiao.github.io/domino-news/posts/java-database/) | [ssjs-database](https://bryanhsiao.github.io/domino-news/posts/ssjs-database/) |
 | `NotesDateTime` | [java-datetime](https://bryanhsiao.github.io/domino-news/posts/java-datetime/) | [ssjs-datetime](https://bryanhsiao.github.io/domino-news/posts/ssjs-datetime/) |
 | `NotesDocument` | [java-document-items](https://bryanhsiao.github.io/domino-news/posts/java-document-items/) | [ssjs-backend-document](https://bryanhsiao.github.io/domino-news/posts/ssjs-backend-document/) |
 | `NotesDocumentCollection` | [java-collection-iteration](https://bryanhsiao.github.io/domino-news/posts/java-collection-iteration/) | — |
@@ -228,7 +228,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | `ViewEntry` | [domino-web-view-start-parameter](https://bryanhsiao.github.io/domino-news/posts/domino-web-view-start-parameter/), [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
 | `ViewEntryCollection` | [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
 
-### SSJS counterparts still in the gap (35)
+### SSJS counterparts still in the gap (34)
 
 | SSJS class | LS posts that point to it |
 |---|---|
@@ -264,7 +264,6 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | `ViewEntry` | [domino-web-view-start-parameter](https://bryanhsiao.github.io/domino-news/posts/domino-web-view-start-parameter/), [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
 | `ViewEntryCollection` | [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
 | `ViewNavigator` | [notes-view-navigator](https://bryanhsiao.github.io/domino-news/posts/notes-view-navigator/) |
-| `database` | [notes-database-ft-index](https://bryanhsiao.github.io/domino-news/posts/notes-database-ft-index/), [notes-document-locking](https://bryanhsiao.github.io/domino-news/posts/notes-document-locking/), [profile-documents](https://bryanhsiao.github.io/domino-news/posts/profile-documents/), [lotusscript-db-search](https://bryanhsiao.github.io/domino-news/posts/lotusscript-db-search/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
 | `documentCollection` | [notes-document-collection](https://bryanhsiao.github.io/domino-news/posts/notes-document-collection/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
 | `view` | [notes-view-autoupdate](https://bryanhsiao.github.io/domino-news/posts/notes-view-autoupdate/), [lotusscript-ftsearch](https://bryanhsiao.github.io/domino-news/posts/lotusscript-ftsearch/) |
 
@@ -272,6 +271,9 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [ssjs-database](https://bryanhsiao.github.io/domino-news/posts/ssjs-database/) | — | — | — |
+| [notes-client-emudhra-ca-cve](https://bryanhsiao.github.io/domino-news/posts/notes-client-emudhra-ca-cve/) | — | — | — |
+| [domino-emudhra-ca-cve](https://bryanhsiao.github.io/domino-news/posts/domino-emudhra-ca-cve/) | — | — | — |
 | [java-database](https://bryanhsiao.github.io/domino-news/posts/java-database/) | — | — | — |
 | [ssjs-backend-document](https://bryanhsiao.github.io/domino-news/posts/ssjs-backend-document/) | `NotesDocument` | — | — |
 | [ssjs-datetime](https://bryanhsiao.github.io/domino-news/posts/ssjs-datetime/) | — | — | — |
