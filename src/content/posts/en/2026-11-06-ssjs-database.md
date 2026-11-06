@@ -18,6 +18,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "Database"
 apiLang: "ssjs"
+cover: "/covers/ssjs-database.webp"
+coverStyle: "minimalist-mono"
 ---
 
 LotusScript needs `session.GetDatabase` plus a check; Java needs you to get a Session first, then `getDatabase`, then check `isOpen`. XPages SSJS skips all of it — `database` is just there, a ready-made global pointing at the current application's NSF. You don't even call `getDatabase`.

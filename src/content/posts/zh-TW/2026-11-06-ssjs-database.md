@@ -18,6 +18,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "Database"
 apiLang: "ssjs"
+cover: "/covers/ssjs-database.webp"
+coverStyle: "minimalist-mono"
 ---
 
 LotusScript 要 `session.GetDatabase` 加判斷,Java 還要先生出 Session、再 `getDatabase`、再查 `isOpen`。XPages 的 SSJS 省了這一整段——`database` 直接就在那,一個現成的全域變數,指向當前這個應用的 NSF。你連 `getDatabase` 都不必呼叫。
