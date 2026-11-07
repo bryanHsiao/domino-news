@@ -455,8 +455,8 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
   let panelNode = null; // class row hovered in the panel
   const refreshFocus = () => links.setFocus(hoverNode || panelNode, selected);
 
-  // ---- language lens (cables from the power plant, house states)
-  const lens = createLens(THREE, scene, { layout, world, data, heightAt: env.heightAt, haloTex });
+  // ---- language lens (house states, beams over the lit houses)
+  const lens = createLens(THREE, scene, { layout, world, data, haloTex });
   let missed = null; // class ids the search leaves out (null = no search)
   // one tint per house from the search and the lens together: a search miss
   // pales it; otherwise the lens decides
@@ -924,7 +924,6 @@ export function createIslandScene({ canvas, stage, labelsEl, tipEl, data, string
       harbours.update(motion);
       wildlife.update(dt);
       links.update(dt);
-      lens.update(dt);
     }
     followTheClock(dt);
     if (timeAnim) {
