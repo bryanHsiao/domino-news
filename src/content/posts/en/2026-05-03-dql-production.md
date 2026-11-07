@@ -20,7 +20,7 @@ sources:
 cover: "/covers/dql-production.webp"
 coverStyle: "low-poly-3d"
 relatedJava: ["DominoQuery"]
-relatedSsjs: ["DominoQuery"]
+relatedSsjs: []
 ---
 
 > 📚 **The "DQL Trilogy" series**

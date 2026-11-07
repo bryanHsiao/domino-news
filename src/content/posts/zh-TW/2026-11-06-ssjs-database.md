@@ -49,7 +49,7 @@ var view:NotesView = database.getView("vwOrders");
 var doc:NotesDocument = database.getDocumentByUNID(unid);
 ```
 
-`database` 底下的方法——`getView`、`getDocumentByUNID`、`createDocument`、`FTSearch`、`createDominoQuery`——跟 LotusScript、Java 是同一套 `lotus.domino` API,名字只差大小寫慣例。
+`database` 底下的方法——`getView`、`getDocumentByUNID`、`createDocument`、`FTSearch`——跟 LotusScript、Java 是同一套 `lotus.domino` API,名字只差大小寫慣例。(DQL 是例外:SSJS 的 `database` **沒有** `createDominoQuery`,`NotesDominoQuery` 只在 LotusScript 和 Java;XPages 要跑 DQL 得走 Java,見 [DQL 上線實務](/domino-news/posts/dql-production/)。)
 
 ## 要開別的庫:走 session
 

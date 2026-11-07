@@ -49,7 +49,7 @@ var view:NotesView = database.getView("vwOrders");
 var doc:NotesDocument = database.getDocumentByUNID(unid);
 ```
 
-The methods under `database` — `getView`, `getDocumentByUNID`, `createDocument`, `FTSearch`, `createDominoQuery` — are the same `lotus.domino` API as LotusScript and Java, differing only in casing convention.
+The methods under `database` — `getView`, `getDocumentByUNID`, `createDocument`, `FTSearch` — are the same `lotus.domino` API as LotusScript and Java, differing only in casing convention. (DQL is the exception: SSJS's `database` has **no** `createDominoQuery` — `NotesDominoQuery` exists only in LotusScript and Java, so to run DQL from XPages you go through Java; see [DQL in production](/domino-news/posts/dql-production/).)
 
 ## To open another database: go through session
 

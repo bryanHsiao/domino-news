@@ -21,7 +21,7 @@ sources:
 cover: "/covers/dql-getting-started.webp"
 coverStyle: "art-deco"
 relatedJava: ["DominoQuery"]
-relatedSsjs: ["DominoQuery"]
+relatedSsjs: []
 ---
 
 > 📚 **The "DQL Trilogy" series**

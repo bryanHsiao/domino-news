@@ -18,7 +18,7 @@ sources:
 cover: "/covers/dql-pitfalls.webp"
 coverStyle: "collage"
 relatedJava: ["DominoQuery"]
-relatedSsjs: ["DominoQuery"]
+relatedSsjs: []
 ---
 
 > 📚 **The "DQL Trilogy" series**
