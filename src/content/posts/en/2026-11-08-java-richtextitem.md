@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "RichTextItem"
 apiLang: "java"
+cover: "/covers/java-richtextitem.webp"
+coverStyle: "paper-craft"
 ---
 
 You want to read a document's `Body` as plain text — to index it, preview it, drop it into an email. In LotusScript you more or less just read it. In Java, `doc.getFirstItem("Body")` hands you an `Item`, and you have to cast it to `RichTextItem` before you can call `getFormattedText()`.

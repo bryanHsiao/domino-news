@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "RichTextItem"
 apiLang: "java"
+cover: "/covers/java-richtextitem.webp"
+coverStyle: "paper-craft"
 ---
 
 你要把一份文件的 `Body` 讀成純文字——拿去做索引、做預覽、塞進一封信。在 LotusScript 你差不多直接讀就有了。在 Java,`doc.getFirstItem("Body")` 回給你的是一個 `Item`,你得先把它 **cast 成 `RichTextItem`** 才能呼叫 `getFormattedText()`。
