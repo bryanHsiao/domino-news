@@ -18,6 +18,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "DocumentCollection"
 apiLang: "ssjs"
+cover: "/covers/ssjs-documentcollection.webp"
+coverStyle: "art-deco"
 ---
 
 你在 SSJS 跑了一個 `database.search("Form = 'Order' & Status = 'Pending'")`,拿到一堆待處理訂單,現在要把它們全部標成「已處理」。第一反應:`getFirstDocument` / `getNextDocument` 一路跑,每份 `replaceItemValue` 再 `save`。

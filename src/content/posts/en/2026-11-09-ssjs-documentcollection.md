@@ -18,6 +18,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "DocumentCollection"
 apiLang: "ssjs"
+cover: "/covers/ssjs-documentcollection.webp"
+coverStyle: "art-deco"
 ---
 
 In SSJS you run `database.search("Form = 'Order' & Status = 'Pending'")`, get a pile of pending orders, and now you want to mark them all "Processed." The reflex: `getFirstDocument` / `getNextDocument`, `replaceItemValue` and `save` on each one.
