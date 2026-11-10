@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "EmbeddedObject"
 apiLang: "java"
+cover: "/covers/java-embeddedobject.webp"
+coverStyle: "pencil-sketch"
 ---
 
 In Java you want an attachment's content — to stream it to a browser download, take a SHA-256, or push it to S3. The reflex: `extractFile` it to a temp file, then read that file back.

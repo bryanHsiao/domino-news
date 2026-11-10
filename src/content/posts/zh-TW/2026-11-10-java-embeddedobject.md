@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "EmbeddedObject"
 apiLang: "java"
+cover: "/covers/java-embeddedobject.webp"
+coverStyle: "pencil-sketch"
 ---
 
 你在 Java 要一份附件的內容——串給瀏覽器下載、算個 SHA-256、或推去 S3。直覺的寫法:`extractFile` 把它存成一個暫存檔,再把那個檔讀回來。
