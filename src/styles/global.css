@@ -282,6 +282,13 @@ main > h2::before {
   border-radius: 50%;
 }
 
+/* Homepage "最新文章 / Latest Posts" heading — the auto-scroll landing
+   target (see BaseLayout's home-scroll script). The offset clears the
+   sticky site-header so the heading isn't tucked underneath it. */
+#latest.home-latest {
+  scroll-margin-top: 84px;
+}
+
 /* ---------- card grid ---------- */
 
 .card-grid {
