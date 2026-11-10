@@ -230,5 +230,63 @@ const otherLangUrl = new URL(localizedPath(otherLang, otherLangPath), Astro.site
         window.addEventListener('pageshow', restore);
       })();
     </script>
+
+    <script is:inline>
+      // Homepage entrance scroll.
+      //
+      // When a visitor lands on the homepage at the top, give the hero a
+      // beat and then glide the page down so the "最新文章 / Latest Posts"
+      // section comes into view. `astro:page-load` fires on the initial
+      // load AND after every view-transition navigation, so one listener
+      // covers a direct visit and an in-site click back to home. The
+      // #latest heading only exists on the homepage's first page, so its
+      // presence is the "are we on the homepage?" signal.
+      //
+      // Deliberately conservative — it never fights the reader:
+      //   - only from the very top (a restored / already-scrolled position
+      //     is left untouched, so the language-switch restore above wins)
+      //   - skipped for #hash deep-links and prefers-reduced-motion
+      //   - any wheel / touch / key / pointer input during the beat aborts it
+      (function () {
+        function homeScroll() {
+          var target = document.getElementById('latest');
+          if (!target) return; // not the homepage first page
+          if (location.hash) return; // a deep-link to a section wins
+          if (window.scrollY > 40) return; // already scrolled / restored
+          try {
+            if (
+              window.matchMedia &&
+              window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            )
+              return;
+          } catch (err) {}
+
+          var cancelled = false;
+          function cancel() {
+            cancelled = true;
+            teardown();
+          }
+          function teardown() {
+            window.removeEventListener('wheel', cancel);
+            window.removeEventListener('touchmove', cancel);
+            window.removeEventListener('keydown', cancel);
+            window.removeEventListener('pointerdown', cancel);
+          }
+          window.addEventListener('wheel', cancel, { passive: true });
+          window.addEventListener('touchmove', cancel, { passive: true });
+          window.addEventListener('keydown', cancel);
+          window.addEventListener('pointerdown', cancel);
+
+          setTimeout(function () {
+            teardown();
+            if (cancelled) return;
+            if (window.scrollY > 40) return; // moved during the beat
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 550);
+        }
+
+        document.addEventListener('astro:page-load', homeScroll);
+      })();
+    </script>
   </body>
 </html>
