@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-11-09 · Posts scanned: 208 · Classes catalogued: 97*
+*Generated: 2026-11-10 · Posts scanned: 209 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -143,7 +143,7 @@
 
 **Dedicated** = the class has its own Java / SSJS deep-dive (`coversClass` + `apiLang` frontmatter — the authoritative "already written" list). **Gap** = Java / SSJS counterparts that LS posts point to (via `relatedJava` / `relatedSsjs`) but that do **not** yet have a dedicated article — the natural pool of "topics worth a single-language deep-dive next." A `relatedJava` pointer alone is NOT an article; only `coversClass` + `apiLang` counts as written.
 
-**Summary** — Java: **13** classes have a dedicated article, **39** referenced counterparts still in the gap. SSJS: **6** dedicated, **33** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
+**Summary** — Java: **14** classes have a dedicated article, **38** referenced counterparts still in the gap. SSJS: **6** dedicated, **33** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
 
 ### Dedicated Java / SSJS articles
 
@@ -157,6 +157,7 @@
 | `NotesDominoQuery` | [java-dql-dominoquery](https://bryanhsiao.github.io/domino-news/posts/java-dql-dominoquery/) | — |
 | `NotesDXLExporter` | [java-dxl-exporter-importer](https://bryanhsiao.github.io/domino-news/posts/java-dxl-exporter-importer/) | — |
 | `NotesDXLImporter` | [java-dxl-exporter-importer](https://bryanhsiao.github.io/domino-news/posts/java-dxl-exporter-importer/) | — |
+| `NotesEmbeddedObject` | [java-embeddedobject](https://bryanhsiao.github.io/domino-news/posts/java-embeddedobject/) | — |
 | `NotesItem` | — | [ssjs-vector-multivalue](https://bryanhsiao.github.io/domino-news/posts/ssjs-vector-multivalue/) |
 | `NotesLLMRequest` | [domino-iq-timeout-java-ssjs](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-java-ssjs/) | — |
 | `NotesRichTextItem` | [java-richtextitem](https://bryanhsiao.github.io/domino-news/posts/java-richtextitem/) | — |
@@ -184,7 +185,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | [java-notesthread](https://bryanhsiao.github.io/domino-news/posts/java-notesthread/) | Java runtime | java |
 | [java-recycle-memory](https://bryanhsiao.github.io/domino-news/posts/java-recycle-memory/) | Java runtime | java |
 
-### Java counterparts still in the gap (39)
+### Java counterparts still in the gap (38)
 
 | Java class | LS posts that point to it |
 |---|---|
@@ -196,7 +197,6 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | `DbDirectory` | [notes-db-directory](https://bryanhsiao.github.io/domino-news/posts/notes-db-directory/) |
 | `Directory` | [notes-directory](https://bryanhsiao.github.io/domino-news/posts/notes-directory/) |
 | `DirectoryNavigator` | [notes-directory](https://bryanhsiao.github.io/domino-news/posts/notes-directory/) |
-| `EmbeddedObject` | [xpages-attachment-multi-delete](https://bryanhsiao.github.io/domino-news/posts/xpages-attachment-multi-delete/), [domino-attachments-bulk](https://bryanhsiao.github.io/domino-news/posts/domino-attachments-bulk/), [domino-attachments-three-ways](https://bryanhsiao.github.io/domino-news/posts/domino-attachments-three-ways/), [notes-embedded-object](https://bryanhsiao.github.io/domino-news/posts/notes-embedded-object/) |
 | `Form` | [notes-form](https://bryanhsiao.github.io/domino-news/posts/notes-form/) |
 | `IDVault` | [notes-id-vault](https://bryanhsiao.github.io/domino-news/posts/notes-id-vault/) |
 | `International` | [notes-international](https://bryanhsiao.github.io/domino-news/posts/notes-international/) |
@@ -270,6 +270,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [java-embeddedobject](https://bryanhsiao.github.io/domino-news/posts/java-embeddedobject/) | — | — | — |
 | [ssjs-documentcollection](https://bryanhsiao.github.io/domino-news/posts/ssjs-documentcollection/) | — | — | — |
 | [java-richtextitem](https://bryanhsiao.github.io/domino-news/posts/java-richtextitem/) | — | — | — |
 | [java-view](https://bryanhsiao.github.io/domino-news/posts/java-view/) | — | — | — |
