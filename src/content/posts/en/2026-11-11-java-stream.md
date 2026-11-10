@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "Stream"
 apiLang: "java"
+cover: "/covers/java-stream.webp"
+coverStyle: "low-poly-3d"
 ---
 
 In Java you want to write a document's `Body` out to a `.txt`, or read a file in and drop it into a field. The reflex is `java.io.FileWriter`. But if this code runs inside Domino there's another path: [`Stream`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSTREAM_CLASS_JAVA.html) — you get one from `session.createStream()`, and the docs define it as "Represents a stream of binary or character data." It's integrated with Domino's encoding, and it's the stream `MIMEEntity` and attachments use underneath.

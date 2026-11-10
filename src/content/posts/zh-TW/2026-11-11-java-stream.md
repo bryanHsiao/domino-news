@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "Stream"
 apiLang: "java"
+cover: "/covers/java-stream.webp"
+coverStyle: "low-poly-3d"
 ---
 
 你在 Java 要把一份文件的 `Body` 寫成一個 `.txt`,或把一個檔案讀進來塞進欄位。直覺會去抓 `java.io.FileWriter`。但如果這段碼跑在 Domino 裡,還有另一條路:[`Stream`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESSTREAM_CLASS_JAVA.html)——`session.createStream()` 拿到,官方定義是「Represents a stream of binary or character data.」它跟 Domino 的編碼體系整合,也是 `MIMEEntity`、附件底層在用的那條串流。
