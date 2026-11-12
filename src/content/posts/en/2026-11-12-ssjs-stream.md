@@ -18,6 +18,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "Stream"
 apiLang: "ssjs"
+cover: "/covers/ssjs-stream.webp"
+coverStyle: "collage"
 ---
 
 In XPages you keep running into two things: the user clicks a button and wants to download a CSV or report you generate right then, or the user uploads a file and you need to read and parse it on the back end. Both go through the back-end [`NotesStream`](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Stream.html) — you get one from `session.createStream()`, and the docs define it as "Represents a stream of binary or character data. The stream can be associated with a file."

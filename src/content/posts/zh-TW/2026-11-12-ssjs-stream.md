@@ -18,6 +18,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "Stream"
 apiLang: "ssjs"
+cover: "/covers/ssjs-stream.webp"
+coverStyle: "collage"
 ---
 
 在 XPages 你常會遇到這兩件事:使用者按一個按鈕,要下載一份當場產生的 CSV 或報表檔;或者使用者上傳了一個檔,你要在後端讀它、解析。兩件事都能用後端的 [`NotesStream`](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_Stream.html)——`session.createStream()` 拿到,官方定義是「Represents a stream of binary or character data. The stream can be associated with a file.」
