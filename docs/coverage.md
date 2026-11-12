@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-11-10 · Posts scanned: 210 · Classes catalogued: 97*
+*Generated: 2026-11-12 · Posts scanned: 211 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -143,7 +143,7 @@
 
 **Dedicated** = the class has its own Java / SSJS deep-dive (`coversClass` + `apiLang` frontmatter — the authoritative "already written" list). **Gap** = Java / SSJS counterparts that LS posts point to (via `relatedJava` / `relatedSsjs`) but that do **not** yet have a dedicated article — the natural pool of "topics worth a single-language deep-dive next." A `relatedJava` pointer alone is NOT an article; only `coversClass` + `apiLang` counts as written.
 
-**Summary** — Java: **15** classes have a dedicated article, **37** referenced counterparts still in the gap. SSJS: **6** dedicated, **33** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
+**Summary** — Java: **15** classes have a dedicated article, **37** referenced counterparts still in the gap. SSJS: **7** dedicated, **32** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
 
 ### Dedicated Java / SSJS articles
 
@@ -162,7 +162,7 @@
 | `NotesLLMRequest` | [domino-iq-timeout-java-ssjs](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-java-ssjs/) | — |
 | `NotesRichTextItem` | [java-richtextitem](https://bryanhsiao.github.io/domino-news/posts/java-richtextitem/) | — |
 | `NotesSession` | [java-session-notesfactory](https://bryanhsiao.github.io/domino-news/posts/java-session-notesfactory/) | [ssjs-session-evaluate-formula](https://bryanhsiao.github.io/domino-news/posts/ssjs-session-evaluate-formula/) |
-| `NotesStream` | [java-stream](https://bryanhsiao.github.io/domino-news/posts/java-stream/) | — |
+| `NotesStream` | [java-stream](https://bryanhsiao.github.io/domino-news/posts/java-stream/) | [ssjs-stream](https://bryanhsiao.github.io/domino-news/posts/ssjs-stream/) |
 | `NotesView` | [java-view](https://bryanhsiao.github.io/domino-news/posts/java-view/) | — |
 | `NotesViewNavigator` | [java-collection-iteration](https://bryanhsiao.github.io/domino-news/posts/java-collection-iteration/) | — |
 
@@ -228,7 +228,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | `ViewEntry` | [domino-web-view-start-parameter](https://bryanhsiao.github.io/domino-news/posts/domino-web-view-start-parameter/), [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
 | `ViewEntryCollection` | [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
 
-### SSJS counterparts still in the gap (33)
+### SSJS counterparts still in the gap (32)
 
 | SSJS class | LS posts that point to it |
 |---|---|
@@ -258,7 +258,6 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | `RichTextStyle` | [notes-rich-text-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-style/) |
 | `RichTextTab` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
 | `RichTextTable` | [notes-rich-text-table](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-table/) |
-| `Stream` | [notes-stream-encoding](https://bryanhsiao.github.io/domino-news/posts/notes-stream-encoding/), [notes-stream](https://bryanhsiao.github.io/domino-news/posts/notes-stream/) |
 | `View` | [by-key-lookup-categorized-views](https://bryanhsiao.github.io/domino-news/posts/by-key-lookup-categorized-views/), [getalldocumentsbykey](https://bryanhsiao.github.io/domino-news/posts/getalldocumentsbykey/) |
 | `ViewColumn` | [notes-view-column](https://bryanhsiao.github.io/domino-news/posts/notes-view-column/) |
 | `ViewEntry` | [domino-web-view-start-parameter](https://bryanhsiao.github.io/domino-news/posts/domino-web-view-start-parameter/), [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
@@ -270,6 +269,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [ssjs-stream](https://bryanhsiao.github.io/domino-news/posts/ssjs-stream/) | — | — | — |
 | [java-stream](https://bryanhsiao.github.io/domino-news/posts/java-stream/) | — | — | — |
 | [java-embeddedobject](https://bryanhsiao.github.io/domino-news/posts/java-embeddedobject/) | — | — | — |
 | [ssjs-documentcollection](https://bryanhsiao.github.io/domino-news/posts/ssjs-documentcollection/) | — | — | — |
