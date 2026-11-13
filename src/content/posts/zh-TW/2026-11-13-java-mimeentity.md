@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "MIMEEntity"
 apiLang: "java"
+cover: "/covers/java-mimeentity.webp"
+coverStyle: "risograph"
 ---
 
 你在 Java 要讀一封信的 `Body`。直覺:`doc.getFirstItem("Body")`,再把它當 rich text 讀。但現代 Domino 的郵件 Body 多半是 **MIME**——多段式、帶一堆 headers、各段有自己的 content type 和編碼——不是傳統的 composite rich text。

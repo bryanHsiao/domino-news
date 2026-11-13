@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "MIMEEntity"
 apiLang: "java"
+cover: "/covers/java-mimeentity.webp"
+coverStyle: "risograph"
 ---
 
 In Java you want to read a message's `Body`. The reflex: `doc.getFirstItem("Body")`, then read it as rich text. But modern Domino mail stores the Body as **MIME** — multipart, a pile of headers, each part with its own content type and encoding — not the classic composite rich text.
