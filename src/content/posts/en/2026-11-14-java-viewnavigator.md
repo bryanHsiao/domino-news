@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "ViewNavigator"
 apiLang: "java"
+cover: "/covers/java-viewnavigator.webp"
+coverStyle: "photoreal-3d"
 ---
 
 A view with a few hundred thousand entries, and in Java you need to walk every row and do something. The reflex is `view.getAllDocuments()` — and then a big view blows your heap, because it pulls the whole batch of documents into memory first.

@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "ViewNavigator"
 apiLang: "java"
+cover: "/covers/java-viewnavigator.webp"
+coverStyle: "photoreal-3d"
 ---
 
 一個十幾萬筆的 view,你在 Java 要走過每一列做點事。直覺是 `view.getAllDocuments()` 一把抓——然後大 view 直接把你的 heap 撐爆,因為它會先把整批文件拉進記憶體。
