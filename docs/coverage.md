@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-11-13 · Posts scanned: 212 · Classes catalogued: 97*
+*Generated: 2026-11-14 · Posts scanned: 213 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -165,7 +165,7 @@
 | `NotesSession` | [java-session-notesfactory](https://bryanhsiao.github.io/domino-news/posts/java-session-notesfactory/) | [ssjs-session-evaluate-formula](https://bryanhsiao.github.io/domino-news/posts/ssjs-session-evaluate-formula/) |
 | `NotesStream` | [java-stream](https://bryanhsiao.github.io/domino-news/posts/java-stream/) | [ssjs-stream](https://bryanhsiao.github.io/domino-news/posts/ssjs-stream/) |
 | `NotesView` | [java-view](https://bryanhsiao.github.io/domino-news/posts/java-view/) | — |
-| `NotesViewNavigator` | [java-collection-iteration](https://bryanhsiao.github.io/domino-news/posts/java-collection-iteration/) | — |
+| `NotesViewNavigator` | [java-collection-iteration](https://bryanhsiao.github.io/domino-news/posts/java-collection-iteration/), [java-viewnavigator](https://bryanhsiao.github.io/domino-news/posts/java-viewnavigator/) | — |
 
 ### Off-shore island posts (13)
 
@@ -269,6 +269,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [java-viewnavigator](https://bryanhsiao.github.io/domino-news/posts/java-viewnavigator/) | — | — | — |
 | [java-mimeentity](https://bryanhsiao.github.io/domino-news/posts/java-mimeentity/) | — | — | — |
 | [ssjs-stream](https://bryanhsiao.github.io/domino-news/posts/ssjs-stream/) | — | — | — |
 | [java-stream](https://bryanhsiao.github.io/domino-news/posts/java-stream/) | — | — | — |
