@@ -18,6 +18,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "ViewEntry"
 apiLang: "ssjs"
+cover: "/covers/ssjs-viewentry.webp"
+coverStyle: "art-deco"
 ---
 
 在 XPages 你要列一批資料——一個 typeahead 清單、一段要回給前端的 JSON、一個自訂樣式的 repeat。要顯示的欄位,其實某個 view 裡都排好了。直覺的寫法是走訪那個 view、每一列 `getDocument()` 再 `getItemValueString(...)`。

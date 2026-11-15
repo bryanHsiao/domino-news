@@ -18,6 +18,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "ViewEntry"
 apiLang: "ssjs"
+cover: "/covers/ssjs-viewentry.webp"
+coverStyle: "art-deco"
 ---
 
 In XPages you need to list a batch of data — a typeahead list, a chunk of JSON to return to the front end, a custom-styled repeat. The columns you want to show are already laid out in some view. The reflex is to walk that view, `getDocument()` each row, and `getItemValueString(...)`.
