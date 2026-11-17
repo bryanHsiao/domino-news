@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-11-16 · Posts scanned: 215 · Classes catalogued: 97*
+*Generated: 2026-11-17 · Posts scanned: 216 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -143,7 +143,7 @@
 
 **Dedicated** = the class has its own Java / SSJS deep-dive (`coversClass` + `apiLang` frontmatter — the authoritative "already written" list). **Gap** = Java / SSJS counterparts that LS posts point to (via `relatedJava` / `relatedSsjs`) but that do **not** yet have a dedicated article — the natural pool of "topics worth a single-language deep-dive next." A `relatedJava` pointer alone is NOT an article; only `coversClass` + `apiLang` counts as written.
 
-**Summary** — Java: **17** classes have a dedicated article, **35** referenced counterparts still in the gap. SSJS: **8** dedicated, **31** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
+**Summary** — Java: **17** classes have a dedicated article, **35** referenced counterparts still in the gap. SSJS: **9** dedicated, **30** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
 
 ### Dedicated Java / SSJS articles
 
@@ -161,7 +161,7 @@
 | `NotesItem` | — | [ssjs-vector-multivalue](https://bryanhsiao.github.io/domino-news/posts/ssjs-vector-multivalue/) |
 | `NotesLLMRequest` | [domino-iq-timeout-java-ssjs](https://bryanhsiao.github.io/domino-news/posts/domino-iq-timeout-java-ssjs/) | — |
 | `NotesMIMEEntity` | [java-mimeentity](https://bryanhsiao.github.io/domino-news/posts/java-mimeentity/) | — |
-| `NotesName` | [java-name](https://bryanhsiao.github.io/domino-news/posts/java-name/) | — |
+| `NotesName` | [java-name](https://bryanhsiao.github.io/domino-news/posts/java-name/) | [ssjs-name](https://bryanhsiao.github.io/domino-news/posts/ssjs-name/) |
 | `NotesRichTextItem` | [java-richtextitem](https://bryanhsiao.github.io/domino-news/posts/java-richtextitem/) | — |
 | `NotesSession` | [java-session-notesfactory](https://bryanhsiao.github.io/domino-news/posts/java-session-notesfactory/) | [ssjs-session-evaluate-formula](https://bryanhsiao.github.io/domino-news/posts/ssjs-session-evaluate-formula/) |
 | `NotesStream` | [java-stream](https://bryanhsiao.github.io/domino-news/posts/java-stream/) | [ssjs-stream](https://bryanhsiao.github.io/domino-news/posts/ssjs-stream/) |
@@ -229,7 +229,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | `ViewEntry` | [domino-web-view-start-parameter](https://bryanhsiao.github.io/domino-news/posts/domino-web-view-start-parameter/), [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
 | `ViewEntryCollection` | [notes-view-entry](https://bryanhsiao.github.io/domino-news/posts/notes-view-entry/) |
 
-### SSJS counterparts still in the gap (31)
+### SSJS counterparts still in the gap (30)
 
 | SSJS class | LS posts that point to it |
 |---|---|
@@ -244,7 +244,6 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | `EmbeddedObject` | [notes-embedded-object](https://bryanhsiao.github.io/domino-news/posts/notes-embedded-object/) |
 | `Form` | [notes-form](https://bryanhsiao.github.io/domino-news/posts/notes-form/) |
 | `International` | [notes-international](https://bryanhsiao.github.io/domino-news/posts/notes-international/) |
-| `Name` | [notesname-formats](https://bryanhsiao.github.io/domino-news/posts/notesname-formats/), [notes-name](https://bryanhsiao.github.io/domino-news/posts/notes-name/) |
 | `Newsletter` | [notes-newsletter](https://bryanhsiao.github.io/domino-news/posts/notes-newsletter/) |
 | `NoteCollection` | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/) |
 | `NotesRichTextDoclink` | [notes-rich-text-doclink](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-doclink/) |
@@ -269,6 +268,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [ssjs-name](https://bryanhsiao.github.io/domino-news/posts/ssjs-name/) | — | — | — |
 | [java-name](https://bryanhsiao.github.io/domino-news/posts/java-name/) | — | — | — |
 | [ssjs-viewentry](https://bryanhsiao.github.io/domino-news/posts/ssjs-viewentry/) | — | — | — |
 | [java-viewnavigator](https://bryanhsiao.github.io/domino-news/posts/java-viewnavigator/) | — | — | — |
