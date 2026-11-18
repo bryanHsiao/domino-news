@@ -256,9 +256,13 @@ interface SaturatedSource {
  * recentTitles so the rule has a natural expiry — after 14 days a
  * source can be re-cited from a different angle if needed.
  *
- * Also includes URLs from rejected drafts in _drafts/ — if a topic just
- * failed validation yesterday, the same source URLs should be blocked
- * today, otherwise the model keeps re-proposing the identical article.
+ * Deliberately does NOT scan _drafts/: a rejected draft was never shown to
+ * a reader, so its sources aren't actually "covered" yet. Counting them
+ * meant every rejection permanently poisoned those URLs for the whole
+ * TITLE_LOOKBACK_DAYS window, and a day with several rejected attempts
+ * (attempt1 + attempt2, or manual re-runs) could starve every later attempt
+ * of usable sources — a compounding spiral where the more it failed, the
+ * fewer sources were left, so it failed more. Only published posts saturate.
  */
 async function loadSaturatedSources(): Promise<Map<string, SaturatedSource>> {
   const sat = new Map<string, SaturatedSource>();
@@ -289,17 +293,19 @@ async function loadSaturatedSources(): Promise<Map<string, SaturatedSource>> {
   for (const lang of ['zh-TW', 'en'] as const) {
     await collect(join(POSTS_DIR, lang));
   }
-  await collect(DRAFTS_DIR);
   return sat;
 }
 
 /**
- * Returns every slug ever used across both languages (zh-TW + en union)
- * AND every slug from rejected drafts in _drafts/. Slugs are URL
- * identities and must be unique forever — no time window. Including
- * draft slugs prevents the model from re-proposing the same topic that
- * already failed validation (e.g. the nomad-1.0.19 release draft that
- * showed up as attempt 1 three days running).
+ * Returns every slug ever actually PUBLISHED across both languages
+ * (zh-TW + en union). Slugs are URL identities and must be unique forever —
+ * no time window.
+ *
+ * Deliberately does NOT scan _drafts/: a rejected draft's slug was never a
+ * live URL, so nothing collides if a later attempt reuses it. Forbidding
+ * draft slugs forever (the old behavior) meant every rejection permanently
+ * retired that topic, which is how a handful of same-day re-runs left the
+ * model with fewer and fewer viable topics for no real reason.
  *
  * Used both as a soft hint in the prompt ("forbidden slugs") and as a
  * hard reject in validate().
@@ -319,7 +325,6 @@ async function loadAllSlugs(): Promise<Set<string>> {
   for (const lang of ['zh-TW', 'en'] as const) {
     await collect(join(POSTS_DIR, lang));
   }
-  await collect(DRAFTS_DIR);
   return slugs;
 }
 
