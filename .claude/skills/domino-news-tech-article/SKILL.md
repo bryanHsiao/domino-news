@@ -520,6 +520,20 @@ frontmatter, run this loop:
 A merged title is fine when two angles each win on a different axis
 (the 8/5 List piece merged a concept hook with a concrete-benefit tail).
 
+**Start the sidecar from the template, don't hand-write its structure.**
+Copy [`research/_TEMPLATE.md`](../../../research/_TEMPLATE.md) to
+`research/<date>-<slug>.md` and fill the blanks. The headings
+`## 查證 checklist` / `## 標題候選` / `## 異動日誌` / `## 獨立審查 (review)`
+are **literal parse anchors** for `/how-its-made` — keep them verbatim
+(renaming `查證 checklist` → `驗證清單`, or dropping the frontmatter block,
+is exactly how the sidecar schema drifted across 2026-11 and left a run of
+cards half-empty). The provenance frontmatter (`requester` / `author_model` /
+`review_model` / `review_result`) is filled **only when that step actually
+ran** — if you didn't run an independent-model review, leave `review_model` /
+`review_result` blank; the page renders an honest blank and must never show a
+fabricated PASS. (The page also backfills title/date/tags from the post if the
+sidecar omits them, but that's a safety net, not a licence to skip the template.)
+
 **Record the candidates in the sidecar** (`research/<date>-<slug>.md`,
 the 標題候選 section — see `research/README.md`). The `/how-its-made`
 page **auto-parses that section** (`parseTitleChoices` in

@@ -15,6 +15,12 @@ notebook、問了什麼、有沒有走完 NotebookLM → WebFetch 研究鏈、�
 
 ## 格式
 
+> **寫新 sidecar：直接複製 [`_TEMPLATE.md`](_TEMPLATE.md) → `research/<YYYY-MM-DD>-<slug>.md` 再填。**
+> 範本已排好所有欄位與區塊。`## 查證 checklist`／`## 標題候選`／`## 異動日誌`／`## 獨立審查`
+> 這幾個標題是 `/how-its-made` 的**解析錨點，字不要改**（用「驗證清單」之類頁面就抓不到、卡片半空——
+> 2026-11 就是這樣漂掉的）。provenance 欄位（`requester`／`author_model`／`review_model`／
+> `review_result`）**有實際跑才填**，沒跑的留空，頁面會誠實留白，別編造「審查 PASS」。
+
 frontmatter（對應投影片那套「誰提出／用什麼模型／何時」的標示）：
 
 | 欄位 | 意義 |
