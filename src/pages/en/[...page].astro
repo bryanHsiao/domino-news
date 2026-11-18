@@ -30,6 +30,11 @@ const siteOrigin = Astro.site?.origin ?? 'https://bryanhsiao.github.io';
 const siteRoot = `${siteOrigin}${base}/`;
 const enRoot = `${siteOrigin}${base}/en/`;
 
+// Page-numbered title + description for /en/2/, /en/3/… so paginated pages
+// don't all reuse the homepage title (duplicate-title). Page 1 keeps default.
+const metaTitle = isFirstPage ? undefined : `Posts — Page ${page.currentPage} of ${page.lastPage}`;
+const metaDesc = isFirstPage ? undefined : `HCL Domino Daily article list, page ${page.currentPage} of ${page.lastPage}.`;
+
 // Home-only JSON-LD: WebSite with SearchAction so Google can show a
 // sitelinks search box for the site. URL template uses /en/search/?q=…;
 // search.astro reads the q parameter and pre-fills the Pagefind input.
@@ -63,7 +68,7 @@ const homeJsonLd = isFirstPage
   : undefined;
 ---
 
-<BaseLayout lang={lang} jsonLd={homeJsonLd}>
+<BaseLayout lang={lang} title={metaTitle} description={metaDesc} jsonLd={homeJsonLd}>
   {
     isFirstPage && (
       <>

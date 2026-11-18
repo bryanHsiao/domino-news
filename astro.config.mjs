@@ -132,6 +132,18 @@ export default defineConfig({
       },
     }),
     mdx(),
-    sitemap(),
+    // i18n so the sitemap emits <xhtml:link rel="alternate" hreflang=…>
+    // pairing each zh-TW page with its /en/ counterpart (and x-default),
+    // reinforcing the in-page hreflang from BaseLayout.
+    sitemap({
+      i18n: {
+        defaultLocale: 'zh-TW',
+        locales: { 'zh-TW': 'zh-TW', en: 'en' },
+      },
+      // /how-its-made is intentionally noindex (internal methodology page);
+      // keep it out of the sitemap so GSC doesn't flag "submitted URL marked
+      // noindex".
+      filter: (page) => !page.includes('/how-its-made'),
+    }),
   ],
 });

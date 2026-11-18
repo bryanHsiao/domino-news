@@ -70,6 +70,12 @@ const ogImageUrl = coverOgPath
   : defaultOgImage;
 const otherLangPath = stripped || '/';
 const otherLangUrl = new URL(localizedPath(otherLang, otherLangPath), Astro.site ?? siteOrigin).toString();
+// x-default must resolve to the SAME URL on every page of a translation
+// cluster — always the default-locale (zh-TW) version. Pointing it at the
+// current page (so zh pages claimed zh, en pages claimed en) made the cluster
+// inconsistent, which can leave Google unsure which language to serve and
+// showing the zh title to en searchers.
+const defaultLangUrl = lang === defaultLang ? canonicalUrl : otherLangUrl;
 ---
 
 <!doctype html>
@@ -97,7 +103,7 @@ const otherLangUrl = new URL(localizedPath(otherLang, otherLangPath), Astro.site
     <link rel="canonical" href={canonicalUrl} />
     <link rel="alternate" hreflang={lang} href={canonicalUrl} />
     <link rel="alternate" hreflang={otherLang} href={otherLangUrl} />
-    <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+    <link rel="alternate" hreflang="x-default" href={defaultLangUrl} />
 
     {/* Open Graph */}
     <meta property="og:type" content={ogType} />
