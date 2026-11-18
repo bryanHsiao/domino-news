@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "QueryResultsProcessor"
 apiLang: "java"
+cover: "/covers/java-queryresultsprocessor.webp"
+coverStyle: "low-poly-3d"
 ---
 
 You have three batches of documents from three different databases — this year's orders, last year's archived orders, a department's orders on another server. You need them merged into one list, sorted by amount, a total computed, and finally a chunk of JSON for the front end, or a view people can click into.

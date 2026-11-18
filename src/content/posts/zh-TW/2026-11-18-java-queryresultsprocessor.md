@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "QueryResultsProcessor"
 apiLang: "java"
+cover: "/covers/java-queryresultsprocessor.webp"
+coverStyle: "low-poly-3d"
 ---
 
 你手上有三批文件,來自三個不同的資料庫——今年的訂單、去年歸檔的訂單、另一台 server 上某部門的訂單。你要把它們合成一份、照「金額」排序、算個總計,最後給前端一段 JSON,或存成一個 view 讓人點進去看。
