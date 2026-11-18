@@ -29,6 +29,12 @@ const base = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '');
 const siteOrigin = Astro.site?.origin ?? 'https://bryanhsiao.github.io';
 const siteRoot = `${siteOrigin}${base}/`;
 
+// Give paginated pages (/2/, /3/…) a page-numbered title + description so they
+// don't all share the homepage's title (a duplicate-title SEO problem). The
+// first page keeps the default homepage title/description.
+const metaTitle = isFirstPage ? undefined : `文章一覽（第 ${page.currentPage}／${page.lastPage} 頁）`;
+const metaDesc = isFirstPage ? undefined : `HCL Domino 日報的文章列表，第 ${page.currentPage} 頁（共 ${page.lastPage} 頁）。`;
+
 // Home-only JSON-LD: WebSite with SearchAction so Google can show a
 // sitelinks search box for the site. URL template uses /search/?q=…;
 // search.astro reads the q parameter and pre-fills the Pagefind input.
@@ -62,7 +68,7 @@ const homeJsonLd = isFirstPage
   : undefined;
 ---
 
-<BaseLayout lang={lang} jsonLd={homeJsonLd}>
+<BaseLayout lang={lang} title={metaTitle} description={metaDesc} jsonLd={homeJsonLd}>
   {
     isFirstPage && (
       <>
