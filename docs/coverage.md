@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-11-18 · Posts scanned: 217 · Classes catalogued: 97*
+*Generated: 2026-11-19 · Posts scanned: 218 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -143,12 +143,14 @@
 
 **Dedicated** = the class has its own Java / SSJS deep-dive (`coversClass` + `apiLang` frontmatter — the authoritative "already written" list). **Gap** = Java / SSJS counterparts that LS posts point to (via `relatedJava` / `relatedSsjs`) but that do **not** yet have a dedicated article — the natural pool of "topics worth a single-language deep-dive next." A `relatedJava` pointer alone is NOT an article; only `coversClass` + `apiLang` counts as written.
 
-**Summary** — Java: **18** classes have a dedicated article, **34** referenced counterparts still in the gap. SSJS: **9** dedicated, **30** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
+**Summary** — Java: **20** classes have a dedicated article, **32** referenced counterparts still in the gap. SSJS: **9** dedicated, **30** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
 
 ### Dedicated Java / SSJS articles
 
 | Class | Java | SSJS |
 |---|---|---|
+| `NotesACL` | [java-acl](https://bryanhsiao.github.io/domino-news/posts/java-acl/) | — |
+| `NotesACLEntry` | [java-acl](https://bryanhsiao.github.io/domino-news/posts/java-acl/) | — |
 | `NotesAgent` | [java-agent-anatomy](https://bryanhsiao.github.io/domino-news/posts/java-agent-anatomy/) | — |
 | `NotesDatabase` | [java-database](https://bryanhsiao.github.io/domino-news/posts/java-database/) | [ssjs-database](https://bryanhsiao.github.io/domino-news/posts/ssjs-database/) |
 | `NotesDateTime` | [java-datetime](https://bryanhsiao.github.io/domino-news/posts/java-datetime/) | [ssjs-datetime](https://bryanhsiao.github.io/domino-news/posts/ssjs-datetime/) |
@@ -190,12 +192,10 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | [java-notesthread](https://bryanhsiao.github.io/domino-news/posts/java-notesthread/) | Java runtime | java |
 | [java-recycle-memory](https://bryanhsiao.github.io/domino-news/posts/java-recycle-memory/) | Java runtime | java |
 
-### Java counterparts still in the gap (34)
+### Java counterparts still in the gap (32)
 
 | Java class | LS posts that point to it |
 |---|---|
-| `ACL` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
-| `ACLEntry` | [notes-acl-entry](https://bryanhsiao.github.io/domino-news/posts/notes-acl-entry/) |
 | `AdministrationProcess` | [notes-administration-process](https://bryanhsiao.github.io/domino-news/posts/notes-administration-process/) |
 | `ColorObject` | [notes-rich-text-paragraph-style](https://bryanhsiao.github.io/domino-news/posts/notes-rich-text-paragraph-style/) |
 | `DateRange` | [notes-datetime](https://bryanhsiao.github.io/domino-news/posts/notes-datetime/) |
@@ -268,6 +268,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [java-acl](https://bryanhsiao.github.io/domino-news/posts/java-acl/) | — | — | — |
 | [java-queryresultsprocessor](https://bryanhsiao.github.io/domino-news/posts/java-queryresultsprocessor/) | — | — | — |
 | [ssjs-name](https://bryanhsiao.github.io/domino-news/posts/ssjs-name/) | — | — | — |
 | [java-name](https://bryanhsiao.github.io/domino-news/posts/java-name/) | — | — | — |
