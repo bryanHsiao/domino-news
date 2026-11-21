@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "ViewEntryCollection"
 apiLang: "java"
+cover: "/covers/java-viewentrycollection.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 You get a batch of view-ordered document entries with `view.getAllEntries()` or `getAllEntriesByKey(key)`, and now you need to do something to them: set one field to the same value across all of them, narrow the range with a full-text search, or subtract "query B's results" from "query A's".

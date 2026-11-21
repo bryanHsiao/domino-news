@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "ViewEntryCollection"
 apiLang: "java"
+cover: "/covers/java-viewentrycollection.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 你用 `view.getAllEntries()` 或 `getAllEntriesByKey(key)` 拿到一批照 view 排序的文件 entry,接下來要對它們做事:把某個欄位全部改成同一個值、把範圍再用全文搜尋縮小、或把「A 查詢的結果」扣掉「B 查詢的結果」。
