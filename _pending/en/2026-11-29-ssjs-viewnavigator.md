@@ -43,7 +43,7 @@ For "the list under this category" or "an expandable tree" in XPages, `createVie
 
 This is the performance lever. The class page, verbatim: "A `goto` method is favored over a `get` method for navigation-only purposes because a `goto` method does not create a NotesViewEntry object."
 
-- `getNext()` returns a `NotesViewEntry` (null if none) and moves the pointer — use it when you need to read an entry's columns.
+- [`getNext()`](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_ViewNavigator_getNext.html) returns a `NotesViewEntry` (null if none) and moves the pointer — use it when you need to read an entry's columns.
 - `gotoNext()` returns a `boolean` (true/false), moves the pointer, and **builds no ViewEntry object**.
 
 ```javascript
