@@ -19,6 +19,8 @@ coversClass:
   - "Directory"
   - "DirectoryNavigator"
 apiLang: "java"
+cover: "/covers/java-directory.webp"
+coverStyle: "minimalist-mono"
 ---
 
 一個排程的 Java agent 要從 Domino Directory(names.nsf / NAB)查東西:這個人的 mail server 是哪台、他的 internet address 是什麼、某個群組裡有誰。你不想自己開 `names.nsf`、猜 view 名稱、手刻 `@NameLookup`,於是你找到 `Directory` 類別。

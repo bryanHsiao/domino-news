@@ -19,6 +19,8 @@ coversClass:
   - "Directory"
   - "DirectoryNavigator"
 apiLang: "java"
+cover: "/covers/java-directory.webp"
+coverStyle: "minimalist-mono"
 ---
 
 A scheduled Java agent needs something out of the Domino Directory (names.nsf / the NAB): which mail server this person is on, their internet address, who's in a group. You'd rather not open `names.nsf` by hand, guess view names, and hand-roll `@NameLookup` — so you find the `Directory` class.
