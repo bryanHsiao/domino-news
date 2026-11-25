@@ -18,6 +18,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "RichTextItem"
 apiLang: "ssjs"
+cover: "/covers/ssjs-richtextitem.webp"
+coverStyle: "bw-grain"
 ---
 
 XPages back-end code needs to build a formatted document body: a heading, a few lines, and a freshly-generated report file attached. Or a mail memo. You open a rich text item with `createRichTextItem`, `appendText` your lines with `\n` between them — and it all comes out as **one run-on paragraph**, as if the newlines never happened.

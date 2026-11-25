@@ -18,6 +18,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "RichTextItem"
 apiLang: "ssjs"
+cover: "/covers/ssjs-richtextitem.webp"
+coverStyle: "bw-grain"
 ---
 
 XPages 後端程式要組一份有格式的文件 body:標題、幾行說明、再夾一個剛產好的報表檔。或是組一封 mail 內文。你用 `createRichTextItem` 開一個 rich text item,`appendText` 一行一行加、字串裡放 `\n` 想換行 —— 跑出來**全部擠成一段**,換行像沒發生過。
