@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "DbDirectory"
 apiLang: "java"
+cover: "/covers/java-dbdirectory.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 一個 Java agent 要掃一台 server 上的資料庫:盤點有哪些庫、哪些是某個 template 生出來的、哪些最近有改。你找到 `DbDirectory`,`getDbDirectory` 拿到目錄、`getFirstDatabase` / `getNextDatabase` 一個一個走。

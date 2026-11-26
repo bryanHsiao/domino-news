@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "DbDirectory"
 apiLang: "java"
+cover: "/covers/java-dbdirectory.webp"
+coverStyle: "oil-chiaroscuro"
 ---
 
 A Java agent needs to sweep the databases on a server: an inventory, which ones came from a given template, which changed recently. You find `DbDirectory`, call `getDbDirectory` for the directory, and walk it with `getFirstDatabase` / `getNextDatabase`.
