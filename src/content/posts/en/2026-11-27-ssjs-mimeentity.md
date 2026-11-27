@@ -18,6 +18,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "MIMEEntity"
 apiLang: "ssjs"
+cover: "/covers/ssjs-mimeentity.webp"
+coverStyle: "risograph"
 ---
 
 XPages back-end code needs to send an **HTML** mail: formatted, with links and house styling, not flat plain text. That mail body is MIME, and you build it with [`MIMEEntity`](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_MIMEEntity.html).

@@ -18,6 +18,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "MIMEEntity"
 apiLang: "ssjs"
+cover: "/covers/ssjs-mimeentity.webp"
+coverStyle: "risograph"
 ---
 
 XPages 後端要寄一封 **HTML 格式**的 mail:帶格式、帶超連結、帶公司樣式,不是乾巴巴的純文字。這種信內文是 MIME,你用 [`MIMEEntity`](https://help.hcl-software.com/dom_designer/14.5.1/reference/r_domino_MIMEEntity.html) 組。
