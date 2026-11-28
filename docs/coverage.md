@@ -1,6 +1,6 @@
 # LotusScript Class Coverage
 
-*Generated: 2026-11-27 · Posts scanned: 226 · Classes catalogued: 97*
+*Generated: 2026-11-28 · Posts scanned: 227 · Classes catalogued: 97*
 
 > Source data: [OpenNTF/ls-classmap](https://github.com/OpenNTF/ls-classmap), 14.5.1 catalogue.
 
@@ -143,7 +143,7 @@
 
 **Dedicated** = the class has its own Java / SSJS deep-dive (`coversClass` + `apiLang` frontmatter — the authoritative "already written" list). **Gap** = Java / SSJS counterparts that LS posts point to (via `relatedJava` / `relatedSsjs`) but that do **not** yet have a dedicated article — the natural pool of "topics worth a single-language deep-dive next." A `relatedJava` pointer alone is NOT an article; only `coversClass` + `apiLang` counts as written.
 
-**Summary** — Java: **25** classes have a dedicated article, **27** referenced counterparts still in the gap. SSJS: **15** dedicated, **25** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
+**Summary** — Java: **26** classes have a dedicated article, **26** referenced counterparts still in the gap. SSJS: **15** dedicated, **25** in the gap, plus **13** off-shore island posts (XPages / Java-runtime, not tied to a backend class).
 
 ### Dedicated Java / SSJS articles
 
@@ -168,6 +168,7 @@
 | `NotesLog` | [java-log](https://bryanhsiao.github.io/domino-news/posts/java-log/) | — |
 | `NotesMIMEEntity` | [java-mimeentity](https://bryanhsiao.github.io/domino-news/posts/java-mimeentity/) | [ssjs-mimeentity](https://bryanhsiao.github.io/domino-news/posts/ssjs-mimeentity/) |
 | `NotesName` | [java-name](https://bryanhsiao.github.io/domino-news/posts/java-name/) | [ssjs-name](https://bryanhsiao.github.io/domino-news/posts/ssjs-name/) |
+| `NotesNoteCollection` | [java-notecollection](https://bryanhsiao.github.io/domino-news/posts/java-notecollection/) | — |
 | `NotesQueryResultsProcessor` | [java-queryresultsprocessor](https://bryanhsiao.github.io/domino-news/posts/java-queryresultsprocessor/) | — |
 | `NotesRichTextItem` | [java-richtextitem](https://bryanhsiao.github.io/domino-news/posts/java-richtextitem/) | [ssjs-richtextitem](https://bryanhsiao.github.io/domino-news/posts/ssjs-richtextitem/) |
 | `NotesSession` | [java-session-notesfactory](https://bryanhsiao.github.io/domino-news/posts/java-session-notesfactory/) | [ssjs-session-evaluate-formula](https://bryanhsiao.github.io/domino-news/posts/ssjs-session-evaluate-formula/) |
@@ -197,7 +198,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | [java-notesthread](https://bryanhsiao.github.io/domino-news/posts/java-notesthread/) | Java runtime | java |
 | [java-recycle-memory](https://bryanhsiao.github.io/domino-news/posts/java-recycle-memory/) | Java runtime | java |
 
-### Java counterparts still in the gap (27)
+### Java counterparts still in the gap (26)
 
 | Java class | LS posts that point to it |
 |---|---|
@@ -210,7 +211,6 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 | `Item` | [readers-authors-fields](https://bryanhsiao.github.io/domino-news/posts/readers-authors-fields/), [domino-large-summary-field-too-large](https://bryanhsiao.github.io/domino-news/posts/domino-large-summary-field-too-large/) |
 | `MIMEHeader` | [notes-mime-entity](https://bryanhsiao.github.io/domino-news/posts/notes-mime-entity/) |
 | `Newsletter` | [notes-newsletter](https://bryanhsiao.github.io/domino-news/posts/notes-newsletter/) |
-| `NoteCollection` | [notes-note-collection](https://bryanhsiao.github.io/domino-news/posts/notes-note-collection/) |
 | `Outline` | [notes-outline](https://bryanhsiao.github.io/domino-news/posts/notes-outline/) |
 | `OutlineEntry` | [notes-outline](https://bryanhsiao.github.io/domino-news/posts/notes-outline/) |
 | `Property` | [notes-property-broker](https://bryanhsiao.github.io/domino-news/posts/notes-property-broker/) |
@@ -263,6 +263,7 @@ These cover a layer with no LotusScript back-end class in the catalogue, so they
 
 | Post | Classes covered | Java mentions | SSJS mentions |
 |---|---|---|---|
+| [java-notecollection](https://bryanhsiao.github.io/domino-news/posts/java-notecollection/) | — | — | — |
 | [ssjs-mimeentity](https://bryanhsiao.github.io/domino-news/posts/ssjs-mimeentity/) | — | — | — |
 | [java-dbdirectory](https://bryanhsiao.github.io/domino-news/posts/java-dbdirectory/) | — | — | — |
 | [ssjs-richtextitem](https://bryanhsiao.github.io/domino-news/posts/ssjs-richtextitem/) | — | — | — |
