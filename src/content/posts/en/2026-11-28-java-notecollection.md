@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "NoteCollection"
 apiLang: "java"
+cover: "/covers/java-notecollection.webp"
+coverStyle: "photoreal-3d"
 ---
 
 `DocumentCollection` only selects documents. But sometimes you want more than documents: inventory which design elements a database has, export a batch of forms / views / agents **together with** data as DXL, or grab "only notes created after this date." That calls for [`NoteCollection`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESNOTECOLLECTION_CLASS_JAVA.html) — in the docs, "Represents a collection of Domino design and data elements in a database." It selects **design notes too**.

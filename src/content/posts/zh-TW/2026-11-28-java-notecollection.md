@@ -17,6 +17,8 @@ relatedJava: []
 relatedSsjs: []
 coversClass: "NoteCollection"
 apiLang: "java"
+cover: "/covers/java-notecollection.webp"
+coverStyle: "photoreal-3d"
 ---
 
 `DocumentCollection` 只選得到文件。但你有時要的不只是文件:盤點一個庫有哪些設計元件、把一批 form / view / agent **連文件一起**匯出成 DXL、或「只要建立時間在某天之後的那些 note」。這要用 [`NoteCollection`](https://help.hcl-software.com/dom_designer/14.5.1/basic/H_NOTESNOTECOLLECTION_CLASS_JAVA.html) —— 官方定義「Represents a collection of Domino design and data elements in a database.」,**連設計 note 都選得到**。
